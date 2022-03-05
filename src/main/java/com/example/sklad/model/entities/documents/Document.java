@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Document {
 
     @Id
@@ -25,10 +26,14 @@ public class Document {
 
     private LocalDateTime dateTime;
 
-    private boolean isPayed;
-
     @Enumerated(EnumType.STRING)
     private DocumentType type;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
+
+    private boolean isPayed;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "supplier_id")
@@ -45,10 +50,6 @@ public class Document {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "storageTo_id")
     private Storage storageTo;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User author;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "storage_id", nullable = false)
