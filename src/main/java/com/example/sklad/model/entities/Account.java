@@ -1,10 +1,13 @@
 package com.example.sklad.model.entities;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Account {
 
@@ -21,5 +24,7 @@ public class Account {
 
     private String corAccountNumber;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id")
     private Company company;
 }

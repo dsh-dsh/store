@@ -1,6 +1,6 @@
 package com.example.sklad.model.entities;
 
-import com.example.sklad.model.entities.documents.Document;
+import com.example.sklad.model.entities.documents.ItemMoveDoc;
 import com.example.sklad.model.enums.StorageType;
 import lombok.Data;
 
@@ -22,5 +22,5 @@ public class Storage {
     private StorageType type;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Document> documents;
+    private List<ItemMoveDoc> itemMoveDocs;
 }

@@ -14,6 +14,8 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "item_id")
     private Item item;
 
     private double value;

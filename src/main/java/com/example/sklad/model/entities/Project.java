@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-public class Workshop {
+public class Project {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -15,7 +15,4 @@ public class Workshop {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "item_id")
-    private Item item;
 }

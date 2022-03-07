@@ -1,6 +1,6 @@
 package com.example.sklad.model.entities;
 
-import com.example.sklad.model.entities.documents.Document;
+import com.example.sklad.model.entities.documents.ItemMoveDoc;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,7 +16,7 @@ public class DocumentItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
-    private Document document;
+    private ItemMoveDoc itemMoveDoc;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")

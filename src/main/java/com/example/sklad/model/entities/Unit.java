@@ -15,5 +15,7 @@ public class Unit {
 
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "item_id")
     private Item item;
 }

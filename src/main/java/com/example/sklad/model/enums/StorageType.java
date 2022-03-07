@@ -8,7 +8,7 @@ public enum StorageType {
     CAFE_STORE(Constants.CAFE_STORE_TYPE),
     RETAIL_STORE(Constants.RETAIL_STORE_TYPE);
 
-    private String type;
+    private final String type;
 
     StorageType(String type) {
         this.type = type;

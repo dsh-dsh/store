@@ -10,7 +10,7 @@ public enum DocumentType {
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE);
 
-    private String type;
+    private final String type;
 
     DocumentType(String type) {
         this.type = type;
