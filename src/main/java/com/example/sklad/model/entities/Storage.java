@@ -2,12 +2,14 @@ package com.example.sklad.model.entities;
 
 import com.example.sklad.model.entities.documents.ItemMoveDoc;
 import com.example.sklad.model.enums.StorageType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Storage {
 

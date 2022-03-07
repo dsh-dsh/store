@@ -3,12 +3,14 @@ package com.example.sklad.model.entities.documents;
 import com.example.sklad.model.entities.Project;
 import com.example.sklad.model.entities.User;
 import com.example.sklad.model.enums.DocumentType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Document {

@@ -1,13 +1,15 @@
 package com.example.sklad.model.entities;
 
 import com.example.sklad.model.enums.Role;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class User {
 

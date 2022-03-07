@@ -2,11 +2,13 @@ package com.example.sklad.model.entities.documents;
 
 import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.enums.PaymentType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class CashOrderDoc extends Document  implements DocInterface {
 
