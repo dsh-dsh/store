@@ -1,13 +1,15 @@
 package com.example.sklad.model.entities;
 
-import com.example.sklad.model.entities.documents.ItemMoveDoc;
+import com.example.sklad.model.entities.documents.ItemDoc;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 public class DocumentItem {
 
@@ -18,7 +20,7 @@ public class DocumentItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
-    private ItemMoveDoc itemMoveDoc;
+    private ItemDoc itemDoc;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")

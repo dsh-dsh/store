@@ -1,11 +1,11 @@
 package com.example.sklad.fabrics;
 
-import com.example.sklad.model.entities.documents.ItemMoveDoc;
+import com.example.sklad.model.entities.documents.ItemDoc;
 
 public class ItemDocFactory implements DocFactory {
 
     @Override
-    public ItemMoveDoc createDocument() {
+    public ItemDoc createDocument() {
         return null;
     }
 

@@ -1,6 +1,6 @@
 package com.example.sklad.controllers;
 
-import com.example.sklad.model.dto.PostingDocumentDTO;
+import com.example.sklad.model.dto.PostingDocDTO;
 import com.example.sklad.model.responses.ListResponse;
 import com.example.sklad.services.PostingDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class PostingDocumentController {
     private PostingDocumentService postingDocumentService;
 
     @GetMapping()
-    public ResponseEntity<ListResponse<PostingDocumentDTO>> getPostingDocuments(Pageable pageable) {
+    public ResponseEntity<ListResponse<PostingDocDTO>> getPostingDocuments(Pageable pageable) {
         return ResponseEntity.ok(postingDocumentService.getDocuments());
     }
 

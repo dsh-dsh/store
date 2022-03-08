@@ -4,6 +4,7 @@ import com.example.sklad.model.entities.Project;
 import com.example.sklad.model.entities.User;
 import com.example.sklad.model.enums.DocumentType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Document {
@@ -40,5 +42,7 @@ public class Document {
     private User individual;
 
     private boolean isPayed;
+
+    private boolean isHold;
 
 }

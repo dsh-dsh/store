@@ -1,15 +1,15 @@
 package com.example.sklad.model.entities;
 
-import com.example.sklad.model.entities.documents.ItemMoveDoc;
 import com.example.sklad.model.enums.StorageType;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 public class Storage {
 
@@ -23,6 +23,6 @@ public class Storage {
     @Enumerated(EnumType.STRING)
     private StorageType type;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<ItemMoveDoc> itemMoveDocs;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    private List<ItemMoveDoc> itemMoveDocs;
 }
