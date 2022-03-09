@@ -10,13 +10,22 @@ public enum DocumentType {
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE);
 
-    private final String type;
+    private final String value;
 
-    DocumentType(String type) {
-        this.type = type;
+    DocumentType(String value) {
+        this.value = value;
     }
 
-    public String getType() {
-        return type;
+    public String getValue() {
+        return value;
+    }
+
+    public static DocumentType getByValue(String value) {
+        for(DocumentType docType : DocumentType.values()) {
+            if(docType.value.equalsIgnoreCase(value)) {
+                return docType;
+            }
+        }
+        return null;
     }
 }

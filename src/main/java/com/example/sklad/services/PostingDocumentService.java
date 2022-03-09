@@ -1,7 +1,7 @@
 package com.example.sklad.services;
 
-import com.example.sklad.fabrics.ItemDocFactory;
-import com.example.sklad.model.dto.PostingDocDTO;
+import com.example.sklad.factories.ItemDocFactory;
+import com.example.sklad.model.dto.ItemDocDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.responses.ListResponse;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ public class PostingDocumentService {
 
     private final ItemDocFactory docFactory = new ItemDocFactory();
 
-    public ListResponse<PostingDocDTO> getDocuments() {
-        ListResponse<PostingDocDTO> response =
-                new ListResponse<>(List.of(new PostingDocDTO()), null);
+    public ListResponse<ItemDocDTO> getDocuments() {
+        ListResponse<ItemDocDTO> response =
+                new ListResponse<>(List.of(new ItemDocDTO()), null);
         return response;
     }
 

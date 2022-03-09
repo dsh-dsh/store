@@ -1,4 +1,4 @@
-package com.example.sklad.fabrics;
+package com.example.sklad.factories;
 
 import com.example.sklad.model.entities.documents.DocInterface;
 import org.springframework.stereotype.Component;
@@ -7,5 +7,6 @@ import org.springframework.stereotype.Component;
 public interface DocFactory {
 
     DocInterface createDocument();
+    DocInterface createDocumentFrom1C();
 
 }

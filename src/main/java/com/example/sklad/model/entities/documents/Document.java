@@ -20,9 +20,10 @@ public class Document {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    private int number;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long number;
 
     private LocalDateTime dateTime;
 

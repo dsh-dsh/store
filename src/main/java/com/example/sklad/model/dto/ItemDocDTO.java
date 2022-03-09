@@ -8,9 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -18,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostingDocDTO {
+public class ItemDocDTO {
 
     private int id;
 
@@ -31,6 +28,8 @@ public class PostingDocDTO {
     private String type;
 
     private AuthorDTO author;
+
+    private IndividualDTO individual;
 
     @JsonProperty("is_payed")
     private boolean isPayed;
@@ -48,6 +47,7 @@ public class PostingDocDTO {
     @JsonProperty("storage_to")
     private StorageDTO storageTo;
 
+    @JsonProperty("doc_items")
     private List<DocItemDTO> docItems;
 
 }
