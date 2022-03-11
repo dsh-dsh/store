@@ -3,6 +3,7 @@ package com.example.sklad.model.entities.documents;
 import com.example.sklad.model.entities.Project;
 import com.example.sklad.model.entities.User;
 import com.example.sklad.model.enums.DocumentType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "number, dateTime")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Document {

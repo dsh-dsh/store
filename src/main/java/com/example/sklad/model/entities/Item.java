@@ -2,6 +2,7 @@ package com.example.sklad.model.entities;
 
 import com.example.sklad.model.enums.Unit;
 import com.example.sklad.model.enums.Workshop;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = "name, regTime")
 public class Item {
 
     @Id

@@ -3,6 +3,7 @@ package com.example.sklad.model.entities.documents;
 import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.entities.DocumentItem;
 import com.example.sklad.model.entities.Storage;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

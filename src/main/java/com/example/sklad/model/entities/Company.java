@@ -1,5 +1,6 @@
 package com.example.sklad.model.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = "inn")
 public class Company {
 
     @Id
@@ -21,6 +23,7 @@ public class Company {
 
     private String name;
 
+    @Column(nullable = false)
     private long inn;
 
     private int kpp;

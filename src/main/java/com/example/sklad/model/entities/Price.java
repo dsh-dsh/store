@@ -1,5 +1,6 @@
 package com.example.sklad.model.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = "item, date")
 public class Price {
 
     @Id

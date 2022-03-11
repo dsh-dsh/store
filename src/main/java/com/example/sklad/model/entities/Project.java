@@ -1,5 +1,6 @@
 package com.example.sklad.model.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(of = "name")
 public class Project {
 
     @Id
