@@ -21,7 +21,7 @@ public class Company {
 
     private String name;
 
-    private int inn;
+    private long inn;
 
     private int kpp;
 

@@ -17,9 +17,7 @@ public class CheckDocumentController {
 
     @PostMapping("/check/docs")
     public ResponseEntity<Response<String>> addCheckDocsFrom1C(@RequestBody CheckRequestDTO checkRequestDTO) {
-        System.out.println(checkRequestDTO.getString());
-        System.out.println(checkRequestDTO.getInteger());
-
+        System.out.println(checkRequestDTO);
         checkDocService.addCheckDocsFrom1C(checkRequestDTO);
 
         return ResponseEntity.ok(new Response<>("ok"));

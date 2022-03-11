@@ -28,7 +28,8 @@ public class Document {
     private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)
-    private DocumentType type;
+    @Column(name = "doc_type")
+    private DocumentType docType;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", nullable = false)

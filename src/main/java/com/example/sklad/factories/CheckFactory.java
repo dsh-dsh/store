@@ -1,7 +1,6 @@
 package com.example.sklad.factories;
 
 import com.example.sklad.model.dto.ItemDocDTO;
-import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.ItemDocRepository;
@@ -9,10 +8,10 @@ import com.example.sklad.services.DocItemService;
 import com.example.sklad.services.ProjectService;
 import com.example.sklad.services.StorageService;
 import com.example.sklad.services.UserService;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Setter
+@Component
 public class CheckFactory  implements DocFactory {
 
     ItemDocDTO itemDocDTO;
@@ -36,7 +35,7 @@ public class CheckFactory  implements DocFactory {
         ItemDoc check = new ItemDoc();
         check.setNumber(getNewNumber());
         check.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        check.setType(DocumentType.CHECK_DOC);
+        check.setDocType(DocumentType.CHECK_DOC);
         check.setProject(projectService.getById(itemDocDTO.getProject().getId()));
         check.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
         check.setIndividual(userService.getById(itemDocDTO.getIndividual().getId()));
@@ -57,10 +56,10 @@ public class CheckFactory  implements DocFactory {
         ItemDoc check = new ItemDoc();
         check.setNumber(itemDocDTO.getNumber());
         check.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        check.setType(DocumentType.CHECK_DOC);
+        check.setDocType(DocumentType.CHECK_DOC);
         check.setProject(projectService.getByName(itemDocDTO.getProject().getName()));
-        check.setAuthor(userService.getByName(itemDocDTO.getAuthor().getName()));
-        check.setIndividual(userService.getByName(itemDocDTO.getIndividual().getName()));
+        check.setAuthor(userService.getByEmail(itemDocDTO.getAuthor().getEmail()));
+        check.setIndividual(userService.getByEmail(itemDocDTO.getIndividual().getEmail()));
         check.setStorageFrom(storageService.getByName(itemDocDTO.getStorageFrom().getName()));
         ItemDoc newCheck = itemDocRepository.save(check);
 
@@ -78,4 +77,7 @@ public class CheckFactory  implements DocFactory {
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
     }
 
+    public void setItemDocDTO(ItemDocDTO itemDocDTO) {
+        this.itemDocDTO = itemDocDTO;
+    }
 }

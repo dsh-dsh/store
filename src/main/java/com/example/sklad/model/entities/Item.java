@@ -1,5 +1,7 @@
 package com.example.sklad.model.entities;
 
+import com.example.sklad.model.enums.Unit;
+import com.example.sklad.model.enums.Workshop;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,16 +39,18 @@ public class Item {
     private boolean isSauce;
     private boolean isIncludeSauce;
 
-    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
-    private List<Price> prices = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "workshop_id")
+    @Enumerated(EnumType.STRING)
     private Workshop workshop;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "unit_id", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Unit unit;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parent_id")
+    private Item parent;
+
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
+    private List<Price> prices = new ArrayList<>();
 
     @OneToMany()
     @JoinTable(name = "dinners")

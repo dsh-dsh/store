@@ -1,6 +1,7 @@
 package com.example.sklad.model.entities;
 
 import com.example.sklad.model.enums.Role;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "users")
+@EqualsAndHashCode(of = "email")
 public class User {
 
     @Id
@@ -29,7 +32,7 @@ public class User {
 
     private String password;
 
-    private int phone;
+    private String phone;
 
     @Column(nullable = false)
     private LocalDateTime regTime;

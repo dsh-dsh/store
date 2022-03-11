@@ -12,8 +12,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User getByName(String name) {
-        return userRepository.findByName(name)
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(BadRequestException::new);
     }
 

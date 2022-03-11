@@ -5,6 +5,7 @@ public class Constants {
     public static final String ADMIN_ROLE = "администратор";
     public static final String CASHIER_ROLE = "кассир";
     public static final String ACCOUNTANT_ROLE = "бухгалтер";
+    public static final String CUSTOMER_ROLE = "покупатель";
 
     public static final String CHECK_DOC_TYPE = "Чек ККМ";
     public static final String POSTING_DOC_TYPE = "Оприходование";
@@ -22,4 +23,12 @@ public class Constants {
     public static final String SALARY_PAYMENT_TYPE = "Выплата заработной платы";
 
     public static final String BAD_REQUEST_MESSAGE = "invalid_request";
+
+    public static final String KG = "кг.";
+    public static final String LITER = "л.";
+    public static final String PIECE = "шт.";
+    public static final String PORTION = "порция";
+
+    public static final String KITCHEN = "Кухня";
+    public static final String BAR = "Бар";
 }

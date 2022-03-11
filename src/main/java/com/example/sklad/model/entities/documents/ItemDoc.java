@@ -26,14 +26,14 @@ public class ItemDoc extends Document implements DocInterface {
     private Company recipient;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "storageTo_id")
+    @JoinColumn(name = "storage_from_id")
     private Storage storageFrom;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "storageTo_id", insertable = false, updatable = false)
+    @JoinColumn(name = "storage_to_id", insertable = false, updatable = false)
     private Storage storageTo;
 
-    @OneToMany(mappedBy = "itemDoc")
+    @OneToMany(mappedBy = "itemDoc", fetch = FetchType.LAZY)
     private Set<DocumentItem> documentItems = new HashSet<>();
 
 }
