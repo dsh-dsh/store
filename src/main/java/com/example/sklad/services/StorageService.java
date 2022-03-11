@@ -18,7 +18,7 @@ public class StorageService {
     }
 
     public Storage getByName(String name) {
-        return storageRepository.findByName(name)
+        return storageRepository.findByNameIgnoreCase(name)
                 .orElseThrow(BadRequestException::new);
     }
 

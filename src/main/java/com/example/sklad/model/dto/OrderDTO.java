@@ -1,6 +1,5 @@
 package com.example.sklad.model.dto;
 
-import com.example.sklad.model.entities.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -21,10 +20,10 @@ public class OrderDTO {
 
     private Timestamp time;
 
-    private ProjectDTO project;
-
     @JsonProperty("doc_type")
     private String docType;
+
+    private ProjectDTO project;
 
     private AuthorDTO author;
 

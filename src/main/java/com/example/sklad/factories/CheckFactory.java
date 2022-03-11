@@ -1,6 +1,7 @@
 package com.example.sklad.factories;
 
 import com.example.sklad.model.dto.ItemDocDTO;
+import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.ItemDocRepository;
@@ -33,6 +34,7 @@ public class CheckFactory  implements DocFactory {
         if (itemDocDTO == null) return null;
 
         ItemDoc check = new ItemDoc();
+
         check.setNumber(getNewNumber());
         check.setDateTime(itemDocDTO.getTime().toLocalDateTime());
         check.setDocType(DocumentType.CHECK_DOC);

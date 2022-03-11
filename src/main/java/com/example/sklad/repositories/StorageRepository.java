@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface StorageRepository extends JpaRepository<Storage, Long> {
 
-    Optional<Storage> findByName(String name);
+    Optional<Storage> findByNameIgnoreCase(String name);
 
 }

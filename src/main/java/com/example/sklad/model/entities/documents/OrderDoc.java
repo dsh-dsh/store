@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class CashOrderDoc extends Document  implements DocInterface {
+public class OrderDoc extends Document  implements DocInterface {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id")

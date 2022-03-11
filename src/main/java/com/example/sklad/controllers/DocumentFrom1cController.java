@@ -1,8 +1,9 @@
 package com.example.sklad.controllers;
 
 import com.example.sklad.model.dto.requests.CheckRequestDTO;
+import com.example.sklad.model.dto.requests.OrderRequestDTO;
 import com.example.sklad.model.responses.Response;
-import com.example.sklad.services.CheckDocService;
+import com.example.sklad.services.DocsFrom1cService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,15 +11,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CheckDocumentController {
+public class DocumentFrom1cController {
 
     @Autowired
-    private CheckDocService checkDocService;
+    private DocsFrom1cService docsFrom1cService;
 
-    @PostMapping("/check/docs")
+    @PostMapping("/docs/checks")
     public ResponseEntity<Response<String>> addCheckDocsFrom1C(@RequestBody CheckRequestDTO checkRequestDTO) {
         System.out.println(checkRequestDTO);
-        checkDocService.addCheckDocsFrom1C(checkRequestDTO);
+        docsFrom1cService.addCheckDocsFrom1C(checkRequestDTO);
+
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/docs/orders")
+    public ResponseEntity<Response<String>> addOrderDocsFrom1C(@RequestBody OrderRequestDTO orderRequestDTO) {
+        System.out.println(orderRequestDTO);
+        docsFrom1cService.addOrderDocsFrom1C(orderRequestDTO);
 
         return ResponseEntity.ok(new Response<>("ok"));
     }

@@ -5,6 +5,8 @@ import com.example.sklad.utils.Constants;
 public enum DocumentType {
 
     CHECK_DOC(Constants.CHECK_DOC_TYPE),
+    CREDIT_ORDER_DOC(Constants.CREDIT_ORDER_DOC_TYPE),
+    WITHDRAW_DOC_DOC(Constants.WITHDRAW_DOC_DOC_TYPE),
     POSTING_DOC(Constants.POSTING_DOC_TYPE),
     RECEIPT_DOC(Constants.RECEIPT_DOC_TYPE),
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),

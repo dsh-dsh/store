@@ -13,7 +13,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public User getByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(BadRequestException::new);
     }
 

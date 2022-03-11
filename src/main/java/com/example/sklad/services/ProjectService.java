@@ -13,10 +13,8 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     public Project getByName(String name) {
-        Project project = projectRepository.findByNameIgnoreCase(name)
+        return projectRepository.findByNameIgnoreCase(name)
                 .orElseThrow(BadRequestException::new);
-        System.out.println(project);
-        return project;
     }
 
     public Project getById(int id) {
