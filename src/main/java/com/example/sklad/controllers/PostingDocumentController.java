@@ -1,6 +1,6 @@
 package com.example.sklad.controllers;
 
-import com.example.sklad.model.dto.ItemDocDTO;
+import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.responses.ListResponse;
 import com.example.sklad.services.PostingDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;

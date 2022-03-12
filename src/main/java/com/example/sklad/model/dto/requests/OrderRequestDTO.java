@@ -1,6 +1,6 @@
 package com.example.sklad.model.dto.requests;
 
-import com.example.sklad.model.dto.OrderDTO;
+import com.example.sklad.model.dto.documents.OrderDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

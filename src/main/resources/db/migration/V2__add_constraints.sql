@@ -14,8 +14,6 @@ alter table document add constraint FK_individual_id foreign key (individual_id)
 
 alter table document add constraint FK_project_id foreign key (project_id) references project (id);
 
-alter table document add constraint FK_company_id foreign key (company_id) references company (id);
-
 alter table document add constraint FK_recipient_id foreign key (recipient_id) references company (id);
 
 alter table document add constraint FK_storage_to_id foreign key (storage_to_id) references storage (id);
@@ -23,6 +21,8 @@ alter table document add constraint FK_storage_to_id foreign key (storage_to_id)
 alter table document add constraint FK_storage_from_id foreign key (storage_from_id) references storage (id);
 
 alter table document add constraint FK_supplier_id foreign key (supplier_id) references company (id);
+
+alter table check_KKM_info add constraint FK_check_id foreign key (check_id) references document (id);
 
 alter table document_item add constraint FK_item_id foreign key (item_id) references item (id);
 

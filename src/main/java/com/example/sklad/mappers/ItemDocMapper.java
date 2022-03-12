@@ -1,6 +1,6 @@
 package com.example.sklad.mappers;
 
-import com.example.sklad.model.dto.ItemDocDTO;
+import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

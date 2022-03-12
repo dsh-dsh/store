@@ -7,6 +7,5 @@ import org.springframework.stereotype.Component;
 public interface DocFactory {
 
     DocInterface createDocument();
-    DocInterface createDocumentFrom1C();
 
 }

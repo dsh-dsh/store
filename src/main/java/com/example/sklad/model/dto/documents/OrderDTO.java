@@ -1,5 +1,9 @@
-package com.example.sklad.model.dto;
+package com.example.sklad.model.dto.documents;
 
+import com.example.sklad.model.dto.AuthorDTO;
+import com.example.sklad.model.dto.CompanyDTO;
+import com.example.sklad.model.dto.IndividualDTO;
+import com.example.sklad.model.dto.ProjectDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -35,6 +39,7 @@ public class OrderDTO {
     private String paymentType;
 
     private double amount;
+    private double tax;
 
     @JsonProperty("is_hold")
     private boolean isHold;

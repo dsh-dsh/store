@@ -1,5 +1,6 @@
-package com.example.sklad.model.dto;
+package com.example.sklad.model.dto.documents;
 
+import com.example.sklad.model.dto.*;
 import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.entities.Storage;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -48,6 +49,9 @@ public class ItemDocDTO {
 
     @JsonProperty("storage_to")
     private StorageDTO storageTo;
+
+    @JsonProperty("check_info")
+    private CheckInfoDTO checkInfo;
 
     @JsonProperty("doc_items")
     private List<DocItemDTO> docItems;

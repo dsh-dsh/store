@@ -11,13 +11,19 @@ create table dinners
 
 create table document
 (doc_type varchar(31) not null, id bigint not null auto_increment, date_time datetime(6), is_hold bit not null,
-is_payed bit not null, number bigint not null, amount double precision, payment_type varchar(255),
-author_id bigint not null, individual_id bigint, project_id integer not null, company_id bigint, recipient_id bigint,
-storage_to_id bigint, storage_from_id bigint, supplier_id bigint, dtype varchar(255), primary key (id));
+is_payed bit not null, number bigint not null, amount double precision, tax double precision, payment_type varchar(255),
+author_id bigint not null, individual_id bigint, project_id integer not null, recipient_id bigint,
+storage_to_id bigint, storage_from_id bigint, supplier_id bigint, base_document_id bigint, is_delivery bit not null,
+dtype varchar(255), primary key (id));
 
 create table document_item
 (id bigint not null auto_increment, price double precision not null, quantity double precision not null, item_id bigint,
 document_id bigint, primary key (id));
+
+create table check_KKM_info
+(id bigint not null auto_increment, check_number bigint, cash_register_number varchar(255), amount_received double precision not null,
+guest_number integer, table_number integer, waiter varchar(255), time datetime, is_return bit not null, is_KKM_checked bit not null,
+is_payed bit not null, is_payed_by_card bit not null, check_id bigint,  primary key (id));
 
 create table item
 (id bigint not null auto_increment, is_alcohol bit not null, is_garnish bit not null, is_in_employee_menu bit not null,

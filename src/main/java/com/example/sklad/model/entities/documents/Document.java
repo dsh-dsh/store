@@ -1,5 +1,6 @@
 package com.example.sklad.model.entities.documents;
 
+import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.entities.Project;
 import com.example.sklad.model.entities.User;
 import com.example.sklad.model.enums.DocumentType;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = "number, dateTime")
+@EqualsAndHashCode(of = {"number", "dateTime"})
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Document {
@@ -42,11 +43,19 @@ public class Document {
     private User author;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "supplier_id")
+    private Company supplier;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "individual_id")
     private User individual;
 
     private boolean isPayed;
 
     private boolean isHold;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "base_document_id")
+    private Document baseDocument;
 
 }

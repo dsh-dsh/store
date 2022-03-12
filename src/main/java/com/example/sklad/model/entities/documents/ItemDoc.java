@@ -3,7 +3,6 @@ package com.example.sklad.model.entities.documents;
 import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.entities.DocumentItem;
 import com.example.sklad.model.entities.Storage;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,10 +18,6 @@ import java.util.Set;
 public class ItemDoc extends Document implements DocInterface {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "supplier_id")
-    private Company supplier;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id")
     private Company recipient;
 
@@ -36,5 +31,7 @@ public class ItemDoc extends Document implements DocInterface {
 
     @OneToMany(mappedBy = "itemDoc", fetch = FetchType.LAZY)
     private Set<DocumentItem> documentItems = new HashSet<>();
+
+    private boolean isDelivery;
 
 }

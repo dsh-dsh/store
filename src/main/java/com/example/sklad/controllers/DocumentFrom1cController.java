@@ -1,6 +1,6 @@
 package com.example.sklad.controllers;
 
-import com.example.sklad.model.dto.requests.CheckRequestDTO;
+import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
 import com.example.sklad.model.dto.requests.OrderRequestDTO;
 import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.DocsFrom1cService;
@@ -17,9 +17,9 @@ public class DocumentFrom1cController {
     private DocsFrom1cService docsFrom1cService;
 
     @PostMapping("/docs/checks")
-    public ResponseEntity<Response<String>> addCheckDocsFrom1C(@RequestBody CheckRequestDTO checkRequestDTO) {
-        System.out.println(checkRequestDTO);
-        docsFrom1cService.addCheckDocsFrom1C(checkRequestDTO);
+    public ResponseEntity<Response<String>> addCheckDocsFrom1C(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
+        System.out.println(itemDocRequestDTO);
+        docsFrom1cService.addCheckDocsFrom1C(itemDocRequestDTO);
 
         return ResponseEntity.ok(new Response<>("ok"));
     }

@@ -1,6 +1,6 @@
 package com.example.sklad.factories;
 
-import com.example.sklad.model.dto.OrderDTO;
+import com.example.sklad.model.dto.documents.OrderDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.enums.DocumentType;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderFactory implements DocFactory {
+public class Order1cFactory implements DocFactory {
 
     private OrderDTO orderDTO;
 
@@ -26,13 +26,9 @@ public class OrderFactory implements DocFactory {
     @Autowired
     private CompanyService companyService;
 
-    @Override
-    public OrderDoc createDocument() {
-        return null;
-    }
 
     @Override
-    public DocInterface createDocumentFrom1C() {
+    public OrderDoc createDocument() {
         if (orderDTO == null) return null;
 
         OrderDoc orderDoc = new OrderDoc();
@@ -42,9 +38,10 @@ public class OrderFactory implements DocFactory {
         orderDoc.setProject(projectService.getByName(orderDTO.getProject().getName()));
         orderDoc.setAuthor(userService.getByEmail(orderDTO.getAuthor().getEmail()));
         orderDoc.setIndividual(userService.getByEmail(orderDTO.getIndividual().getEmail()));
-        orderDoc.setCompany(companyService.getByName(orderDTO.getCompany().getName()));
+        orderDoc.setSupplier(companyService.getByName(orderDTO.getCompany().getName()));
         orderDoc.setPaymentType(PaymentType.getByValue(orderDTO.getPaymentType()));
         orderDoc.setAmount(orderDTO.getAmount());
+        orderDoc.setTax(orderDTO.getTax());
         orderDoc.setHold(orderDTO.isHold());
 
         return orderDocRepository.save(orderDoc);

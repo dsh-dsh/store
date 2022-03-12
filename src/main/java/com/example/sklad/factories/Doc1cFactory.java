@@ -6,8 +6,10 @@ import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.ItemDocRepository;
 import com.example.sklad.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class CheckFactory implements DocFactory {
+@Component
+public class Doc1cFactory implements DocFactory {
 
     ItemDocDTO itemDocDTO;
 
@@ -23,32 +25,41 @@ public class CheckFactory implements DocFactory {
     private CompanyService companyService;
     @Autowired
     private ItemDocRepository itemDocRepository;
+    @Autowired
+    private CheckInfoService checkInfoService;
 
     @Override
     public ItemDoc createDocument() {
 
         if (itemDocDTO == null) return null;
+        DocumentType docType = DocumentType.getByValue(itemDocDTO.getType());
 
         ItemDoc check = new ItemDoc();
-
-        check.setNumber(getNewNumber());
+        check.setNumber(itemDocDTO.getNumber());
         check.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        check.setDocType(DocumentType.CHECK_DOC);
-        check.setProject(projectService.getById(itemDocDTO.getProject().getId()));
-        check.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
-        check.setIndividual(userService.getById(itemDocDTO.getIndividual().getId()));
-        check.setStorageFrom(storageService.getById(itemDocDTO.getStorageFrom().getId()));
-        check.setPayed(itemDocDTO.isPayed());
-        check.setHold(itemDocDTO.isHold());
+        check.setProject(projectService.getByName(itemDocDTO.getProject().getName()));
+        check.setAuthor(userService.getByEmail(itemDocDTO.getAuthor().getEmail()));
+        check.setSupplier(companyService.getByName(itemDocDTO.getSupplier().getName()));
+        check.setStorageFrom(storageService.getByName(itemDocDTO.getStorageFrom().getName()));
+        check.setDocType(docType);
+        switch (docType) {
+            case CHECK_DOC:
+                check.setIndividual(userService.getByEmail(itemDocDTO.getIndividual().getEmail()));
+                itemDocRepository.save(check);
+                checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
+                break;
+            case WRITE_OFF_DOC:
+                System.out.println("");
+                break;
+            case MOVEMENT_DOC:
+                check.setStorageTo(storageService.getByName(itemDocDTO.getStorageTo().getName()));
+                break;
+        }
         ItemDoc newCheck = itemDocRepository.save(check);
 
         addDocItems(newCheck);
 
         return newCheck;
-    }
-
-    private long getNewNumber() {
-        return itemDocRepository.getLastNumber(DocumentType.CHECK_DOC) + 1;
     }
 
     private void addDocItems(ItemDoc check) {
