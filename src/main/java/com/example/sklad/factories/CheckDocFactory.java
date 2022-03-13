@@ -1,17 +1,18 @@
 package com.example.sklad.factories;
 
+import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CheckFactory extends AbstractDocFactory {
+public class CheckDocFactory extends AbstractDocFactory {
 
     @Override
-    public DocInterface createDocument() {
-        if (itemDocDTO == null) return null;
-        ItemDoc check = getItemDoc();
+    public DocInterface addDocument(ItemDocDTO itemDocDTO) {
+        this.itemDocDTO = itemDocDTO;
+        ItemDoc check = new ItemDoc();
         setDocumentType(DocumentType.CHECK_DOC);
         setCommonFields(check);
         setAdditionalFields(check);
@@ -19,6 +20,20 @@ public class CheckFactory extends AbstractDocFactory {
 
         addCheckInfo(check);
         addDocItems(check);
+
+        return check;
+    }
+
+    @Override
+    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
+        this.itemDocDTO = itemDocDTO;
+        ItemDoc check = getItemDoc();
+        updateCommonFields(check);
+        setAdditionalFields(check);
+        itemDocRepository.save(check);
+
+        updateCheckInfo(check);
+        updateDocItems(check);
 
         return check;
     }

@@ -1,5 +1,6 @@
 package com.example.sklad.factories;
 
+import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
@@ -9,23 +10,36 @@ import org.springframework.stereotype.Component;
 public class ReceiptDocFactory extends AbstractDocFactory {
 
     @Override
-    public DocInterface createDocument() {
-        if (itemDocDTO == null) return null;
-        ItemDoc postingDoc = getItemDoc();
+    public DocInterface addDocument(ItemDocDTO itemDocDTO) {
+        this.itemDocDTO = itemDocDTO;
+        ItemDoc receiptDoc = new ItemDoc();
         setDocumentType(DocumentType.RECEIPT_DOC);
-        setCommonFields(postingDoc);
-        setAdditionalFields(postingDoc);
-        itemDocRepository.save(postingDoc);
+        setCommonFields(receiptDoc);
+        setAdditionalFields(receiptDoc);
+        itemDocRepository.save(receiptDoc);
 
-        addDocItems(postingDoc);
+        addDocItems(receiptDoc);
 
-        return postingDoc;
+        return receiptDoc;
     }
 
-    private void setAdditionalFields(ItemDoc postingDoc) {
-        postingDoc.setSupplier(companyService.getById(itemDocDTO.getSupplier().getId()));
-        postingDoc.setRecipient(companyService.getById(itemDocDTO.getRecipient().getId()));
-        postingDoc.setStorageTo(storageService.getById(itemDocDTO.getStorageTo().getId()));
+    @Override
+    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
+        this.itemDocDTO = itemDocDTO;
+        ItemDoc receiptDoc = getItemDoc();
+        updateCommonFields(receiptDoc);
+        setAdditionalFields(receiptDoc);
+        itemDocRepository.save(receiptDoc);
+
+        updateDocItems(receiptDoc);
+
+        return receiptDoc;
+    }
+
+    private void setAdditionalFields(ItemDoc receiptDoc) {
+        receiptDoc.setSupplier(companyService.getById(itemDocDTO.getSupplier().getId()));
+        receiptDoc.setRecipient(companyService.getById(itemDocDTO.getRecipient().getId()));
+        receiptDoc.setStorageTo(storageService.getById(itemDocDTO.getStorageTo().getId()));
     }
 
 }

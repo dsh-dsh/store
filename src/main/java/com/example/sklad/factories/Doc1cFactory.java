@@ -1,6 +1,7 @@
 package com.example.sklad.factories;
 
 import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.ItemDocRepository;
@@ -30,9 +31,9 @@ public class Doc1cFactory implements DocFactory {
     private CheckInfoService checkInfoService;
 
     @Override
-    public ItemDoc createDocument() {
+    public ItemDoc addDocument(ItemDocDTO itemDocDTO) {
 
-        if (itemDocDTO == null) return null;
+        docType = DocumentType.getByValue(itemDocDTO.getDocType());
 
         ItemDoc check = new ItemDoc();
         check.setNumber(itemDocDTO.getNumber());
@@ -61,18 +62,22 @@ public class Doc1cFactory implements DocFactory {
             checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
         }
 
-        addDocItems(check);
+        addDocItems(itemDocDTO, check);
 
         return check;
     }
 
-    private void addDocItems(ItemDoc check) {
+    @Override
+    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
+        return null;
+    }
+
+    private void addDocItems(ItemDocDTO itemDocDTO, ItemDoc check) {
         itemDocDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
     }
 
     public void setItemDocDTO(ItemDocDTO itemDocDTO) {
         this.itemDocDTO = itemDocDTO;
-        this.docType = DocumentType.getByValue(this.itemDocDTO.getType());
     }
 }

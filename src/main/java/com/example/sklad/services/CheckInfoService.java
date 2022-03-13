@@ -1,5 +1,6 @@
 package com.example.sklad.services;
 
+import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.model.dto.CheckInfoDTO;
 import com.example.sklad.model.entities.CheckKKMInfo;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -15,6 +16,26 @@ public class CheckInfoService {
 
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
         CheckKKMInfo checkInfo = new CheckKKMInfo();
+        setFields(checkInfoDTO, checkInfo);
+        checkInfo.setCheck(check);
+
+        checkInfoRepository.save(checkInfo);
+    }
+
+    public void updateCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
+        CheckKKMInfo checkInfo = getCheckKKMInfo(check);
+        setFields(checkInfoDTO, checkInfo);
+
+        checkInfoRepository.save(checkInfo);
+    }
+
+    private CheckKKMInfo getCheckKKMInfo(ItemDoc check) {
+        CheckKKMInfo checkInfo = checkInfoRepository.findByCheck(check)
+                .orElseThrow(BadRequestException::new);
+        return checkInfo;
+    }
+
+    private void setFields(CheckInfoDTO checkInfoDTO, CheckKKMInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());
         checkInfo.setCashRegisterNumber(checkInfoDTO.getCashRegisterNumber());
         checkInfo.setAmountReceived(checkInfoDTO.getAmountReceived());
@@ -26,9 +47,7 @@ public class CheckInfoService {
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());
         checkInfo.setPayedByCard(checkInfoDTO.isPayedByCard());
-        checkInfo.setCheck(check);
-
-        checkInfoRepository.save(checkInfo);
+        checkInfo.setDelivery(checkInfoDTO.isDelivery());
     }
 
 }

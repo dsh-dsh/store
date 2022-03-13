@@ -33,6 +33,7 @@ public class CheckKKMInfo {
     private boolean isKKMChecked;
     private boolean isPayed;
     private boolean isPayedByCard;
+    private boolean isDelivery;
 
     @ManyToOne
     @JoinColumn(name = "check_id")

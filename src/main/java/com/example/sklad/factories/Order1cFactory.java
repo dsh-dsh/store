@@ -1,6 +1,6 @@
 package com.example.sklad.factories;
 
-import com.example.sklad.model.dto.documents.OrderDTO;
+import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.enums.DocumentType;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Order1cFactory implements DocFactory {
 
-    private OrderDTO orderDTO;
+    protected ItemDocDTO itemDocDTO;
 
     @Autowired
     private OrderDocRepository orderDocRepository;
@@ -28,27 +28,27 @@ public class Order1cFactory implements DocFactory {
 
 
     @Override
-    public OrderDoc createDocument() {
-        if (orderDTO == null) return null;
+    public OrderDoc addDocument(ItemDocDTO itemDocDTO) {
 
         OrderDoc orderDoc = new OrderDoc();
-        orderDoc.setNumber(orderDTO.getNumber());
-        orderDoc.setDateTime(orderDTO.getTime().toLocalDateTime());
-        orderDoc.setDocType(DocumentType.getByValue(orderDTO.getDocType()));
-        orderDoc.setProject(projectService.getByName(orderDTO.getProject().getName()));
-        orderDoc.setAuthor(userService.getByEmail(orderDTO.getAuthor().getEmail()));
-        orderDoc.setIndividual(userService.getByEmail(orderDTO.getIndividual().getEmail()));
-        orderDoc.setSupplier(companyService.getByName(orderDTO.getCompany().getName()));
-        orderDoc.setPaymentType(PaymentType.getByValue(orderDTO.getPaymentType()));
-        orderDoc.setAmount(orderDTO.getAmount());
-        orderDoc.setTax(orderDTO.getTax());
-        orderDoc.setHold(orderDTO.isHold());
+        orderDoc.setNumber(itemDocDTO.getNumber());
+        orderDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
+        orderDoc.setDocType(DocumentType.getByValue(itemDocDTO.getDocType()));
+        orderDoc.setProject(projectService.getByName(itemDocDTO.getProject().getName()));
+        orderDoc.setAuthor(userService.getByEmail(itemDocDTO.getAuthor().getEmail()));
+        orderDoc.setIndividual(userService.getByEmail(itemDocDTO.getIndividual().getEmail()));
+        orderDoc.setSupplier(companyService.getByName(itemDocDTO.getSupplier().getName()));
+        orderDoc.setPaymentType(PaymentType.getByValue(itemDocDTO.getPaymentType()));
+        orderDoc.setAmount(itemDocDTO.getAmount());
+        orderDoc.setTax(itemDocDTO.getTax());
+        orderDoc.setHold(itemDocDTO.isHold());
 
         return orderDocRepository.save(orderDoc);
     }
 
-    public void setOrderDTO(OrderDTO orderDTO) {
-        this.orderDTO = orderDTO;
+    @Override
+    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
+        return null;
     }
 
 }

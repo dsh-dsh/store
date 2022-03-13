@@ -18,16 +18,14 @@ public class DocsFrom1cService {
     public void addCheckDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
         itemDocListRequestDTO.getCheckDTOList()
                 .forEach(itemDocDTO -> {
-                    doc1CFactory.setItemDocDTO(itemDocDTO);
-                    doc1CFactory.createDocument();
+                    doc1CFactory.addDocument(itemDocDTO);
                 });
     }
 
     public void addOrderDocsFrom1C(OrderRequestDTO orderRequestDTO) {
-        orderRequestDTO.getOrderDTOList()
+        orderRequestDTO.getItemDocDTO()
                 .forEach(orderDTO -> {
-                    order1cFactory.setOrderDTO(orderDTO);
-                    order1cFactory.createDocument();
+                    order1cFactory.addDocument(orderDTO);
                 });
     }
 

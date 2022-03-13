@@ -12,6 +12,7 @@ public class Constants {
     public static final String RECEIPT_DOC_TYPE = "Поступление";
     public static final String MOVEMENT_DOC_TYPE = "Перемещение";
     public static final String WRITE_OFF_DOC_TYPE = "Списание";
+    public static final String REQUEST_DOC_TYPE = "Заявка";
     public static final String WITHDRAW_DOC_DOC_TYPE = "ПКО";
     public static final String CREDIT_ORDER_DOC_TYPE = "РКО";
 

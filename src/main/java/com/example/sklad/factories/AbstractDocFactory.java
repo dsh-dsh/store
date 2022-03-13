@@ -31,23 +31,26 @@ public abstract class AbstractDocFactory implements DocFactory{
     @NotNull
     protected ItemDoc getItemDoc() {
         long docId = itemDocDTO.getId();
-        ItemDoc check;
-        if(docId != 0) {
-            check = itemDocRepository.getById(docId);
-        } else {
-            check = new ItemDoc();
-        }
-        return check;
+        return itemDocRepository.getById(docId);
     }
 
-    protected void setCommonFields(ItemDoc postingDoc) {
-        postingDoc.setNumber(getNewNumber(documentType));
-        postingDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        postingDoc.setDocType(documentType);
-        postingDoc.setProject(projectService.getById(itemDocDTO.getProject().getId()));
-        postingDoc.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
-        postingDoc.setPayed(itemDocDTO.isPayed());
-        postingDoc.setHold(itemDocDTO.isHold());
+    protected void setCommonFields(ItemDoc itemDoc) {
+        itemDoc.setNumber(getNewNumber(documentType));
+        itemDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
+        itemDoc.setDocType(documentType);
+        itemDoc.setProject(projectService.getById(itemDocDTO.getProject().getId()));
+        itemDoc.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
+        itemDoc.setPayed(itemDocDTO.isPayed());
+        itemDoc.setHold(itemDocDTO.isHold());
+    }
+
+    protected void updateCommonFields(ItemDoc itemDoc) {
+        itemDoc.setNumber(itemDocDTO.getNumber());
+        itemDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
+        itemDoc.setProject(projectService.getById(itemDocDTO.getProject().getId()));
+        itemDoc.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
+        itemDoc.setPayed(itemDocDTO.isPayed());
+        itemDoc.setHold(itemDocDTO.isHold());
     }
 
     protected long getNewNumber(DocumentType docType) {
@@ -62,13 +65,19 @@ public abstract class AbstractDocFactory implements DocFactory{
         checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
     }
 
+    protected void updateCheckInfo(ItemDoc check) {
+        checkInfoService.updateCheckInfo(itemDocDTO.getCheckInfo(), check);
+    }
+
     protected void addDocItems(ItemDoc check) {
         itemDocDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
     }
 
-    public void setItemDocDTO(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+    protected void updateDocItems(ItemDoc check) {
+        // TODO update
+        itemDocDTO.getDocItems()
+                .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
     }
 
     public void setDocumentType(DocumentType documentType) {

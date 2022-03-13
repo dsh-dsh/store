@@ -26,19 +26,29 @@ public class ItemDocDTO {
 
     private Timestamp time;
 
-    private ProjectDTO project;
+    @JsonProperty("doc_type")
+    private String docType;
 
-    private String type;
+    private ProjectDTO project;
 
     private AuthorDTO author;
 
     private IndividualDTO individual;
+
+    @JsonProperty("payment_type")
+    private String paymentType;
+
+    private double amount;
+    private double tax;
 
     @JsonProperty("is_payed")
     private boolean isPayed;
 
     @JsonProperty("is_hold")
     private boolean isHold;
+
+    @JsonProperty("is_delivery")
+    private boolean isDelivery;
 
     private CompanyDTO supplier;
 
