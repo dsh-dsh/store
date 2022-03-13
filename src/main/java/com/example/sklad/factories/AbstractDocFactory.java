@@ -8,9 +8,10 @@ import com.example.sklad.services.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class DocAbstractFactory implements DocFactory{
+public abstract class AbstractDocFactory implements DocFactory{
 
     protected ItemDocDTO itemDocDTO;
+    protected DocumentType documentType;
 
     @Autowired
     protected ProjectService projectService;
@@ -39,14 +40,27 @@ public abstract class DocAbstractFactory implements DocFactory{
         return check;
     }
 
+    protected void setCommonFields(ItemDoc postingDoc) {
+        postingDoc.setNumber(getNewNumber(documentType));
+        postingDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
+        postingDoc.setDocType(documentType);
+        postingDoc.setProject(projectService.getById(itemDocDTO.getProject().getId()));
+        postingDoc.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
+        postingDoc.setPayed(itemDocDTO.isPayed());
+        postingDoc.setHold(itemDocDTO.isHold());
+    }
+
     protected long getNewNumber(DocumentType docType) {
-        return itemDocRepository.getLastNumber(docType.toString()) + 1;
+        try {
+           return itemDocRepository.getLastNumber(docType.toString()) + 1;
+        } catch (Exception exception) {
+            return 1;
+        }
     }
 
     protected void addCheckInfo(ItemDoc check) {
         checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
     }
-
 
     protected void addDocItems(ItemDoc check) {
         itemDocDTO.getDocItems()
@@ -55,5 +69,9 @@ public abstract class DocAbstractFactory implements DocFactory{
 
     public void setItemDocDTO(ItemDocDTO itemDocDTO) {
         this.itemDocDTO = itemDocDTO;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 }

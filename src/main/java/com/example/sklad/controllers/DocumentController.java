@@ -15,9 +15,15 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
-    @PostMapping("/api/v1/docs")
-    public ResponseEntity<Response<String>> setDocument(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
+    @PostMapping("/api/v1/docs/check")
+    public ResponseEntity<Response<String>> setCheckDocument(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
         documentService.addCheckDoc(itemDocRequestDTO.getItemDocDTO());
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/api/v1/docs/receipt")
+    public ResponseEntity<Response<String>> setReceiptDocument(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
+        documentService.addReceiptDoc(itemDocRequestDTO.getItemDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

@@ -26,7 +26,7 @@ public class ItemDoc extends Document implements DocInterface {
     private Storage storageFrom;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "storage_to_id", insertable = false, updatable = false)
+    @JoinColumn(name = "storage_to_id")
     private Storage storageTo;
 
     @OneToMany(mappedBy = "itemDoc", fetch = FetchType.LAZY)
