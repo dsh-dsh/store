@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Doc1cFactory implements DocFactory {
 
-    ItemDocDTO itemDocDTO;
+    private ItemDocDTO itemDocDTO;
+    private DocumentType docType;
 
     @Autowired
     private ProjectService projectService;
@@ -32,7 +33,6 @@ public class Doc1cFactory implements DocFactory {
     public ItemDoc createDocument() {
 
         if (itemDocDTO == null) return null;
-        DocumentType docType = DocumentType.getByValue(itemDocDTO.getType());
 
         ItemDoc check = new ItemDoc();
         check.setNumber(itemDocDTO.getNumber());
@@ -42,11 +42,10 @@ public class Doc1cFactory implements DocFactory {
         check.setSupplier(companyService.getByName(itemDocDTO.getSupplier().getName()));
         check.setStorageFrom(storageService.getByName(itemDocDTO.getStorageFrom().getName()));
         check.setDocType(docType);
+
         switch (docType) {
             case CHECK_DOC:
                 check.setIndividual(userService.getByEmail(itemDocDTO.getIndividual().getEmail()));
-                itemDocRepository.save(check);
-                checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
                 break;
             case WRITE_OFF_DOC:
                 System.out.println("");
@@ -55,11 +54,16 @@ public class Doc1cFactory implements DocFactory {
                 check.setStorageTo(storageService.getByName(itemDocDTO.getStorageTo().getName()));
                 break;
         }
-        ItemDoc newCheck = itemDocRepository.save(check);
 
-        addDocItems(newCheck);
+        itemDocRepository.save(check);
 
-        return newCheck;
+        if(docType.equals(DocumentType.CHECK_DOC)) {
+            checkInfoService.addCheckInfo(itemDocDTO.getCheckInfo(), check);
+        }
+
+        addDocItems(check);
+
+        return check;
     }
 
     private void addDocItems(ItemDoc check) {
@@ -69,5 +73,6 @@ public class Doc1cFactory implements DocFactory {
 
     public void setItemDocDTO(ItemDocDTO itemDocDTO) {
         this.itemDocDTO = itemDocDTO;
+        this.docType = DocumentType.getByValue(this.itemDocDTO.getType());
     }
 }

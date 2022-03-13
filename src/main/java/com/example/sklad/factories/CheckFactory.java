@@ -1,62 +1,37 @@
 package com.example.sklad.factories;
 
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
-import com.example.sklad.repositories.ItemDocRepository;
-import com.example.sklad.services.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class CheckFactory implements DocFactory {
+@Component
+public class CheckFactory extends DocAbstractFactory {
 
-    ItemDocDTO itemDocDTO;
-
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private DocItemService docItemService;
-    @Autowired
-    private StorageService storageService;
-    @Autowired
-    private CompanyService companyService;
-    @Autowired
-    private ItemDocRepository itemDocRepository;
+    private final DocumentType documentType = DocumentType.CHECK_DOC;
 
     @Override
-    public ItemDoc createDocument() {
-
+    public DocInterface createDocument() {
         if (itemDocDTO == null) return null;
+        ItemDoc check = getItemDoc();
+        setFields(check);
+        addCheckInfo(check);
+        addDocItems(check);
 
-        ItemDoc check = new ItemDoc();
+        return check;
+    }
 
-        check.setNumber(getNewNumber());
+    private void setFields(ItemDoc check) {
+        check.setNumber(getNewNumber(documentType));
         check.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        check.setDocType(DocumentType.CHECK_DOC);
+        check.setDocType(documentType);
         check.setProject(projectService.getById(itemDocDTO.getProject().getId()));
         check.setAuthor(userService.getById(itemDocDTO.getAuthor().getId()));
         check.setIndividual(userService.getById(itemDocDTO.getIndividual().getId()));
+        check.setSupplier(companyService.getById(itemDocDTO.getSupplier().getId()));
         check.setStorageFrom(storageService.getById(itemDocDTO.getStorageFrom().getId()));
         check.setPayed(itemDocDTO.isPayed());
         check.setHold(itemDocDTO.isHold());
-        ItemDoc newCheck = itemDocRepository.save(check);
-
-        addDocItems(newCheck);
-
-        return newCheck;
-    }
-
-    private long getNewNumber() {
-        return itemDocRepository.getLastNumber(DocumentType.CHECK_DOC) + 1;
-    }
-
-    private void addDocItems(ItemDoc check) {
-        itemDocDTO.getDocItems()
-                .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
-    }
-
-    public void setItemDocDTO(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        itemDocRepository.save(check);
     }
 }

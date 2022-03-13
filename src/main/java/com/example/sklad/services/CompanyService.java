@@ -12,6 +12,11 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    public Company getById(long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(BadRequestException::new);
+    }
+
     public Company getByName(String name) {
         return companyRepository.findByNameIgnoreCase(name)
                 .orElseThrow(BadRequestException::new);

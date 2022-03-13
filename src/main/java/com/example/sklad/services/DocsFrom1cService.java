@@ -2,7 +2,7 @@ package com.example.sklad.services;
 
 import com.example.sklad.factories.Doc1cFactory;
 import com.example.sklad.factories.Order1cFactory;
-import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.dto.requests.ItemDocListRequestDTO;
 import com.example.sklad.model.dto.requests.OrderRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,8 @@ public class DocsFrom1cService {
     @Autowired
     private Order1cFactory order1cFactory;
 
-    public void addCheckDocsFrom1C(ItemDocRequestDTO itemDocRequestDTO) {
-        itemDocRequestDTO.getCheckDTOList()
+    public void addCheckDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
+        itemDocListRequestDTO.getCheckDTOList()
                 .forEach(itemDocDTO -> {
                     doc1CFactory.setItemDocDTO(itemDocDTO);
                     doc1CFactory.createDocument();

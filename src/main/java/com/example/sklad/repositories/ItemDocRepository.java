@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ItemDocRepository extends JpaRepository<ItemDoc, Long> {
 
-    @Query(value = "SELECT doc.number " +
-            "FROM item_doc AS doc " +
-            "WHERE doc.type = :type " +
-            "ORDER BY doc.number ASC " +
+    @Query(value = "SELECT number " +
+            "FROM document " +
+            "WHERE doc_type = :docType " +
+            "ORDER BY number DESC " +
             "LIMIT 1"
             , nativeQuery = true)
-    int getLastNumber(DocumentType type);
+    int getLastNumber(String docType);
 
 }
