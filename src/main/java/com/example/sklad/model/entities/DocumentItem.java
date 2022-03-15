@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "itemDoc, item")
+@EqualsAndHashCode(of = {"itemDoc", "item"})
 public class DocumentItem {
 
     @Id
@@ -31,5 +31,7 @@ public class DocumentItem {
     private double quantity;
 
     private double price;
+
+    private double discount;
 
 }

@@ -75,9 +75,7 @@ public abstract class AbstractDocFactory implements DocFactory{
     }
 
     protected void updateDocItems(ItemDoc check) {
-        // TODO update
-        itemDocDTO.getDocItems()
-                .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
+        docItemService.updateDocItems(itemDocDTO.getDocItems(), check);
     }
 
     public void setDocumentType(DocumentType documentType) {
