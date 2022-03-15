@@ -5,7 +5,8 @@ import com.example.sklad.utils.Constants;
 public enum Workshop {
 
     KITCHEN(Constants.KITCHEN),
-    BAR(Constants.BAR);
+    BAR(Constants.BAR),
+    NONE(Constants.NONE);
 
     private final String name;
 

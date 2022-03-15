@@ -4,10 +4,7 @@ import com.example.sklad.model.entities.Company;
 import com.example.sklad.model.entities.Project;
 import com.example.sklad.model.entities.User;
 import com.example.sklad.model.enums.DocumentType;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

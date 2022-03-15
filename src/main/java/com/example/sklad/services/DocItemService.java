@@ -43,8 +43,9 @@ public class DocItemService {
         List<Integer> ids = new ArrayList<>();
         for(DocumentItem currentItem : currentItems) {
             for(DocItemDTO dto : docItemDTOList) {
-                if(Objects.equals(dto.getItemId(), currentItem.getId())) {
+                if(Objects.equals(dto.getItemId(), currentItem.getItem().getId())) {
                     updateDocItem(currentItem, dto);
+
                     ids.add(dto.getItemId());
                 }
             }
@@ -56,6 +57,7 @@ public class DocItemService {
                 .filter(dto -> !ids.contains(dto.getItemId()))
                 .map(dto -> createDocItem(dto, doc))
                 .forEach(item -> docItemRepository.save(item));
+        System.out.println();
     }
 
     private void updateDocItem(DocumentItem docItem, DocItemDTO dto) {

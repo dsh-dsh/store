@@ -7,7 +7,8 @@ public enum Unit {
     KG(Constants.KG),
     LITER(Constants.LITER),
     PIECE(Constants.PIECE),
-    PORTION(Constants.PORTION);
+    PORTION(Constants.PORTION),
+    NONE(Constants.NONE);
 
     private final String name;
 

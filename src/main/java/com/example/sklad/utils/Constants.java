@@ -32,6 +32,8 @@ public class Constants {
     public static final String PIECE = "шт.";
     public static final String PORTION = "порция";
 
+    public static final String NONE = "";
+
     public static final String KITCHEN = "Кухня";
     public static final String BAR = "Бар";
 }
