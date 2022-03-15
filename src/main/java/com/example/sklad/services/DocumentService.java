@@ -35,12 +35,24 @@ public class DocumentService {
         receiptDocFactory.addDocument(itemDocDTO);
     }
 
+    public void updateReceiptDoc(ItemDocDTO itemDocDTO) {
+        receiptDocFactory.updateDocument(itemDocDTO);
+    }
+
     public void addPostingDoc(ItemDocDTO itemDocDTO) {
         postingDocFactory.addDocument(itemDocDTO);
     }
 
+    public void updatePostingDoc(ItemDocDTO itemDocDTO) {
+        postingDocFactory.updateDocument(itemDocDTO);
+    }
+
     public void addRequestDoc(ItemDocDTO itemDocDTO) {
         requestDocFactory.addDocument(itemDocDTO);
+    }
+
+    public void updateRequestDoc(ItemDocDTO itemDocDTO) {
+        requestDocFactory.updateDocument(itemDocDTO);
     }
 
     public ListResponse<ItemDocDTO> getDocuments() {
