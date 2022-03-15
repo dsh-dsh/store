@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface DocItemRepository extends JpaRepository<DocumentItem, Long> {
+public interface DocItemRepository extends JpaRepository<DocumentItem, Integer> {
 
     @Modifying
-    @Query("DELETE docItem FROM DocumentItem AS docItem " +
+    @Query("DELETE DocumentItem AS docItem " +
             "WHERE docItem IN (:docItems)")
     void deleteByIdIn(List<DocumentItem> docItems);
 

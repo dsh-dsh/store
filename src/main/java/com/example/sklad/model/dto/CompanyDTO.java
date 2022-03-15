@@ -14,11 +14,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CompanyDTO {
 
-    private long id;
+    private int id;
 
     private String name;
 
-    private int inn;
+    private long inn;
 
     private int kpp;
 

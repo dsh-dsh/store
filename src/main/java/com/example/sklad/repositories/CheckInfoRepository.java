@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CheckInfoRepository extends JpaRepository<CheckKKMInfo, Long> {
+public interface CheckInfoRepository extends JpaRepository<CheckKKMInfo, Integer> {
 
     Optional<CheckKKMInfo> findByCheck(ItemDoc check);
 

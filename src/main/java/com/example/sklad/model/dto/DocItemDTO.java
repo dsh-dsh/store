@@ -13,15 +13,15 @@ import lombok.Setter;
 public class DocItemDTO {
 
     @JsonProperty("document_id")
-    private long documentId;
+    private int documentId;
 
     @JsonProperty("item_id")
-    private long itemId;
+    private int itemId;
 
-    private double quantity;
+    private float quantity;
 
-    private double price;
+    private float price;
 
-    private double discount;
+    private float discount;
 
 }

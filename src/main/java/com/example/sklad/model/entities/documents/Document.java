@@ -18,15 +18,16 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = {"number", "dateTime"})
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="d_type",
+        discriminatorType = DiscriminatorType.INTEGER)
 public class Document {
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long number;
+    private int number;
 
     private LocalDateTime dateTime;
 

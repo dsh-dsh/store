@@ -1,1 +1,0 @@
-alter table document_item add discount double precision;

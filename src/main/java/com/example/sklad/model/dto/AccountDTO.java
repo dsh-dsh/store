@@ -12,7 +12,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDTO {
 
-    private long id;
+    private int id;
 
     @JsonProperty("bank_name")
     private String bankName;

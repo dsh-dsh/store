@@ -38,8 +38,8 @@ public class ItemDocDTO {
     @JsonProperty("payment_type")
     private String paymentType;
 
-    private double amount;
-    private double tax;
+    private float amount;
+    private float tax;
 
     @JsonProperty("is_payed")
     private boolean isPayed;

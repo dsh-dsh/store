@@ -15,6 +15,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@DiscriminatorValue("1")
 public class ItemDoc extends Document implements DocInterface {
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -18,7 +18,7 @@ public class DocumentItem {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
@@ -28,10 +28,10 @@ public class DocumentItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private double quantity;
+    private float quantity;
 
-    private double price;
+    private float price;
 
-    private double discount;
+    private float discount;
 
 }

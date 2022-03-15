@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@DiscriminatorValue("2")
 public class OrderDoc extends Document  implements DocInterface {
 
     @Enumerated(EnumType.STRING)

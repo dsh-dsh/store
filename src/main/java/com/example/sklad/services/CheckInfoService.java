@@ -30,9 +30,8 @@ public class CheckInfoService {
     }
 
     private CheckKKMInfo getCheckKKMInfo(ItemDoc check) {
-        CheckKKMInfo checkInfo = checkInfoRepository.findByCheck(check)
+        return checkInfoRepository.findByCheck(check)
                 .orElseThrow(BadRequestException::new);
-        return checkInfo;
     }
 
     private void setFields(CheckInfoDTO checkInfoDTO, CheckKKMInfo checkInfo) {
@@ -42,7 +41,7 @@ public class CheckInfoService {
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setTime(checkInfoDTO.getTime());
+        checkInfo.setDateTime(checkInfoDTO.getDateTime());
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

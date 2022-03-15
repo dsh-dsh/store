@@ -20,17 +20,23 @@ public class CheckKKMInfo {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private long checkNumber;
-    private String cashRegisterNumber;
-    private double amountReceived;
+    private int id;
+
+    private int checkNumber;
+    private long cashRegisterNumber;
+    private float amountReceived;
     private int guestNumber;
     private int tableNumber;
     private String waiter;
-    private LocalDateTime time;
+
+    @Column(name = "date_time")
+    private LocalDateTime dateTime;
+
     private boolean isReturn;
+
     @Column(name = "is_KKM_checked")
     private boolean isKKMChecked;
+
     private boolean isPayed;
     private boolean isPayedByCard;
     private boolean isDelivery;

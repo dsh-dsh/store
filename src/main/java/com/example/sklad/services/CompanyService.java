@@ -12,7 +12,7 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
-    public Company getById(long id) {
+    public Company getById(int id) {
         return companyRepository.findById(id)
                 .orElseThrow(BadRequestException::new);
     }

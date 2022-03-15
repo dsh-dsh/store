@@ -11,7 +11,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StorageDTO {
 
-    private long id;
+    private int id;
     private String name;
 
 }

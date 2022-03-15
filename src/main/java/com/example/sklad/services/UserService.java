@@ -17,7 +17,7 @@ public class UserService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    public User getById(long id) {
+    public User getById(int id) {
         return userRepository.findById(id)
                 .orElseThrow(BadRequestException::new);
     }

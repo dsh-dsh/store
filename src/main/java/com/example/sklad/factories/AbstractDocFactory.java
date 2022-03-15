@@ -30,7 +30,7 @@ public abstract class AbstractDocFactory implements DocFactory{
 
     @NotNull
     protected ItemDoc getItemDoc() {
-        long docId = itemDocDTO.getId();
+        int docId = itemDocDTO.getId();
         return itemDocRepository.getById(docId);
     }
 
@@ -53,7 +53,7 @@ public abstract class AbstractDocFactory implements DocFactory{
         itemDoc.setHold(itemDocDTO.isHold());
     }
 
-    protected long getNewNumber(DocumentType docType) {
+    protected int getNewNumber(DocumentType docType) {
         try {
            return itemDocRepository.getLastNumber(docType.toString()) + 1;
         } catch (Exception exception) {

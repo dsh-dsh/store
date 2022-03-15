@@ -11,7 +11,7 @@ public class ItemService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public Item getItemById(long id) {
+    public Item getItemById(int id) {
         return itemRepository.getById(id);
     }
 

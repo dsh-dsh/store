@@ -24,7 +24,6 @@ public class DocItemService {
     public void addDocItem(DocItemDTO docItemDTO, ItemDoc doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
         docItemRepository.save(documentItem);
-
     }
 
     @NotNull
@@ -41,7 +40,7 @@ public class DocItemService {
 
     public void updateDocItems(List<DocItemDTO> docItemDTOList, ItemDoc doc) {
         List<DocumentItem> currentItems = docItemRepository.findByItemDoc(doc);
-        List<Long> ids = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
         for(DocumentItem currentItem : currentItems) {
             for(DocItemDTO dto : docItemDTOList) {
                 if(Objects.equals(dto.getItemId(), currentItem.getId())) {

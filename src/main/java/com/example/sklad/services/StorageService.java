@@ -12,7 +12,7 @@ public class StorageService {
     @Autowired
     private StorageRepository storageRepository;
 
-    public Storage getById(long id) {
+    public Storage getById(int id) {
         return storageRepository.findById(id)
                 .orElseThrow(BadRequestException::new);
     }

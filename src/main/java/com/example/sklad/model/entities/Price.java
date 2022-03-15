@@ -12,19 +12,21 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "item, date")
+@EqualsAndHashCode(of = {"item", "date"})
 public class Price {
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private double value;
+    @Column(name = "price_value")
+    private float value;
 
+    @Column(name = "price_date")
     private LocalDate date;
 }

@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
 public class CheckInfoDTO {
 
     @JsonProperty("check_number")
-    private long checkNumber;
+    private int checkNumber;
 
     @JsonProperty("cash_register_number")
-    private String cashRegisterNumber;
+    private long cashRegisterNumber;
 
     @JsonProperty("amount_received")
-    private double amountReceived;
+    private float amountReceived;
 
     @JsonProperty("guest_number")
     private int guestNumber;
@@ -30,7 +30,8 @@ public class CheckInfoDTO {
 
     private String waiter;
 
-    private LocalDateTime time;
+    @JsonProperty("date_time")
+    private LocalDateTime dateTime;
 
     @JsonProperty("is_return")
     private boolean isReturn;

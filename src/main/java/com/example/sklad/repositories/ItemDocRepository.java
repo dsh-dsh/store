@@ -5,7 +5,7 @@ import com.example.sklad.model.enums.DocumentType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface ItemDocRepository extends JpaRepository<ItemDoc, Long> {
+public interface ItemDocRepository extends JpaRepository<ItemDoc, Integer> {
 
     @Query(value = "SELECT number " +
             "FROM document " +
