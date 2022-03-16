@@ -1,4 +1,4 @@
-package com.example.sklad.factories;
+package com.example.sklad.factories.orderdoc;
 
 import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
@@ -9,13 +9,14 @@ import com.example.sklad.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreditOrderFactory extends AbstractDocFactory {
+public class WithdrawOrderFactory extends AbstractDocFactory {
+
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
         this.docDTO = itemDocDTO;
         OrderDoc order = new OrderDoc();
-        setDocumentType(DocumentType.CREDIT_ORDER_DOC);
+        setDocumentType(DocumentType.WITHDRAW_DOC_DOC);
         setCommonFields(order);
         setAdditionalFields(order);
         orderDocRepository.save(order);
@@ -38,7 +39,6 @@ public class CreditOrderFactory extends AbstractDocFactory {
         order.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
         order.setAmount(docDTO.getAmount());
         order.setTax(docDTO.getTax());
-        order.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
         order.setIndividual(userService.getById(docDTO.getIndividual().getId()));
         order.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
     }

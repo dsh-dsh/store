@@ -1,7 +1,7 @@
 package com.example.sklad.services;
 
-import com.example.sklad.factories.CreditOrderFactory;
-import com.example.sklad.factories.WithdrawOrderFactory;
+import com.example.sklad.factories.orderdoc.CreditOrderFactory;
+import com.example.sklad.factories.orderdoc.WithdrawOrderFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;

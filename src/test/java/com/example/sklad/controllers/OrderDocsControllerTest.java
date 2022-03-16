@@ -40,7 +40,11 @@ public class OrderDocsControllerTest {
     private static final float TAX = 0.00f;
     private static final String SALARY_TYPE_STRING = Constants.SALARY_PAYMENT_TYPE;
     private static final String SALE_TYPE_STRING = Constants.SALE_PAYMENT_TYPE;
-
+    private static final String SUPPLIER_TYPE_STRING = Constants.SUPPLIER_PAYMENT_TYPE;
+    private static final String OTHER_PAYMENT_STRING = Constants.OTHER_PAYMENT_TYPE;
+    private static final int INDIVIDUAL_ID = 3;
+    private static final int SUPPLIER_ID = 1;
+    private static final int RECIPIENT_ID = 2;
 
     @Autowired
     private TestService testService;
@@ -56,8 +60,8 @@ public class OrderDocsControllerTest {
     void addSalaryOrderTest() throws Exception {
 
         ItemDocDTO docDTO = testService.setDTOFields();
-        docDTO.setIndividual(testService.setIndividualDTO(3));
-        docDTO.setSupplier(testService.setCompanyDTO(1));
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SALARY_TYPE_STRING, AMOUNT, TAX);
         ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
@@ -77,16 +81,14 @@ public class OrderDocsControllerTest {
         assertEquals(PaymentType.SALARY_PAYMENT, docs.get(0).getPaymentType());
     }
 
-
-
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void addSaleOrderTest() throws Exception {
 
         ItemDocDTO docDTO = testService.setDTOFields();
-        docDTO.setIndividual(testService.setIndividualDTO(4));
-        docDTO.setSupplier(testService.setCompanyDTO(1));
-        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
         testService.setOrderFields(docDTO, SALE_TYPE_STRING, AMOUNT, TAX);
         ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
@@ -100,10 +102,68 @@ public class OrderDocsControllerTest {
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
         assertEquals(1, docs.size());
-        assertEquals(4, docs.get(0).getIndividual().getId());
+        assertEquals(INDIVIDUAL_ID, docs.get(0).getIndividual().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
         assertEquals(PaymentType.SALE_PAYMENT, docs.get(0).getPaymentType());
     }
 
+    @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateWithdrawDocTest() throws Exception {
+
+        ItemDocDTO docDTO = testService.setDTOFields();
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        testService.setOrderFields(docDTO, SUPPLIER_TYPE_STRING, AMOUNT, TAX);
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/rko")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
+        assertEquals(1, docs.size());
+        assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
+        assertEquals(AMOUNT, docs.get(0).getAmount());
+        assertEquals(TAX, docs.get(0).getTax());
+        assertEquals(PaymentType.SUPPLIER_PAYMENT, docs.get(0).getPaymentType());
+    }
+
+    @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateCreditDocTest() throws Exception {
+
+        ItemDocDTO docDTO = testService.setDTOFields();
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
+        testService.setOrderFields(docDTO, OTHER_PAYMENT_STRING, AMOUNT, TAX);
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/pko")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
+        assertEquals(1, docs.size());
+        assertEquals(TestService.DOC_NUMBER, docs.get(0).getNumber());
+        assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
+        assertEquals(RECIPIENT_ID, docs.get(0).getRecipient().getId());
+        assertEquals(AMOUNT, docs.get(0).getAmount());
+        assertEquals(TAX, docs.get(0).getTax());
+        assertEquals(PaymentType.OTHER_PAYMENT, docs.get(0).getPaymentType());
+    }
 }

@@ -22,6 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Timestamp;
+import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -233,6 +234,28 @@ public class DocumentControllerTest {
         assertEquals(10, doc.getDateTime().getHour());
     }
 
+    @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateRequestDocTest() throws Exception {
 
+        ItemDocDTO itemDocDTO = testService.setPostingDocDTO();
+        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
+        itemDocDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
+        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/request")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        assertEquals(TestService.DOC_NUMBER, doc.getNumber());
+        assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
+        assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
+    }
 }
