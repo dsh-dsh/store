@@ -1,6 +1,6 @@
 package com.example.sklad.repositories;
 
-import com.example.sklad.model.entities.CheckKKMInfo;
+import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CheckInfoRepository extends JpaRepository<CheckKKMInfo, Integer> {
+public interface CheckInfoRepository extends JpaRepository<CheckInfo, Integer> {
 
-    Optional<CheckKKMInfo> findByCheck(ItemDoc check);
+    Optional<CheckInfo> findByCheck(ItemDoc check);
 
 }

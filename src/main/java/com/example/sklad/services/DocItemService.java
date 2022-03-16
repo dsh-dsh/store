@@ -39,7 +39,7 @@ public class DocItemService {
     }
 
     public void updateDocItems(List<DocItemDTO> docItemDTOList, ItemDoc doc) {
-        List<DocumentItem> currentItems = docItemRepository.findByItemDoc(doc);
+        List<DocumentItem> currentItems = getItemsByDoc(doc);
         List<Integer> ids = new ArrayList<>();
         for(DocumentItem currentItem : currentItems) {
             for(DocItemDTO dto : docItemDTOList) {
@@ -65,6 +65,10 @@ public class DocItemService {
         docItem.setPrice(dto.getPrice());
         docItem.setDiscount(dto.getDiscount());
         docItemRepository.save(docItem);
+    }
+
+    public List<DocumentItem> getItemsByDoc(ItemDoc doc) {
+        return docItemRepository.findByItemDoc(doc);
     }
 }
 

@@ -2,7 +2,7 @@ package com.example.sklad.services;
 
 import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.model.dto.CheckInfoDTO;
-import com.example.sklad.model.entities.CheckKKMInfo;
+import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.repositories.CheckInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +14,13 @@ public class CheckInfoService {
     @Autowired
     private CheckInfoRepository checkInfoRepository;
 
+    public CheckInfo getCheckInfo(ItemDoc check) {
+        return checkInfoRepository.findByCheck(check)
+                .orElseThrow(BadRequestException::new);
+    }
+
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
-        CheckKKMInfo checkInfo = new CheckKKMInfo();
+        CheckInfo checkInfo = new CheckInfo();
         setFields(checkInfoDTO, checkInfo);
         checkInfo.setCheck(check);
 
@@ -23,18 +28,18 @@ public class CheckInfoService {
     }
 
     public void updateCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
-        CheckKKMInfo checkInfo = getCheckKKMInfo(check);
+        CheckInfo checkInfo = getCheckKKMInfo(check);
         setFields(checkInfoDTO, checkInfo);
 
         checkInfoRepository.save(checkInfo);
     }
 
-    private CheckKKMInfo getCheckKKMInfo(ItemDoc check) {
+    private CheckInfo getCheckKKMInfo(ItemDoc check) {
         return checkInfoRepository.findByCheck(check)
                 .orElseThrow(BadRequestException::new);
     }
 
-    private void setFields(CheckInfoDTO checkInfoDTO, CheckKKMInfo checkInfo) {
+    private void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());
         checkInfo.setCashRegisterNumber(checkInfoDTO.getCashRegisterNumber());
         checkInfo.setAmountReceived(checkInfoDTO.getAmountReceived());

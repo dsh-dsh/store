@@ -1,11 +1,16 @@
 package com.example.sklad.services;
 
+import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.factories.CheckDocFactory;
 import com.example.sklad.factories.PostingDocFactory;
 import com.example.sklad.factories.ReceiptDocFactory;
 import com.example.sklad.factories.RequestDocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.entities.documents.Document;
+import com.example.sklad.model.entities.documents.ItemDoc;
+import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.model.responses.ListResponse;
+import com.example.sklad.repositories.ItemDocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +27,8 @@ public class DocumentService {
     private PostingDocFactory postingDocFactory;
     @Autowired
     private RequestDocFactory requestDocFactory;
+    @Autowired
+    private ItemDocRepository itemDocRepository;
 
     public void addCheckDoc(ItemDocDTO itemDocDTO) {
         checkDocFactory.addDocument(itemDocDTO);
@@ -55,8 +62,12 @@ public class DocumentService {
         requestDocFactory.updateDocument(itemDocDTO);
     }
 
-    public ListResponse<ItemDocDTO> getDocuments() {
-        return new ListResponse<>(List.of(new ItemDocDTO()), null);
+    public ItemDoc getDocumentByNumber(int number) {
+        return itemDocRepository.findByNumber(number)
+                .orElseThrow(BadRequestException::new);
+    }
 
+    public List<ItemDoc> getDocumentsByType(DocumentType documentType) {
+        return itemDocRepository.findByDocType(documentType);
     }
 }

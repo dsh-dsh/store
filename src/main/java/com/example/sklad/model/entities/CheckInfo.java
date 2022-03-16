@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = {"checkNumber", "cashRegisterNumber"})
 @Entity
 @Table(name = "check_KKM_info")
-public class CheckKKMInfo {
+public class CheckInfo {
 
     @Id
     @Column(name = "id", nullable = false)

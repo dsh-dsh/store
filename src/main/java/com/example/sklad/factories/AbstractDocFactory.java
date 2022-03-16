@@ -57,8 +57,13 @@ public abstract class AbstractDocFactory implements DocFactory{
         try {
            return itemDocRepository.getLastNumber(docType.toString()) + 1;
         } catch (Exception exception) {
-            return 1;
+            return getStartDocNumber(docType);
         }
+    }
+
+    private int getStartDocNumber(DocumentType documentType) {
+        // todo add start number logic
+        return 1;
     }
 
     protected void addCheckInfo(ItemDoc check) {
