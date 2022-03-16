@@ -39,7 +39,8 @@ public class InventoryDocFactory extends AbstractDocFactory {
 
 
     private void setAdditionalFields(ItemDoc doc) {
+        doc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
         doc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
-        doc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
+        doc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
     }
 }

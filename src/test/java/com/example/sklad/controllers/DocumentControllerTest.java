@@ -1,5 +1,6 @@
 package com.example.sklad.controllers;
 
+import com.example.sklad.model.dto.DocItemDTO;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
 import com.example.sklad.model.entities.CheckInfo;
@@ -40,6 +41,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DocumentControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/docs";
+    private static final int INDIVIDUAL_ID = 1;
+    private static final int STORAGE_ID = 1;
+    private static final int SUPPLIER_ID = 1;
+    private static final float QUANTITY_FACT = 10.00f;
 
     @Autowired
     private TestService testService;
@@ -62,7 +67,10 @@ public class DocumentControllerTest {
     @Test
     void addCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setCheckDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        itemDocDTO.setIndividual(testService.setIndividualDTO(1));
+        itemDocDTO.setSupplier(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageFrom(testService.setStorageDTO(3));
         itemDocDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -86,7 +94,10 @@ public class DocumentControllerTest {
     @Test
     void addReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setReceiptDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        itemDocDTO.setSupplier(testService.setCompanyDTO(2));
+        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
@@ -109,7 +120,9 @@ public class DocumentControllerTest {
     @Test
     void addPostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setPostingDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
@@ -132,7 +145,8 @@ public class DocumentControllerTest {
     @Test
     void addRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setRequestDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
@@ -150,35 +164,43 @@ public class DocumentControllerTest {
         assertEquals(TestService.AUTHOR_ID, docs.get(0).getAuthor().getId());
     }
 
-//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void addInventoryDocTest() throws Exception {
-//
-//        ItemDocDTO itemDocDTO = testService.setRequestDocDTO();
-//        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-//        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
-//
-//        this.mockMvc.perform(
-//                        post(URL_PREFIX + "/request")
-//                                .contentType(MediaType.APPLICATION_JSON)
-//                                .content(objectMapper.writeValueAsString(requestDTO)))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.data").value("ok"));
-//
-//        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.REQUEST_DOC);
-//        assertEquals(1, docs.size());
-//
-//        assertEquals(TestService.AUTHOR_ID, docs.get(0).getAuthor().getId());
-//    }
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addInventoryDocTest() throws Exception {
+
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        itemDocDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
+        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/inventory")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.INVENTORY_DOC);
+        assertEquals(1, docs.size());
+
+        assertEquals(INDIVIDUAL_ID, docs.get(0).getIndividual().getId());
+        assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
+        assertEquals(STORAGE_ID, docs.get(0).getStorageFrom().getId());
+    }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void updateCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setCheckDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setIndividual(testService.setIndividualDTO(1));
+        itemDocDTO.setSupplier(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageFrom(testService.setStorageDTO(3));
         itemDocDTO.setCheckInfo(testService.setCHeckInfo(TestService.UPDATE_VALUE));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -206,8 +228,11 @@ public class DocumentControllerTest {
     @Test
     void updateReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setReceiptDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setSupplier(testService.setCompanyDTO(2));
+        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
@@ -236,8 +261,10 @@ public class DocumentControllerTest {
     @Test
     void updatePostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setPostingDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
+        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         itemDocDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -261,8 +288,9 @@ public class DocumentControllerTest {
     @Test
     void updateRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setPostingDocDTO();
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         itemDocDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -279,5 +307,37 @@ public class DocumentControllerTest {
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
         assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
+    }
+
+    @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateInventoryDocTest() throws Exception {
+
+        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        itemDocDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
+        List<DocItemDTO> itemDTOList = testService.setDocItemDTOList(TestService.UPDATE_VALUE);
+        itemDTOList.forEach(dto -> dto.setQuantityFact(10.00f));
+        itemDocDTO.setDocItems(itemDTOList);
+        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/inventory")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        assertEquals(TestService.DOC_NUMBER, doc.getNumber());
+        assertEquals(DocumentType.INVENTORY_DOC, doc.getDocType());
+
+        List<DocumentItem> items = docItemService.getItemsByDoc(doc);
+        assertEquals(QUANTITY_FACT, items.get(0).getQuantityFact());
+
     }
 }
