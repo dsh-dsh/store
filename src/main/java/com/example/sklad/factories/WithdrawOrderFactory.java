@@ -5,6 +5,7 @@ import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
+import com.example.sklad.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,6 +36,9 @@ public class WithdrawOrderFactory extends AbstractDocFactory {
     }
 
     private void setAdditionalFields(OrderDoc order) {
+        order.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
+        order.setAmount(docDTO.getAmount());
+        order.setTax(docDTO.getTax());
         order.setIndividual(userService.getById(docDTO.getIndividual().getId()));
         order.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
     }

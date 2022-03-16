@@ -3,6 +3,7 @@ package com.example.sklad.controllers;
 import com.example.sklad.model.dto.*;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -13,7 +14,6 @@ import java.util.List;
 @Component
 public class TestService {
 
-    static final String URL_PREFIX = "/api/v1/docs";
     static final int ADD_VALUE = 0;
     static final int UPDATE_VALUE = 1;
     static final int DOC_ID = 1;
@@ -32,6 +32,23 @@ public class TestService {
     ItemDocRequestDTO setDTO(ItemDocDTO itemDocDTO) {
         ItemDocRequestDTO dto = new ItemDocRequestDTO();
         dto.setItemDocDTO(itemDocDTO);
+        return dto;
+    }
+
+    void setOrderFields(ItemDocDTO dto, String type, float amount, float tax) {
+        dto.setPaymentType(type);
+        dto.setAmount(amount);
+        dto.setTax(tax);
+    }
+
+    ItemDocDTO setDTOFields() {
+        ItemDocDTO dto = new ItemDocDTO();
+        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        dto.setProject(setProject(1));
+        dto.setAuthor(setAuthorDTO(AUTHOR_ID));
+        dto.setPayed(false);
+        dto.setHold(false);
+
         return dto;
     }
 
@@ -106,31 +123,31 @@ public class TestService {
         return dto;
     }
 
-    private ProjectDTO setProject(int id) {
+    ProjectDTO setProject(int id) {
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(id);
         return projectDTO;
     }
 
-    private AuthorDTO setAuthorDTO(int id) {
+    AuthorDTO setAuthorDTO(int id) {
         AuthorDTO authorDTO = new AuthorDTO();
         authorDTO.setId(id);
         return authorDTO;
     }
 
-    private IndividualDTO setIndividualDTO(int id) {
+    IndividualDTO setIndividualDTO(int id) {
         IndividualDTO individualDTO = new IndividualDTO();
         individualDTO.setId(id);
         return individualDTO;
     }
 
-    private CompanyDTO setCompanyDTO(int id) {
+    CompanyDTO setCompanyDTO(int id) {
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(id);
         return companyDTO;
     }
 
-    private StorageDTO setStorageDTO(int id) {
+    StorageDTO setStorageDTO(int id) {
         StorageDTO storageDTO = new StorageDTO();
         storageDTO.setId(id);
         return storageDTO;

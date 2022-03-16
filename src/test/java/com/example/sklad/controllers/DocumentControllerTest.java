@@ -38,6 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class DocumentControllerTest {
 
+    private static final String URL_PREFIX = "/api/v1/docs";
+
     @Autowired
     private TestService testService;
     @Autowired
@@ -65,7 +67,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        post(TestService.URL_PREFIX + "/check")
+                        post(URL_PREFIX + "/check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -88,7 +90,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        post(TestService.URL_PREFIX + "/receipt")
+                        post(URL_PREFIX + "/receipt")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -111,7 +113,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        post(TestService.URL_PREFIX + "/posting")
+                        post(URL_PREFIX + "/posting")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -134,7 +136,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        post(TestService.URL_PREFIX + "/request")
+                        post(URL_PREFIX + "/request")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -159,7 +161,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        put(TestService.URL_PREFIX + "/check")
+                        put(URL_PREFIX + "/check")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -187,7 +189,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        put(TestService.URL_PREFIX + "/receipt")
+                        put(URL_PREFIX + "/receipt")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -218,7 +220,7 @@ public class DocumentControllerTest {
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
         this.mockMvc.perform(
-                        put(TestService.URL_PREFIX + "/posting")
+                        put(URL_PREFIX + "/posting")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
