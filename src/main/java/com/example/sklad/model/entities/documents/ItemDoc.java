@@ -19,10 +19,6 @@ import java.util.Set;
 public class ItemDoc extends Document implements DocInterface {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "recipient_id")
-    private Company recipient;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "storage_from_id")
     private Storage storageFrom;
 

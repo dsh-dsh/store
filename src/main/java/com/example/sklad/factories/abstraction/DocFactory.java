@@ -1,4 +1,4 @@
-package com.example.sklad.factories;
+package com.example.sklad.factories.abstraction;
 
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;

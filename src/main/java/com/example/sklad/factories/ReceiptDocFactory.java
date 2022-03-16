@@ -1,5 +1,6 @@
 package com.example.sklad.factories;
 
+import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -11,7 +12,7 @@ public class ReceiptDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc receiptDoc = new ItemDoc();
         setDocumentType(DocumentType.RECEIPT_DOC);
         setCommonFields(receiptDoc);
@@ -25,7 +26,7 @@ public class ReceiptDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc receiptDoc = getItemDoc();
         updateCommonFields(receiptDoc);
         setAdditionalFields(receiptDoc);
@@ -37,9 +38,9 @@ public class ReceiptDocFactory extends AbstractDocFactory {
     }
 
     private void setAdditionalFields(ItemDoc receiptDoc) {
-        receiptDoc.setSupplier(companyService.getById(itemDocDTO.getSupplier().getId()));
-        receiptDoc.setRecipient(companyService.getById(itemDocDTO.getRecipient().getId()));
-        receiptDoc.setStorageTo(storageService.getById(itemDocDTO.getStorageTo().getId()));
+        receiptDoc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
+        receiptDoc.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
+        receiptDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
     }
 
 }

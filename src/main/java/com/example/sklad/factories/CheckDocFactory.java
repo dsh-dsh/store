@@ -1,5 +1,6 @@
 package com.example.sklad.factories;
 
+import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -11,7 +12,7 @@ public class CheckDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc check = new ItemDoc();
         setDocumentType(DocumentType.CHECK_DOC);
         setCommonFields(check);
@@ -26,7 +27,7 @@ public class CheckDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc check = getItemDoc();
         updateCommonFields(check);
         setAdditionalFields(check);
@@ -39,8 +40,8 @@ public class CheckDocFactory extends AbstractDocFactory {
     }
 
     private void setAdditionalFields(ItemDoc check) {
-        check.setIndividual(userService.getById(itemDocDTO.getIndividual().getId()));
-        check.setSupplier(companyService.getById(itemDocDTO.getSupplier().getId()));
-        check.setStorageFrom(storageService.getById(itemDocDTO.getStorageFrom().getId()));
+        check.setIndividual(userService.getById(docDTO.getIndividual().getId()));
+        check.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
+        check.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
     }
 }

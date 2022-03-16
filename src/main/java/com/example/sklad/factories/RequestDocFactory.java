@@ -1,5 +1,6 @@
 package com.example.sklad.factories;
 
+import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -11,7 +12,7 @@ public class RequestDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc itemDoc = new ItemDoc();
         setDocumentType(DocumentType.REQUEST_DOC);
         setCommonFields(itemDoc);
@@ -25,7 +26,7 @@ public class RequestDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.itemDocDTO = itemDocDTO;
+        this.docDTO = itemDocDTO;
         ItemDoc itemDoc = getItemDoc();
         updateCommonFields(itemDoc);
         setAdditionalFields(itemDoc);
@@ -37,6 +38,6 @@ public class RequestDocFactory extends AbstractDocFactory {
     }
 
     private void setAdditionalFields(ItemDoc itemDoc) {
-        itemDoc.setStorageTo(storageService.getById(itemDocDTO.getStorageTo().getId()));
+        itemDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
     }
 }

@@ -48,6 +48,10 @@ public class Document {
     @JoinColumn(name = "individual_id")
     private User individual;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipient_id")
+    private Company recipient;
+
     private boolean isPayed;
 
     private boolean isHold;

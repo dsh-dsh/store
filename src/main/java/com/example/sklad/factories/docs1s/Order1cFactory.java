@@ -1,5 +1,6 @@
-package com.example.sklad.factories;
+package com.example.sklad.factories.docs1s;
 
+import com.example.sklad.factories.abstraction.DocFactory;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.entities.documents.DocInterface;

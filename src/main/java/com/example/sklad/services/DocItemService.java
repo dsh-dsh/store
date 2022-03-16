@@ -2,6 +2,7 @@ package com.example.sklad.services;
 
 import com.example.sklad.model.dto.DocItemDTO;
 import com.example.sklad.model.entities.DocumentItem;
+import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.repositories.DocItemRepository;
 import org.jetbrains.annotations.NotNull;
@@ -21,21 +22,21 @@ public class DocItemService {
     @Autowired
     private ItemService itemService;
 
-    public void addDocItem(DocItemDTO docItemDTO, ItemDoc doc) {
+    public void addDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
         docItemRepository.save(documentItem);
     }
 
     @NotNull
-    private DocumentItem createDocItem(DocItemDTO docItemDTO, ItemDoc doc) {
-        DocumentItem documentItem = new DocumentItem();
-        documentItem.setItemDoc(doc);
-        documentItem.setItem(itemService.getItemById(docItemDTO.getItemId()));
-        documentItem.setQuantity(docItemDTO.getQuantity());
-        documentItem.setPrice(docItemDTO.getPrice());
-        documentItem.setDiscount(docItemDTO.getDiscount());
+    private DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
+        DocumentItem item = new DocumentItem();
+        item.setItemDoc((ItemDoc) doc);
+        item.setItem(itemService.getItemById(docItemDTO.getItemId()));
+        item.setQuantity(docItemDTO.getQuantity());
+        item.setPrice(docItemDTO.getPrice());
+        item.setDiscount(docItemDTO.getDiscount());
 
-        return documentItem;
+        return item;
     }
 
     public void updateDocItems(List<DocItemDTO> docItemDTOList, ItemDoc doc) {
