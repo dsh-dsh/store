@@ -11,7 +11,8 @@ public enum DocumentType {
     RECEIPT_DOC(Constants.RECEIPT_DOC_TYPE),
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE),
-    REQUEST_DOC(Constants.REQUEST_DOC_TYPE);
+    REQUEST_DOC(Constants.REQUEST_DOC_TYPE),
+    INVENTORY_DOC(Constants.REQUEST_DOC_TYPE);
 
     private final String value;
 

@@ -17,8 +17,8 @@ public class OrderDoc extends Document  implements DocInterface {
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
-    private double amount;
+    private float amount;
 
-    private double tax;
+    private float tax;
 
 }

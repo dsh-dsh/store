@@ -15,6 +15,7 @@ public class Constants {
     public static final String REQUEST_DOC_TYPE = "Заявка";
     public static final String WITHDRAW_DOC_DOC_TYPE = "ПКО";
     public static final String CREDIT_ORDER_DOC_TYPE = "РКО";
+    public static final String INVENTORY_DOC_TYPE = "Инвентаризация";
 
     public static final String STORE_STORE_TYPE = "склад";
     public static final String CAFE_STORE_TYPE = "склад кафе";

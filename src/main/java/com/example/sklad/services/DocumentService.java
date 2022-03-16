@@ -1,10 +1,7 @@
 package com.example.sklad.services;
 
 import com.example.sklad.exceptions.BadRequestException;
-import com.example.sklad.factories.itemdoc.CheckDocFactory;
-import com.example.sklad.factories.itemdoc.PostingDocFactory;
-import com.example.sklad.factories.itemdoc.ReceiptDocFactory;
-import com.example.sklad.factories.itemdoc.RequestDocFactory;
+import com.example.sklad.factories.itemdoc.*;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
@@ -25,6 +22,8 @@ public class DocumentService {
     private PostingDocFactory postingDocFactory;
     @Autowired
     private RequestDocFactory requestDocFactory;
+    @Autowired
+    private InventoryDocFactory inventoryDocFactory;
     @Autowired
     private ItemDocRepository itemDocRepository;
 
@@ -48,6 +47,10 @@ public class DocumentService {
         postingDocFactory.addDocument(itemDocDTO);
     }
 
+    public void addInventoryDoc(ItemDocDTO itemDocDTO) {
+        inventoryDocFactory.addDocument(itemDocDTO);
+    }
+
     public void updatePostingDoc(ItemDocDTO itemDocDTO) {
         postingDocFactory.updateDocument(itemDocDTO);
     }
@@ -58,6 +61,10 @@ public class DocumentService {
 
     public void updateRequestDoc(ItemDocDTO itemDocDTO) {
         requestDocFactory.updateDocument(itemDocDTO);
+    }
+
+    public void updateInventoryDoc(ItemDocDTO itemDocDTO) {
+        inventoryDocFactory.updateDocument(itemDocDTO);
     }
 
     public ItemDoc getDocumentByNumber(int number) {

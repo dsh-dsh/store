@@ -11,14 +11,14 @@ create table dinners
 
 create table document
 (d_type integer not null, id integer not null auto_increment, date_time datetime(6), doc_type varchar(255),
-is_hold bit not null, is_payed bit not null, number integer not null, amount double precision,
-payment_type varchar(255), tax double precision, author_id integer not null, base_document_id integer,
+is_hold bit not null, is_payed bit not null, number integer not null, amount float,
+payment_type varchar(255), tax float, author_id integer not null, base_document_id integer,
 individual_id integer, project_id integer not null, supplier_id integer, recipient_id integer,
 storage_from_id integer, storage_to_id integer, primary key (id));
 
 create table document_item
 (id integer not null auto_increment, discount float not null, price float not null,
-quantity float not null, item_id integer, document_id integer, primary key (id));
+quantity float not null, quantity_fact float not null, item_id integer, document_id integer, primary key (id));
 
 create table check_kkm_info
 (id integer not null auto_increment, amount_received float not null, cash_register_number bigint not null,

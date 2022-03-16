@@ -150,6 +150,28 @@ public class DocumentControllerTest {
         assertEquals(TestService.AUTHOR_ID, docs.get(0).getAuthor().getId());
     }
 
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void addInventoryDocTest() throws Exception {
+//
+//        ItemDocDTO itemDocDTO = testService.setRequestDocDTO();
+//        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+//        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+//
+//        this.mockMvc.perform(
+//                        post(URL_PREFIX + "/request")
+//                                .contentType(MediaType.APPLICATION_JSON)
+//                                .content(objectMapper.writeValueAsString(requestDTO)))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.data").value("ok"));
+//
+//        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.REQUEST_DOC);
+//        assertEquals(1, docs.size());
+//
+//        assertEquals(TestService.AUTHOR_ID, docs.get(0).getAuthor().getId());
+//    }
+
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

@@ -34,6 +34,12 @@ public class DocumentController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @PostMapping("/api/v1/docs/inventory")
+    public ResponseEntity<Response<String>> setInventoryDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
+        documentService.addInventoryDoc(itemDocRequestDTO.getItemDocDTO());
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
     @PostMapping("/api/v1/docs/request")
     public ResponseEntity<Response<String>> setRequestDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
         documentService.addRequestDoc(itemDocRequestDTO.getItemDocDTO());
@@ -61,6 +67,12 @@ public class DocumentController {
     @PutMapping("/api/v1/docs/request")
     public ResponseEntity<Response<String>> updateRequestDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
         documentService.updateRequestDoc(itemDocRequestDTO.getItemDocDTO());
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PutMapping("/api/v1/docs/inventory")
+    public ResponseEntity<Response<String>> updateInventoryDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
+        documentService.updateInventoryDoc(itemDocRequestDTO.getItemDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

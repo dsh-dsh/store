@@ -30,6 +30,9 @@ public class DocumentItem {
 
     private float quantity;
 
+    @Column(name = "quantity_fact")
+    private float quantityFact;
+
     private float price;
 
     private float discount;

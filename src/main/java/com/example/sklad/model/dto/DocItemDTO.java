@@ -20,6 +20,9 @@ public class DocItemDTO {
 
     private float quantity;
 
+    @JsonProperty("quantity_fact")
+    private float quantityFact = 0.00f;
+
     private float price;
 
     private float discount;
