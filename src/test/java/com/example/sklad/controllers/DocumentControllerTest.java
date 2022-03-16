@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -59,6 +60,12 @@ public class DocumentControllerTest {
     private static final int CHECK_NUMBER = 654321;
     private static final int RECEIPT_FIELDS_ID = 1;
     private static final int AUTHOR_ID = 1;
+    private static final List<Integer> ADDED_ITEM_IDS = List.of(1, 2, 3, 4);
+    private static final List<Integer> UPDATE_ITEM_IDS = List.of(2, 3, 4, 5);
+
+    // todo add fields validation tests
+    // todo add security tests
+    // todo add delete tests
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -157,7 +164,8 @@ public class DocumentControllerTest {
     @Test
     void updateCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = setCheckDocDTO(DOC_ID, DOC_NUMBER);
+        ItemDocDTO itemDocDTO = setCheckDocDTO();
+        addTo(itemDocDTO, DOC_ID, DOC_NUMBER);
         itemDocDTO.setCheckInfo(setCHeckInfo(UPDATE_VALUE));
         itemDocDTO.setDocItems(setDocItemDTOList(UPDATE_VALUE));
         ItemDocRequestDTO requestDTO = setDTO(itemDocDTO);
@@ -170,7 +178,7 @@ public class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentByNumber(DOC_NUMBER);
+        ItemDoc doc = documentService.getDocumentById(DOC_ID);
         assertEquals(DOC_NUMBER, doc.getNumber());
 
         List<DocumentItem> items = docItemService.getItemsByDoc(doc);
@@ -178,6 +186,67 @@ public class DocumentControllerTest {
 
         CheckInfo checkInfo = checkInfoService.getCheckInfo(doc);
         assertEquals(CHECK_NUMBER + UPDATE_VALUE, checkInfo.getCheckNumber());
+    }
+
+    @Sql(value = "/sql/documents/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateReceiptDocTest() throws Exception {
+
+        ItemDocDTO itemDocDTO = setReceiptDocDTO();
+        addTo(itemDocDTO, DOC_ID, DOC_NUMBER);
+        itemDocDTO.setDocItems(setDocItemDTOList(UPDATE_VALUE));
+        ItemDocRequestDTO requestDTO = setDTO(itemDocDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/receipt")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        ItemDoc doc = documentService.getDocumentById(DOC_ID);
+        assertEquals(DOC_NUMBER, doc.getNumber());
+
+        List<DocumentItem> items = docItemService.getItemsByDoc(doc);
+        List<Integer> itemIds = items.stream()
+                .map(item -> item.getItem().getId())
+                .collect(Collectors.toList());
+
+        assertEquals(4, itemIds.size());
+        assertTrue(itemIds.containsAll(UPDATE_ITEM_IDS));
+    }
+
+    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updatePostingDocTest() throws Exception {
+
+        ItemDocDTO itemDocDTO = setPostingDocDTO();
+        addTo(itemDocDTO, DOC_ID, DOC_NUMBER);
+        itemDocDTO.setDocItems(setDocItemDTOList(UPDATE_VALUE));
+        itemDocDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
+        ItemDocRequestDTO requestDTO = setDTO(itemDocDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/posting")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        ItemDoc doc = documentService.getDocumentById(DOC_ID);
+        assertEquals(DOC_NUMBER, doc.getNumber());
+        assertEquals(1, doc.getDateTime().getDayOfMonth());
+        assertEquals(10, doc.getDateTime().getHour());
+    }
+
+
+    private void addTo(ItemDocDTO dto, int docId, int docNumber) {
+        dto.setId(docId);
+        dto.setNumber(docNumber);
     }
 
     private ItemDocRequestDTO setDTO(ItemDocDTO itemDocDTO) {
@@ -262,22 +331,6 @@ public class DocumentControllerTest {
         return dto;
     }
 
-    private ItemDocDTO setCheckDocDTO(int docId, int docNumber) {
-        ItemDocDTO dto = new ItemDocDTO();
-        dto.setId(docId);
-        dto.setNumber(docNumber);
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        dto.setProject(setProject(3));
-        dto.setAuthor(setAuthorDTO(2));
-        dto.setIndividual(setIndividualDTO(1));
-        dto.setPayed(true);
-        dto.setHold(true);
-        dto.setSupplier(setCompanyDTO(1));
-        dto.setStorageFrom(setStorageDTO(3));
-
-        return dto;
-    }
-
     private CheckInfoDTO setCHeckInfo(int value) {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setCheckNumber(CHECK_NUMBER + value);
@@ -328,21 +381,21 @@ public class DocumentControllerTest {
 
     private List<DocItemDTO> setDocItemDTOList(int value) {
         DocItemDTO first = new DocItemDTO();
-        first.setItemId(1+value);
-        first.setPrice(10.00f*value);
-        first.setQuantity(1+value);
+        first.setItemId(ADDED_ITEM_IDS.get(0) + value);
+        first.setPrice(10.00f * value);
+        first.setQuantity(1 + value);
         DocItemDTO second = new DocItemDTO();
-        second.setItemId(2+value);
-        second.setPrice(20.00f*value);
-        second.setQuantity(2+value);
+        second.setItemId(ADDED_ITEM_IDS.get(1) + value);
+        second.setPrice(20.00f * value);
+        second.setQuantity(2 + value);
         DocItemDTO third = new DocItemDTO();
-        third.setItemId(3+value);
-        third.setPrice(30.00f*value);
-        third.setQuantity(3+value);
+        third.setItemId(ADDED_ITEM_IDS.get(2) + value);
+        third.setPrice(30.00f * value);
+        third.setQuantity(3 + value);
         DocItemDTO forth = new DocItemDTO();
-        forth.setItemId(4+value);
-        forth.setPrice(40.00f*value);
-        forth.setQuantity(4+value);
+        forth.setItemId(ADDED_ITEM_IDS.get(3) + value);
+        forth.setPrice(40.00f * value);
+        forth.setQuantity(4 + value);
 
         return List.of(first, second, third, forth);
     }

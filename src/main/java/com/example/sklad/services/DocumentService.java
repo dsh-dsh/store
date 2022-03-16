@@ -70,4 +70,9 @@ public class DocumentService {
     public List<ItemDoc> getDocumentsByType(DocumentType documentType) {
         return itemDocRepository.findByDocType(documentType);
     }
+
+    public ItemDoc getDocumentById(int docId) {
+        return itemDocRepository.findById(docId)
+                .orElseThrow(BadRequestException::new);
+    }
 }
