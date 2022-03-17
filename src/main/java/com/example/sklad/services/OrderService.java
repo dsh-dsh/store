@@ -37,6 +37,11 @@ public class OrderService {
         creditOrderFactory.updateDocument(docDTO);
     }
 
+    public void deleteOrderDoc(DocDTO docDTO) {
+        int docId = docDTO.getId();
+        withdrawFactory.deleteDocument(docId);
+    }
+
 
     public List<OrderDoc> getDocumentsByType(DocumentType documentType) {
         return orderDocRepository.findByDocType(documentType);

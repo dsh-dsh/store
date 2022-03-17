@@ -1,14 +1,11 @@
 package com.example.sklad.controllers;
 
-import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class OrderController {
@@ -17,26 +14,32 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/api/v1/orders/rko")
-    public ResponseEntity<Response<String>> setWithdrawOrder(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        orderService.addRKO(itemDocRequestDTO.getDocDTO());
+    public ResponseEntity<Response<String>> setWithdrawOrder(@RequestBody DocRequestDTO docRequestDTO) {
+        orderService.addRKO(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PostMapping("/api/v1/orders/pko")
-    public ResponseEntity<Response<String>> setCreditOrder(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        orderService.addPKO(itemDocRequestDTO.getDocDTO());
+    public ResponseEntity<Response<String>> setCreditOrder(@RequestBody DocRequestDTO docRequestDTO) {
+        orderService.addPKO(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/orders/rko")
-    public ResponseEntity<Response<String>> updateWithdrawOrder(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        orderService.updateRKO(itemDocRequestDTO.getDocDTO());
+    public ResponseEntity<Response<String>> updateWithdrawOrder(@RequestBody DocRequestDTO docRequestDTO) {
+        orderService.updateRKO(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/orders/pko")
-    public ResponseEntity<Response<String>> updateCreditOrder(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        orderService.updatePKO(itemDocRequestDTO.getDocDTO());
+    public ResponseEntity<Response<String>> updateCreditOrder(@RequestBody DocRequestDTO docRequestDTO) {
+        orderService.updatePKO(docRequestDTO.getDocDTO());
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @DeleteMapping("/api/v1/orders")
+    public ResponseEntity<Response<String>> deleteOrder(@RequestBody DocRequestDTO docRequestDTO) {
+        orderService.deleteOrderDoc(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 }

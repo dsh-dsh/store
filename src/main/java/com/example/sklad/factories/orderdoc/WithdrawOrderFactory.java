@@ -35,4 +35,9 @@ public class WithdrawOrderFactory extends AbstractDocFactory {
         order.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
         orderDocRepository.save(order);
     }
+
+    @Override
+    public void deleteDocument(int docId) {
+        orderDocRepository.deleteById(docId);
+    }
 }

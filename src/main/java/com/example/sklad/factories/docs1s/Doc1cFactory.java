@@ -74,9 +74,7 @@ public class Doc1cFactory implements DocFactory {
     }
 
     @Override
-    public DocInterface deleteDocument(DocDTO docDTO) {
-        return null;
-    }
+    public void deleteDocument(int docId) {}
 
     private void addDocItems(DocDTO docDTO, ItemDoc check) {
         docDTO.getDocItems()

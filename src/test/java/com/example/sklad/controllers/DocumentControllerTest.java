@@ -2,7 +2,7 @@ package com.example.sklad.controllers;
 
 import com.example.sklad.model.dto.DocItemDTO;
 import com.example.sklad.model.dto.documents.DocDTO;
-import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.DocumentItem;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -75,7 +75,7 @@ public class DocumentControllerTest {
 
         docDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/check")
@@ -101,7 +101,7 @@ public class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/receipt")
@@ -126,7 +126,7 @@ public class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/posting")
@@ -150,7 +150,7 @@ public class DocumentControllerTest {
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/request")
@@ -177,7 +177,7 @@ public class DocumentControllerTest {
         docDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
 
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/inventory")
@@ -207,7 +207,7 @@ public class DocumentControllerTest {
         docDTO.setStorageFrom(testService.setStorageDTO(3));
         docDTO.setCheckInfo(testService.setCHeckInfo(TestService.UPDATE_VALUE));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/check")
@@ -238,7 +238,7 @@ public class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/receipt")
@@ -271,7 +271,7 @@ public class DocumentControllerTest {
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         docDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/posting")
@@ -297,7 +297,7 @@ public class DocumentControllerTest {
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
         docDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/request")
@@ -326,7 +326,7 @@ public class DocumentControllerTest {
         List<DocItemDTO> itemDTOList = testService.setDocItemDTOList(TestService.UPDATE_VALUE);
         itemDTOList.forEach(dto -> dto.setQuantityFact(10.00f));
         docDTO.setDocItems(itemDTOList);
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/inventory")

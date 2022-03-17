@@ -2,7 +2,7 @@ package com.example.sklad.controllers;
 
 import com.example.sklad.model.dto.*;
 import com.example.sklad.model.dto.documents.DocDTO;
-import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.enums.DocumentType;
 import org.springframework.stereotype.Component;
 
@@ -23,14 +23,16 @@ public class TestService {
     static final int AUTHOR_ID = 1;
     static final List<Integer> ADDED_ITEM_IDS = List.of(1, 2, 3, 4);
     static final List<Integer> UPDATE_ITEM_IDS = List.of(2, 3, 4, 5);
+    static final int ONE_DOCUMENT = 1;
+    static final int NO_DOCUMENTS = 0;
 
     void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);
         dto.setNumber(docNumber);
     }
 
-    ItemDocRequestDTO setDTO(DocDTO docDTO) {
-        ItemDocRequestDTO dto = new ItemDocRequestDTO();
+    DocRequestDTO setDTO(DocDTO docDTO) {
+        DocRequestDTO dto = new DocRequestDTO();
         dto.setDocDTO(docDTO);
         return dto;
     }

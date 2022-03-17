@@ -7,6 +7,7 @@ import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
+import com.example.sklad.repositories.DocumentRepository;
 import com.example.sklad.repositories.ItemDocRepository;
 import com.example.sklad.repositories.OrderDocRepository;
 import com.example.sklad.services.*;
@@ -57,31 +58,17 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     @Override
-    public DocInterface deleteDocument(DocDTO docDTO) {
-        this.docDTO = docDTO;
-        ItemDoc document = getItemDoc(); // todo сделать метод с id
+    public void deleteDocument(int docId) {
+        ItemDoc document = getItemDoc(docId);
         if(document.getDocType() == DocumentType.CHECK_DOC) {
-            deleteCheckInfo(document);
+            checkInfoService.deleteByDocId(document);
         }
-        deleteDocItems(document);
-        deleteItemDoc(document);
-        return document;
-    }
-    protected void deleteDocItems(ItemDoc itemDoc) {
-        docItemService.deleteByDoc(itemDoc);
-    }
-
-    protected void deleteItemDoc(ItemDoc itemDoc) {
-        itemDocRepository.deleteById(itemDoc.getId());
-    }
-
-    protected void deleteCheckInfo(ItemDoc check) {
-        checkInfoService.deleteByDocId(check);
+        docItemService.deleteByDoc(document);
+        itemDocRepository.deleteById(document.getId());
     }
 
     @NotNull
-    protected ItemDoc getItemDoc() {
-        int docId = docDTO.getId();
+    protected ItemDoc getItemDoc(int docId) {
             return itemDocRepository.findById(docId)
                     .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
     }
@@ -127,15 +114,6 @@ public abstract class AbstractDocFactory implements DocFactory {
         document.setHold(docDTO.isHold());
     }
 
-    protected void updateCommonFields(Document document) {
-        document.setNumber(docDTO.getNumber());
-        document.setDateTime(docDTO.getTime().toLocalDateTime());
-        document.setProject(projectService.getById(docDTO.getProject().getId()));
-        document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
-        document.setPayed(docDTO.isPayed());
-        document.setHold(docDTO.isHold());
-    }
-
     protected int getNewNumber() {
         try {
            return itemDocRepository.getLastNumber(documentType.toString()) + 1;
@@ -149,21 +127,21 @@ public abstract class AbstractDocFactory implements DocFactory {
         return 1;
     }
 
-    protected void addCheckInfo(Document check) {
-        checkInfoService.addCheckInfo(docDTO.getCheckInfo(), (ItemDoc) check);
+    protected void addCheckInfo(ItemDoc check) {
+        checkInfoService.addCheckInfo(docDTO.getCheckInfo(), check);
     }
 
-    protected void updateCheckInfo(Document check) {
-        checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), (ItemDoc) check);
+    protected void updateCheckInfo(ItemDoc check) {
+        checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), check);
     }
 
-    protected void addDocumentItems(Document document) {
+    protected void addDocumentItems(ItemDoc document) {
         docDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, document));
     }
 
-    protected void updateDocItems(Document document) {
-        docItemService.updateDocItems(docDTO.getDocItems(), (ItemDoc) document);
+    protected void updateDocItems(ItemDoc document) {
+        docItemService.updateDocItems(docDTO.getDocItems(), document);
     }
 
     public void setDocumentType(DocumentType documentType) {

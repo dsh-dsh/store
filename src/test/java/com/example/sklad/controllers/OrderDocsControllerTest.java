@@ -2,7 +2,7 @@ package com.example.sklad.controllers;
 
 
 import com.example.sklad.model.dto.documents.DocDTO;
-import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.model.enums.PaymentType;
@@ -63,7 +63,7 @@ public class OrderDocsControllerTest {
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SALARY_TYPE_STRING, AMOUNT, TAX);
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/rko")
@@ -74,7 +74,7 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
-        assertEquals(1, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
 
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
@@ -90,7 +90,7 @@ public class OrderDocsControllerTest {
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
         testService.setOrderFields(docDTO, SALE_TYPE_STRING, AMOUNT, TAX);
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/pko")
@@ -101,7 +101,7 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
-        assertEquals(1, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertEquals(INDIVIDUAL_ID, docs.get(0).getIndividual().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
@@ -118,7 +118,7 @@ public class OrderDocsControllerTest {
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SUPPLIER_TYPE_STRING, AMOUNT, TAX);
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/rko")
@@ -129,7 +129,7 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
-        assertEquals(1, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
@@ -147,7 +147,7 @@ public class OrderDocsControllerTest {
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
         testService.setOrderFields(docDTO, OTHER_PAYMENT_STRING, AMOUNT, TAX);
-        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/pko")
@@ -158,12 +158,54 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
-        assertEquals(1, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertEquals(TestService.DOC_NUMBER, docs.get(0).getNumber());
         assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
         assertEquals(RECIPIENT_ID, docs.get(0).getRecipient().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
         assertEquals(PaymentType.OTHER_PAYMENT, docs.get(0).getPaymentType());
+    }
+
+    @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteCreditDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+    }
+
+    @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteWithdrawDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
     }
 }

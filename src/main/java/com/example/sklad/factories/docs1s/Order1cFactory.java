@@ -53,8 +53,6 @@ public class Order1cFactory implements DocFactory {
     }
 
     @Override
-    public DocInterface deleteDocument(DocDTO docDTO) {
-        return null;
-    }
+    public void deleteDocument(int docId) {}
 
 }

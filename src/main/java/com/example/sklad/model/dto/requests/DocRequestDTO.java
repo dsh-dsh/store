@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDocRequestDTO {
+public class DocRequestDTO {
     @JsonProperty("item_doc_dto")
     private DocDTO docDTO;
 }
