@@ -1,18 +1,17 @@
 package com.example.sklad.factories.itemdoc;
 
 import com.example.sklad.factories.abstraction.AbstractDocFactory;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
-import com.example.sklad.model.enums.DocumentType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RequestDocFactory extends AbstractDocFactory {
 
     @Override
-    public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        ItemDoc requestDoc = getItemDoc(itemDocDTO);
+    public DocInterface addDocument(DocDTO docDTO) {
+        ItemDoc requestDoc = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(requestDoc);
         addDocumentItems(requestDoc);
 
@@ -20,8 +19,8 @@ public class RequestDocFactory extends AbstractDocFactory {
     }
 
     @Override
-    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        ItemDoc requestDoc = getItemDoc(itemDocDTO);
+    public DocInterface updateDocument(DocDTO docDTO) {
+        ItemDoc requestDoc = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(requestDoc);
         updateDocItems(requestDoc);
 

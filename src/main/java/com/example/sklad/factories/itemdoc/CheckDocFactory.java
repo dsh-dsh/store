@@ -1,7 +1,7 @@
 package com.example.sklad.factories.itemdoc;
 
 import com.example.sklad.factories.abstraction.AbstractDocFactory;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class CheckDocFactory extends AbstractDocFactory {
 
     @Override
-    public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        ItemDoc check = getItemDoc(itemDocDTO);
+    public DocInterface addDocument(DocDTO docDTO) {
+        ItemDoc check = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(check);
         addCheckInfo(check);
         addDocumentItems(check);
@@ -20,8 +20,8 @@ public class CheckDocFactory extends AbstractDocFactory {
     }
 
     @Override
-    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        ItemDoc check = getItemDoc(itemDocDTO);
+    public DocInterface updateDocument(DocDTO docDTO) {
+        ItemDoc check = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(check);
         updateCheckInfo(check);
         updateDocItems(check);

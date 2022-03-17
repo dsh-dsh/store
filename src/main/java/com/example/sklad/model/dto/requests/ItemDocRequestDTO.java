@@ -1,6 +1,6 @@
 package com.example.sklad.model.dto.requests;
 
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,5 +13,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemDocRequestDTO {
     @JsonProperty("item_doc_dto")
-    private ItemDocDTO itemDocDTO;
+    private DocDTO docDTO;
 }

@@ -1,7 +1,7 @@
 package com.example.sklad.factories.docs1s;
 
 import com.example.sklad.factories.abstraction.DocFactory;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.enums.DocumentType;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Order1cFactory implements DocFactory {
 
-    protected ItemDocDTO itemDocDTO;
+    protected DocDTO docDTO;
 
     @Autowired
     private OrderDocRepository orderDocRepository;
@@ -29,31 +29,31 @@ public class Order1cFactory implements DocFactory {
 
 
     @Override
-    public OrderDoc addDocument(ItemDocDTO itemDocDTO) {
+    public OrderDoc addDocument(DocDTO docDTO) {
 
         OrderDoc orderDoc = new OrderDoc();
-        orderDoc.setNumber(itemDocDTO.getNumber());
-        orderDoc.setDateTime(itemDocDTO.getTime().toLocalDateTime());
-        orderDoc.setDocType(DocumentType.getByValue(itemDocDTO.getDocType()));
-        orderDoc.setProject(projectService.getByName(itemDocDTO.getProject().getName()));
-        orderDoc.setAuthor(userService.getByEmail(itemDocDTO.getAuthor().getEmail()));
-        orderDoc.setIndividual(userService.getByEmail(itemDocDTO.getIndividual().getEmail()));
-        orderDoc.setSupplier(companyService.getByName(itemDocDTO.getSupplier().getName()));
-        orderDoc.setPaymentType(PaymentType.getByValue(itemDocDTO.getPaymentType()));
-        orderDoc.setAmount(itemDocDTO.getAmount());
-        orderDoc.setTax(itemDocDTO.getTax());
-        orderDoc.setHold(itemDocDTO.isHold());
+        orderDoc.setNumber(docDTO.getNumber());
+        orderDoc.setDateTime(docDTO.getTime().toLocalDateTime());
+        orderDoc.setDocType(DocumentType.getByValue(docDTO.getDocType()));
+        orderDoc.setProject(projectService.getByName(docDTO.getProject().getName()));
+        orderDoc.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
+        orderDoc.setIndividual(userService.getByEmail(docDTO.getIndividual().getEmail()));
+        orderDoc.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
+        orderDoc.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
+        orderDoc.setAmount(docDTO.getAmount());
+        orderDoc.setTax(docDTO.getTax());
+        orderDoc.setHold(docDTO.isHold());
 
         return orderDocRepository.save(orderDoc);
     }
 
     @Override
-    public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
+    public DocInterface updateDocument(DocDTO docDTO) {
         return null;
     }
 
     @Override
-    public DocInterface deleteDocument(ItemDocDTO itemDocDTO) {
+    public DocInterface deleteDocument(DocDTO docDTO) {
         return null;
     }
 

@@ -1,10 +1,9 @@
 package com.example.sklad.controllers;
 
 import com.example.sklad.model.dto.*;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
 import com.example.sklad.model.enums.DocumentType;
-import com.example.sklad.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -25,25 +24,25 @@ public class TestService {
     static final List<Integer> ADDED_ITEM_IDS = List.of(1, 2, 3, 4);
     static final List<Integer> UPDATE_ITEM_IDS = List.of(2, 3, 4, 5);
 
-    void addTo(ItemDocDTO dto, int docId, int docNumber) {
+    void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);
         dto.setNumber(docNumber);
     }
 
-    ItemDocRequestDTO setDTO(ItemDocDTO itemDocDTO) {
+    ItemDocRequestDTO setDTO(DocDTO docDTO) {
         ItemDocRequestDTO dto = new ItemDocRequestDTO();
-        dto.setItemDocDTO(itemDocDTO);
+        dto.setDocDTO(docDTO);
         return dto;
     }
 
-    void setOrderFields(ItemDocDTO dto, String type, float amount, float tax) {
+    void setOrderFields(DocDTO dto, String type, float amount, float tax) {
         dto.setPaymentType(type);
         dto.setAmount(amount);
         dto.setTax(tax);
     }
 
-    ItemDocDTO setDTOFields(DocumentType docType) {
-        ItemDocDTO dto = new ItemDocDTO();
+    DocDTO setDTOFields(DocumentType docType) {
+        DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
@@ -54,8 +53,8 @@ public class TestService {
         return dto;
     }
 
-    ItemDocDTO setRequestDocDTO() {
-        ItemDocDTO dto = new ItemDocDTO();
+    DocDTO setRequestDocDTO() {
+        DocDTO dto = new DocDTO();
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
@@ -66,8 +65,8 @@ public class TestService {
         return dto;
     }
 
-    ItemDocDTO setPostingDocDTO() {
-        ItemDocDTO dto = new ItemDocDTO();
+    DocDTO setPostingDocDTO() {
+        DocDTO dto = new DocDTO();
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(2));
@@ -79,8 +78,8 @@ public class TestService {
         return dto;
     }
 
-    ItemDocDTO setReceiptDocDTO() {
-        ItemDocDTO dto = new ItemDocDTO();
+    DocDTO setReceiptDocDTO() {
+        DocDTO dto = new DocDTO();
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(RECEIPT_FIELDS_ID));
         dto.setAuthor(setAuthorDTO(2));
@@ -93,8 +92,8 @@ public class TestService {
         return dto;
     }
 
-    ItemDocDTO setCheckDocDTO() {
-        ItemDocDTO dto = new ItemDocDTO();
+    DocDTO setCheckDocDTO() {
+        DocDTO dto = new DocDTO();
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(3));
         dto.setAuthor(setAuthorDTO(2));

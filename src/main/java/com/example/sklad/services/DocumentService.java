@@ -2,7 +2,7 @@ package com.example.sklad.services;
 
 import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.factories.itemdoc.*;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.ItemDocRepository;
@@ -27,44 +27,44 @@ public class DocumentService {
     @Autowired
     private ItemDocRepository itemDocRepository;
 
-    public void addCheckDoc(ItemDocDTO itemDocDTO) {
-        checkDocFactory.addDocument(itemDocDTO);
+    public void addCheckDoc(DocDTO docDTO) {
+        checkDocFactory.addDocument(docDTO);
     }
 
-    public void updateCheckDoc(ItemDocDTO itemDocDTO) {
-        checkDocFactory.updateDocument(itemDocDTO);
+    public void updateCheckDoc(DocDTO docDTO) {
+        checkDocFactory.updateDocument(docDTO);
     }
 
-    public void addReceiptDoc(ItemDocDTO itemDocDTO) {
-        receiptDocFactory.addDocument(itemDocDTO);
+    public void addReceiptDoc(DocDTO docDTO) {
+        receiptDocFactory.addDocument(docDTO);
     }
 
-    public void updateReceiptDoc(ItemDocDTO itemDocDTO) {
-        receiptDocFactory.updateDocument(itemDocDTO);
+    public void updateReceiptDoc(DocDTO docDTO) {
+        receiptDocFactory.updateDocument(docDTO);
     }
 
-    public void addPostingDoc(ItemDocDTO itemDocDTO) {
-        postingDocFactory.addDocument(itemDocDTO);
+    public void addPostingDoc(DocDTO docDTO) {
+        postingDocFactory.addDocument(docDTO);
     }
 
-    public void addInventoryDoc(ItemDocDTO itemDocDTO) {
-        inventoryDocFactory.addDocument(itemDocDTO);
+    public void addInventoryDoc(DocDTO docDTO) {
+        inventoryDocFactory.addDocument(docDTO);
     }
 
-    public void updatePostingDoc(ItemDocDTO itemDocDTO) {
-        postingDocFactory.updateDocument(itemDocDTO);
+    public void updatePostingDoc(DocDTO docDTO) {
+        postingDocFactory.updateDocument(docDTO);
     }
 
-    public void addRequestDoc(ItemDocDTO itemDocDTO) {
-        requestDocFactory.addDocument(itemDocDTO);
+    public void addRequestDoc(DocDTO docDTO) {
+        requestDocFactory.addDocument(docDTO);
     }
 
-    public void updateRequestDoc(ItemDocDTO itemDocDTO) {
-        requestDocFactory.updateDocument(itemDocDTO);
+    public void updateRequestDoc(DocDTO docDTO) {
+        requestDocFactory.updateDocument(docDTO);
     }
 
-    public void updateInventoryDoc(ItemDocDTO itemDocDTO) {
-        inventoryDocFactory.updateDocument(itemDocDTO);
+    public void updateInventoryDoc(DocDTO docDTO) {
+        inventoryDocFactory.updateDocument(docDTO);
     }
 
     public ItemDoc getDocumentByNumber(int number) {

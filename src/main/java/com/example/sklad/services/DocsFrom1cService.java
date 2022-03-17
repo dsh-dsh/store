@@ -21,7 +21,7 @@ public class DocsFrom1cService {
     }
 
     public void addOrderDocsFrom1C(OrderRequestDTO orderRequestDTO) {
-        orderRequestDTO.getItemDocDTO()
+        orderRequestDTO.getDocDTO()
                 .forEach(order1cFactory::addDocument);
     }
 

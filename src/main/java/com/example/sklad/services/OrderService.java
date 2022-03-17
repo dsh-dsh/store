@@ -2,7 +2,7 @@ package com.example.sklad.services;
 
 import com.example.sklad.factories.orderdoc.CreditOrderFactory;
 import com.example.sklad.factories.orderdoc.WithdrawOrderFactory;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.OrderDocRepository;
@@ -21,19 +21,19 @@ public class OrderService {
     @Autowired
     private OrderDocRepository orderDocRepository;
 
-    public void addRKO(ItemDocDTO docDTO) {
+    public void addRKO(DocDTO docDTO) {
         withdrawFactory.addDocument(docDTO);
     }
 
-    public void updateRKO(ItemDocDTO docDTO) {
+    public void updateRKO(DocDTO docDTO) {
         withdrawFactory.updateDocument(docDTO);
     }
 
-    public void addPKO(ItemDocDTO docDTO) {
+    public void addPKO(DocDTO docDTO) {
         creditOrderFactory.addDocument(docDTO);
     }
 
-    public void updatePKO(ItemDocDTO docDTO) {
+    public void updatePKO(DocDTO docDTO) {
         creditOrderFactory.updateDocument(docDTO);
     }
 

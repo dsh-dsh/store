@@ -1,7 +1,7 @@
 package com.example.sklad.controllers;
 
 
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
@@ -59,7 +59,7 @@ public class OrderDocsControllerTest {
     @Test
     void addSalaryOrderTest() throws Exception {
 
-        ItemDocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SALARY_TYPE_STRING, AMOUNT, TAX);
@@ -85,7 +85,7 @@ public class OrderDocsControllerTest {
     @Test
     void addSaleOrderTest() throws Exception {
 
-        ItemDocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
@@ -113,7 +113,7 @@ public class OrderDocsControllerTest {
     @Test
     void updateWithdrawDocTest() throws Exception {
 
-        ItemDocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
@@ -141,7 +141,7 @@ public class OrderDocsControllerTest {
     @Test
     void updateCreditDocTest() throws Exception {
 
-        ItemDocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));

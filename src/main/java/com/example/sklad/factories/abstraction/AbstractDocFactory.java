@@ -1,7 +1,7 @@
 package com.example.sklad.factories.abstraction;
 
 import com.example.sklad.exceptions.BadRequestException;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AbstractDocFactory implements DocFactory {
 
     public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
-    protected ItemDocDTO docDTO;
+    protected DocDTO docDTO;
     protected DocumentType documentType;
 
     @Autowired
@@ -37,18 +37,28 @@ public abstract class AbstractDocFactory implements DocFactory {
     protected CheckInfoService checkInfoService;
 
     @NotNull
-    protected ItemDoc getItemDoc(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
+    protected ItemDoc getItemDoc(DocDTO docDTO) {
+        this.docDTO = docDTO;
         ItemDoc check = getOrAddItemDoc();
-        DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
+        DocumentType docType = DocumentType.getByValue(this.docDTO.getDocType());
         setDocumentType(docType);
         setCommonFields(check);
         return check;
     }
 
+    @NotNull
+    protected OrderDoc getOrderDoc(DocDTO docDTO) {
+        this.docDTO = docDTO;
+        OrderDoc order = getOrAddOrderDoc();
+        DocumentType docType = DocumentType.getByValue(this.docDTO.getDocType());
+        setDocumentType(docType);
+        setCommonFields(order);
+        return order;
+    }
+
     @Override
-    public DocInterface deleteDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
+    public DocInterface deleteDocument(DocDTO docDTO) {
+        this.docDTO = docDTO;
         ItemDoc document = getItemDoc(); // todo сделать метод с id
         if(document.getDocType() == DocumentType.CHECK_DOC) {
             deleteCheckInfo(document);
@@ -77,6 +87,22 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     @NotNull
+    protected OrderDoc getOrderDoc() {
+        int docId = docDTO.getId();
+        return orderDocRepository.getById(docId);
+    }
+
+    @NotNull
+    protected OrderDoc getOrAddOrderDoc() {
+        int docId = docDTO.getId();
+        if(docId != 0) {
+            return orderDocRepository.getById(docId);
+        } else {
+            return new OrderDoc();
+        }
+    }
+
+    @NotNull
     protected ItemDoc getOrAddItemDoc() {
         int docId = docDTO.getId();
         if(docId != 0) {
@@ -85,12 +111,6 @@ public abstract class AbstractDocFactory implements DocFactory {
         } else {
             return new ItemDoc();
         }
-    }
-
-    @NotNull
-    protected OrderDoc getOrderDoc() {
-        int docId = docDTO.getId();
-        return orderDocRepository.getById(docId);
     }
 
     protected void setCommonFields(Document document) {

@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ItemDocDTO {
+public class DocDTO {
 
     private int id;
 

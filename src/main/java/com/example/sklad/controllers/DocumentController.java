@@ -18,61 +18,61 @@ public class DocumentController {
 
     @PostMapping("/api/v1/docs/check")
     public ResponseEntity<Response<String>> setCheckDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.addCheckDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.addCheckDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PostMapping("/api/v1/docs/receipt")
     public ResponseEntity<Response<String>> setReceiptDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.addReceiptDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.addReceiptDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PostMapping("/api/v1/docs/posting")
     public ResponseEntity<Response<String>> setPostingDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.addPostingDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.addPostingDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PostMapping("/api/v1/docs/inventory")
     public ResponseEntity<Response<String>> setInventoryDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.addInventoryDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.addInventoryDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PostMapping("/api/v1/docs/request")
     public ResponseEntity<Response<String>> setRequestDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.addRequestDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.addRequestDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/docs/check")
     public ResponseEntity<Response<String>> updateCheckDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.updateCheckDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.updateCheckDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/docs/receipt")
     public ResponseEntity<Response<String>> updateReceiptDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.updateReceiptDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.updateReceiptDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/docs/posting")
     public ResponseEntity<Response<String>> updatePostingDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.updatePostingDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.updatePostingDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/docs/request")
     public ResponseEntity<Response<String>> updateRequestDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.updateRequestDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.updateRequestDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @PutMapping("/api/v1/docs/inventory")
     public ResponseEntity<Response<String>> updateInventoryDoc(@RequestBody ItemDocRequestDTO itemDocRequestDTO) {
-        documentService.updateInventoryDoc(itemDocRequestDTO.getItemDocDTO());
+        documentService.updateInventoryDoc(itemDocRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

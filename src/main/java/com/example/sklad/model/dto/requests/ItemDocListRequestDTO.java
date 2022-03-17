@@ -1,6 +1,6 @@
 package com.example.sklad.model.dto.requests;
 
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemDocListRequestDTO {
     @JsonProperty("item_doc_dto_list")
-    private List<ItemDocDTO> checkDTOList;
+    private List<DocDTO> checkDTOList;
 }

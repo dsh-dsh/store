@@ -1,7 +1,7 @@
 package com.example.sklad.controllers;
 
 import com.example.sklad.model.dto.DocItemDTO;
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
 import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.DocumentItem;
@@ -67,15 +67,15 @@ public class DocumentControllerTest {
     @Test
     void addCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
 
-        itemDocDTO.setIndividual(testService.setIndividualDTO(1));
-        itemDocDTO.setSupplier(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageFrom(testService.setStorageDTO(3));
+        docDTO.setIndividual(testService.setIndividualDTO(1));
+        docDTO.setSupplier(testService.setCompanyDTO(1));
+        docDTO.setStorageFrom(testService.setStorageDTO(3));
 
-        itemDocDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        docDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/check")
@@ -96,12 +96,12 @@ public class DocumentControllerTest {
     @Test
     void addReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
-        itemDocDTO.setSupplier(testService.setCompanyDTO(2));
-        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        docDTO.setSupplier(testService.setCompanyDTO(2));
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/receipt")
@@ -122,11 +122,11 @@ public class DocumentControllerTest {
     @Test
     void addPostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
-        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(1));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/posting")
@@ -147,10 +147,10 @@ public class DocumentControllerTest {
     @Test
     void addRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
-        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
+        docDTO.setStorageTo(testService.setStorageDTO(1));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/request")
@@ -170,14 +170,14 @@ public class DocumentControllerTest {
     @Test
     void addInventoryDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
 
-        itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
-        itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
-        itemDocDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        docDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
 
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/inventory")
@@ -200,14 +200,14 @@ public class DocumentControllerTest {
     @Test
     void updateCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
-        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
-        itemDocDTO.setIndividual(testService.setIndividualDTO(1));
-        itemDocDTO.setSupplier(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageFrom(testService.setStorageDTO(3));
-        itemDocDTO.setCheckInfo(testService.setCHeckInfo(TestService.UPDATE_VALUE));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setIndividual(testService.setIndividualDTO(1));
+        docDTO.setSupplier(testService.setCompanyDTO(1));
+        docDTO.setStorageFrom(testService.setStorageDTO(3));
+        docDTO.setCheckInfo(testService.setCHeckInfo(TestService.UPDATE_VALUE));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/check")
@@ -232,13 +232,13 @@ public class DocumentControllerTest {
     @Test
     void updateReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
-        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
-        itemDocDTO.setSupplier(testService.setCompanyDTO(2));
-        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setSupplier(testService.setCompanyDTO(2));
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/receipt")
@@ -265,13 +265,13 @@ public class DocumentControllerTest {
     @Test
     void updatePostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
-        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
-        itemDocDTO.setRecipient(testService.setCompanyDTO(1));
-        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        itemDocDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(1));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
+        docDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/posting")
@@ -292,12 +292,12 @@ public class DocumentControllerTest {
     @Test
     void updateRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
-        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
-        itemDocDTO.setStorageTo(testService.setStorageDTO(1));
-        itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        itemDocDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setStorageTo(testService.setStorageDTO(1));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
+        docDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/request")
@@ -318,15 +318,15 @@ public class DocumentControllerTest {
     @Test
     void updateInventoryDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
-        testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
-        itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
-        itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
-        itemDocDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
+        docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
+        docDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
         List<DocItemDTO> itemDTOList = testService.setDocItemDTOList(TestService.UPDATE_VALUE);
         itemDTOList.forEach(dto -> dto.setQuantityFact(10.00f));
-        itemDocDTO.setDocItems(itemDTOList);
-        ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
+        docDTO.setDocItems(itemDTOList);
+        ItemDocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/inventory")

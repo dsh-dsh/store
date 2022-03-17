@@ -1,6 +1,6 @@
 package com.example.sklad.model.dto.requests;
 
-import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -13,5 +13,5 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderRequestDTO {
     @JsonProperty("order_dto_list")
-    private List<ItemDocDTO> itemDocDTO;
+    private List<DocDTO> docDTO;
 }
