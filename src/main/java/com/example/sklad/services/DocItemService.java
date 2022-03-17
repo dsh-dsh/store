@@ -76,6 +76,10 @@ public class DocItemService {
         return docItemRepository.findByItemDoc(doc);
     }
 
+    public int countItemsByDoc(int docId) {
+        return docItemRepository.countItemsByDocId(docId);
+    }
+
     public void deleteByDoc(ItemDoc itemDoc) {
         docItemRepository.deleteByItemDoc(itemDoc);
     }

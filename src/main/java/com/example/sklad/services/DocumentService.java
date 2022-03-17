@@ -5,7 +5,6 @@ import com.example.sklad.factories.itemdoc.*;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
-import com.example.sklad.repositories.DocumentRepository;
 import com.example.sklad.repositories.ItemDocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,5 +79,10 @@ public class DocumentService {
     public ItemDoc getDocumentById(int docId) {
         return itemDocRepository.findById(docId)
                 .orElseThrow(BadRequestException::new);
+    }
+
+    public void deleteDocument(DocDTO docDTO) {
+        int docId = docDTO.getId();
+        inventoryDocFactory.deleteDocument(docId);
     }
 }

@@ -58,4 +58,7 @@ public class CheckInfoService {
         checkInfoRepository.deleteByCheck(check);
     }
 
+    public int countRowsByDoc(int docId) {
+        return checkInfoRepository.countRowsByDocId(docId);
+    }
 }

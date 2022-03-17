@@ -18,4 +18,7 @@ public interface DocItemRepository extends JpaRepository<DocumentItem, Integer> 
     List<DocumentItem> findByItemDoc(ItemDoc itemDoc);
 
     void deleteByItemDoc(ItemDoc itemDoc);
+
+    @Query(value = "select count(*) from document_item where document_id = :docId", nativeQuery = true)
+    int countItemsByDocId(int docId);
 }

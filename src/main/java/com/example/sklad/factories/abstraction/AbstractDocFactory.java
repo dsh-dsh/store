@@ -13,6 +13,7 @@ import com.example.sklad.repositories.OrderDocRepository;
 import com.example.sklad.services.*;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public abstract class AbstractDocFactory implements DocFactory {
 
@@ -58,6 +59,7 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     @Override
+    @Transactional
     public void deleteDocument(int docId) {
         ItemDoc document = getItemDoc(docId);
         if(document.getDocType() == DocumentType.CHECK_DOC) {

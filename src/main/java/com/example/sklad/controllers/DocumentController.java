@@ -5,10 +5,7 @@ import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DocumentController {
@@ -73,6 +70,12 @@ public class DocumentController {
     @PutMapping("/api/v1/docs/inventory")
     public ResponseEntity<Response<String>> updateInventoryDoc(@RequestBody DocRequestDTO docRequestDTO) {
         documentService.updateInventoryDoc(docRequestDTO.getDocDTO());
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @DeleteMapping("/api/v1/docs")
+    public ResponseEntity<Response<String>> deleteDocument(@RequestBody DocRequestDTO docRequestDTO) {
+        documentService.deleteDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

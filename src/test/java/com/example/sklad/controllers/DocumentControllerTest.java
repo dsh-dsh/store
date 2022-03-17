@@ -344,4 +344,139 @@ public class DocumentControllerTest {
         assertEquals(QUANTITY_FACT, items.get(0).getQuantityFact());
 
     }
+
+    @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteCheckDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.CHECK_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
+        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+        count = checkInfoService.countRowsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+    }
+
+    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deletePostingDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.POSTING_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
+        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+    }
+
+    @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteRequestDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.REQUEST_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
+        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+    }
+
+    @Sql(value = "/sql/documents/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteReceiptDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.RECEIPT_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
+        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+    }
+
+    @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void deleteInventoryDocTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        List<DocItemDTO> itemDTOList = testService.setDocItemDTOList(TestService.UPDATE_VALUE);
+        docDTO.setDocItems(itemDTOList);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<ItemDoc> docs = documentService.getDocumentsByType(DocumentType.INVENTORY_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
+        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.NO_DOCUMENTS, count);
+
+    }
 }
