@@ -12,32 +12,24 @@ public class RequestDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc itemDoc = new ItemDoc();
-        setDocumentType(DocumentType.REQUEST_DOC);
-        setCommonFields(itemDoc);
-        setAdditionalFields(itemDoc);
-        itemDocRepository.save(itemDoc);
+        ItemDoc requestDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(requestDoc);
+        addDocumentItems(requestDoc);
 
-        addDocItems(itemDoc);
-
-        return itemDoc;
+        return requestDoc;
     }
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc itemDoc = getItemDoc();
-        updateCommonFields(itemDoc);
-        setAdditionalFields(itemDoc);
-        itemDocRepository.save(itemDoc);
+        ItemDoc requestDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(requestDoc);
+        updateDocItems(requestDoc);
 
-        updateDocItems(itemDoc);
-
-        return itemDoc;
+        return requestDoc;
     }
 
-    private void setAdditionalFields(ItemDoc itemDoc) {
-        itemDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
+    private void setAdditionalFieldsAndSave(ItemDoc requestDoc) {
+        requestDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
+        itemDocRepository.save(requestDoc);
     }
 }

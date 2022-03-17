@@ -12,33 +12,25 @@ public class PostingDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc postingDoc = new ItemDoc();
-        setDocumentType(DocumentType.POSTING_DOC);
-        setCommonFields(postingDoc);
-        setAdditionalFields(postingDoc);
-        itemDocRepository.save(postingDoc);
-
-        addDocItems(postingDoc);
+        ItemDoc postingDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(postingDoc);
+        addDocumentItems(postingDoc);
 
         return postingDoc;
     }
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc postingDoc = getItemDoc();
-        updateCommonFields(postingDoc);
-        setAdditionalFields(postingDoc);
-        itemDocRepository.save(postingDoc);
-
+        ItemDoc postingDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(postingDoc);
         updateDocItems(postingDoc);
 
         return postingDoc;
     }
 
-    private void setAdditionalFields(ItemDoc postingDoc) {
+    private void setAdditionalFieldsAndSave(ItemDoc postingDoc) {
         postingDoc.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
         postingDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
+        itemDocRepository.save(postingDoc);
     }
 }

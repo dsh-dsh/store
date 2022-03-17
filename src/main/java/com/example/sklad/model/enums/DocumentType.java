@@ -12,7 +12,7 @@ public enum DocumentType {
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE),
     REQUEST_DOC(Constants.REQUEST_DOC_TYPE),
-    INVENTORY_DOC(Constants.REQUEST_DOC_TYPE);
+    INVENTORY_DOC(Constants.INVENTORY_DOC_TYPE);
 
     private final String value;
 

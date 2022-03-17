@@ -12,35 +12,27 @@ public class InventoryDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc inventoryDoc = new ItemDoc();
-        setDocumentType(DocumentType.INVENTORY_DOC);
-        setCommonFields(inventoryDoc);
-        setAdditionalFields(inventoryDoc);
-        itemDocRepository.save(inventoryDoc);
-
-        addDocItems(inventoryDoc);
+        ItemDoc inventoryDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(inventoryDoc);
+        addDocumentItems(inventoryDoc);
 
         return inventoryDoc;
     }
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc inventoryDoc = getItemDoc();
-        updateCommonFields(inventoryDoc);
-        setAdditionalFields(inventoryDoc);
-        itemDocRepository.save(inventoryDoc);
-
+        ItemDoc inventoryDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(inventoryDoc);
         updateDocItems(inventoryDoc);
 
         return inventoryDoc;
     }
 
 
-    private void setAdditionalFields(ItemDoc doc) {
-        doc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
-        doc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
-        doc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
+    private void setAdditionalFieldsAndSave(ItemDoc inventoryDoc) {
+        inventoryDoc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
+        inventoryDoc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
+        inventoryDoc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
+        itemDocRepository.save(inventoryDoc);
     }
 }

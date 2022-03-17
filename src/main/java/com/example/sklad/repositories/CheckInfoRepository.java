@@ -13,7 +13,7 @@ public interface CheckInfoRepository extends JpaRepository<CheckInfo, Integer> {
 
     Optional<CheckInfo> findByCheck(ItemDoc check);
 
-    @Query("DELETE CheckInfo AS checkInfo" +
+    @Query("DELETE CheckInfo AS checkInfo " +
             "WHERE checkInfo.check = : check")
     void deleteByCheck(ItemDoc check);
 

@@ -3,6 +3,7 @@ package com.example.sklad.controllers;
 import com.example.sklad.model.dto.*;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
 import com.example.sklad.model.dto.requests.ItemDocRequestDTO;
+import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.model.enums.PaymentType;
 import org.springframework.stereotype.Component;
 
@@ -41,8 +42,9 @@ public class TestService {
         dto.setTax(tax);
     }
 
-    ItemDocDTO setDTOFields() {
+    ItemDocDTO setDTOFields(DocumentType docType) {
         ItemDocDTO dto = new ItemDocDTO();
+        dto.setDocType(docType.getValue());
         dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));

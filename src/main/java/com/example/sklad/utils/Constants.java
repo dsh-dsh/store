@@ -38,4 +38,8 @@ public class Constants {
 
     public static final String KITCHEN = "Кухня";
     public static final String BAR = "Бар";
+
+    public static final String NO_SUCH_USER_MESSAGE = "No such user";
+    public static final String NO_SUCH_COMPANY_MESSAGE = "No such company";
+    public static final String NO_SUCH_STORAGE_MESSAGE = "no such storage";
 }

@@ -67,10 +67,12 @@ public class DocumentControllerTest {
     @Test
     void addCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+
         itemDocDTO.setIndividual(testService.setIndividualDTO(1));
         itemDocDTO.setSupplier(testService.setCompanyDTO(1));
         itemDocDTO.setStorageFrom(testService.setStorageDTO(3));
+
         itemDocDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -94,7 +96,7 @@ public class DocumentControllerTest {
     @Test
     void addReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
         itemDocDTO.setSupplier(testService.setCompanyDTO(2));
         itemDocDTO.setRecipient(testService.setCompanyDTO(1));
         itemDocDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
@@ -120,7 +122,7 @@ public class DocumentControllerTest {
     @Test
     void addPostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
         itemDocDTO.setRecipient(testService.setCompanyDTO(1));
         itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
@@ -145,7 +147,7 @@ public class DocumentControllerTest {
     @Test
     void addRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
@@ -168,10 +170,12 @@ public class DocumentControllerTest {
     @Test
     void addInventoryDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+
         itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         itemDocDTO.setStorageFrom(testService.setStorageDTO(STORAGE_ID));
+
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
         ItemDocRequestDTO requestDTO = testService.setDTO(itemDocDTO);
 
@@ -196,7 +200,7 @@ public class DocumentControllerTest {
     @Test
     void updateCheckDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         itemDocDTO.setIndividual(testService.setIndividualDTO(1));
         itemDocDTO.setSupplier(testService.setCompanyDTO(1));
@@ -228,7 +232,7 @@ public class DocumentControllerTest {
     @Test
     void updateReceiptDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         itemDocDTO.setSupplier(testService.setCompanyDTO(2));
         itemDocDTO.setRecipient(testService.setCompanyDTO(1));
@@ -261,7 +265,7 @@ public class DocumentControllerTest {
     @Test
     void updatePostingDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         itemDocDTO.setRecipient(testService.setCompanyDTO(1));
         itemDocDTO.setStorageTo(testService.setStorageDTO(1));
@@ -288,7 +292,7 @@ public class DocumentControllerTest {
     @Test
     void updateRequestDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         itemDocDTO.setStorageTo(testService.setStorageDTO(1));
         itemDocDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
@@ -314,7 +318,7 @@ public class DocumentControllerTest {
     @Test
     void updateInventoryDocTest() throws Exception {
 
-        ItemDocDTO itemDocDTO = testService.setDTOFields();
+        ItemDocDTO itemDocDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
         testService.addTo(itemDocDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         itemDocDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         itemDocDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));

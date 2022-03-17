@@ -12,35 +12,27 @@ public class ReceiptDocFactory extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc receiptDoc = new ItemDoc();
-        setDocumentType(DocumentType.RECEIPT_DOC);
-        setCommonFields(receiptDoc);
-        setAdditionalFields(receiptDoc);
-        itemDocRepository.save(receiptDoc);
-
-        addDocItems(receiptDoc);
+        ItemDoc receiptDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(receiptDoc);
+        addDocumentItems(receiptDoc);
 
         return receiptDoc;
     }
 
     @Override
     public DocInterface updateDocument(ItemDocDTO itemDocDTO) {
-        this.docDTO = itemDocDTO;
-        ItemDoc receiptDoc = getItemDoc();
-        updateCommonFields(receiptDoc);
-        setAdditionalFields(receiptDoc);
-        itemDocRepository.save(receiptDoc);
-
+        ItemDoc receiptDoc = getItemDoc(itemDocDTO);
+        setAdditionalFieldsAndSave(receiptDoc);
         updateDocItems(receiptDoc);
 
         return receiptDoc;
     }
 
-    private void setAdditionalFields(ItemDoc receiptDoc) {
+    private void setAdditionalFieldsAndSave(ItemDoc receiptDoc) {
         receiptDoc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
         receiptDoc.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
         receiptDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
+        itemDocRepository.save(receiptDoc);
     }
 
 }

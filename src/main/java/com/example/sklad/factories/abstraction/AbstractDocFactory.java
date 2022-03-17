@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractDocFactory implements DocFactory {
 
+    public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
     protected ItemDocDTO docDTO;
     protected DocumentType documentType;
 
@@ -35,10 +36,20 @@ public abstract class AbstractDocFactory implements DocFactory {
     @Autowired
     protected CheckInfoService checkInfoService;
 
+    @NotNull
+    protected ItemDoc getItemDoc(ItemDocDTO itemDocDTO) {
+        this.docDTO = itemDocDTO;
+        ItemDoc check = getOrAddItemDoc();
+        DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
+        setDocumentType(docType);
+        setCommonFields(check);
+        return check;
+    }
+
     @Override
     public DocInterface deleteDocument(ItemDocDTO itemDocDTO) {
         this.docDTO = itemDocDTO;
-        ItemDoc document = getItemDoc();
+        ItemDoc document = getItemDoc(); // todo сделать метод с id
         if(document.getDocType() == DocumentType.CHECK_DOC) {
             deleteCheckInfo(document);
         }
@@ -61,8 +72,19 @@ public abstract class AbstractDocFactory implements DocFactory {
     @NotNull
     protected ItemDoc getItemDoc() {
         int docId = docDTO.getId();
-        return itemDocRepository.findById(docId)
-                .orElseThrow(BadRequestException::new);
+            return itemDocRepository.findById(docId)
+                    .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
+    }
+
+    @NotNull
+    protected ItemDoc getOrAddItemDoc() {
+        int docId = docDTO.getId();
+        if(docId != 0) {
+            return itemDocRepository.findById(docId)
+                    .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
+        } else {
+            return new ItemDoc();
+        }
     }
 
     @NotNull
@@ -72,9 +94,13 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     protected void setCommonFields(Document document) {
-        document.setNumber(getNewNumber(documentType));
-        document.setDateTime(docDTO.getTime().toLocalDateTime());
+        if(docDTO.getNumber() == 0) {
+            document.setNumber(getNewNumber());
+        } else {
+            document.setNumber(docDTO.getNumber());
+        }
         document.setDocType(documentType);
+        document.setDateTime(docDTO.getTime().toLocalDateTime());
         document.setProject(projectService.getById(docDTO.getProject().getId()));
         document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
         document.setPayed(docDTO.isPayed());
@@ -90,11 +116,11 @@ public abstract class AbstractDocFactory implements DocFactory {
         document.setHold(docDTO.isHold());
     }
 
-    protected int getNewNumber(DocumentType docType) {
+    protected int getNewNumber() {
         try {
-           return itemDocRepository.getLastNumber(docType.toString()) + 1;
+           return itemDocRepository.getLastNumber(documentType.toString()) + 1;
         } catch (Exception exception) {
-            return getStartDocNumber(docType);
+            return getStartDocNumber(documentType);
         }
     }
 
@@ -111,7 +137,7 @@ public abstract class AbstractDocFactory implements DocFactory {
         checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), (ItemDoc) check);
     }
 
-    protected void addDocItems(Document document) {
+    protected void addDocumentItems(Document document) {
         docDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, document));
     }
