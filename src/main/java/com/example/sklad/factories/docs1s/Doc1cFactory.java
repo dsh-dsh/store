@@ -73,6 +73,11 @@ public class Doc1cFactory implements DocFactory {
         return null;
     }
 
+    @Override
+    public DocInterface deleteDocument(ItemDocDTO itemDocDTO) {
+        return null;
+    }
+
     private void addDocItems(ItemDocDTO itemDocDTO, ItemDoc check) {
         itemDocDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));

@@ -9,5 +9,6 @@ public interface DocFactory {
 
     DocInterface addDocument(ItemDocDTO itemDocDTO);
     DocInterface updateDocument(ItemDocDTO itemDocDTO);
+    DocInterface deleteDocument(ItemDocDTO itemDocDTO);
 
 }

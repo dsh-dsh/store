@@ -75,5 +75,9 @@ public class DocItemService {
     public List<DocumentItem> getItemsByDoc(ItemDoc doc) {
         return docItemRepository.findByItemDoc(doc);
     }
+
+    public void deleteByDoc(ItemDoc itemDoc) {
+        docItemRepository.deleteByItemDoc(itemDoc);
+    }
 }
 

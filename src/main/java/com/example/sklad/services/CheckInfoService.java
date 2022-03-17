@@ -54,4 +54,8 @@ public class CheckInfoService {
         checkInfo.setDelivery(checkInfoDTO.isDelivery());
     }
 
+    public void deleteByDocId(ItemDoc check) {
+        checkInfoRepository.deleteByCheck(check);
+    }
+
 }

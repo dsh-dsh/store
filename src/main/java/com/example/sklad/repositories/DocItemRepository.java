@@ -17,4 +17,5 @@ public interface DocItemRepository extends JpaRepository<DocumentItem, Integer> 
 
     List<DocumentItem> findByItemDoc(ItemDoc itemDoc);
 
+    void deleteByItemDoc(ItemDoc itemDoc);
 }

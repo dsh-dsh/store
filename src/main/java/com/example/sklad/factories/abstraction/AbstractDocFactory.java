@@ -1,6 +1,8 @@
 package com.example.sklad.factories.abstraction;
 
+import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.model.dto.documents.ItemDocDTO;
+import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.entities.documents.OrderDoc;
@@ -33,10 +35,34 @@ public abstract class AbstractDocFactory implements DocFactory {
     @Autowired
     protected CheckInfoService checkInfoService;
 
+    @Override
+    public DocInterface deleteDocument(ItemDocDTO itemDocDTO) {
+        this.docDTO = itemDocDTO;
+        ItemDoc document = getItemDoc();
+        if(document.getDocType() == DocumentType.CHECK_DOC) {
+            deleteCheckInfo(document);
+        }
+        deleteDocItems(document);
+        deleteItemDoc(document);
+        return document;
+    }
+    protected void deleteDocItems(ItemDoc itemDoc) {
+        docItemService.deleteByDoc(itemDoc);
+    }
+
+    protected void deleteItemDoc(ItemDoc itemDoc) {
+        itemDocRepository.deleteById(itemDoc.getId());
+    }
+
+    protected void deleteCheckInfo(ItemDoc check) {
+        checkInfoService.deleteByDocId(check);
+    }
+
     @NotNull
     protected ItemDoc getItemDoc() {
         int docId = docDTO.getId();
-        return itemDocRepository.getById(docId);
+        return itemDocRepository.findById(docId)
+                .orElseThrow(BadRequestException::new);
     }
 
     @NotNull
