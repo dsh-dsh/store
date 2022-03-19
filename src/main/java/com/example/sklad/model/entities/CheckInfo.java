@@ -23,7 +23,7 @@ public class CheckInfo {
     private int id;
 
     private int checkNumber;
-    private long cashRegisterNumber;
+    private Long cashRegisterNumber;
     private float amountReceived;
     private int guestNumber;
     private int tableNumber;

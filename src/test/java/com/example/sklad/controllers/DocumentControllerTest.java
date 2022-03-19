@@ -10,6 +10,7 @@ import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.services.CheckInfoService;
 import com.example.sklad.services.DocItemService;
 import com.example.sklad.services.DocumentService;
+import com.example.sklad.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +63,7 @@ public class DocumentControllerTest {
     // todo add fields validation tests
     // todo add security tests
     // todo add delete tests
+
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -478,5 +480,27 @@ public class DocumentControllerTest {
         int count = docItemService.countItemsByDoc(TestService.DOC_ID);
         assertEquals(TestService.NO_DOCUMENTS, count);
 
+    }
+
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void FailedTransactionTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+        docDTO.setIndividual(testService.setIndividualDTO(1));
+        docDTO.setSupplier(testService.setCompanyDTO(1));
+        docDTO.setStorageFrom(testService.setStorageDTO(3));
+        docDTO.setCheckInfo(testService.setCHeckInfo(TestService.ADD_VALUE));
+        docDTO.getCheckInfo().setCashRegisterNumber(null);
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/check")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.TRANSACTION_FAILED_MESSAGE));
     }
 }

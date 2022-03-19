@@ -27,7 +27,8 @@ public class Constants {
     public static final String SALARY_PAYMENT_TYPE = "Выплата заработной платы";
     public static final String SALE_PAYMENT_TYPE = "Выручка";
 
-    public static final String BAD_REQUEST_MESSAGE = "invalid_request";
+    public static final String BAD_REQUEST_MESSAGE = "invalid request";
+    public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
 
     public static final String KG = "кг.";
     public static final String LITER = "л.";

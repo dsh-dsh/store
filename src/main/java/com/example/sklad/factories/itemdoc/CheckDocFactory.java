@@ -4,12 +4,15 @@ import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
+import com.example.sklad.utils.annotations.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CheckDocFactory extends AbstractDocFactory {
 
+
     @Override
+    @Transaction
     public DocInterface addDocument(DocDTO docDTO) {
         ItemDoc check = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(check);
@@ -20,6 +23,7 @@ public class CheckDocFactory extends AbstractDocFactory {
     }
 
     @Override
+    @Transaction
     public DocInterface updateDocument(DocDTO docDTO) {
         ItemDoc check = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(check);

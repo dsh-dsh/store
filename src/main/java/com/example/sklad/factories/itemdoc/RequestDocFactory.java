@@ -4,12 +4,14 @@ import com.example.sklad.factories.abstraction.AbstractDocFactory;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.ItemDoc;
+import com.example.sklad.utils.annotations.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RequestDocFactory extends AbstractDocFactory {
 
     @Override
+    @Transaction
     public DocInterface addDocument(DocDTO docDTO) {
         ItemDoc requestDoc = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(requestDoc);
@@ -19,6 +21,7 @@ public class RequestDocFactory extends AbstractDocFactory {
     }
 
     @Override
+    @Transaction
     public DocInterface updateDocument(DocDTO docDTO) {
         ItemDoc requestDoc = getItemDoc(docDTO);
         setAdditionalFieldsAndSave(requestDoc);

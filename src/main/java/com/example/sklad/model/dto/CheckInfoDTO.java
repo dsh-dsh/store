@@ -17,7 +17,7 @@ public class CheckInfoDTO {
     private int checkNumber;
 
     @JsonProperty("cash_register_number")
-    private long cashRegisterNumber;
+    private Long cashRegisterNumber;
 
     @JsonProperty("amount_received")
     private float amountReceived;

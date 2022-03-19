@@ -2,15 +2,14 @@ package com.example.sklad.factories.abstraction;
 
 import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.model.dto.documents.DocDTO;
-import com.example.sklad.model.entities.documents.DocInterface;
 import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.entities.documents.OrderDoc;
 import com.example.sklad.model.enums.DocumentType;
-import com.example.sklad.repositories.DocumentRepository;
 import com.example.sklad.repositories.ItemDocRepository;
 import com.example.sklad.repositories.OrderDocRepository;
 import com.example.sklad.services.*;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
