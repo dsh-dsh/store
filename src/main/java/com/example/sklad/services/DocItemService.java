@@ -65,7 +65,6 @@ public class DocItemService {
 
     private void updateDocItem(DocumentItem item, DocItemDTO dto) {
         item.setQuantity(dto.getQuantity());
-        float qf = dto.getQuantityFact();
         item.setQuantityFact(dto.getQuantityFact());
         item.setPrice(dto.getPrice());
         item.setDiscount(dto.getDiscount());

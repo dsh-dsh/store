@@ -132,14 +132,14 @@ public class TestService {
         return projectDTO;
     }
 
-    AuthorDTO setAuthorDTO(int id) {
-        AuthorDTO authorDTO = new AuthorDTO();
-        authorDTO.setId(id);
-        return authorDTO;
+    UserDTO setAuthorDTO(int id) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(id);
+        return userDTO;
     }
 
-    IndividualDTO setIndividualDTO(int id) {
-        IndividualDTO individualDTO = new IndividualDTO();
+    UserDTO setIndividualDTO(int id) {
+        UserDTO individualDTO = new UserDTO();
         individualDTO.setId(id);
         return individualDTO;
     }

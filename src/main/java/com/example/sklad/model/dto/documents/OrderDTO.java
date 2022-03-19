@@ -1,8 +1,7 @@
 package com.example.sklad.model.dto.documents;
 
-import com.example.sklad.model.dto.AuthorDTO;
+import com.example.sklad.model.dto.UserDTO;
 import com.example.sklad.model.dto.CompanyDTO;
-import com.example.sklad.model.dto.IndividualDTO;
 import com.example.sklad.model.dto.ProjectDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +28,9 @@ public class OrderDTO {
 
     private ProjectDTO project;
 
-    private AuthorDTO author;
+    private UserDTO author;
 
-    private IndividualDTO individual;
+    private UserDTO individual;
 
     private CompanyDTO company;
 

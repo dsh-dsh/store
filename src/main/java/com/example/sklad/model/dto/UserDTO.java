@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class IndividualDTO {
+public class UserDTO {
 
     private int id;
     private String email;
+
 }

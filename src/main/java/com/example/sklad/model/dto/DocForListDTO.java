@@ -1,6 +1,5 @@
 package com.example.sklad.model.dto;
 
-import com.example.sklad.model.entities.Company;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class DocForListDTO {
 
     private ProjectDTO project;
 
-    private AuthorDTO author;
+    private UserDTO author;
 
     @JsonProperty("is_payed")
     private boolean isPayed;

@@ -1,8 +1,6 @@
 package com.example.sklad.model.dto.documents;
 
 import com.example.sklad.model.dto.*;
-import com.example.sklad.model.entities.Company;
-import com.example.sklad.model.entities.Storage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -31,9 +29,9 @@ public class DocDTO {
 
     private ProjectDTO project;
 
-    private AuthorDTO author;
+    private UserDTO author;
 
-    private IndividualDTO individual;
+    private UserDTO individual;
 
     @JsonProperty("payment_type")
     private String paymentType;
