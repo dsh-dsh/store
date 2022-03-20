@@ -1,6 +1,9 @@
 package com.example.sklad.controllers;
 
+import com.example.sklad.mappers.DocMapper;
+import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
+import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,15 @@ public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private DocMapper docMapper;
+
+    @GetMapping("/api/v1/docs")
+    public ResponseEntity<Response<DocDTO>> getDocumentById(@RequestParam int id) {
+        ItemDoc doc = documentService.getDocumentById(id);
+        return ResponseEntity.ok(new Response<>(docMapper.mapToDocDTO(doc)));
+
+    }
 
     @PostMapping("/api/v1/docs/check")
     public ResponseEntity<Response<String>> setCheckDoc(@RequestBody DocRequestDTO docRequestDTO) {

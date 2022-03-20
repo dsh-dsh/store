@@ -29,4 +29,8 @@ public class ItemDoc extends Document implements DocInterface {
     @OneToMany(mappedBy = "itemDoc", fetch = FetchType.LAZY)
     private Set<DocumentItem> documentItems = new HashSet<>();
 
+    public ItemDoc getThis() {
+        return this;
+    }
+
 }

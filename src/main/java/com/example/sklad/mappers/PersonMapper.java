@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PersonMapper extends Converters {
+public class PersonMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
 

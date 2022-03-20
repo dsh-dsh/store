@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Component
-public class Converters {
+public class MappingConverters {
 
     protected final Converter<LocalDateTime, Long> dateTimeConverter =
             date -> {
