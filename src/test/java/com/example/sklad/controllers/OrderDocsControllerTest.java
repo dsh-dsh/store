@@ -208,4 +208,18 @@ public class OrderDocsControllerTest {
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
         assertEquals(TestService.NO_DOCUMENTS, docs.size());
     }
+
+    @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getWithdrawDocTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX).param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(TestService.DOC_ID))
+                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.WITHDRAW_DOC_DOC.toString()))
+                .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALE_PAYMENT.toString()));
+    }
+
 }

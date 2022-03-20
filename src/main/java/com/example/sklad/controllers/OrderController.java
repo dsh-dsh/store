@@ -1,5 +1,6 @@
 package com.example.sklad.controllers;
 
+import com.example.sklad.model.dto.documents.OrderDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.OrderService;
@@ -12,6 +13,12 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @GetMapping("/api/v1/orders")
+    public ResponseEntity<Response<OrderDTO>> getOrder(@RequestParam int id) {
+        OrderDTO order = orderService.getOrderById(id);
+        return ResponseEntity.ok(new Response<>(order));
+    }
 
     @PostMapping("/api/v1/orders/rko")
     public ResponseEntity<Response<String>> setWithdrawOrder(@RequestBody DocRequestDTO docRequestDTO) {
