@@ -20,19 +20,13 @@ public class TransactionAspect {
     private TransactionTemplate transactionTemplate;
 
     @Pointcut("@annotation(com.example.sklad.utils.annotations.Transaction)")
-    private void onMethod() {
-
-    }
+    private void onMethod() {}
 
     @Pointcut("@annotation(com.example.sklad.utils.annotations.Transaction)")
-    private void onClass() {
-
-    }
+    private void onClass() {}
 
     @Pointcut("onMethod() || onClass()")
-    private void anyType() {
-
-    }
+    private void anyType() {}
 
     @Around("anyType()")
     public Object transactionOnMethod(ProceedingJoinPoint joinPoint) {
