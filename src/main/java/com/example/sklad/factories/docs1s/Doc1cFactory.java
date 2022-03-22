@@ -38,7 +38,7 @@ public class Doc1cFactory implements DocFactory {
 
         ItemDoc check = new ItemDoc();
         check.setNumber(docDTO.getNumber());
-        check.setDateTime(docDTO.getTime().toLocalDateTime());
+//        check.setDateTime(docDTO.getTime().toLocalDateTime());
         check.setProject(projectService.getByName(docDTO.getProject().getName()));
         check.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
         check.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));

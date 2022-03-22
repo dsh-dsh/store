@@ -1,28 +1,38 @@
 package com.example.sklad.controllers;
 
 import com.example.sklad.mappers.DocMapper;
+import com.example.sklad.mappers.DocToListMapper;
 import com.example.sklad.model.dto.documents.DocDTO;
+import com.example.sklad.model.dto.documents.DocToListDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.entities.documents.ItemDoc;
+import com.example.sklad.model.enums.DocumentType;
+import com.example.sklad.model.responses.ListResponse;
 import com.example.sklad.model.responses.Response;
 import com.example.sklad.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
-    @Autowired
-    private DocMapper docMapper;
+
+    @GetMapping("/api/v1/docs/list")
+    public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
+            @RequestParam(required = false) DocumentType type) {
+        List<DocToListDTO> docToListDTOS = documentService.getDocumentsByType(type);
+        return ResponseEntity.ok(new ListResponse<>(docToListDTOS));
+    }
 
     @GetMapping("/api/v1/docs")
     public ResponseEntity<Response<DocDTO>> getDocumentById(@RequestParam int id) {
-        ItemDoc doc = documentService.getDocumentById(id);
-        return ResponseEntity.ok(new Response<>(docMapper.mapToDocDTO(doc)));
-
+        DocDTO docDTO = documentService.getDocDTOById(id);
+        return ResponseEntity.ok(new Response<>(docDTO));
     }
 
     @PostMapping("/api/v1/docs/check")

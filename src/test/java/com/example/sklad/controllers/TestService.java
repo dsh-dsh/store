@@ -46,7 +46,7 @@ public class TestService {
     DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
@@ -57,7 +57,7 @@ public class TestService {
 
     DocDTO setRequestDocDTO() {
         DocDTO dto = new DocDTO();
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
@@ -69,7 +69,7 @@ public class TestService {
 
     DocDTO setPostingDocDTO() {
         DocDTO dto = new DocDTO();
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(2));
         dto.setPayed(false);
@@ -82,7 +82,7 @@ public class TestService {
 
     DocDTO setReceiptDocDTO() {
         DocDTO dto = new DocDTO();
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(RECEIPT_FIELDS_ID));
         dto.setAuthor(setAuthorDTO(2));
         dto.setPayed(true);
@@ -96,7 +96,7 @@ public class TestService {
 
     DocDTO setCheckDocDTO() {
         DocDTO dto = new DocDTO();
-        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
         dto.setProject(setProject(3));
         dto.setAuthor(setAuthorDTO(2));
         dto.setPayed(true);

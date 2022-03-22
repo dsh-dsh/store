@@ -108,7 +108,7 @@ public abstract class AbstractDocFactory implements DocFactory {
             document.setNumber(docDTO.getNumber());
         }
         document.setDocType(documentType);
-        document.setDateTime(docDTO.getTime().toLocalDateTime());
+//        document.setDateTime(docDTO.getTime().toLocalDateTime());
         document.setProject(projectService.getById(docDTO.getProject().getId()));
         document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
         document.setPayed(docDTO.isPayed());

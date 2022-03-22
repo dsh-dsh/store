@@ -5,6 +5,7 @@ import com.example.sklad.model.enums.PaymentType;
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -12,18 +13,19 @@ import java.time.ZoneId;
 @Component
 public class MappingConverters {
 
+    protected final Converter<LocalDateTime, Timestamp> timestampConverter =
+            date -> Timestamp.valueOf(date.getSource());
+
     protected final Converter<LocalDateTime, Long> dateTimeConverter =
             date -> {
                 LocalDateTime localDateTime = date.getSource();
-                return localDateTime == null?
-                        0 : localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return localDateTime == null ? 0 : localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             };
 
     protected final Converter<LocalDate, Long> dateConverter =
             date -> {
                 LocalDate localDate = date.getSource();
-                return date == null?
-                        0 : localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return date == null ? 0 : localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
             };
 
     protected final Converter<PaymentType, String> paymentTypeConverter = type ->

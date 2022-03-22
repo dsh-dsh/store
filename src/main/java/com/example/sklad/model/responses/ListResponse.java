@@ -27,4 +27,11 @@ public class ListResponse<T> {
         this.pageSize = page.getSize();
         this.data = data;
     }
+
+    public ListResponse(List<T> data) {
+        this.total = 0;
+        this.pageNumber = 0;
+        this.pageSize = 0;
+        this.data = data;
+    }
 }

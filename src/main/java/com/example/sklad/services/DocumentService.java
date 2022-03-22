@@ -2,14 +2,20 @@ package com.example.sklad.services;
 
 import com.example.sklad.exceptions.BadRequestException;
 import com.example.sklad.factories.itemdoc.*;
+import com.example.sklad.mappers.DocMapper;
+import com.example.sklad.mappers.DocToListMapper;
 import com.example.sklad.model.dto.documents.DocDTO;
+import com.example.sklad.model.dto.documents.DocToListDTO;
+import com.example.sklad.model.entities.documents.Document;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
+import com.example.sklad.repositories.DocumentRepository;
 import com.example.sklad.repositories.ItemDocRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -26,6 +32,12 @@ public class DocumentService {
     private InventoryDocFactory inventoryDocFactory;
     @Autowired
     private ItemDocRepository itemDocRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
+    @Autowired
+    private DocMapper docMapper;
+    @Autowired
+    private DocToListMapper docToListMapper;
 
     public void addCheckDoc(DocDTO docDTO) {
         checkDocFactory.addDocument(docDTO);
@@ -72,13 +84,27 @@ public class DocumentService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    public List<ItemDoc> getDocumentsByType(DocumentType documentType) {
+    public List<DocToListDTO> getDocumentsByType(DocumentType documentType) {
+        List<Document> docs = documentRepository.getByDocType(documentType);
+        return docs.stream()
+                .peek(document -> System.out.println(document.getId()))
+                .map(docToListMapper::mapToDocDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ItemDoc> getItemDocsByType(DocumentType documentType) {
         return itemDocRepository.findByDocType(documentType);
     }
 
     public ItemDoc getDocumentById(int docId) {
         return itemDocRepository.findById(docId)
                 .orElseThrow(BadRequestException::new);
+    }
+
+    public DocDTO getDocDTOById(int docId) {
+        ItemDoc itemDoc = itemDocRepository.findById(docId)
+                .orElseThrow(BadRequestException::new);
+        return docMapper.mapToDocDTO(itemDoc);
     }
 
     public void deleteDocument(DocDTO docDTO) {

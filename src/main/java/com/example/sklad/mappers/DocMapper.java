@@ -8,8 +8,10 @@ import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.DocumentItem;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.entities.documents.OrderDoc;
+import com.example.sklad.services.DocItemService;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,6 +19,9 @@ import java.util.List;
 
 @Component
 public class DocMapper extends MappingConverters {
+
+    @Autowired
+    private DocItemService docItemService;
 
     private final ModelMapper modelMapper;
 
@@ -33,7 +38,7 @@ public class DocMapper extends MappingConverters {
     public DocMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(ItemDoc.class, DocDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(ItemDoc::getDateTime, DocDTO::setTime))
+//                .addMappings(mapper -> mapper.using(dateTimeConverter).map(ItemDoc::getDateTime, DocDTO::setTime))
                 .addMappings(mapper -> mapper.using(docItemsConverter).map(ItemDoc::getDocumentItems, DocDTO::setDocItems))
                 .addMappings(mapper -> mapper.using(checkInfoConverter).map(ItemDoc::getThis, DocDTO::setCheckInfo));
     }

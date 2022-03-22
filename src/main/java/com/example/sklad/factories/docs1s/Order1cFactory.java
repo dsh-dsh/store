@@ -33,7 +33,7 @@ public class Order1cFactory implements DocFactory {
 
         OrderDoc orderDoc = new OrderDoc();
         orderDoc.setNumber(docDTO.getNumber());
-        orderDoc.setDateTime(docDTO.getTime().toLocalDateTime());
+//        orderDoc.setDateTime(docDTO.getTime().toLocalDateTime());
         orderDoc.setDocType(DocumentType.getByValue(docDTO.getDocType()));
         orderDoc.setProject(projectService.getByName(docDTO.getProject().getName()));
         orderDoc.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
