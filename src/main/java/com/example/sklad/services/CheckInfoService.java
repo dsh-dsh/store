@@ -1,6 +1,7 @@
 package com.example.sklad.services;
 
 import com.example.sklad.exceptions.BadRequestException;
+import com.example.sklad.mappers.CheckInfoMapper;
 import com.example.sklad.model.dto.CheckInfoDTO;
 import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.documents.ItemDoc;
@@ -13,6 +14,8 @@ public class CheckInfoService {
 
     @Autowired
     private CheckInfoRepository checkInfoRepository;
+    @Autowired
+    private CheckInfoMapper checkInfoMapper;
 
     public CheckInfo getCheckInfo(ItemDoc check) {
         return checkInfoRepository.findByCheck(check)
@@ -60,5 +63,10 @@ public class CheckInfoService {
 
     public int countRowsByDoc(int docId) {
         return checkInfoRepository.countRowsByDocId(docId);
+    }
+
+    public CheckInfoDTO getCheckInfoDTO(ItemDoc doc) {
+        CheckInfo checkInfo = getCheckInfo(doc);
+        return checkInfoMapper.mapCheckInfo(checkInfo);
     }
 }
