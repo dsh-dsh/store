@@ -21,6 +21,7 @@ public class Constants {
     public static final String CAFE_STORE_TYPE = "склад кафе";
     public static final String RETAIL_STORE_TYPE = "розница";
 
+    public static final String TAX_PAYMENT_TYPE = "Оплата налога";
     public static final String CLIENT_PAYMENT_TYPE = "Оплата от покупателя";
     public static final String SUPPLIER_PAYMENT_TYPE = "Оплата поставщику";
     public static final String OTHER_PAYMENT_TYPE = "Прочее";
@@ -43,4 +44,6 @@ public class Constants {
     public static final String NO_SUCH_USER_MESSAGE = "No such user";
     public static final String NO_SUCH_COMPANY_MESSAGE = "No such company";
     public static final String NO_SUCH_STORAGE_MESSAGE = "no such storage";
+    public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
+    public static final String NO_SUCH_CHECK_INFO_MESSAGE = "no such check info";
 }

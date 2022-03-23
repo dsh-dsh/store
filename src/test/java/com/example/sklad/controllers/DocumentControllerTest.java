@@ -534,4 +534,20 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.doc_items.[2]").exists())
                 .andExpect(jsonPath("$.data.doc_items.[3]").doesNotExist());
     }
+
+    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getPostingTest() throws Exception {
+
+        this.mockMvc.perform(get(URL_PREFIX)
+                        .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.check_info").doesNotExist())
+                .andExpect(jsonPath("$.data.doc_items").isArray())
+                .andExpect(jsonPath("$.data.doc_items.[1]").exists())
+                .andExpect(jsonPath("$.data.doc_items.[2]").doesNotExist());
+    }
 }

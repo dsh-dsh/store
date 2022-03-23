@@ -1,11 +1,8 @@
 package com.example.sklad.controllers;
 
-import com.example.sklad.mappers.DocMapper;
-import com.example.sklad.mappers.DocToListMapper;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.documents.DocToListDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
-import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.model.responses.ListResponse;
 import com.example.sklad.model.responses.Response;

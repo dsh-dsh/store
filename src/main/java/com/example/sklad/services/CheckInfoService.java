@@ -6,6 +6,7 @@ import com.example.sklad.model.dto.CheckInfoDTO;
 import com.example.sklad.model.entities.CheckInfo;
 import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.repositories.CheckInfoRepository;
+import com.example.sklad.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class CheckInfoService {
 
     public CheckInfo getCheckInfo(ItemDoc check) {
         return checkInfoRepository.findByCheck(check)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_CHECK_INFO_MESSAGE));
     }
 
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {

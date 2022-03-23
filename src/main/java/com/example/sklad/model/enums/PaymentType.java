@@ -4,6 +4,7 @@ import com.example.sklad.utils.Constants;
 
 public enum PaymentType {
 
+    TAX_PAYMENT(Constants.TAX_PAYMENT_TYPE),
     CLIENT_PAYMENT(Constants.CLIENT_PAYMENT_TYPE),
     SUPPLIER_PAYMENT(Constants.SUPPLIER_PAYMENT_TYPE),
     OTHER_PAYMENT(Constants.OTHER_PAYMENT_TYPE),

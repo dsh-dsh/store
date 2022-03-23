@@ -11,6 +11,7 @@ import com.example.sklad.model.entities.documents.ItemDoc;
 import com.example.sklad.model.enums.DocumentType;
 import com.example.sklad.repositories.DocumentRepository;
 import com.example.sklad.repositories.ItemDocRepository;
+import com.example.sklad.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +104,7 @@ public class DocumentService {
 
     public DocDTO getDocDTOById(int docId) {
         ItemDoc itemDoc = itemDocRepository.findById(docId)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         return docMapper.mapToDocDTO(itemDoc);
     }
 
