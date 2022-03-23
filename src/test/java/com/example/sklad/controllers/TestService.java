@@ -4,10 +4,12 @@ import com.example.sklad.model.dto.*;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.enums.DocumentType;
+import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,6 +27,10 @@ public class TestService {
     static final List<Integer> UPDATE_ITEM_IDS = List.of(2, 3, 4, 5);
     static final int ONE_DOCUMENT = 1;
     static final int NO_DOCUMENTS = 0;
+
+    long dateTimeToLong(String dateTime) {
+        return LocalDateTime.parse(dateTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
 
     void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);

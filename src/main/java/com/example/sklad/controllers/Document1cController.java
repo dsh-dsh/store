@@ -18,7 +18,6 @@ public class Document1cController {
 
     @PostMapping("/docs/checks")
     public ResponseEntity<Response<String>> addCheckDocsFrom1C(@RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
-        System.out.println(itemDocListRequestDTO);
         docsFrom1cService.addCheckDocsFrom1C(itemDocListRequestDTO);
 
         return ResponseEntity.ok(new Response<>("ok"));
@@ -26,7 +25,6 @@ public class Document1cController {
 
     @PostMapping("/docs/orders")
     public ResponseEntity<Response<String>> addOrderDocsFrom1C(@RequestBody OrderRequestDTO orderRequestDTO) {
-        System.out.println(orderRequestDTO);
         docsFrom1cService.addOrderDocsFrom1C(orderRequestDTO);
 
         return ResponseEntity.ok(new Response<>("ok"));

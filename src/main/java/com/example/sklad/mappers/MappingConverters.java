@@ -25,7 +25,7 @@ public class MappingConverters {
     protected final Converter<LocalDate, Long> dateConverter =
             date -> {
                 LocalDate localDate = date.getSource();
-                return date == null ? 0 : localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return localDate == null ? 0 : localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
             };
 
     protected final Converter<PaymentType, String> paymentTypeConverter = type ->

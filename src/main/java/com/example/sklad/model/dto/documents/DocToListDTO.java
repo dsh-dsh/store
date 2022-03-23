@@ -22,7 +22,7 @@ public class DocToListDTO {
 
     private int number;
 
-//    private Timestamp time;
+    private long time;
 
     private ProjectDTO project;
 

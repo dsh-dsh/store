@@ -23,7 +23,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.sql.Timestamp;
 import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -272,7 +271,7 @@ public class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-//        docDTO.setTime(Timestamp.valueOf("2022-01-01 10:30:00"));
+        docDTO.setTime(testService.dateTimeToLong("2022-01-01T10:30:00"));
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -285,8 +284,8 @@ public class DocumentControllerTest {
 
         ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
-//        assertEquals(1, doc.getDateTime().getDayOfMonth());
-//        assertEquals(10, doc.getDateTime().getHour());
+        assertEquals(1, doc.getDateTime().getDayOfMonth());
+        assertEquals(10, doc.getDateTime().getHour());
     }
 
     @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -298,7 +297,7 @@ public class DocumentControllerTest {
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-//        docDTO.setTime(Timestamp.valueOf("2022-02-01 10:30:00"));
+        docDTO.setTime(testService.dateTimeToLong("2022-02-01T10:30:00"));
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -312,7 +311,7 @@ public class DocumentControllerTest {
         ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
-//        assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
+        assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
     }
 
     @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -522,8 +521,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getCheckTest() throws Exception {
-
+    void getCheckDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
                         .param("id", String.valueOf(TestService.DOC_ID)))
                 .andDo(print())
@@ -538,8 +536,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getPostingTest() throws Exception {
-
+    void getPostingDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
                         .param("id", String.valueOf(TestService.DOC_ID)))
                 .andDo(print())

@@ -24,7 +24,7 @@ public class PersonDTO {
     private String phone;
 
     @JsonProperty("reg_date")
-    private long regTime;
+    private long regDate;
 
     @JsonProperty("birth_date")
     private long birthDate;

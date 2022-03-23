@@ -88,7 +88,6 @@ public class DocumentService {
     public List<DocToListDTO> getDocumentsByType(DocumentType documentType) {
         List<Document> docs = documentRepository.getByDocType(documentType);
         return docs.stream()
-                .peek(document -> System.out.println(document.getId()))
                 .map(docToListMapper::mapToDocDTO)
                 .collect(Collectors.toList());
     }

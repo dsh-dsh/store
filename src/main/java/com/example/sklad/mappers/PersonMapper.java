@@ -13,7 +13,7 @@ public class PersonMapper extends MappingConverters {
     public PersonMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(User.class, PersonDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(User::getRegTime, PersonDTO::setRegTime))
+                .addMappings(mapper -> mapper.using(dateTimeConverter).map(User::getRegTime, PersonDTO::setRegDate))
                 .addMappings(mapper -> mapper.using(dateConverter).map(User::getBirthDate, PersonDTO::setBirthDate));
     }
 

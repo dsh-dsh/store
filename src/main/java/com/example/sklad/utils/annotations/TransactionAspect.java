@@ -34,7 +34,6 @@ public class TransactionAspect {
         transactionTemplate = new TransactionTemplate(transactionManager);
         try {
             transactionTemplate.execute(status -> {
-                System.out.println("in transaction");
                 try {
                     return joinPoint.proceed();
                 } catch (Throwable e) {

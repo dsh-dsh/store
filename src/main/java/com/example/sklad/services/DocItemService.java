@@ -63,7 +63,6 @@ public class DocItemService {
                 .filter(dto -> !ids.contains(dto.getItemId()))
                 .map(dto -> createDocItem(dto, doc))
                 .forEach(item -> docItemRepository.save(item));
-        System.out.println();
     }
 
     private void updateDocItem(DocumentItem item, DocItemDTO dto) {
