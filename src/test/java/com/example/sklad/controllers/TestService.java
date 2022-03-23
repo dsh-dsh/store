@@ -4,10 +4,12 @@ import com.example.sklad.model.dto.*;
 import com.example.sklad.model.dto.documents.DocDTO;
 import com.example.sklad.model.dto.requests.DocRequestDTO;
 import com.example.sklad.model.enums.DocumentType;
+import com.example.sklad.model.enums.Role;
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -28,9 +30,18 @@ public class TestService {
     static final int ONE_DOCUMENT = 1;
     static final int NO_DOCUMENTS = 0;
 
+
+
     long dateTimeToLong(String dateTime) {
         return LocalDateTime.parse(dateTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
+
+    long dateToLong(String date) {
+        return LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+//    PersonDTO getPersonDTO() {
+//    }
 
     void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);
