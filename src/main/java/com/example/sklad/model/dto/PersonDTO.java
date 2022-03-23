@@ -1,6 +1,7 @@
 package com.example.sklad.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +9,8 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
+//@NoArgsConstructor
 public class PersonDTO {
 
     private int id;
@@ -20,6 +22,8 @@ public class PersonDTO {
     private String lastName;
 
     private String email;
+
+    private String password;
 
     private String phone;
 
