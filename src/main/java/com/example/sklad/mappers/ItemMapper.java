@@ -35,14 +35,15 @@ public class ItemMapper extends MappingConverters {
         this.modelMapper.createTypeMap(ItemDTO.class, Item.class)
                 .addMappings(mapper -> mapper.using(longToDateTime).map(ItemDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
-                .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit));
+                .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit))
+                .addMappings(mapper -> mapper.skip(ItemDTO::getParentId, Item::setParent));
     }
 
-    public ItemDTO mapItemToDTO(Item item) {
+    public ItemDTO mapToDTO(Item item) {
         return modelMapper.map(item, ItemDTO.class);
     }
 
-    public Item mapItemDTO(ItemDTO dto) {
+    public Item mapToItem(ItemDTO dto) {
         return modelMapper.map(dto, Item.class);
     }
 }

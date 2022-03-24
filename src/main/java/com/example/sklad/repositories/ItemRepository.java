@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 
@@ -13,5 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     @Query(value = "select set_id from sets where item_id = :itemId", nativeQuery = true)
     List<Integer> getDinnerIdList(int itemId);
+
+    Optional<Item> findByName(String name);
 
 }
