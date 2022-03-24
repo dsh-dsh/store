@@ -28,9 +28,8 @@ public class ItemService {
         Item item = itemMapper.mapToItem(itemDTO);
         item.setParent(getParentById(itemDTO.getParentId()));
         itemRepository.save(item);
-        List<Price> prices = itemDTO.getPrices().stream()
-                .map(priceDTO -> priceService.setNewPrice(priceDTO, item))
-                .collect(Collectors.toList());
+        itemDTO.getPrices()
+                .forEach(priceDTO -> priceService.setNewPrice(priceDTO, item));
         return item.getId();
     }
 

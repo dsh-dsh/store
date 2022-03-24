@@ -72,6 +72,16 @@ public class ItemControllerTest{
     @Test
     void setItem() throws Exception {
 
+        PriceDTO oldRetailPrice = PriceDTO.builder()
+                .date("2022-01-01")
+                .type(PriceType.RETAIL.getType())
+                .value(RETAIL_PRICE_VALUE - 20)
+                .build();
+        PriceDTO oldDeliveryPrice = PriceDTO.builder()
+                .date("2022-01-01")
+                .type(PriceType.DELIVERY.getType())
+                .value(DELIVERY_PRICE_VALUE - 20)
+                .build();
         PriceDTO retailPrice = PriceDTO.builder()
                 .type(PriceType.RETAIL.getType())
                 .value(RETAIL_PRICE_VALUE)
@@ -88,7 +98,7 @@ public class ItemControllerTest{
                 .regTime(testService.dateTimeToLong(LocalDateTime.now().toString()))
                 .unit(Unit.PORTION.toString())
                 .workshop(Workshop.KITCHEN.toString())
-                .prices(List.of(retailPrice, deliveryPrice))
+                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
                 .build();
 
         this.mockMvc.perform(
@@ -103,7 +113,11 @@ public class ItemControllerTest{
         assertEquals(Unit.PORTION, item.getUnit());
         assertEquals(Workshop.KITCHEN, item.getWorkshop());
         assertEquals(PARENT_ID, item.getParent().getId());
+        assertEquals(2, item.getPrices().size());
+        assertEquals(RETAIL_PRICE_VALUE, item.getPrices().get(0).getValue());
+        assertEquals(PriceType.RETAIL, item.getPrices().get(0).getPriceType());
         assertEquals(DELIVERY_PRICE_VALUE, item.getPrices().get(1).getValue());
+        assertEquals(PriceType.DELIVERY, item.getPrices().get(1).getPriceType());
 
     }
 }
