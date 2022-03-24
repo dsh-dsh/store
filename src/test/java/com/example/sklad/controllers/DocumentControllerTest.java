@@ -113,10 +113,35 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.RECEIPT_DOC);
-        assertEquals(1, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
 
         assertEquals(TestService.RECEIPT_FIELDS_ID, docs.get(0).getProject().getId());
         assertEquals(TestService.RECEIPT_FIELDS_ID, docs.get(0).getStorageTo().getId());
+    }
+
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addReceiptDocWithWrongFirstDocItemTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        docDTO.setSupplier(testService.setCompanyDTO(2));
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        docDTO.getDocItems().get(0).setItemId(1000);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/receipt")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.TRANSACTION_FAILED_MESSAGE));
+
+        List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.RECEIPT_DOC);
+        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
