@@ -26,7 +26,7 @@ public class PersonMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(dateConverter).map(User::getBirthDate, PersonDTO::setBirthDate))
                 .addMappings(mapper -> mapper.skip(User::getPassword, PersonDTO::setPassword));
         modelMapper.createTypeMap(PersonDTO.class, User.class)
-                .addMappings(mapper -> mapper.using(longToTime).map(PersonDTO::getRegDate, User::setRegTime))
+                .addMappings(mapper -> mapper.using(longToDateTime).map(PersonDTO::getRegDate, User::setRegTime))
                 .addMappings(mapper -> mapper.using(longToDate).map(PersonDTO::getBirthDate, User::setBirthDate))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
 //                .addMappings(mapper -> mapper.when(passwordExists).map());

@@ -14,7 +14,7 @@ import java.time.ZoneId;
 @Component
 public class MappingConverters {
 
-    protected final Converter<Long, LocalDateTime> longToTime =
+    protected final Converter<Long, LocalDateTime> longToDateTime =
             value -> Instant.ofEpochMilli(value.getSource()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 
     protected final Converter<Long, LocalDate> longToDate =
