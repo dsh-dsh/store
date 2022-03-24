@@ -1,12 +1,10 @@
-alter table dinners add constraint UK_in_dinners_id unique (in_dinners_id);
-
 alter table users add constraint UK_email unique (email);
 
 alter table account add constraint FK_account_company_id foreign key (company_id) references company (id);
 
-alter table dinners add constraint FK_in_dinners_id foreign key (in_dinners_id) references item (id);
+alter table sets add constraint FK_set_id foreign key (set_id) references item (id);
 
-alter table dinners add constraint FK_dinners_item_id foreign key (item_id) references item (id);
+alter table sets add constraint FK_sets_item_id foreign key (item_id) references item (id);
 
 alter table document add constraint FK_author_id foreign key (author_id) references users (id);
 

@@ -28,6 +28,9 @@ public class Constants {
     public static final String SALARY_PAYMENT_TYPE = "Выплата заработной платы";
     public static final String SALE_PAYMENT_TYPE = "Выручка";
 
+    public static final String RETAIL_PRICE_TYPE = "Розничная";
+    public static final String DELIVERY_PRICE_TYPE = "На доставку";
+
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
 
@@ -47,4 +50,6 @@ public class Constants {
     public static final String NO_SUCH_STORAGE_MESSAGE = "no such storage";
     public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
     public static final String NO_SUCH_CHECK_INFO_MESSAGE = "no such check info";
+    public static final String NO_SUCH_ITEM_MESSAGE = "no such item";
+    public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
 }

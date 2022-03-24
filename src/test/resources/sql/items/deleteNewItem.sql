@@ -1,0 +1,1 @@
+delete from item where name = 'Новое блюдо (1)';

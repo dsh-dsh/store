@@ -22,6 +22,7 @@ public class ItemMapper extends MappingConverters {
     private final Converter<String, Workshop> stringWorkshopConverter = str -> Workshop.valueOf(str.getSource());
     private final Converter<Unit, String> unitConverter = unit -> unit.getSource().toString();
     private final Converter<String, Unit> stringUnitConverter = str -> Unit.valueOf(str.getSource());
+    private final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
 
     @PostConstruct
     public void init() {
@@ -29,14 +30,15 @@ public class ItemMapper extends MappingConverters {
         this.modelMapper.createTypeMap(Item.class, ItemDTO.class)
                 .addMappings(mapper -> mapper.using(dateTimeConverter).map(Item::getRegTime, ItemDTO::setRegTime))
                 .addMappings(mapper -> mapper.using(workshopConverter).map(Item::getWorkshop, ItemDTO::setWorkshop))
-                .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit));
+                .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit))
+                .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTO::setParentId));
         this.modelMapper.createTypeMap(ItemDTO.class, Item.class)
                 .addMappings(mapper -> mapper.using(longToDateTime).map(ItemDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit));
     }
 
-    public ItemDTO mapItem(Item item) {
+    public ItemDTO mapItemToDTO(Item item) {
         return modelMapper.map(item, ItemDTO.class);
     }
 

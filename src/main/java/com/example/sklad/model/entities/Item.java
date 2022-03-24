@@ -10,7 +10,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -54,8 +56,11 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private List<Price> prices = new ArrayList<>();
 
-    @OneToMany()
-    @JoinTable(name = "dinners")
-    private List<Item> inDinners = new ArrayList<>();
+//    @OneToMany(mappedBy = "item", orphanRemoval = true)
+//    private Set<Set> inSets  = new HashSet<>();
+
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "sets")
+//    private List<Item> inSets = new ArrayList<>();
 
 }
