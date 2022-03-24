@@ -47,7 +47,7 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private Unit unit;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Item parent;
 
