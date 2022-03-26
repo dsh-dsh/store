@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ItemControllerTest{
+public class ItemControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/items";
     private static final int ITEM_ID = 4;
@@ -118,6 +118,6 @@ public class ItemControllerTest{
         assertEquals(PriceType.RETAIL, item.getPrices().get(0).getPriceType());
         assertEquals(DELIVERY_PRICE_VALUE, item.getPrices().get(1).getValue());
         assertEquals(PriceType.DELIVERY, item.getPrices().get(1).getPriceType());
-
     }
+
 }
