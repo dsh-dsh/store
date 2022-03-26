@@ -22,6 +22,8 @@ public class ItemService {
     private ItemMapper itemMapper;
     @Autowired
     private PriceService priceService;
+    @Autowired
+    private SetService setService;
 
     public Item setNewItem(ItemDTO itemDTO) {
         Item item = itemMapper.mapToItem(itemDTO);
@@ -64,19 +66,16 @@ public class ItemService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
-//    public List<Item> getSetsIn(Item item) {
-//        List<Integer> dinnerIdList = itemRepository.getDinnerIdList(item.getId());
-//        return dinnerIdList.stream().map(this::findSetById).collect(Collectors.toList());
-//    }
-
     public ItemDTO getItemDTOById(int id, String stringDate) {
         LocalDate date = LocalDate.parse(stringDate);
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         item.setParent(getParent(item));
         item.setPrices(priceService.getPriceListOfItem(item, date));
-//        item.setInSets(getSetsIn(item));
-        return itemMapper.mapToDTO(item);
+        ItemDTO itemDTO = itemMapper.mapToDTO(item);
+        itemDTO.setInSets(setService.getSets(item));
+
+        return itemDTO;
     }
 
     private Item findItemById(int id) {

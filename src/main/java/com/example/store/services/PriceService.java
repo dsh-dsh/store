@@ -25,9 +25,8 @@ public class PriceService {
     private PriceRepository priceRepository;
 
     public void updateItemPrices(Item item, List<PriceDTO> priceDTOList, LocalDate date) {
-        List<Price> priceListOnDate = priceRepository.findByItemAndDateLessThan(item, date);
-//        List<>
-
+        List<Price> priceListOnDate = getPriceListOfItem(item, date);
+        priceDTOList.forEach(priceDTO -> updatePrice(priceDTO, priceListOnDate, item));
     }
 
     public List<Price> getPriceListOfItem(Item item, LocalDate date) {
@@ -35,6 +34,37 @@ public class PriceService {
                 .map(type -> getPriceByItemAndType(item, type, date))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    public List<Price> getItemPriceList(Item item) {
+        return priceRepository.findByItem(item);
+    }
+
+
+    private void updatePrice(PriceDTO dto, List<Price> prices, Item item) {
+        Price price = getPriceOfType(prices, PriceType.getByValue(dto.getType()));
+        if (price == null) {
+            setNewPrice(item, dto);
+            return;
+        }
+        if (LocalDate.parse(dto.getDate()).isAfter(price.getDate())) {
+            if (price.getValue() != dto.getValue()) {
+                setNewPrice(item, dto);
+            }
+        }
+        if (LocalDate.parse(dto.getDate()).isEqual(price.getDate())){
+            price.setValue(dto.getValue());
+            priceRepository.save(price);
+        }
+    }
+
+    private Price getPriceOfType(List<Price> prices, PriceType type) {
+        for (Price price : prices) {
+            if (price.getPriceType() == type) {
+                return price;
+            }
+        }
+        return null;
     }
 
     private Price getPriceByItemAndType(Item item, PriceType type, LocalDate date) {

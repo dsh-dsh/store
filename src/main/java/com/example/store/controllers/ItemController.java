@@ -29,7 +29,7 @@ public class ItemController {
         return ResponseEntity.ok(new Response<>(item.getId()));
     }
 
-    @PutMapping("/api/v1/items/date")
+    @PutMapping("/api/v1/items/{date}")
     public ResponseEntity<Response<String>> updateItemById(
             @PathVariable String date,
             @RequestBody ItemDTO itemDTO) {
