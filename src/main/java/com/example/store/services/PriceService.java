@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.PriceDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
@@ -23,30 +24,39 @@ public class PriceService {
     @Autowired
     private PriceRepository priceRepository;
 
-    public List<Price> getPriceListOfItem(Item item) {
+    public void updateItemPrices(Item item, List<PriceDTO> priceDTOList, LocalDate date) {
+        List<Price> priceListOnDate = priceRepository.findByItemAndDateLessThan(item, date);
+//        List<>
+
+    }
+
+    public List<Price> getPriceListOfItem(Item item, LocalDate date) {
         return Arrays.stream(PriceType.values())
-                .map(type -> getPriceByItemAndType(item, type))
+                .map(type -> getPriceByItemAndType(item, type, date))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    public Price getPriceByItemAndType(Item item, PriceType type) {
+    private Price getPriceByItemAndType(Item item, PriceType type, LocalDate date) {
         Pageable pageable =
                 PageRequest.of(0,1, Sort.by("date").descending());
-        List<Price> prices = priceRepository.findByItemAndPriceType(item, type, pageable);
+        List<Price> prices = priceRepository.findByItemAndPriceTypeAndDateLessThanEqual(item, type, date, pageable);
         return prices.size() == 1 ? prices.get(0) : null;
     }
 
-    public Price setNewPrice(PriceDTO priceDTO, Item item) {
+    public void addPrices(Item item, ItemDTO itemDTO) {
+        itemDTO.getPrices()
+                .forEach(priceDTO -> setNewPrice(item, priceDTO));
+    }
+
+    private void setNewPrice(Item item, PriceDTO dto) {
         Price price = new Price();
-        price.setPriceType(PriceType.getByValue(priceDTO.getType()));
-        LocalDate date = priceDTO.getDate() == null ? LocalDate.now() : LocalDate.parse(priceDTO.getDate());
+        price.setPriceType(PriceType.getByValue(dto.getType()));
+        LocalDate date = dto.getDate() == null ? LocalDate.now() : LocalDate.parse(dto.getDate());
         price.setDate(date);
         price.setItem(item);
-        price.setValue(priceDTO.getValue());
+        price.setValue(dto.getValue());
         priceRepository.save(price);
-
-        return price;
     }
 
 

@@ -1,9 +1,12 @@
 package com.example.store.controllers;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
+import com.example.store.model.entities.Item;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.utils.Constants;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -35,9 +38,6 @@ public class TestService {
     long dateToLong(String date) {
         return LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
-
-//    PersonDTO getPersonDTO() {
-//    }
 
     void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);

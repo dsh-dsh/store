@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class ItemControllerTest {
     private static final String NEW_ITEM_NAME = "Новое блюдо (1)";
 
     @Autowired
-    private TestService testService;
+    private ItemTestService itemTestService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -57,7 +58,8 @@ public class ItemControllerTest {
     void getItem() throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX)
-                                .param("id", String.valueOf(ITEM_ID)))
+                                .param("id", String.valueOf(ITEM_ID))
+                                .param("date", LocalDate.now().toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value(EXISTING_ITEM_NAME))
@@ -95,7 +97,7 @@ public class ItemControllerTest {
                 .name("Новое блюдо (1)")
                 .printName("Новое блюдо")
                 .parentId(PARENT_ID)
-                .regTime(testService.dateTimeToLong(LocalDateTime.now().toString()))
+                .regTime(itemTestService.dateTimeToLong(LocalDateTime.now().toString()))
                 .unit(Unit.PORTION.toString())
                 .workshop(Workshop.KITCHEN.toString())
                 .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
@@ -108,7 +110,7 @@ public class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemService.getItemByName(NEW_ITEM_NAME);
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME);
         assertEquals(NEW_ITEM_NAME, item.getName());
         assertEquals(Unit.PORTION, item.getUnit());
         assertEquals(Workshop.KITCHEN, item.getWorkshop());
