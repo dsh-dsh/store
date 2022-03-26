@@ -60,4 +60,6 @@ public class Document {
     @JoinColumn(name = "base_document_id")
     private Document baseDocument;
 
+    private boolean isDeleted;
+
 }

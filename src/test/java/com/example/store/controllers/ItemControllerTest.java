@@ -8,6 +8,7 @@ import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.services.ItemService;
+import com.example.store.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,6 +42,7 @@ public class ItemControllerTest {
     private static final int ITEM_ID = 4;
     private static final int PARENT_ID = 1;
     private static final int SET_ID = 9;
+    private static final int NEW_ITEM_ID = 10;
     private static final String EXISTING_ITEM_NAME = "Картофель фри (1)";
     private static final float RETAIL_PRICE_VALUE = 200.00f;
     private static final float DELIVERY_PRICE_VALUE = 250.00f;
@@ -115,6 +117,7 @@ public class ItemControllerTest {
                 .andExpect(status().isOk());
 
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        assertNotNull(item);
         assertEquals(NEW_ITEM_NAME, item.getName());
         assertEquals(Unit.PORTION, item.getUnit());
         assertEquals(Workshop.KITCHEN, item.getWorkshop());
@@ -131,6 +134,7 @@ public class ItemControllerTest {
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void updateItemWithTwoNewPrice() throws Exception {
+
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(DATE)
                 .type(PriceType.RETAIL.getType())
@@ -143,7 +147,7 @@ public class ItemControllerTest {
                 .build();
 
         ItemDTO itemDTO = ItemDTO.builder()
-                .id(10)
+                .id(NEW_ITEM_ID)
                 .name(UPDATE_NAME)
                 .printName(UPDATE_NAME)
                 .parentId(PARENT_ID)
@@ -160,6 +164,7 @@ public class ItemControllerTest {
                 .andExpect(status().isOk());
 
         Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(DATE));
+        assertNotNull(item);
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Unit.KG, item.getUnit());
         assertEquals(Workshop.BAR, item.getWorkshop());
@@ -190,7 +195,7 @@ public class ItemControllerTest {
                 .build();
 
         ItemDTO itemDTO = ItemDTO.builder()
-                .id(10)
+                .id(NEW_ITEM_ID)
                 .name(UPDATE_NAME)
                 .printName(UPDATE_NAME)
                 .parentId(PARENT_ID)
@@ -207,6 +212,7 @@ public class ItemControllerTest {
                 .andExpect(status().isOk());
 
         Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(updateDate));
+        assertNotNull(item);
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Unit.KG, item.getUnit());
         assertEquals(Workshop.BAR, item.getWorkshop());
@@ -219,6 +225,20 @@ public class ItemControllerTest {
 
         List<Price> prices = itemTestService.getItemPriceList(item);
         assertEquals(5, prices.size());
+    }
+
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void softDeleteItem() throws Exception {
+        this.mockMvc.perform(
+                        delete(URL_PREFIX + "/" + NEW_ITEM_ID))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(Constants.OK));
+
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        assertTrue(item.isDeleted());
     }
 
 }

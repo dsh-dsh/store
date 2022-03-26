@@ -14,7 +14,7 @@ create table document
 is_hold bit not null, is_payed bit not null, number integer not null, amount float,
 payment_type varchar(255), tax float, author_id integer not null, base_document_id integer,
 individual_id integer, project_id integer not null, supplier_id integer, recipient_id integer,
-storage_from_id integer, storage_to_id integer, primary key (id));
+storage_from_id integer, storage_to_id integer, is_deleted bit not null, primary key (id));
 
 create table document_item
 (id integer not null auto_increment, discount float not null, price float not null,
@@ -31,7 +31,7 @@ create table item
 is_in_employee_menu bit not null, is_include_garnish bit not null, is_include_sauce bit not null,
 is_sauce bit not null, is_weight bit not null, name varchar(255), print_name varchar(255),
 reg_time datetime(6) not null, unit varchar(255), workshop varchar(255), parent_id integer,
-primary key (id));
+is_deleted bit not null, number integer not null, primary key (id));
 
 create table price
 (id integer not null auto_increment, price_date date, price_value float, item_id integer, price_type varchar(255),

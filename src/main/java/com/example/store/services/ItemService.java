@@ -94,4 +94,9 @@ public class ItemService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
+    public void softDeleteItem(int id) {
+        Item item = findItemById(id);
+        item.setDeleted(true);
+        itemRepository.save(item);
+    }
 }

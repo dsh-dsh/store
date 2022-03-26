@@ -22,9 +22,10 @@ public class ItemTestService extends TestService{
 
 
     public Item getItemByName(String name, LocalDate date) {
-        Item item = itemRepository.findByName(name)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-        item.setPrices(priceService.getPriceListOfItem(item, date));
+        Item item = itemRepository.getByName(name);
+        if(item != null) {
+            item.setPrices(priceService.getPriceListOfItem(item, date));
+        }
         return item;
     }
 

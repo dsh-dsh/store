@@ -37,4 +37,10 @@ public class ItemController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
+    @DeleteMapping("/api/v1/items/{id}")
+    public ResponseEntity<Response<String>> softDeleteItemById(@PathVariable int id) {
+        itemService.softDeleteItem(id);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
 }

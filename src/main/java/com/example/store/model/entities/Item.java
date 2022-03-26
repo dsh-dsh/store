@@ -54,11 +54,7 @@ public class Item {
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private List<Price> prices = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "item", orphanRemoval = true)
-//    private Set<Set> inSets  = new HashSet<>();
-
-//    @OneToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "sets")
-//    private List<Item> inSets = new ArrayList<>();
+    private boolean isDeleted;
+    private int number;
 
 }
