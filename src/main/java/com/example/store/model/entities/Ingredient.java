@@ -29,6 +29,6 @@ public class Ingredient {
     private Item child;
 
     @OneToMany(mappedBy = "ingredient")
-    private List<PeriodicQuantity> quantityList;
+    private List<Quantity> quantityList;
 
 }

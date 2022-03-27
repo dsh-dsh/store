@@ -1,12 +1,17 @@
 package com.example.store.controllers;
 
+import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.PriceDTO;
+import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
 import com.example.store.model.enums.PriceType;
+import com.example.store.model.enums.QuantityType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
+import com.example.store.services.IngredientService;
 import com.example.store.services.ItemService;
 import com.example.store.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,6 +63,8 @@ public class ItemControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private IngredientService ingredientService;
 
     @Test
     void getItem() throws Exception {
@@ -72,42 +79,15 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.data.unit").value(Unit.PORTION.toString()))
                 .andExpect(jsonPath("$.data.parent_id").value(PARENT_ID))
                 .andExpect(jsonPath("$.data.prices.[0].value").value(RETAIL_PRICE_VALUE))
-                .andExpect(jsonPath("$.data.in_sets.[0]").value(SET_ID));
+                .andExpect(jsonPath("$.data.sets.[0]").value(SET_ID));
 
     }
 
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void setItem() throws Exception {
+    void setItemWithoutIngredientsAndSets() throws Exception {
 
-        PriceDTO oldRetailPrice = PriceDTO.builder()
-                .date("2022-01-01")
-                .type(PriceType.RETAIL.getType())
-                .value(RETAIL_PRICE_VALUE - 20)
-                .build();
-        PriceDTO oldDeliveryPrice = PriceDTO.builder()
-                .date("2022-01-01")
-                .type(PriceType.DELIVERY.getType())
-                .value(DELIVERY_PRICE_VALUE - 20)
-                .build();
-        PriceDTO retailPrice = PriceDTO.builder()
-                .type(PriceType.RETAIL.getType())
-                .value(RETAIL_PRICE_VALUE)
-                .build();
-        PriceDTO deliveryPrice = PriceDTO.builder()
-                .type(PriceType.DELIVERY.getType())
-                .value(DELIVERY_PRICE_VALUE)
-                .build();
-
-        ItemDTO itemDTO = ItemDTO.builder()
-                .name(NEW_ITEM_NAME)
-                .printName(NEW_ITEM_NAME)
-                .parentId(PARENT_ID)
-                .regTime(itemTestService.dateTimeToLong(LocalDateTime.now().toString()))
-                .unit(Unit.PORTION.toString())
-                .workshop(Workshop.KITCHEN.toString())
-                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
-                .build();
+        ItemDTO itemDTO = getItemDTO();
 
         this.mockMvc.perform(
                         post(URL_PREFIX)
@@ -127,6 +107,29 @@ public class ItemControllerTest {
         assertEquals(PriceType.RETAIL, item.getPrices().get(0).getPriceType());
         assertEquals(DELIVERY_PRICE_VALUE, item.getPrices().get(1).getValue());
         assertEquals(PriceType.DELIVERY, item.getPrices().get(1).getPriceType());
+
+    }
+
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setItemWithIngredientsAndSets() throws Exception {
+
+        ItemDTO itemDTO = getItemDTO();
+        itemDTO.setSets(List.of(9));
+        itemDTO.setIngredients(getIngredientDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(itemDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        assertNotNull(item);
+
+        List<Ingredient> ingredients = ingredientService.getIngredient(item);
+        assertEquals(2, ingredients.size());
 
     }
 
@@ -239,6 +242,82 @@ public class ItemControllerTest {
 
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
         assertTrue(item.isDeleted());
+    }
+
+
+
+    private List<IngredientDTO> getIngredientDTOList() {
+        QuantityDTO netDTO = new QuantityDTO();
+        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setType(QuantityType.NET.toString());
+        netDTO.setQuantity(0.3f);
+
+        QuantityDTO grossDTO = new QuantityDTO();
+        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setType(QuantityType.GROSS.toString());
+        grossDTO.setQuantity(0.2f);
+
+        ItemDTO child = new ItemDTO();
+        child.setId(8);
+        child.setName("Мука");
+
+        IngredientDTO first = IngredientDTO.builder()
+                .child(child)
+                .quantityList(List.of(netDTO, grossDTO))
+                .build();
+
+        netDTO = new QuantityDTO();
+        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setType(QuantityType.NET.toString());
+        netDTO.setQuantity(0.4f);
+
+        grossDTO = new QuantityDTO();
+        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setType(QuantityType.GROSS.toString());
+        grossDTO.setQuantity(0.3f);
+
+        child = new ItemDTO();
+        child.setId(7);
+        child.setName("Картофель фри");
+
+        IngredientDTO second = IngredientDTO.builder()
+                .child(child)
+                .quantityList(List.of(netDTO, grossDTO))
+                .build();
+
+        return List.of(first, second);
+    }
+
+    private ItemDTO getItemDTO() {
+        PriceDTO oldRetailPrice = PriceDTO.builder()
+                .date("2022-01-01")
+                .type(PriceType.RETAIL.getType())
+                .value(RETAIL_PRICE_VALUE - 20)
+                .build();
+        PriceDTO oldDeliveryPrice = PriceDTO.builder()
+                .date("2022-01-01")
+                .type(PriceType.DELIVERY.getType())
+                .value(DELIVERY_PRICE_VALUE - 20)
+                .build();
+        PriceDTO retailPrice = PriceDTO.builder()
+                .type(PriceType.RETAIL.getType())
+                .value(RETAIL_PRICE_VALUE)
+                .build();
+        PriceDTO deliveryPrice = PriceDTO.builder()
+                .type(PriceType.DELIVERY.getType())
+                .value(DELIVERY_PRICE_VALUE)
+                .build();
+
+        ItemDTO itemDTO = ItemDTO.builder()
+                .name(NEW_ITEM_NAME)
+                .printName(NEW_ITEM_NAME)
+                .parentId(PARENT_ID)
+                .regTime(itemTestService.dateTimeToLong(LocalDateTime.now().toString()))
+                .unit(Unit.PORTION.toString())
+                .workshop(Workshop.KITCHEN.toString())
+                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
+                .build();
+        return itemDTO;
     }
 
 }

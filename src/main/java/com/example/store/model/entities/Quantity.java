@@ -1,5 +1,6 @@
 package com.example.store.model.entities;
 
+import com.example.store.model.enums.QuantityType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "periodic_quantity")
-public class PeriodicQuantity {
+public class Quantity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -28,5 +29,8 @@ public class PeriodicQuantity {
     private LocalDate date;
 
     private float quantity;
+
+    @Enumerated(EnumType.STRING)
+    private QuantityType type;
 
 }

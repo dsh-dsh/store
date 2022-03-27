@@ -24,13 +24,15 @@ public class ItemService {
     private PriceService priceService;
     @Autowired
     private SetService setService;
+    @Autowired
+    private IngredientService ingredientService;
 
     public Item setNewItem(ItemDTO itemDTO) {
         Item item = itemMapper.mapToItem(itemDTO);
         item.setParent(findParentById(itemDTO.getParentId()));
         itemRepository.save(item);
         priceService.addPrices(item, itemDTO);
-
+        ingredientService.setIngredients(item, itemDTO.getIngredients());
         return item;
     }
 
@@ -73,7 +75,7 @@ public class ItemService {
         item.setParent(getParent(item));
         item.setPrices(priceService.getPriceListOfItem(item, date));
         ItemDTO itemDTO = itemMapper.mapToDTO(item);
-        itemDTO.setInSets(setService.getSets(item));
+        itemDTO.setSets(setService.getSets(item));
 
         return itemDTO;
     }

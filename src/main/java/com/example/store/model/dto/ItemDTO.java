@@ -53,6 +53,8 @@ public class ItemDTO {
 
     private List<PriceDTO> prices;
 
+    private List<Integer> sets;
+
     @JsonProperty("in_sets")
-    private List<Integer> inSets;
+    private List<IngredientDTO> ingredients;
 }
