@@ -76,6 +76,7 @@ public class ItemService {
         item.setPrices(priceService.getPriceListOfItem(item, date));
         ItemDTO itemDTO = itemMapper.mapToDTO(item);
         itemDTO.setSets(setService.getSets(item));
+        itemDTO.setIngredients(ingredientService.getIngredientDTOList(item, date));
 
         return itemDTO;
     }

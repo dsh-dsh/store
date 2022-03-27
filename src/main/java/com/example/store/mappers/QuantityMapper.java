@@ -1,8 +1,6 @@
 package com.example.store.mappers;
 
-import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.QuantityDTO;
-import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Quantity;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

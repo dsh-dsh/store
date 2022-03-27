@@ -66,15 +66,17 @@ public class ItemControllerTest {
     @Autowired
     private IngredientService ingredientService;
 
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getItem() throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX)
-                                .param("id", String.valueOf(ITEM_ID))
+                                .param("id", String.valueOf(NEW_ITEM_ID))
                                 .param("date", LocalDate.now().toString()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.name").value(EXISTING_ITEM_NAME))
+                .andExpect(jsonPath("$.data.name").value(NEW_ITEM_NAME))
                 .andExpect(jsonPath("$.data.workshop").value(Workshop.KITCHEN.toString()))
                 .andExpect(jsonPath("$.data.unit").value(Unit.PORTION.toString()))
                 .andExpect(jsonPath("$.data.parent_id").value(PARENT_ID))
@@ -128,7 +130,7 @@ public class ItemControllerTest {
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
         assertNotNull(item);
 
-        List<Ingredient> ingredients = ingredientService.getIngredient(item);
+        List<Ingredient> ingredients = ingredientService.getIngredients(item);
         assertEquals(2, ingredients.size());
 
     }
