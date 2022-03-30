@@ -31,4 +31,5 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient")
     private List<Quantity> quantityList;
 
+    private boolean isDeleted;
 }

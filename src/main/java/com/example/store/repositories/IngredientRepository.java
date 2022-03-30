@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
-    List<Ingredient> findByParent(Item parent);
+    List<Ingredient> findByParentAndIsDeleted(Item parent, boolean isDeleted);
 }

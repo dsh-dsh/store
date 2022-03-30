@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -53,7 +54,7 @@ public class ItemDTO {
 
     private List<PriceDTO> prices;
 
-    private List<Integer> sets;
+    private List<Integer> sets = new ArrayList<>();
 
     private List<IngredientDTO> ingredients;
 }

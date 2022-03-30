@@ -14,7 +14,7 @@ values
 insert into ingredient
 (id, parent_id, child_id)
 values
-(1, 10, 7),
+(1, 10, 6),
 (2, 10, 8);
 
 insert into periodic_quantity

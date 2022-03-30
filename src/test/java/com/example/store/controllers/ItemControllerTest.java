@@ -13,6 +13,7 @@ import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.services.IngredientService;
 import com.example.store.services.ItemService;
+import com.example.store.services.SetService;
 import com.example.store.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,7 @@ public class ItemControllerTest {
     private static final String NEW_ITEM_NAME = "Новое блюдо";
     private static final String DATE = "2022-02-01";
     private static final String UPDATE_NAME = "Пиво";
+    private static final  String UPDATE_DATE = "2022-01-15";
 
     @Autowired
     private ItemTestService itemTestService;
@@ -65,6 +67,8 @@ public class ItemControllerTest {
     private ItemService itemService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private SetService setService;
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -110,6 +114,9 @@ public class ItemControllerTest {
         assertEquals(DELIVERY_PRICE_VALUE, item.getPrices().get(1).getValue());
         assertEquals(PriceType.DELIVERY, item.getPrices().get(1).getPriceType());
 
+        List<Integer> sets = setService.getSets(item);
+        assertTrue(sets.isEmpty());
+
     }
 
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -130,7 +137,10 @@ public class ItemControllerTest {
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
         assertNotNull(item);
 
-        List<Ingredient> ingredients = ingredientService.getIngredients(item);
+        List<Integer> sets = setService.getSets(item);
+        assertEquals(List.of(9), sets);
+
+        List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
         assertEquals(2, ingredients.size());
 
     }
@@ -140,26 +150,7 @@ public class ItemControllerTest {
     @Test
     void updateItemWithTwoNewPrice() throws Exception {
 
-        PriceDTO retailPrice = PriceDTO.builder()
-                .date(DATE)
-                .type(PriceType.RETAIL.getType())
-                .value(RETAIL_PRICE_VALUE)
-                .build();
-        PriceDTO deliveryPrice = PriceDTO.builder()
-                .date(DATE)
-                .type(PriceType.DELIVERY.getType())
-                .value(DELIVERY_PRICE_VALUE)
-                .build();
-
-        ItemDTO itemDTO = ItemDTO.builder()
-                .id(NEW_ITEM_ID)
-                .name(UPDATE_NAME)
-                .printName(UPDATE_NAME)
-                .parentId(PARENT_ID)
-                .unit(Unit.KG.toString())
-                .workshop(Workshop.BAR.toString())
-                .prices(List.of(retailPrice, deliveryPrice))
-                .build();
+        ItemDTO itemDTO = getItemDTOToUpdate(DATE);
 
         this.mockMvc.perform(
                         put(URL_PREFIX + "/" + DATE)
@@ -179,44 +170,26 @@ public class ItemControllerTest {
         assertEquals(PriceType.RETAIL, item.getPrices().get(0).getPriceType());
         assertEquals(DELIVERY_PRICE_VALUE, item.getPrices().get(1).getValue());
         assertEquals(PriceType.DELIVERY, item.getPrices().get(1).getPriceType());
+
+        List<Price> prices = itemTestService.getItemPriceList(item);
+        assertEquals(6, prices.size());
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updateItemWithOneNewPrice() throws Exception {
+    void updateItemWithOneNewPriceAndNoSets() throws Exception {
 
-        String updateDate = "2022-01-15";
-
-        PriceDTO retailPrice = PriceDTO.builder()
-                .date(updateDate)
-                .type(PriceType.RETAIL.getType())
-                .value(RETAIL_PRICE_VALUE)
-                .build();
-        PriceDTO deliveryPrice = PriceDTO.builder()
-                .date(updateDate)
-                .type(PriceType.DELIVERY.getType())
-                .value(DELIVERY_PRICE_VALUE)
-                .build();
-
-        ItemDTO itemDTO = ItemDTO.builder()
-                .id(NEW_ITEM_ID)
-                .name(UPDATE_NAME)
-                .printName(UPDATE_NAME)
-                .parentId(PARENT_ID)
-                .unit(Unit.KG.toString())
-                .workshop(Workshop.BAR.toString())
-                .prices(List.of(retailPrice, deliveryPrice))
-                .build();
+        ItemDTO itemDTO = getItemDTOToUpdate(UPDATE_DATE);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/" + updateDate)
+                        put(URL_PREFIX + "/" + UPDATE_DATE)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(itemDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(updateDate));
+        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(UPDATE_DATE));
         assertNotNull(item);
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Unit.KG, item.getUnit());
@@ -230,6 +203,36 @@ public class ItemControllerTest {
 
         List<Price> prices = itemTestService.getItemPriceList(item);
         assertEquals(5, prices.size());
+
+        List<Integer> sets = setService.getSets(item);
+        assertTrue(sets.isEmpty());
+    }
+
+
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateItemWithIngredientsAndSets() throws Exception {
+
+        ItemDTO itemDTO = getItemDTOToUpdate(DATE);
+        itemDTO.setSets(List.of(5, 8));
+        itemDTO.setIngredients(getIngredientDTOList());
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/" + DATE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(itemDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(UPDATE_DATE));
+        assertNotNull(item);
+
+        List<Integer> sets = setService.getSets(item);
+        assertEquals(List.of(5, 8), sets);
+
+        List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
+        assertEquals(2, ingredients.size());
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -245,8 +248,6 @@ public class ItemControllerTest {
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
         assertTrue(item.isDeleted());
     }
-
-
 
     private List<IngredientDTO> getIngredientDTOList() {
         QuantityDTO netDTO = new QuantityDTO();
@@ -320,6 +321,30 @@ public class ItemControllerTest {
                 .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
                 .build();
         return itemDTO;
+    }
+
+    private ItemDTO getItemDTOToUpdate(String date) {
+
+        PriceDTO retailPrice = PriceDTO.builder()
+                .date(date)
+                .type(PriceType.RETAIL.getType())
+                .value(RETAIL_PRICE_VALUE)
+                .build();
+        PriceDTO deliveryPrice = PriceDTO.builder()
+                .date(date)
+                .type(PriceType.DELIVERY.getType())
+                .value(DELIVERY_PRICE_VALUE)
+                .build();
+
+        return ItemDTO.builder()
+                .id(NEW_ITEM_ID)
+                .name(UPDATE_NAME)
+                .printName(UPDATE_NAME)
+                .parentId(PARENT_ID)
+                .unit(Unit.KG.toString())
+                .workshop(Workshop.BAR.toString())
+                .prices(List.of(retailPrice, deliveryPrice))
+                .build();
     }
 
 }

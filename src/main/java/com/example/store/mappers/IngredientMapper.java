@@ -29,8 +29,10 @@ public class IngredientMapper {
 
     private final Converter<Item, ItemDTO> itemConverter = item -> getItemDTO(item.getSource());
     private final Converter<ItemDTO, Item> itemDTOConverter = dto -> getItem(dto.getSource());
-    private final Converter<List<Quantity>, List<QuantityDTO>> quantityConverter =
-            list -> quantityService.getQuantityDTOList(list.getSource());
+//    private final Converter<List<Quantity>, List<QuantityDTO>> quantityConverter =
+//            list -> quantityService.getQuantityDTOList(list.getSource());
+//    private final Converter<List<QuantityDTO>, List<Quantity>> quantityDTOConverter =
+//            list ->
 
     @PostConstruct
     private void init() {
@@ -41,7 +43,7 @@ public class IngredientMapper {
         modelMapper.createTypeMap(IngredientDTO.class, Ingredient.class)
                 .addMappings(mapper -> mapper.using(itemDTOConverter).map(IngredientDTO::getParent, Ingredient::setParent))
                 .addMappings(mapper -> mapper.using(itemDTOConverter).map(IngredientDTO::getChild, Ingredient::setChild))
-                .addMappings(mapper -> mapper.using(quantityConverter).map(IngredientDTO::getQuantityList, Ingredient::setQuantityList));
+                .addMappings(mapper -> mapper.skip(IngredientDTO::getQuantityList, Ingredient::setQuantityList));
     }
 
     public IngredientDTO mapToDTO(Ingredient ingredient) {

@@ -32,6 +32,7 @@ public class ItemService {
         item.setParent(findParentById(itemDTO.getParentId()));
         itemRepository.save(item);
         priceService.addPrices(item, itemDTO);
+        setService.setSets(item, itemDTO.getSets());
         ingredientService.setIngredients(item, itemDTO.getIngredients());
         return item;
     }
@@ -42,6 +43,8 @@ public class ItemService {
         updateItemFields(item, itemDTO);
         itemRepository.save(item);
         priceService.updateItemPrices(item, itemDTO.getPrices(), date);
+        setService.updateSets(item, itemDTO.getSets());
+        ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }
 
     private void updateItemFields(Item item, ItemDTO dto) {
