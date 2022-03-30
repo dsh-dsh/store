@@ -32,69 +32,21 @@ public class DocumentController {
         return ResponseEntity.ok(new Response<>(docDTO));
     }
 
-    @PostMapping("/api/v1/docs/check")
-    public ResponseEntity<Response<String>> setCheckDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.addCheckDoc(docRequestDTO.getDocDTO());
+    @PostMapping("/api/v1/docs")
+    public ResponseEntity<Response<String>> addDocument(@RequestBody DocRequestDTO docRequestDTO) {
+        documentService.addDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @PostMapping("/api/v1/docs/receipt")
-    public ResponseEntity<Response<String>> setReceiptDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.addReceiptDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PostMapping("/api/v1/docs/posting")
-    public ResponseEntity<Response<String>> setPostingDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.addPostingDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PostMapping("/api/v1/docs/inventory")
-    public ResponseEntity<Response<String>> setInventoryDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.addInventoryDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PostMapping("/api/v1/docs/request")
-    public ResponseEntity<Response<String>> setRequestDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.addRequestDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PutMapping("/api/v1/docs/check")
-    public ResponseEntity<Response<String>> updateCheckDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.updateCheckDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PutMapping("/api/v1/docs/receipt")
-    public ResponseEntity<Response<String>> updateReceiptDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.updateReceiptDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PutMapping("/api/v1/docs/posting")
-    public ResponseEntity<Response<String>> updatePostingDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.updatePostingDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PutMapping("/api/v1/docs/request")
-    public ResponseEntity<Response<String>> updateRequestDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.updateRequestDoc(docRequestDTO.getDocDTO());
-        return ResponseEntity.ok(new Response<>("ok"));
-    }
-
-    @PutMapping("/api/v1/docs/inventory")
-    public ResponseEntity<Response<String>> updateInventoryDoc(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.updateInventoryDoc(docRequestDTO.getDocDTO());
+    @PutMapping("/api/v1/docs")
+    public ResponseEntity<Response<String>> updateDocument(@RequestBody DocRequestDTO docRequestDTO) {
+        documentService.updateDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
     @DeleteMapping("/api/v1/docs")
-    public ResponseEntity<Response<String>> deleteDocument(@RequestBody DocRequestDTO docRequestDTO) {
-        documentService.deleteDocument(docRequestDTO.getDocDTO());
+    public ResponseEntity<Response<String>> softDeleteDocument(@RequestBody DocRequestDTO docRequestDTO) {
+        documentService.softDeleteDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

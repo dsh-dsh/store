@@ -1,7 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.factories.orderdoc.OrderDocFactory;
+import com.example.store.factories.OrderDocFactory;
 import com.example.store.mappers.OrderMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.OrderDTO;

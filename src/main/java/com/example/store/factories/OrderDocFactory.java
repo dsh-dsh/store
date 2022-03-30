@@ -1,11 +1,10 @@
-package com.example.store.factories.orderdoc;
+package com.example.store.factories;
 
 import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.PaymentType;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Component;
 
 @Component

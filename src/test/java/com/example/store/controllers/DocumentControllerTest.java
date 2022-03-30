@@ -79,7 +79,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/check")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -105,7 +105,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/receipt")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -132,7 +132,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/receipt")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -155,7 +155,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/posting")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -179,7 +179,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/request")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -206,7 +206,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/inventory")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -236,7 +236,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/check")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -267,7 +267,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/receipt")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -300,7 +300,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/posting")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -326,7 +326,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/request")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -355,7 +355,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/inventory")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -391,13 +391,11 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.CHECK_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
 
-        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
-
-        count = checkInfoService.countRowsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
+        int count = checkInfoService.countRowsByDoc(TestService.DOC_ID);
+        assertEquals(TestService.ONE_DOCUMENT, count);
 
     }
 
@@ -420,10 +418,8 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.POSTING_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
-
-        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
 
     }
 
@@ -446,10 +442,8 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.REQUEST_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
-
-        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
 
     }
 
@@ -472,10 +466,8 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.RECEIPT_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
-
-        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
 
     }
 
@@ -499,10 +491,8 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.INVENTORY_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
-
-        int count = docItemService.countItemsByDoc(TestService.DOC_ID);
-        assertEquals(TestService.NO_DOCUMENTS, count);
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
 
     }
 
@@ -520,7 +510,7 @@ public class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/check")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
