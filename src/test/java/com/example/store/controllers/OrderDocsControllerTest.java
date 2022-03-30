@@ -66,7 +66,7 @@ public class OrderDocsControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/rko")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -93,7 +93,7 @@ public class OrderDocsControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/pko")
+                        post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -121,7 +121,7 @@ public class OrderDocsControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/rko")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -150,7 +150,7 @@ public class OrderDocsControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX + "/pko")
+                        put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -170,7 +170,7 @@ public class OrderDocsControllerTest {
     @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void deleteCreditDocTest() throws Exception {
+    void softDeleteCreditDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
@@ -185,13 +185,14 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.CREDIT_ORDER_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
     }
 
     @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void deleteWithdrawDocTest() throws Exception {
+    void softDeleteWithdrawDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
@@ -206,7 +207,8 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data").value("ok"));
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
-        assertEquals(TestService.NO_DOCUMENTS, docs.size());
+        assertEquals(TestService.ONE_DOCUMENT, docs.size());
+        assertTrue(docs.get(0).isDeleted());
     }
 
     @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

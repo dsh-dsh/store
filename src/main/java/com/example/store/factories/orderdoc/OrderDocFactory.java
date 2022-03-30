@@ -5,10 +5,11 @@ import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.PaymentType;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreditOrderFactory extends AbstractDocFactory {
+public class OrderDocFactory  extends AbstractDocFactory {
 
     @Override
     public DocInterface addDocument(DocDTO docDTO) {
@@ -30,7 +31,9 @@ public class CreditOrderFactory extends AbstractDocFactory {
         order.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
         order.setAmount(docDTO.getAmount());
         order.setTax(docDTO.getTax());
-        order.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
+        if(docDTO.getRecipient() != null) {
+            order.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
+        }
         order.setIndividual(userService.getById(docDTO.getIndividual().getId()));
         order.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
         orderDocRepository.save(order);
@@ -38,6 +41,8 @@ public class CreditOrderFactory extends AbstractDocFactory {
 
     @Override
     public void deleteDocument(int docId) {
-        orderDocRepository.deleteById(docId);
+        OrderDoc order = orderDocRepository.getById(docId);
+        order.setDeleted(true);
+        orderDocRepository.save(order);
     }
 }

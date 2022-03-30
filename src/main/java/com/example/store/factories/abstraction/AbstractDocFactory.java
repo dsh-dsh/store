@@ -78,12 +78,6 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     @NotNull
-    protected OrderDoc getOrderDoc() {
-        int docId = docDTO.getId();
-        return orderDocRepository.getById(docId);
-    }
-
-    @NotNull
     protected OrderDoc getOrAddOrderDoc() {
         int docId = docDTO.getId();
         if(docId != 0) {

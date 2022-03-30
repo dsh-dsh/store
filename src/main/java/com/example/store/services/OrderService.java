@@ -1,8 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.factories.orderdoc.CreditOrderFactory;
-import com.example.store.factories.orderdoc.WithdrawOrderFactory;
+import com.example.store.factories.orderdoc.OrderDocFactory;
 import com.example.store.mappers.OrderMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.OrderDTO;
@@ -18,9 +17,7 @@ import java.util.List;
 public class OrderService {
 
     @Autowired
-    private WithdrawOrderFactory withdrawFactory;
-    @Autowired
-    private CreditOrderFactory creditOrderFactory;
+    private OrderDocFactory orderDocFactory;
     @Autowired
     private OrderDocRepository orderDocRepository;
     @Autowired
@@ -32,27 +29,18 @@ public class OrderService {
         return orderMapper.mapToOrderDTO(order);
     }
 
-    public void addRKO(DocDTO docDTO) {
-        withdrawFactory.addDocument(docDTO);
+    public void addOrder(DocDTO docDTO) {
+        orderDocFactory.addDocument(docDTO);
     }
 
-    public void updateRKO(DocDTO docDTO) {
-        withdrawFactory.updateDocument(docDTO);
-    }
-
-    public void addPKO(DocDTO docDTO) {
-        creditOrderFactory.addDocument(docDTO);
-    }
-
-    public void updatePKO(DocDTO docDTO) {
-        creditOrderFactory.updateDocument(docDTO);
+    public void updateOrder(DocDTO docDTO) {
+        orderDocFactory.updateDocument(docDTO);
     }
 
     public void deleteOrderDoc(DocDTO docDTO) {
         int docId = docDTO.getId();
-        withdrawFactory.deleteDocument(docId);
+        orderDocFactory.deleteDocument(docId);
     }
-
 
     public List<OrderDoc> getDocumentsByType(DocumentType documentType) {
         return orderDocRepository.findByDocType(documentType);
