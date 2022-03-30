@@ -21,4 +21,6 @@ public class IngredientDTO {
     @JsonProperty("quantity_list")
     private List<QuantityDTO> quantityList;
 
+    private boolean isDeleted;
+
 }

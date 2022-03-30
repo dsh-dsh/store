@@ -26,14 +26,16 @@ public class IngredientService {
 
     // TODO написать Unit тесты к этому методу
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
+        if(ingredientDTOList == null) return;
         Map<Integer, Ingredient> ingredientMap = getIngredientMap(item);
+
         for(IngredientDTO ingredientDTO : ingredientDTOList) {
-            if(!ingredientMap.containsKey(ingredientDTO.getChild().getId())) {
-                setIngredient(item, ingredientDTO);
-            } else {
+            if(ingredientMap.containsKey(ingredientDTO.getChild().getId())) {
                 Ingredient ingredient = ingredientMap.get(ingredientDTO.getChild().getId());
                 updateIngredient(ingredient, ingredientDTO);
                 ingredientMap.remove(ingredientDTO.getChild().getId());
+            } else {
+                setIngredient(item, ingredientDTO);
             }
         }
         ingredientMap.forEach((key, value) -> softDeleteIngredient(value));
@@ -45,6 +47,8 @@ public class IngredientService {
     }
 
     private void updateIngredient(Ingredient ingredient, IngredientDTO dto) {
+        ingredient.setDeleted(dto.isDeleted());
+        ingredientRepository.save(ingredient);
         quantityService.updateQuantities(ingredient, dto.getQuantityList());
     }
 
@@ -80,6 +84,16 @@ public class IngredientService {
         ingredient.setParent(item);
         ingredientRepository.save(ingredient);
         quantityService.setQuantities(ingredient, dto.getQuantityList());
+    }
+
+    public void softDeleteIngredients(Item item) {
+        List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, false);
+        ingredients.forEach(this::softDelete);
+    }
+
+    private void softDelete(Ingredient ingredient) {
+        ingredient.setDeleted(true);
+        ingredientRepository.save(ingredient);
     }
 
 }

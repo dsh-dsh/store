@@ -104,5 +104,6 @@ public class ItemService {
         Item item = findItemById(id);
         item.setDeleted(true);
         itemRepository.save(item);
+        ingredientService.softDeleteIngredients(item);
     }
 }
