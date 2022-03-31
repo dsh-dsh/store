@@ -25,6 +25,4 @@ public class Storage {
     @Enumerated(EnumType.STRING)
     private StorageType type;
 
-//    @OneToMany(fetch = FetchType.LAZY)
-//    private List<ItemMoveDoc> itemMoveDocs;
 }

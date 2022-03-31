@@ -372,20 +372,20 @@ public class ItemControllerTest {
     private ItemDTO getItemDTO() {
         PriceDTO oldRetailPrice = PriceDTO.builder()
                 .date("2022-01-01")
-                .type(PriceType.RETAIL.getType())
+                .type(PriceType.RETAIL.getValue())
                 .value(RETAIL_PRICE_VALUE - 20)
                 .build();
         PriceDTO oldDeliveryPrice = PriceDTO.builder()
                 .date("2022-01-01")
-                .type(PriceType.DELIVERY.getType())
+                .type(PriceType.DELIVERY.getValue())
                 .value(DELIVERY_PRICE_VALUE - 20)
                 .build();
         PriceDTO retailPrice = PriceDTO.builder()
-                .type(PriceType.RETAIL.getType())
+                .type(PriceType.RETAIL.getValue())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
-                .type(PriceType.DELIVERY.getType())
+                .type(PriceType.DELIVERY.getValue())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 
@@ -405,12 +405,12 @@ public class ItemControllerTest {
 
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.RETAIL.getType())
+                .type(PriceType.RETAIL.getValue())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.DELIVERY.getType())
+                .type(PriceType.DELIVERY.getValue())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 

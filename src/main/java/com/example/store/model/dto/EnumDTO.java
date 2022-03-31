@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StorageDTO {
+public class EnumDTO {
 
-    private int id;
     private String name;
-    private String type;
+    private String value;
 
 }

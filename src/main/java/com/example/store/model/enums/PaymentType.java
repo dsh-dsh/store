@@ -2,7 +2,7 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum PaymentType {
+public enum PaymentType implements EnumeratedInterface {
 
     TAX_PAYMENT(Constants.TAX_PAYMENT_TYPE),
     CLIENT_PAYMENT(Constants.CLIENT_PAYMENT_TYPE),
@@ -11,19 +11,19 @@ public enum PaymentType {
     SALARY_PAYMENT(Constants.SALARY_PAYMENT_TYPE),
     SALE_PAYMENT(Constants.SALE_PAYMENT_TYPE);
 
-    private final String type;
+    private final String value;
 
-    PaymentType(String type) {
-        this.type = type;
+    PaymentType(String value) {
+        this.value = value;
     }
 
-    public String getType() {
-        return type;
+    public String getValue() {
+        return value;
     }
 
-    public static PaymentType getByValue(String type) {
+    public static PaymentType getByValue(String value) {
         for(PaymentType paymentType : PaymentType.values()) {
-            if(paymentType.type.equalsIgnoreCase(type)) {
+            if(paymentType.value.equalsIgnoreCase(value)) {
                 return paymentType;
             }
         }

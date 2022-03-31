@@ -2,7 +2,7 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum DocumentType {
+public enum DocumentType implements EnumeratedInterface{
 
     CHECK_DOC(Constants.CHECK_DOC_TYPE),
     CREDIT_ORDER_DOC(Constants.CREDIT_ORDER_DOC_TYPE),

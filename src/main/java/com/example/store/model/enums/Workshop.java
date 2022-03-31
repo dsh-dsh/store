@@ -2,19 +2,19 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum Workshop {
+public enum Workshop implements EnumeratedInterface{
 
     KITCHEN(Constants.KITCHEN),
     BAR(Constants.BAR),
     NONE(Constants.NONE);
 
-    private final String name;
+    private final String value;
 
     Workshop(String value) {
-        this.name = value;
+        this.value = value;
     }
 
     public String getValue() {
-        return name;
+        return value;
     }
 }

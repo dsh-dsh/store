@@ -5,7 +5,6 @@ import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Quantity;
 import com.example.store.services.ItemService;
 import com.example.store.services.QuantityService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component

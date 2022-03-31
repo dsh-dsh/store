@@ -13,16 +13,16 @@ public enum Role {
     ACCOUNTANT(Constants.ACCOUNTANT_ROLE, Set.of(Permission.WRITE)),
     CUSTOMER(Constants.CUSTOMER_ROLE, Set.of(Permission.READ));
 
-    private final String name;
+    private final String value;
     private final Set<Permission> permissions;
 
-    Role(String name, Set<Permission> permissions) {
-        this.name = name;
+    Role(String value, Set<Permission> permissions) {
+        this.value = value;
         this.permissions = permissions;
     }
 
-    public String getName() {
-        return this.name;
+    public String getValue() {
+        return this.value;
     }
 
     public Set<SimpleGrantedAuthority> getAuthorities() {

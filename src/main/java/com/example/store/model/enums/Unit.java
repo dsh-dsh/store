@@ -2,7 +2,7 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum Unit {
+public enum Unit implements EnumeratedInterface {
 
     KG(Constants.KG),
     LITER(Constants.LITER),
@@ -10,13 +10,13 @@ public enum Unit {
     PORTION(Constants.PORTION),
     NONE(Constants.NONE);
 
-    private final String name;
+    private final String value;
 
     Unit(String value) {
-        this.name = value;
+        this.value = value;
     }
 
     public String getValue() {
-        return name;
+        return value;
     }
 }

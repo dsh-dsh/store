@@ -1,17 +1,27 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.entities.Storage;
 import com.example.store.repositories.StorageRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StorageService {
 
     @Autowired
     private StorageRepository storageRepository;
+
+    public List<StorageDTO> getStorageDTOList() {
+        return storageRepository.findAll()
+                .stream().map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 
     public Storage getById(int id) {
         return storageRepository.findById(id)
@@ -21,6 +31,14 @@ public class StorageService {
     public Storage getByName(String name) {
         return storageRepository.findByNameIgnoreCase(name)
                 .orElseThrow(BadRequestException::new);
+    }
+
+    private StorageDTO mapToDTO(Storage storage) {
+        StorageDTO dto = new StorageDTO();
+        dto.setId(storage.getId());
+        dto.setName(storage.getName());
+        dto.setType(storage.getType().getValue());
+        return dto;
     }
 
 }

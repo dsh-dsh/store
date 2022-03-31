@@ -2,24 +2,24 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum QuantityType {
+public enum QuantityType implements EnumeratedInterface {
 
     NET(Constants.NET_TYPE),
     GROSS(Constants.GROSS_TYPE);
 
-    private final String type;
+    private final String value;
 
-    QuantityType(String type) {
-        this.type = type;
+    QuantityType(String value) {
+        this.value = value;
     }
 
-    public String getType() {
-        return type;
+    public String getValue() {
+        return value;
     }
 
-    public static QuantityType getByValue(String type) {
+    public static QuantityType getByValue(String value) {
         for(QuantityType quantityType : QuantityType.values()) {
-            if(quantityType.type.equalsIgnoreCase(type)) {
+            if(quantityType.value.equalsIgnoreCase(value)) {
                 return quantityType;
             }
         }

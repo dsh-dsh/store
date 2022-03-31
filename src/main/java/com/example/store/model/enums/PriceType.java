@@ -2,24 +2,24 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum PriceType {
+public enum PriceType implements EnumeratedInterface {
 
     RETAIL(Constants.RETAIL_PRICE_TYPE),
     DELIVERY(Constants.DELIVERY_PRICE_TYPE);
 
-    private final String type;
+    private final String value;
 
-    PriceType(String type) {
-        this.type = type;
+    PriceType(String value) {
+        this.value = value;
     }
 
-    public String getType() {
-        return type;
+    public String getValue() {
+        return value;
     }
 
-    public static PriceType getByValue(String type) {
+    public static PriceType getByValue(String value) {
         for(PriceType priceType : PriceType.values()) {
-            if(priceType.type.equalsIgnoreCase(type)) {
+            if(priceType.value.equalsIgnoreCase(value)) {
                 return priceType;
             }
         }

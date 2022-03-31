@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -63,5 +65,11 @@ public class UserService {
         if(dto.getBirthDate() !=0) user.setBirthDate(Instant
                 .ofEpochMilli(dto.getBirthDate()).atZone(ZoneId.systemDefault()).toLocalDate());
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
+    }
+
+    public List<PersonDTO> getProjectDTOList() {
+        return userRepository.findAll().stream()
+                .map(personMapper::mapToUserDTO)
+                .collect(Collectors.toList());
     }
 }
