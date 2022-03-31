@@ -8,6 +8,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,9 @@ public class DocumentController {
 
     @GetMapping("/api/v1/docs/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
-            @RequestParam(required = false) DocumentType type) {
-        List<DocToListDTO> docToListDTOS = documentService.getDocumentsByType(type);
-        return ResponseEntity.ok(new ListResponse<>(docToListDTOS));
+            @RequestParam(required = false) DocumentType type,
+            Pageable pageable) {
+        return ResponseEntity.ok(documentService.getDocumentsByType(type, pageable));
     }
 
     @GetMapping("/api/v1/docs")

@@ -29,6 +29,9 @@ public class TestService {
     static final int ONE_DOCUMENT = 1;
     static final int NO_DOCUMENTS = 0;
     static final String EXISTING_EMAIL = "customer@mail.ru";
+    static final String PAGE_NUMBER = "0";
+    static final String LIMIT = "20";
+
 
 
 

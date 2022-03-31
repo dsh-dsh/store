@@ -9,10 +9,13 @@ import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.responses.ListResponse;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,11 +48,12 @@ public class DocumentService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    public List<DocToListDTO> getDocumentsByType(DocumentType documentType) {
-        List<Document> docs = documentRepository.getByDocType(documentType);
-        return docs.stream()
+    public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {
+        Page<Document> page = documentRepository.getByDocType(documentType, pageable);
+        List<DocToListDTO> dtoList = page.stream()
                 .map(docToListMapper::mapToDocDTO)
                 .collect(Collectors.toList());
+        return new ListResponse<>(dtoList, page);
     }
 
     public List<ItemDoc> getItemDocsByType(DocumentType documentType) {
