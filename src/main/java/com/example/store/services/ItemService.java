@@ -3,15 +3,21 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForList;
+import com.example.store.model.dto.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemService {
@@ -26,6 +32,16 @@ public class ItemService {
     private SetService setService;
     @Autowired
     private IngredientService ingredientService;
+
+    private List<ItemDTOForList> allItems = new ArrayList<>();
+
+    public List<ItemDTOForList> getItemDTOTree() {
+        setItemDTOList();
+        return allItems.stream()
+                .filter(item -> item.getParentId() == 0)
+                .map(item -> item.getDTOForList(allItems))
+                .collect(Collectors.toList());
+    }
 
     public Item setNewItem(ItemDTO itemDTO) {
         Item item = itemMapper.mapToItem(itemDTO);
@@ -66,11 +82,6 @@ public class ItemService {
         return itemRepository.getById(id);
     }
 
-    public Item findSetById(int id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-    }
-
     public ItemDTO getItemDTOById(int id, String stringDate) {
         LocalDate date = LocalDate.parse(stringDate);
         Item item = itemRepository.findById(id)
@@ -82,6 +93,13 @@ public class ItemService {
         itemDTO.setIngredients(ingredientService.getIngredientDTOList(item, date));
 
         return itemDTO;
+    }
+
+    public void softDeleteItem(int id) {
+        Item item = findItemById(id);
+        item.setDeleted(true);
+        itemRepository.save(item);
+        ingredientService.softDeleteIngredients(item);
     }
 
     private Item findItemById(int id) {
@@ -100,10 +118,20 @@ public class ItemService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
-    public void softDeleteItem(int id) {
-        Item item = findItemById(id);
-        item.setDeleted(true);
-        itemRepository.save(item);
-        ingredientService.softDeleteIngredients(item);
+    private void setItemDTOList() {
+        if(allItems.isEmpty()) {
+            List<ItemDTOForListInterface> items = itemRepository.getItemDTOList();
+            allItems = items.stream()
+                    .map(this::getItemDTOForList)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private ItemDTOForList getItemDTOForList(ItemDTOForListInterface item) {
+        ItemDTOForList dto = new ItemDTOForList();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setParentId(item.getParentId());
+        return dto;
     }
 }

@@ -71,6 +71,30 @@ public class ItemControllerTest {
     @Autowired
     private SetService setService;
 
+    @Test
+    void getItemTreeUnauthorizedTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/tree"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemTreeTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/tree"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[0].children.[3]").exists())
+                .andExpect(jsonPath("$.data.[0].children.[4]").doesNotExist())
+                .andExpect(jsonPath("$.data.[1].children.[0].children.[1]").exists())
+                .andExpect(jsonPath("$.data.[1].children.[0].children.[2]").doesNotExist())
+                .andExpect(jsonPath("$.data.[2]").doesNotExist());
+
+    }
+
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

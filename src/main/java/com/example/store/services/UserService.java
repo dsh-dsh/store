@@ -22,8 +22,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private PersonMapper personMapper;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     public PersonDTO getPersonById(int id) {
         User user = getById(id);
@@ -43,7 +43,7 @@ public class UserService {
     public void setPerson(PersonDTO personDTO) {
         User user = personMapper.mapToUser(personDTO);
         user.setRegTime(LocalDateTime.now());
-        user.setPassword(passwordEncoder.encode(personDTO.getPassword()));
+//        user.setPassword(passwordEncoder.encode(personDTO.getPassword()));
         userRepository.save(user);
     }
 

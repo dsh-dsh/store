@@ -1,5 +1,6 @@
 package com.example.store.model.entities;
 
+import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter

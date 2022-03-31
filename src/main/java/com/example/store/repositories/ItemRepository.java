@@ -1,5 +1,7 @@
 package com.example.store.repositories;
 
+import com.example.store.model.dto.ItemDTOForList;
+import com.example.store.model.dto.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +21,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Optional<Item> findByName(String name);
 
     Item getByName(String name);
+
+    @Query(value = "select i.id, i.name, i.parent_id as parentId from item as i", nativeQuery = true)
+    List<ItemDTOForListInterface> getItemDTOList();
 
 }

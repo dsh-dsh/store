@@ -1,7 +1,9 @@
 package com.example.store.controllers;
 
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.entities.Item;
+import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.ItemService;
 import com.example.store.utils.Constants;
@@ -14,6 +16,11 @@ public class ItemController {
 
     @Autowired
     private ItemService itemService;
+
+    @GetMapping("/api/v1/items/tree")
+    public ResponseEntity<ListResponse<ItemDTOForList>> getItemTree() {
+        return ResponseEntity.ok(new ListResponse<>(itemService.getItemDTOTree()));
+    }
 
     @GetMapping("/api/v1/items")
     public ResponseEntity<Response<ItemDTO>> getItemById(
