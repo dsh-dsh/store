@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF" packages="com.skillbox.socialnet.util">
+
+    <Properties>
+        <Property name="baseDir">logs</Property>
+        <Property name="fileSize">1 MB</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%throwable"/>
+        </Console>
+
+        <RollingFile name="RollingFileCommonDebugAppender"
+                     filePattern="${baseDir}/commonDebugLevel/$${date:yyyy-MM}/commonDebugs-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} [%t] %p %c %m%n%throwable"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <DirectWriteRolloverStrategy/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileInfoAppender"
+                     filePattern="${baseDir}/infoLevel/$${date:yyyy-MM}/info-%d{yyyy-MM-dd-HH}-%i.log">
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %c %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <DirectWriteRolloverStrategy/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileDebugAppender"
+                     filePattern="${baseDir}/debugLevel/$${date:yyyy-MM}/debugs-%d{yyyy-MM-dd-HH}-%i.log">
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %c %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <DirectWriteRolloverStrategy/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileErrorAppender"
+                     filePattern="${baseDir}/errorLevel/$${date:yyyy-MM}/errors-%d{yyyy-MM-dd-HH}-%i.log">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %c %m%n%throwable"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <DirectWriteRolloverStrategy/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileMethodReturnAppender"
+                     filePattern="${baseDir}/methodLogs/$${date:yyyy-MM}/methodLogs-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%d{dd.MM.yyyy HH:mm:ss.SSS} %p %maskedMessage%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${fileSize}"/>
+            </Policies>
+            <DirectWriteRolloverStrategy/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <logger name="methodReturn" level="info">
+            <AppenderRef ref="RollingFileMethodReturnAppender"/>
+        </logger>
+
+        <logger name="com.skillbox.socialnet"  level="debug">
+            <AppenderRef ref="RollingFileInfoAppender"/>
+            <AppenderRef ref="RollingFileDebugAppender"/>
+            <AppenderRef ref="RollingFileErrorAppender"/>
+        </logger>
+
+        <Root level="debug">
+<!--            <AppenderRef ref="RollingFileCommonDebugAppender"/>-->
+            <AppenderRef ref="ConsoleAppender" level="info"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
