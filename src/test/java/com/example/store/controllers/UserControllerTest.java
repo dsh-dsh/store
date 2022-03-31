@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -53,8 +54,8 @@ public class UserControllerTest {
     private UserService userService;
 
     @Test
-    void getPerson() throws Exception {
-
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getPersonTest() throws Exception {
         this.mockMvc.perform(
                     get(URL_PREFIX)
                         .param("id", String.valueOf(PERSON_ID)))
@@ -62,14 +63,21 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(PERSON_ID))
                 .andExpect(jsonPath("$.data.email").value(PERSON_EMAIL));
-
     }
 
-//    @Sql(value = "/sql/users/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Test
+    void getPersonUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX)
+                                .param("id", String.valueOf(PERSON_ID)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/users/deleteNewUser.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void setPerson() throws Exception {
-
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setPersonTest() throws Exception {
         PersonDTO personDTO = PersonDTO.builder()
                 .id(USER_ID)
                 .firstName(FIRST_NAME)
@@ -80,7 +88,6 @@ public class UserControllerTest {
                 .phone(PHONE)
                 .role(Role.CUSTOMER.toString())
                 .build();
-
         this.mockMvc.perform(
                         post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,14 +99,24 @@ public class UserControllerTest {
         User user = userService.getByEmail(NEW_USER_EMAIL);
         assertEquals(user.getLastName(), LAST_NAME);
         assertEquals(user.getRole(), Role.CUSTOMER);
+    }
 
+    @Test
+    void setPersonUnauthorizedTest() throws Exception {
+        PersonDTO personDTO = PersonDTO.builder().build();
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(personDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Sql(value = "/sql/users/addNewUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/users/deleteNewUser.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updatePerson() throws Exception {
-
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void updatePersonTest() throws Exception {
         PersonDTO personDTO = PersonDTO.builder()
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
@@ -108,7 +125,6 @@ public class UserControllerTest {
                 .phone(PHONE)
                 .role(Role.ADMIN.toString())
                 .build();
-
         this.mockMvc.perform(
                         put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +137,17 @@ public class UserControllerTest {
         assertEquals(user.getLastName(), LAST_NAME);
         assertEquals(user.getBirthDate().toString(), BIRTH_DATE);
         assertEquals(user.getRole(), Role.ADMIN);
+    }
 
+    @Test
+    void updatePersonUnauthorizedTest() throws Exception {
+        PersonDTO personDTO = PersonDTO.builder().build();
+        this.mockMvc.perform(
+                        put(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(personDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
 }

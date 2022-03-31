@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -57,14 +58,13 @@ public class OrderDocsControllerTest {
 
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addSalaryOrderTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SALARY_TYPE_STRING, AMOUNT, TAX);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,23 +75,33 @@ public class OrderDocsControllerTest {
 
         List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
         assertEquals(TestService.ONE_DOCUMENT, docs.size());
-
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
         assertEquals(PaymentType.SALARY_PAYMENT, docs.get(0).getPaymentType());
     }
 
+    @Test
+    void addOrderUnauthorizedTest() throws Exception {
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addSaleOrderTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
         testService.setOrderFields(docDTO, SALE_TYPE_STRING, AMOUNT, TAX);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         post(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -108,18 +118,29 @@ public class OrderDocsControllerTest {
         assertEquals(PaymentType.SALE_PAYMENT, docs.get(0).getPaymentType());
     }
 
+    @Test
+    void updateOrderDocUnauthorizedTest() throws Exception {
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+        this.mockMvc.perform(
+                        put(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateWithdrawDocTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SUPPLIER_TYPE_STRING, AMOUNT, TAX);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,8 +160,8 @@ public class OrderDocsControllerTest {
     @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateCreditDocTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
@@ -148,7 +169,6 @@ public class OrderDocsControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(RECIPIENT_ID));
         testService.setOrderFields(docDTO, OTHER_PAYMENT_STRING, AMOUNT, TAX);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -170,12 +190,11 @@ public class OrderDocsControllerTest {
     @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void softDeleteCreditDocTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         delete(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -192,12 +211,11 @@ public class OrderDocsControllerTest {
     @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void softDeleteWithdrawDocTest() throws Exception {
-
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
         this.mockMvc.perform(
                         delete(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -211,9 +229,22 @@ public class OrderDocsControllerTest {
         assertTrue(docs.get(0).isDeleted());
     }
 
+    @Test
+    void softDeleteUnauthorizedTest() throws Exception {
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/orders/addWithdrawDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void getWithdrawDocTest() throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX).param("id", String.valueOf(TestService.DOC_ID)))
@@ -227,6 +258,7 @@ public class OrderDocsControllerTest {
     @Sql(value = "/sql/orders/addCreditDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/orders/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCreditDocTest() throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX).param("id", String.valueOf(TestService.DOC_ID)))
@@ -235,6 +267,14 @@ public class OrderDocsControllerTest {
                 .andExpect(jsonPath("$.data.id").value(TestService.DOC_ID))
                 .andExpect(jsonPath("$.data.doc_type").value(DocumentType.CREDIT_ORDER_DOC.toString()))
                 .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALE_PAYMENT.toString()));
+    }
+
+    @Test
+    void getOrderDocUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX).param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -66,6 +67,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addCheckDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
@@ -93,8 +95,23 @@ public class DocumentControllerTest {
         assertEquals(TestService.CHECK_NUMBER + TestService.ADD_VALUE, checkInfo.getCheckNumber());
     }
 
+    @Test
+    void addCheckDocUnauthorizedTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addReceiptDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
@@ -121,6 +138,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addReceiptDocWithWrongFirstDocItemTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
@@ -146,6 +164,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addPostingDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
@@ -171,6 +190,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addRequestDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
@@ -194,6 +214,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addInventoryDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
@@ -224,6 +245,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateCheckDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
@@ -253,9 +275,24 @@ public class DocumentControllerTest {
         assertEquals(TestService.CHECK_NUMBER + TestService.UPDATE_VALUE, checkInfo.getCheckNumber());
     }
 
+    @Test
+    void updateCheckDocUnauthorizedTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/documents/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateReceiptDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
@@ -289,6 +326,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updatePostingDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
@@ -316,6 +354,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateRequestDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
@@ -342,6 +381,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateInventoryDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
@@ -374,6 +414,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void deleteCheckDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
@@ -399,9 +440,26 @@ public class DocumentControllerTest {
 
     }
 
+
+    @Test
+    void deleteCheckDocUnauthorizedTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        delete(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void deletePostingDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.POSTING_DOC);
@@ -426,6 +484,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void deleteRequestDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
@@ -450,6 +509,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void deleteReceiptDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
@@ -474,6 +534,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void deleteInventoryDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
@@ -498,6 +559,7 @@ public class DocumentControllerTest {
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void FailedTransactionTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
@@ -521,6 +583,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void getDocListTest() throws Exception {
 
         this.mockMvc.perform(get(URL_PREFIX + "/list"))
@@ -536,6 +599,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCheckDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
                         .param("id", String.valueOf(TestService.DOC_ID)))
@@ -551,6 +615,7 @@ public class DocumentControllerTest {
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
     void getPostingDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
                         .param("id", String.valueOf(TestService.DOC_ID)))
@@ -561,5 +626,13 @@ public class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.doc_items").isArray())
                 .andExpect(jsonPath("$.data.doc_items.[1]").exists())
                 .andExpect(jsonPath("$.data.doc_items.[2]").doesNotExist());
+    }
+
+    @Test
+    void getPostingDocTestUnauthorized() throws Exception {
+        this.mockMvc.perform(get(URL_PREFIX)
+                        .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -73,7 +74,8 @@ public class ItemControllerTest {
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getItem() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemTest() throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX)
                                 .param("id", String.valueOf(NEW_ITEM_ID))
@@ -89,9 +91,21 @@ public class ItemControllerTest {
 
     }
 
+    @Test
+    void getItemUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX)
+                                .param("id", String.valueOf(NEW_ITEM_ID))
+                                .param("date", LocalDate.now().toString()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void setItemWithoutIngredientsAndSets() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setItemWithoutIngredientsAndSetsTest() throws Exception {
 
         ItemDTO itemDTO = getItemDTO();
 
@@ -119,9 +133,24 @@ public class ItemControllerTest {
 
     }
 
+    @Test
+    void setItemUnauthorizedTest() throws Exception {
+
+        ItemDTO itemDTO = getItemDTO();
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(itemDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void setItemWithIngredientsAndSets() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setItemWithIngredientsAndSetsTest() throws Exception {
 
         ItemDTO itemDTO = getItemDTO();
         itemDTO.setSets(List.of(9));
@@ -148,7 +177,8 @@ public class ItemControllerTest {
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updateItemWithTwoNewPrice() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void updateItemWithTwoNewPriceTest() throws Exception {
 
         ItemDTO itemDTO = getItemDTOToUpdate(DATE);
 
@@ -175,10 +205,24 @@ public class ItemControllerTest {
         assertEquals(6, prices.size());
     }
 
+    @Test
+    void updateItemUnauthorizedTest() throws Exception {
+
+        ItemDTO itemDTO = getItemDTOToUpdate(DATE);
+
+        this.mockMvc.perform(
+                        put(URL_PREFIX + "/" + DATE)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(itemDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updateItemWithOneNewPriceAndNoSets() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void updateItemWithOneNewPriceAndNoSetsTest() throws Exception {
 
         ItemDTO itemDTO = getItemDTOToUpdate(UPDATE_DATE);
 
@@ -212,7 +256,8 @@ public class ItemControllerTest {
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updateItemWithIngredientsAndSets() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void updateItemWithIngredientsAndSetsTest() throws Exception {
 
         ItemDTO itemDTO = getItemDTOToUpdate(DATE);
         itemDTO.setSets(List.of(5, 8));
@@ -238,7 +283,8 @@ public class ItemControllerTest {
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void softDeleteItem() throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void softDeleteItemTest() throws Exception {
         this.mockMvc.perform(
                         delete(URL_PREFIX + "/" + NEW_ITEM_ID))
                 .andDo(print())
@@ -247,6 +293,14 @@ public class ItemControllerTest {
 
         Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
         assertTrue(item.isDeleted());
+    }
+
+    @Test
+    void softDeleteItemUnauthorized() throws Exception {
+        this.mockMvc.perform(
+                        delete(URL_PREFIX + "/" + NEW_ITEM_ID))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     private List<IngredientDTO> getIngredientDTOList() {
