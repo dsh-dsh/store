@@ -1,1 +1,0 @@
-alter table ingredient add is_deleted bit not null default B'0';

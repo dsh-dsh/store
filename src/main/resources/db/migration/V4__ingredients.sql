@@ -1,6 +1,6 @@
 create table if not exists ingredient
 (id integer not null auto_increment, parent_id integer not null, child_id integer not null,
-primary key (id));
+is_deleted bit not null default B'0', primary key (id));
 
 create table if not exists periodic_quantity
 (id integer not null auto_increment, ingredient_id integer not null, data datetime(6),

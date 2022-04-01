@@ -21,7 +21,8 @@ public class Document {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "docSequence")
+    @SequenceGenerator(name = "docSequence", sequenceName = "DOC_SEQ")
     private int id;
 
     private int number;
