@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -35,8 +35,8 @@ public class LotMovement {
     @JoinColumn(name = "document_id")
     private ItemDoc doc;
 
-    @Column(name = "movement_date")
-    private LocalDate movementDate;
+    @Column(name = "movement_time")
+    private LocalDateTime movementTime;
 
     private float quantity;
     private float amount;

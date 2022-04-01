@@ -1,8 +1,8 @@
 create table if not exists lot
-(id bigint not null, item_id int not null, lot_date datetime(6), primary key (id));
+(id bigint not null, item_id int not null, lot_time datetime(6), primary key (id));
 
 create table if not exists lot_movement
-(id bigint not null, movement_date datetime(6), lot_id bigint not null, storage_id int not null,
+(id bigint not null, movement_time datetime(6), lot_id bigint not null, storage_id int not null,
 document_id int not null, amount float not null, quantity float not null, primary key (id));
 
 alter table lot add constraint FK_lot_item_id foreign key (item_id) references item (id);
