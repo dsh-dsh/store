@@ -3,8 +3,10 @@ package com.example.store.factories;
 import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.DocInterface;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.PaymentType;
+import com.example.store.utils.annotations.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,4 +46,12 @@ public class OrderDocFactory  extends AbstractDocFactory {
         order.setDeleted(true);
         orderDocRepository.save(order);
     }
+
+    @Override
+    public void holdDocument(Document document) {
+        document.setHold(true);
+    }
+
+    @Override
+    public void unHoldDocument(Document document){document.setHold(false);}
 }

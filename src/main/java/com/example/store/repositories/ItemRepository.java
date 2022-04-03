@@ -1,7 +1,6 @@
 package com.example.store.repositories;
 
-import com.example.store.model.dto.ItemDTOForList;
-import com.example.store.model.dto.ItemDTOForListInterface;
+import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

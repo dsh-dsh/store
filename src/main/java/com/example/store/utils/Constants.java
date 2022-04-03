@@ -33,6 +33,8 @@ public class Constants {
 
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
+    public static final String HOLD_FAILED_MESSAGE = "hold failed";
+    public static final String UN_HOLD_FORBIDDEN_MESSAGE = "hold cancellation forbidden";
 
     public static final String KG = "кг.";
     public static final String LITER = "л.";
@@ -51,6 +53,8 @@ public class Constants {
     public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
     public static final String NO_SUCH_CHECK_INFO_MESSAGE = "no such check info";
     public static final String NO_SUCH_ITEM_MESSAGE = "no such item";
+    public static final String NO_SUCH_LOT_MESSAGE = "no such lot";
+    public static final String NO_SUCH_LOT_MOVEMENT_MESSAGE = "no such lot movement";
     public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
 
     public static final String NET_TYPE = "Нетто";

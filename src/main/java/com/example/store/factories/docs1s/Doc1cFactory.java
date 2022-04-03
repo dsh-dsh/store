@@ -3,6 +3,7 @@ package com.example.store.factories.docs1s;
 import com.example.store.factories.abstraction.DocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.DocInterface;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.ItemDocRepository;
@@ -76,6 +77,7 @@ public class Doc1cFactory implements DocFactory {
     @Override
     public void deleteDocument(int docId) {}
 
+
     private void addDocItems(DocDTO docDTO, ItemDoc check) {
         docDTO.getDocItems()
                 .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
@@ -84,4 +86,10 @@ public class Doc1cFactory implements DocFactory {
     public void setItemDocDTO(DocDTO docDTO) {
         this.docDTO = docDTO;
     }
+
+    @Override
+    public void holdDocument(Document document) {}
+
+    @Override
+    public void unHoldDocument(Document document){}
 }

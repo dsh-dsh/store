@@ -6,6 +6,7 @@ import com.example.store.mappers.DocMapper;
 import com.example.store.mappers.DocToListMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
@@ -13,6 +14,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,4 +77,8 @@ public class DocumentService {
         int docId = docDTO.getId();
         itemDocFactory.deleteDocument(docId);
     }
+
+//    public void holdDocument(ItemDoc document) {
+//        itemDocFactory.holdDocument(document);
+//    }
 }

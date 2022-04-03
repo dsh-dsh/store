@@ -2,6 +2,7 @@ package com.example.store.factories.docs1s;
 
 import com.example.store.factories.abstraction.DocFactory;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.enums.DocumentType;
@@ -54,5 +55,11 @@ public class Order1cFactory implements DocFactory {
 
     @Override
     public void deleteDocument(int docId) {}
+
+    @Override
+    public void holdDocument(Document document) {}
+
+    @Override
+    public void unHoldDocument(Document document){}
 
 }

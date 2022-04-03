@@ -4,13 +4,12 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
-import com.example.store.model.dto.ItemDTOForListInterface;
+import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

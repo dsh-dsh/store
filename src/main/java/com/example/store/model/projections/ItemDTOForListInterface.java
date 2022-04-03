@@ -1,4 +1,4 @@
-package com.example.store.model.dto;
+package com.example.store.model.projections;
 
 public interface ItemDTOForListInterface {
     Integer getId();

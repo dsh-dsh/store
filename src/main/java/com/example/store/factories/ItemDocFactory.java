@@ -2,15 +2,23 @@ package com.example.store.factories;
 
 import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.DocInterface;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
-import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.services.LotService;
 import com.example.store.utils.annotations.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ItemDocFactory extends AbstractDocFactory {
+
+    @Autowired
+    private LotService lotService;
 
     @Override
     @Transaction
@@ -58,10 +66,28 @@ public class ItemDocFactory extends AbstractDocFactory {
     }
 
     @Override
+    @Transaction
     public void deleteDocument(int docId) {
         ItemDoc itemDoc = itemDocRepository.getById(docId);
         itemDoc.setDeleted(true);
         itemDocRepository.save(itemDoc);
+        //TODO if document isHold removing is forbidden
         //TODO soft delete docItems and checkInfo
+    }
+
+    @Override
+    @Transaction
+    public void holdDocument(Document document) {
+        lotService.addLotMovements(document);
+        document.setHold(true);
+    }
+
+//    @Override
+    @Transaction
+    public void unHoldDocument(Document document) {
+        List<DocumentItem> items =
+                docItemService.getItemsByDoc((ItemDoc) document);
+        lotService.removeLots(items);
+        document.setHold(false);
     }
 }

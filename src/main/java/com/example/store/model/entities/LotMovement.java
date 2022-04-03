@@ -1,6 +1,7 @@
 package com.example.store.model.entities;
 
 import com.example.store.model.entities.documents.ItemDoc;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-//@EqualsAndHashCode(of = {"name", "regTime"})
+@EqualsAndHashCode(of = {"lot", "movementTime"})
 public class LotMovement {
 
     @Id
@@ -33,12 +34,18 @@ public class LotMovement {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "document_id")
-    private ItemDoc doc;
+    private ItemDoc document;
 
     @Column(name = "movement_time")
     private LocalDateTime movementTime;
 
     private float quantity;
-    private float amount;
 
+
+    public LotMovement(Lot lot, ItemDoc document, LocalDateTime movementTime, float quantity) {
+        this.lot = lot;
+        this.document = document;
+        this.movementTime = movementTime;
+        this.quantity = quantity;
+    }
 }
