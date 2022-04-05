@@ -24,7 +24,7 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "and movement.movement_time < :time " +
             "group by lot.id " +
             "having sum(movement.quantity) > 0")
-    Collection<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
+    List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
 
 //    @Query("SELECT lot FROM Lot lot " +
 //            "WHERE lot.item " +
