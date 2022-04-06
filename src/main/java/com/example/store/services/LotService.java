@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -74,15 +73,24 @@ public class LotService {
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
         List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), time);
         return lotsOfItem.stream()
-                .collect(Collectors.toMap(LotFloat::getLot, LotFloat::getValue, (lf1, lf2) -> lf1, TreeMap::new));
+                .peek(lotFloat -> System.out.println(lotFloat.getId()))
+                .peek(lotFloat -> System.out.println(lotFloat.getValue()))
+                .collect(Collectors.toMap(
+                        lotFloat -> getLotById(lotFloat.getId()),
+                        LotFloat::getValue,
+                        (lf1, lf2) -> lf1,
+                        TreeMap::new));
+    }
+    private Lot getLotById(long id) {
+        return lotRepository.getById(id);
     }
 
-    private void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
+    public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
         if(docItemQuantity > lotsQuantitySum) throw new HoldDocumentException();
     }
 
-    private Map<Lot, Float> getLotMapToUse(Map<Lot, Float> lotMap, float quantity) {
+    public Map<Lot, Float> getLotMapToUse(Map<Lot, Float> lotMap, float quantity) {
         Map<Lot, Float> newLotMap = new TreeMap<>();
         for(Map.Entry<Lot, Float> entry : lotMap.entrySet()) {
             if(quantity > 0){
@@ -94,14 +102,14 @@ public class LotService {
         return newLotMap;
     }
 
-    private void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
-        newLotMap.forEach((key, value) -> lotMoveService
-                .addPlusLotMovement(key, document, value));
-    }
-
-    private void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+    public void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> lotMoveService
                 .addMinusLotMovement(key, document, value));
+    }
+
+    public void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+        newLotMap.forEach((key, value) -> lotMoveService
+                .addPlusLotMovement(key, document, value));
     }
 
     private void addLots(Document document) {
