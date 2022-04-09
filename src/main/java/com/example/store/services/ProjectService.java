@@ -29,9 +29,13 @@ public class ProjectService {
     }
 
     public List<ProjectDTO> getProjectDTOList() {
-        return projectRepository.findAll().stream()
+        return getProjectList().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<Project> getProjectList() {
+        return projectRepository.findAll();
     }
 
     private ProjectDTO mapToDTO(Project project) {

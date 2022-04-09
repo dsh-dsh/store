@@ -77,9 +77,10 @@ public class ItemDocFactory extends AbstractDocFactory {
 
     @Override
     @Transaction
-    public void holdDocument(Document document) {
+    public boolean holdDocument(Document document) {
         lotService.addLotMovements(document);
         document.setHold(true);
+        return true;
     }
 
 //    @Override

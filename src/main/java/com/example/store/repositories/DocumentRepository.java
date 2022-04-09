@@ -17,4 +17,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "FROM Document doc " +
             "WHERE (:docType is null OR doc.docType = :docType)")
     Page<Document> getByDocType(DocumentType docType, Pageable pageable);
+
+    List<Document> findByDocType(DocumentType docType);
 }

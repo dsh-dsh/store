@@ -7,6 +7,7 @@ import com.example.store.model.entities.Quantity;
 import com.example.store.model.enums.QuantityType;
 import com.example.store.repositories.QuantityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,7 +24,8 @@ public class QuantityService {
     private QuantityMapper quantityMapper;
 
     public List<Quantity> getQuantityList(Ingredient ingredient, LocalDate date) {
-        return quantityRepository.findByIngredientAndDateLessThanEqual(ingredient, date);
+        return quantityRepository
+                .findByIngredientAndDateLessThanEqual(ingredient, date, Sort.by("date").descending());
     }
 
     public List<QuantityDTO> getQuantityDTOList(List<Quantity> quantities) {

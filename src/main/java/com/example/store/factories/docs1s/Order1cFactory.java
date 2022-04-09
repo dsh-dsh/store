@@ -57,7 +57,7 @@ public class Order1cFactory implements DocFactory {
     public void deleteDocument(int docId) {}
 
     @Override
-    public void holdDocument(Document document) {}
+    public boolean holdDocument(Document document) {return true;}
 
     @Override
     public void unHoldDocument(Document document){}

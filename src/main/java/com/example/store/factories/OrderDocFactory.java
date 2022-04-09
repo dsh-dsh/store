@@ -6,7 +6,6 @@ import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.PaymentType;
-import com.example.store.utils.annotations.Transaction;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -48,8 +47,9 @@ public class OrderDocFactory  extends AbstractDocFactory {
     }
 
     @Override
-    public void holdDocument(Document document) {
+    public boolean holdDocument(Document document) {
         document.setHold(true);
+        return true;
     }
 
     @Override

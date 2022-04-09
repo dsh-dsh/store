@@ -18,9 +18,13 @@ public class StorageService {
     private StorageRepository storageRepository;
 
     public List<StorageDTO> getStorageDTOList() {
-        return storageRepository.findAll()
-                .stream().map(this::mapToDTO)
+        return getStorageList().stream()
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<Storage> getStorageList() {
+        return storageRepository.findAll();
     }
 
     public Storage getById(int id) {

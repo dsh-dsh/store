@@ -73,14 +73,13 @@ public class LotService {
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
         List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), time);
         return lotsOfItem.stream()
-                .peek(lotFloat -> System.out.println(lotFloat.getId()))
-                .peek(lotFloat -> System.out.println(lotFloat.getValue()))
                 .collect(Collectors.toMap(
                         lotFloat -> getLotById(lotFloat.getId()),
                         LotFloat::getValue,
                         (lf1, lf2) -> lf1,
                         TreeMap::new));
     }
+
     private Lot getLotById(long id) {
         return lotRepository.getById(id);
     }
@@ -121,7 +120,7 @@ public class LotService {
     private void addLot(DocumentItem item) {
         Lot lot = new Lot(item.getItemDoc(), item.getItem(),
                 LocalDateTime.now(), item.getQuantity(), item.getPrice());
-        lotMoveService.addPlusLotMovement(lot, item);
+        lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
         lotRepository.save(lot);
     }
 

@@ -6,7 +6,7 @@ import com.example.store.mappers.DocMapper;
 import com.example.store.mappers.DocToListMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
-import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
@@ -14,12 +14,12 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.utils.Constants;
-import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,6 +50,10 @@ public class DocumentService {
                 .orElseThrow(BadRequestException::new);
     }
 
+    public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
+        return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(type, storage, isHold, from, to);
+    }
+
     public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {
         Page<Document> page = documentRepository.getByDocType(documentType, pageable);
         List<DocToListDTO> dtoList = page.stream()
@@ -78,7 +82,8 @@ public class DocumentService {
         itemDocFactory.deleteDocument(docId);
     }
 
-//    public void holdDocument(ItemDoc document) {
-//        itemDocFactory.holdDocument(document);
-//    }
+    public void setItemDocHolden(ItemDoc doc) {
+        doc.setHold(true);
+        itemDocRepository.save(doc);
+    }
 }

@@ -72,4 +72,10 @@ public class UserService {
                 .map(personMapper::mapToUserDTO)
                 .collect(Collectors.toList());
     }
+
+    public User getSystemAuthor() {
+        String systemUserEmail = "system@user.com"; // TODO вынести в будущие настройки
+        return userRepository.findByEmailIgnoreCase(systemUserEmail)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
+    }
 }

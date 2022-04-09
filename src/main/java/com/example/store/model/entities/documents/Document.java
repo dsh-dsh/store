@@ -53,14 +53,14 @@ public class Document {
     @JoinColumn(name = "recipient_id")
     private Company recipient;
 
-    private boolean isPayed;
+    private boolean isPayed = false;
 
-    private boolean isHold;
+    private boolean isHold = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "base_document_id")
     private Document baseDocument;
 
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
 }

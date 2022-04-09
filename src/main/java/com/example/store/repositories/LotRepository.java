@@ -5,6 +5,7 @@ import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.utils.annotations.Loggable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,10 +30,6 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             , nativeQuery = true)
     List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
 
-//    @Query("SELECT lot FROM Lot lot " +
-//            "WHERE lot.item " +
-//            "AND lot.quantity > " +
-//            "(SELECT SUM(move.) FROM LotMovement move " +
-//            "WHERE move.lot = lot)")
-//    List<Lot> getLotsOfItem(Item item);
+
+    Optional<Lot> findTop1ByItem(Item item, Sort sort);
 }
