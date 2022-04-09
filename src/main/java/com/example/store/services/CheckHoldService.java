@@ -11,6 +11,8 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.ItemDocRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ public class CheckHoldService {
     @Autowired
     private IngredientService ingredientService;
 
+    @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> holdChecksByStoragesAndPeriod(storage, from, to));
