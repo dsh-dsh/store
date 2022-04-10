@@ -147,6 +147,7 @@ public class IngredientService {
     private void softDelete(Ingredient ingredient) {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
+        quantityService.softDeleteQuantities(ingredient);
     }
 
 }

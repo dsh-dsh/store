@@ -33,4 +33,7 @@ public class Quantity {
     @Enumerated(EnumType.STRING)
     private QuantityType type;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
 }

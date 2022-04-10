@@ -47,6 +47,13 @@ public class QuantityService {
         quantityRepository.save(quantity);
     }
 
+    public void softDeleteQuantities(Ingredient ingredient) {
+        List<Quantity> quantities = quantityRepository
+                .findByIngredientAndDateLessThanEqual(ingredient, LocalDate.now(), Sort.unsorted());
+        quantities.forEach(quantity -> quantity.setDeleted(false));
+        quantityRepository.saveAll(quantities);
+    }
+
     public void updateQuantities(Ingredient ingredient, List<QuantityDTO> dtoList) {
         dtoList.forEach(dto -> updateQuantity(ingredient, dto));
     }
@@ -70,4 +77,5 @@ public class QuantityService {
             setQuantity(ingredient, dto);
         }
     }
+
 }
