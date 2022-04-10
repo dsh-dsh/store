@@ -73,14 +73,13 @@
             <AppenderRef ref="RollingFileMethodReturnAppender"/>
         </logger>
 
-        <logger name="com.skillbox.socialnet"  level="debug">
+        <logger name="com.example.store"  level="debug">
             <AppenderRef ref="RollingFileInfoAppender"/>
             <AppenderRef ref="RollingFileDebugAppender"/>
             <AppenderRef ref="RollingFileErrorAppender"/>
         </logger>
 
         <Root level="debug">
-<!--            <AppenderRef ref="RollingFileCommonDebugAppender"/>-->
             <AppenderRef ref="ConsoleAppender" level="info"/>
         </Root>
     </Loggers>

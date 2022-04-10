@@ -33,4 +33,8 @@ public class Ingredient {
     private List<Quantity> quantityList;
 
     private boolean isDeleted;
+
+    public Ingredient(int id) {
+        this.id = id;
+    }
 }

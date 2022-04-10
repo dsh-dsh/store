@@ -77,26 +77,20 @@ public class IngredientService {
                 .findFirst();
     }
 
-    // TODO написать Unit тесты к этому методу
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
         if(ingredientDTOList == null) return;
         Map<Integer, Ingredient> ingredientMap = getIdIngredientMap(item);
-
         for(IngredientDTO ingredientDTO : ingredientDTOList) {
-            if(ingredientMap.containsKey(ingredientDTO.getChild().getId())) {
-                Ingredient ingredient = ingredientMap.get(ingredientDTO.getChild().getId());
+            int childId = ingredientDTO.getChild().getId();
+            if(ingredientMap.containsKey(childId)) {
+                Ingredient ingredient = ingredientMap.get(childId);
                 updateIngredient(ingredient, ingredientDTO);
-                ingredientMap.remove(ingredientDTO.getChild().getId());
+                ingredientMap.remove(childId);
             } else {
                 setIngredient(item, ingredientDTO);
             }
         }
-        ingredientMap.forEach((key, value) -> softDeleteIngredient(value));
-    }
-
-    private void softDeleteIngredient(Ingredient ingredient) {
-        ingredient.setDeleted(true);
-        ingredientRepository.save(ingredient);
+        ingredientMap.forEach((key, value) -> softDeleteIngredient(value, LocalDate.now()));
     }
 
     private void updateIngredient(Ingredient ingredient, IngredientDTO dto) {
@@ -112,42 +106,51 @@ public class IngredientService {
                         Function.identity()));
     }
 
-    public void setIngredients(Item item, List<IngredientDTO> ingredientDTOS) {
-        if(ingredientDTOS == null) return;
-        ingredientDTOS.forEach(dto -> setIngredient(item, dto));
-    }
-
     public List<IngredientDTO> getIngredientDTOList(Item item, LocalDate date) {
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
-        List<IngredientDTO> dtoList = ingredients.stream()
+        return ingredients.stream()
                 .map(ingredient -> {
                     IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
                     dto.setQuantityList(quantityService.getQuantityDTOList(ingredient, date));
                     return dto;
                 }).collect(Collectors.toList());
-        return dtoList;
+    }
+
+    public List<IngredientDTO> getDeletedIngredientDTOList(Item item, LocalDate date) {
+        List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, true);
+        return ingredients.stream()
+                .map(ingredient -> {
+                    IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
+                    dto.setQuantityList(quantityService.getQuantityDTOList(ingredient, date));
+                    return dto;
+                }).collect(Collectors.toList());
     }
 
     public List<Ingredient> getIngredientsNotDeleted(Item item) {
         return ingredientRepository.findByParentAndIsDeleted(item, false);
     }
 
-    private void setIngredient(Item item, IngredientDTO dto) {
+    public void setIngredients(Item item, List<IngredientDTO> ingredientDTOS) {
+        if(ingredientDTOS == null) return;
+        ingredientDTOS.forEach(dto -> setIngredient(item, dto));
+    }
+
+    public void setIngredient(Item item, IngredientDTO dto) {
         Ingredient ingredient = ingredientMapper.mapToEntity(dto);
         ingredient.setParent(item);
         ingredientRepository.save(ingredient);
         quantityService.setQuantities(ingredient, dto.getQuantityList());
     }
 
-    public void softDeleteIngredients(Item item) {
+    public void softDeleteIngredients(Item item, LocalDate date) {
         List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, false);
-        ingredients.forEach(this::softDelete);
+        ingredients.forEach(ingredient -> softDeleteIngredient(ingredient, date));
     }
 
-    private void softDelete(Ingredient ingredient) {
+    private void softDeleteIngredient(Ingredient ingredient, LocalDate date) {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
-        quantityService.softDeleteQuantities(ingredient);
+        quantityService.softDeleteQuantities(ingredient, date);
     }
 
 }

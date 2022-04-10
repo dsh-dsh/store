@@ -10,6 +10,7 @@ import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class ItemService {
 
     public Item setNewItem(ItemDTO itemDTO) {
         Item item = itemMapper.mapToItem(itemDTO);
-        item.setParent(findParentById(itemDTO.getParentId()));
+        item.setParent(findItemById(itemDTO.getParentId()));
         itemRepository.save(item);
         priceService.addPrices(item, itemDTO);
         setService.setSets(item, itemDTO.getSets());
@@ -74,7 +75,7 @@ public class ItemService {
         item.setIncludeSauce(dto.isIncludeSauce());
         item.setWorkshop(Workshop.valueOf(dto.getWorkshop()));
         item.setUnit(Unit.valueOf(dto.getUnit()));
-        item.setParent(findParentById(dto.getParentId()));
+        item.setParent(findItemById(dto.getParentId()));
     }
 
     public Item getItemById(int id) {
@@ -94,19 +95,15 @@ public class ItemService {
         return itemDTO;
     }
 
+    @Transaction
     public void softDeleteItem(int id) {
         Item item = findItemById(id);
         item.setDeleted(true);
         itemRepository.save(item);
-        ingredientService.softDeleteIngredients(item);
+        ingredientService.softDeleteIngredients(item, LocalDate.now());
     }
 
     private Item findItemById(int id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-    }
-
-    private Item findParentById(int id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }

@@ -15,5 +15,6 @@ public class QuantityDTO {
     private String date;
     private float quantity;
     private String type;
+    private boolean isDeleted;
 
 }

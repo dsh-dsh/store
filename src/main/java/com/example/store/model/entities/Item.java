@@ -58,4 +58,7 @@ public class Item {
     private boolean isDeleted;
     private int number;
 
+    public Item(int id) {
+        this.id = id;
+    }
 }
