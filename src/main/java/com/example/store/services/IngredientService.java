@@ -41,7 +41,8 @@ public class IngredientService {
         ingredientMapOfItem = new HashMap<>();
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
         ingredients.forEach(ingredient ->
-                setIngredientMapOfItemRecursively(ingredient, getQuantityRatio(ingredient, date), date));
+                setIngredientMapOfItemRecursively(ingredient,
+                        quantityService.getQuantityRatio(ingredient, date), date));
         return ingredientMapOfItem;
     }
 
@@ -49,32 +50,14 @@ public class IngredientService {
         List<Ingredient> ingredients = getIngredientsNotDeleted(currentIngredient.getChild());
         if(!ingredients.isEmpty()) {
             for(Ingredient ingredient : ingredients) {
-                float ratio = getQuantityRatio(ingredient, date) * quantityRatio;
+                float ratio = quantityService.getQuantityRatio(ingredient, date) * quantityRatio;
                 setIngredientMapOfItemRecursively(ingredient, ratio, date);
             }
         } else {
-            Optional<Quantity> grossQuantity = getQuantity(currentIngredient, QuantityType.GROSS, date);
+            Optional<Quantity> grossQuantity = quantityService.getGrossQuantity(currentIngredient, date);
             if(grossQuantity.isEmpty()) return;
             ingredientMapOfItem.put(currentIngredient.getChild(), grossQuantity.get().getQuantity() * quantityRatio);
         }
-    }
-
-    private float getQuantityRatio(Ingredient ingredient, LocalDate date) {
-        List<Quantity> quantities = quantityService.getQuantityList(ingredient, date);
-        Optional<Quantity> netQuantity = quantities.stream().
-                filter(q -> q.getType().equals(QuantityType.NET)).findFirst();
-        Optional<Quantity> grossQuantity = quantities.stream().
-                filter(q -> q.getType().equals(QuantityType.GROSS)).findFirst();
-        if(netQuantity.isEmpty() || grossQuantity.isEmpty()) return 0f;
-        return netQuantity.get().getQuantity() / grossQuantity.get().getQuantity();
-    }
-
-    @NotNull
-    private Optional<Quantity> getQuantity(Ingredient ingredient, QuantityType type, LocalDate date) {
-        return quantityService
-                .getQuantityList(ingredient, date).stream().
-                filter(q -> q.getType().equals(type))
-                .findFirst();
     }
 
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {

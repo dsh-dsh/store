@@ -28,13 +28,25 @@ public class QuantityService {
                 .findByIngredientAndDateLessThanEqual(ingredient, date, Sort.by("date").descending());
     }
 
-    public List<QuantityDTO> getQuantityDTOList(List<Quantity> quantities) {
-        return quantities.stream().map(quantityMapper::mapToDTO).collect(Collectors.toList());
-    }
-
     public List<QuantityDTO> getQuantityDTOList(Ingredient ingredient, LocalDate date) {
         List<Quantity> quantities = getQuantityList(ingredient, date);
         return quantities.stream().map(quantityMapper::mapToDTO).collect(Collectors.toList());
+    }
+
+    public float getQuantityRatio(Ingredient ingredient, LocalDate date) {
+        List<Quantity> quantities = getQuantityList(ingredient, date);
+        Optional<Quantity> netQuantity = quantities.stream().
+                filter(q -> q.getType().equals(QuantityType.NET)).findFirst();
+        Optional<Quantity> grossQuantity = quantities.stream().
+                filter(q -> q.getType().equals(QuantityType.GROSS)).findFirst();
+        if(netQuantity.isEmpty() || grossQuantity.isEmpty()) return 0f;
+        return netQuantity.get().getQuantity() / grossQuantity.get().getQuantity();
+    }
+
+    public Optional<Quantity> getGrossQuantity(Ingredient ingredient, LocalDate date) {
+        return getQuantityList(ingredient, date).stream().
+                filter(q -> q.getType().equals(QuantityType.GROSS))
+                .findFirst();
     }
 
     public void setQuantities(Ingredient ingredient, List<QuantityDTO> quantityDTOList) {
