@@ -2,18 +2,24 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
+import com.example.store.exceptions.NoDocumentItemsException;
+import com.example.store.exceptions.UnHoldDocumentException;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.DocumentType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -29,39 +35,37 @@ public class LotService {
     private LotMoveService lotMoveService;
     @Autowired
     private DocItemService docItemService;
+    @Autowired
+    private IngredientService ingredientService;
 
+    public static final Logger logger = LogManager.getLogger("LotService");
+
+    //TODO add test
     public void addLotMovements(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
-        switch (document.getDocType()) {
-            case RECEIPT_DOC:
-            case POSTING_DOC:
-                addLots(document);
-                break;
-            case WRITE_OFF_DOC:
-                items.forEach(this::addWriteOffDocMovement);
-                break;
-            case MOVEMENT_DOC:
-                items.forEach(this::addMoveDocMovement);
-                break;
+        if(items.isEmpty()) throw new NoDocumentItemsException();
+
+        DocumentType type = document.getDocType();
+
+        if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC) {
+            addLots(document);
+        } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
+            ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
+            items.forEach(this::addStorageDocMovement);
         }
     }
 
-    private void addWriteOffDocMovement(DocumentItem docItem) {
+    //TODO add test
+    protected void addStorageDocMovement(DocumentItem docItem) {
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
         LocalDateTime time = document.getDateTime();
         Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
         addMinusMovements(document, lotMap);
-    }
-
-    private void addMoveDocMovement(DocumentItem docItem) {
-        ItemDoc document = docItem.getItemDoc();
-        Storage storage = document.getStorageFrom();
-        LocalDateTime time = document.getDateTime();
-        Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
-        addMinusMovements(document, lotMap);
-        addPlusMovements(document, lotMap);
+        if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
+            addPlusMovements(document, lotMap);
+        }
     }
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime time) {
@@ -101,22 +105,28 @@ public class LotService {
         return newLotMap;
     }
 
+    //TODO move to lotMoveService
+    //TODO add test
     public void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> lotMoveService
                 .addMinusLotMovement(key, document, value));
     }
 
+    //TODO move to lotMoveService
+    //TODO add test
     public void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> lotMoveService
                 .addPlusLotMovement(key, document, value));
     }
 
-    private void addLots(Document document) {
+    //TODO add test
+    public void addLots(Document document) {
         List<DocumentItem> items =
             docItemService.getItemsByDoc((ItemDoc) document);
         items.forEach(this::addLot);
     }
 
+    //TODO add test
     private void addLot(DocumentItem item) {
         Lot lot = new Lot(item.getItemDoc(), item.getItem(),
                 LocalDateTime.now(), item.getQuantity(), item.getPrice());
@@ -124,10 +134,12 @@ public class LotService {
         lotRepository.save(lot);
     }
 
+    //TODO add test
     public void removeLots(List<DocumentItem> items) {
         items.forEach(this::removeLot);
     }
 
+    //TODO add test
     private void removeLot(DocumentItem item) {
         Lot lot = lotRepository.findByDocument(item.getItemDoc())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));

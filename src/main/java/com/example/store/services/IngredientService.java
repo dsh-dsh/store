@@ -2,9 +2,11 @@ package com.example.store.services;
 
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
+import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Quantity;
+import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.QuantityType;
 import com.example.store.repositories.IngredientRepository;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +29,10 @@ public class IngredientService {
     private QuantityService quantityService;
 
     private Map<Item, Float> ingredientMapOfItem;
+
+    public boolean haveIngredients(Item item) {
+        return ingredientRepository.existsByParentAndIsDeleted(item, false);
+    }
 
     public Map<Item, Float> getIngredientMap(Map<Item, Float> itemMap, LocalDate date) {
         return itemMap.entrySet().stream()
@@ -76,12 +82,14 @@ public class IngredientService {
         ingredientMap.forEach((key, value) -> softDeleteIngredient(value, LocalDate.now()));
     }
 
+    //TODO add test
     private void updateIngredient(Ingredient ingredient, IngredientDTO dto) {
         ingredient.setDeleted(dto.isDeleted());
         ingredientRepository.save(ingredient);
         quantityService.updateQuantities(ingredient, dto.getQuantityList());
     }
 
+    //TODO add test
     private Map<Integer, Ingredient> getIdIngredientMap(Item item) {
         return  getIngredientsNotDeleted(item).stream()
                 .collect(Collectors.toMap(
@@ -134,6 +142,22 @@ public class IngredientService {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
         quantityService.softDeleteQuantities(ingredient, date);
+    }
+
+    //TODO add test
+    public void addInnerItems(List<DocumentItem> dosItems, LocalDate date) {
+        ItemDoc document = dosItems.get(0).getItemDoc();
+        Map<Item, Float> docItemMap = dosItems.stream()
+                .filter(docItem -> haveIngredients(docItem.getItem()))
+                .collect(Collectors.toMap(
+                        DocumentItem::getItem,
+                        DocumentItem::getQuantity,
+                        Float::sum));
+        Map<Item, Float> itemMap = getIngredientMap(docItemMap, date);
+        List<DocumentItem> list = itemMap.entrySet().stream()
+                .map(set -> new DocumentItem(document, set.getKey(), set.getValue()))
+                .collect(Collectors.toList());
+        dosItems.addAll(list);
     }
 
 }

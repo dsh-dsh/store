@@ -12,4 +12,5 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
 
     List<Ingredient> findByParentAndIsDeleted(Item parent, boolean isDeleted);
 
+    boolean existsByParentAndIsDeleted(Item parent, boolean isDeleted);
 }

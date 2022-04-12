@@ -52,8 +52,8 @@ public class CheckHoldService {
         List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         Project project = checks.get(0).getProject();
 
-        Map<Item, Float> checksItemMap = getItemMapFromCheckDocs(checks);
-        Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(checksItemMap, to.toLocalDate());
+        Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
+        Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
         ItemDoc postingDoc = createPostingDoc(storage, project, postingItemList);

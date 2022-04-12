@@ -35,6 +35,7 @@ public class Constants {
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String HOLD_FAILED_MESSAGE = "hold failed";
     public static final String UN_HOLD_FORBIDDEN_MESSAGE = "hold cancellation forbidden";
+    public static final String NO_DOCUMENT_ITEMS_MESSAGE = "no items in document";
 
     public static final String KG = "кг.";
     public static final String LITER = "л.";
