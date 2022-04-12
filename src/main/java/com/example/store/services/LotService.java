@@ -45,9 +45,7 @@ public class LotService {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
         if(items.isEmpty()) throw new NoDocumentItemsException();
-
         DocumentType type = document.getDocType();
-
         if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC) {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
@@ -62,9 +60,9 @@ public class LotService {
         Storage storage = document.getStorageFrom();
         LocalDateTime time = document.getDateTime();
         Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
-        addMinusMovements(document, lotMap);
+        lotMoveService.addMinusMovements(document, lotMap);
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
-            addPlusMovements(document, lotMap);
+            lotMoveService.addPlusMovements(document, lotMap);
         }
     }
 
@@ -103,20 +101,6 @@ public class LotService {
             }
         }
         return newLotMap;
-    }
-
-    //TODO move to lotMoveService
-    //TODO add test
-    public void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
-        newLotMap.forEach((key, value) -> lotMoveService
-                .addMinusLotMovement(key, document, value));
-    }
-
-    //TODO move to lotMoveService
-    //TODO add test
-    public void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
-        newLotMap.forEach((key, value) -> lotMoveService
-                .addPlusLotMovement(key, document, value));
     }
 
     //TODO add test

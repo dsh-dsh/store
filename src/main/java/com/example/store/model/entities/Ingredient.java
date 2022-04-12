@@ -34,7 +34,8 @@ public class Ingredient {
 
     private boolean isDeleted;
 
-    public Ingredient(int id) {
+    public Ingredient(int id, Item child) {
         this.id = id;
+        this.child = child;
     }
 }

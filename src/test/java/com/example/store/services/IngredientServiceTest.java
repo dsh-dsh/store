@@ -3,7 +3,10 @@ package com.example.store.services;
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
+import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.QuantityType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasValue;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
@@ -32,6 +38,23 @@ class IngredientServiceTest {
     private ItemService itemService;
     @Autowired
     private IngredientService ingredientService;
+
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getIngredientDTOListTest() {
+        LocalDate date = LocalDate.now();
+        Item item = itemService.getItemById(12);
+        List<IngredientDTO> list = ingredientService.getIngredientDTOList(item, date);
+        assertFalse(list.isEmpty());
+        assertEquals(2, list.size());
+        assertEquals(14, list.get(0).getChild().getId());
+        assertEquals(1.5f, list.get(0).getQuantityList().get(0).getQuantity());
+        assertEquals(1f, list.get(0).getQuantityList().get(1).getQuantity());
+        assertEquals(15, list.get(1).getChild().getId());
+        assertEquals(1.8f, list.get(1).getQuantityList().get(0).getQuantity());
+        assertEquals(1f, list.get(1).getQuantityList().get(1).getQuantity());
+    }
 
     @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -88,6 +111,35 @@ class IngredientServiceTest {
         assertEquals(1.2f, list.get(1).getQuantityList().get(0).getQuantity());
     }
 
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addInnerItemsTest() {
+        ItemDoc document = new ItemDoc();
+        LocalDate date = LocalDate.now();
+        List<DocumentItem> dosItems = new ArrayList<>();
+        dosItems.add(new DocumentItem(document, getItem(7), 1));
+        dosItems.add(new DocumentItem(document, getItem(11), 1));
+        dosItems.add(new DocumentItem(document, getItem(12), 2));
+        ingredientService.addInnerItems(dosItems, date);
+        assertEquals(5, dosItems.size());
+        assertEquals(7, dosItems.get(0).getItem().getId());
+        assertEquals(1f, dosItems.get(0).getQuantity());
+        assertEquals(14, dosItems.get(1).getItem().getId());
+        assertEquals(3f, dosItems.get(1).getQuantity());
+        assertEquals(17, dosItems.get(2).getItem().getId());
+        assertEquals(2.4f, dosItems.get(2).getQuantity());
+        assertEquals(15, dosItems.get(3).getItem().getId());
+        assertEquals(3.6f, dosItems.get(3).getQuantity());
+        assertEquals(16, dosItems.get(4).getItem().getId());
+        assertEquals(2.4f, dosItems.get(4).getQuantity());
+    }
+
+    Item getItem(int id) {
+        Item item = new Item(id);
+        item.setName("name" + id);
+        return item;
+    }
 
     private IngredientDTO getIngredientDTO(int parentId, int childId, float netQuantity) {
         String date = LocalDate.now().toString();

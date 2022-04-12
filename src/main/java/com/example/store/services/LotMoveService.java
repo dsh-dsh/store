@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LotMoveService {
@@ -17,6 +18,13 @@ public class LotMoveService {
     @Autowired
     private LotMoveRepository lotMoveRepository;
 
+
+    //TODO add test
+    public void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+        newLotMap.forEach((key, value) -> addPlusLotMovement(key, document, value));
+    }
+
+    //TODO add test
     public void addPlusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
                 new LotMovement(lot, doc, LocalDateTime.now(), quantity);
@@ -24,6 +32,12 @@ public class LotMoveService {
         lotMoveRepository.save(movement);
     }
 
+    //TODO add test
+    public void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+        newLotMap.forEach((key, value) -> addMinusLotMovement(key, document, value));
+    }
+
+    //TODO add test
     public void addMinusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
                 new LotMovement(lot, doc, LocalDateTime.now(), quantity * -1);
@@ -31,10 +45,12 @@ public class LotMoveService {
         lotMoveRepository.save(movement);
     }
 
+    //TODO add test
     private List<LotMovement> getLotMovements(Lot lot) {
         return lotMoveRepository.findByLot(lot);
     }
 
+    //TODO add test
     public void removeLotMovement(Lot lot) {
         List<LotMovement> movements = getLotMovements(lot);
         if(movements.size() > 1) throw new UnHoldDocumentException();
