@@ -5,7 +5,6 @@ import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Quantity;
 import com.example.store.model.enums.QuantityType;
 import com.example.store.repositories.IngredientRepository;
 import org.junit.jupiter.api.Test;
@@ -22,9 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.collection.IsMapContaining.hasValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

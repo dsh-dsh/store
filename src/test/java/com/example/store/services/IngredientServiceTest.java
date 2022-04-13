@@ -4,7 +4,6 @@ import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.DocumentItem;
-import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.QuantityType;
@@ -25,8 +24,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasValue;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =

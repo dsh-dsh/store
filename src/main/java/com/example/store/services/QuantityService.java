@@ -23,7 +23,6 @@ public class QuantityService {
     @Autowired
     private QuantityMapper quantityMapper;
 
-    //TODO add test
     public List<Quantity> getQuantityList(Ingredient ingredient, LocalDate date) {
         return quantityRepository
                 .findByIngredientAndDateLessThanEqual(ingredient, date, Sort.by("date").descending());
@@ -50,19 +49,16 @@ public class QuantityService {
                 .findFirst();
     }
 
-    //TODO add test
     public void setQuantities(Ingredient ingredient, List<QuantityDTO> quantityDTOList) {
         quantityDTOList.forEach(dto -> setQuantity(ingredient, dto));
     }
 
-    //TODO add test
     private void setQuantity(Ingredient ingredient, QuantityDTO dto) {
         Quantity quantity = quantityMapper.mapToItem(dto);
         quantity.setIngredient(ingredient);
         quantityRepository.save(quantity);
     }
 
-    //TODO add test
     public void softDeleteQuantities(Ingredient ingredient, LocalDate date) {
         List<Quantity> quantities = quantityRepository
                 .findByIngredientAndDateLessThanEqual(ingredient, date, Sort.unsorted());
@@ -70,12 +66,10 @@ public class QuantityService {
         quantityRepository.saveAll(quantities);
     }
 
-    //TODO add test
     public void updateQuantities(Ingredient ingredient, List<QuantityDTO> dtoList) {
         dtoList.forEach(dto -> updateQuantity(ingredient, dto));
     }
 
-    //TODO add test
     private void updateQuantity(Ingredient ingredient, QuantityDTO dto) {
         QuantityType type = QuantityType.valueOf(dto.getType());
         LocalDate date = LocalDate.parse(dto.getDate());
