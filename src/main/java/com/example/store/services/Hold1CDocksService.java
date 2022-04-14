@@ -1,17 +1,19 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.factories.ItemDocFactory;
+import com.example.store.factories.OrderDocFactory;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.ItemDocRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class CheckHoldService {
+public class Hold1CDocksService {
 
     @Autowired
     private DocumentService documentService;
@@ -30,7 +32,11 @@ public class CheckHoldService {
     @Autowired
     private StorageService storageService;
     @Autowired
+    private ProjectService projectService;
+    @Autowired
     private ItemDocFactory itemDocFactory;
+    @Autowired
+    private OrderDocFactory orderDocFactory;
     @Autowired
     private UserService userService;
     @Autowired
@@ -44,7 +50,11 @@ public class CheckHoldService {
     public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> holdChecksByStoragesAndPeriod(storage, from, to));
+        List<Project> projects = projectService.getProjectList();
+        projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
     }
+
+    // TODO test all methods
 
     @Transactional
     private void holdChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
@@ -62,6 +72,16 @@ public class CheckHoldService {
         if(itemDocFactory.holdDocument(postingDoc)) {
             if (itemDocFactory.holdDocument(writeOffDoc)) {
                 checks.forEach(check -> documentService.setItemDocHolden(check));
+            }
+        }
+    }
+
+    @Transactional
+    private void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+        List<OrderDoc> orders = getUnHoldenOrdersByStorageAndPeriod(project, from, to);
+        for(OrderDoc order : orders) {
+            if(!orderDocFactory.holdDocument(order)) {
+                throw new HoldDocumentException();
             }
         }
     }
@@ -117,8 +137,15 @@ public class CheckHoldService {
         return docItem;
     }
 
+    // TODO test
     private List<ItemDoc> getUnHoldenChecksByStorageAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         return documentService.getDocumentsByTypeAndStorageAndIsHold(DocumentType.CHECK_DOC, storage, false, from, to);
+    }
+
+    // TODO test
+    private List<OrderDoc> getUnHoldenOrdersByStorageAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+        List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_DOC_DOC);
+        return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 
     private ItemDoc getWriteOffDoc(Storage storage, Project project) {

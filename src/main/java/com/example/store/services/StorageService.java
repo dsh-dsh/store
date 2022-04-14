@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class StorageService {
 
+    //TODO test all methods
+
     @Autowired
     private StorageRepository storageRepository;
 

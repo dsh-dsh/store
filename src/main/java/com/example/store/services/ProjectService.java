@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
 
+    //TODO test all methods
+
     @Autowired
     private ProjectRepository projectRepository;
 
