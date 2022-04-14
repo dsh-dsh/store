@@ -19,18 +19,11 @@ import javax.annotation.PostConstruct;
 @Component
 public class IngredientMapper {
 
-    @Autowired
-    private QuantityService quantityService;
-
     private final ModelMapper modelMapper;
     private final ItemService itemService;
 
     private final Converter<Item, ItemDTO> itemConverter = item -> getItemDTO(item.getSource());
     private final Converter<ItemDTO, Item> itemDTOConverter = dto -> getItem(dto.getSource());
-//    private final Converter<List<Quantity>, List<QuantityDTO>> quantityConverter =
-//            list -> quantityService.getQuantityDTOList(list.getSource());
-//    private final Converter<List<QuantityDTO>, List<Quantity>> quantityDTOConverter =
-//            list ->
 
     @PostConstruct
     private void init() {

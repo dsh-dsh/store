@@ -63,7 +63,7 @@ public class TestService {
     DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
-//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+        dto.setTime(LocalDateTime.now().toString());
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);

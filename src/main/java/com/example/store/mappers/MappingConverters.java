@@ -14,13 +14,23 @@ import java.time.ZoneId;
 @Component
 public class MappingConverters {
 
-    protected final Converter<Long, LocalDateTime> longToDateTime =
-            value -> Instant.ofEpochMilli(value.getSource()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+    protected final Converter<String, LocalDateTime> stringToDateTime = value -> {
+        String date = value.getSource();
+        if(date != null && !date.equals("")) {
+            return LocalDateTime.parse(value.getSource());
+        } else {
+            return null;
+        }
+    };
 
-    protected final Converter<Long, LocalDate> longToDate =
-            value -> Instant.ofEpochMilli(value.getSource()).atZone(ZoneId.systemDefault()).toLocalDate();
-
-    protected final Converter<LocalDateTime, Timestamp> timestampConverter = date -> Timestamp.valueOf(date.getSource());
+    protected final Converter<String, LocalDate> stringToDate = value -> {
+        String date = value.getSource();
+        if(date != null && !date.equals("")) {
+            return LocalDate.parse(value.getSource());
+        } else {
+            return null;
+        }
+    };
 
     protected final Converter<LocalDateTime, Long> dateTimeConverter =
             date -> {

@@ -393,7 +393,7 @@ public class ItemControllerTest {
                 .name(NEW_ITEM_NAME)
                 .printName(NEW_ITEM_NAME)
                 .parentId(PARENT_ID)
-                .regTime(itemTestService.dateTimeToLong(LocalDateTime.now().toString()))
+                .regTime(LocalDateTime.now().toString())
                 .unit(Unit.PORTION.toString())
                 .workshop(Workshop.KITCHEN.toString())
                 .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))

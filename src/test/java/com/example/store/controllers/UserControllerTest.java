@@ -84,7 +84,7 @@ public class UserControllerTest {
                 .lastName(LAST_NAME)
                 .email(NEW_USER_EMAIL)
                 .password(PASSWORD)
-                .birthDate(testService.dateToLong(BIRTH_DATE))
+                .birthDate(BIRTH_DATE)
                 .phone(PHONE)
                 .role(Role.CUSTOMER.toString())
                 .build();
@@ -97,8 +97,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data").value(Constants.OK));
 
         User user = userService.getByEmail(NEW_USER_EMAIL);
-        assertEquals(user.getLastName(), LAST_NAME);
-        assertEquals(user.getRole(), Role.CUSTOMER);
+        assertEquals(LAST_NAME, user.getLastName());
+        assertEquals(Role.CUSTOMER, user.getRole());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class UserControllerTest {
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .email(NEW_USER_EMAIL)
-                .birthDate(testService.dateToLong(BIRTH_DATE))
+                .birthDate(BIRTH_DATE)
                 .phone(PHONE)
                 .role(Role.ADMIN.toString())
                 .build();
@@ -134,9 +134,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.data").value(Constants.OK));
 
         User user = userService.getByEmail(NEW_USER_EMAIL);
-        assertEquals(user.getLastName(), LAST_NAME);
-        assertEquals(user.getBirthDate().toString(), BIRTH_DATE);
-        assertEquals(user.getRole(), Role.ADMIN);
+        assertEquals(LAST_NAME, user.getLastName());
+        assertEquals(BIRTH_DATE, user.getBirthDate().toString());
+        assertEquals(Role.ADMIN, user.getRole());
     }
 
     @Test

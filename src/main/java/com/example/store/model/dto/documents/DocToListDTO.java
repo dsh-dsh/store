@@ -20,7 +20,7 @@ public class DocToListDTO {
 
     private int number;
 
-    private long time;
+    private String time;
 
     private ProjectDTO project;
 

@@ -14,6 +14,8 @@ import com.example.store.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class Order1cFactory implements DocFactory {
 
@@ -34,7 +36,7 @@ public class Order1cFactory implements DocFactory {
 
         OrderDoc orderDoc = new OrderDoc();
         orderDoc.setNumber(docDTO.getNumber());
-//        orderDoc.setDateTime(docDTO.getTime().toLocalDateTime());
+        orderDoc.setDateTime(LocalDateTime.parse(docDTO.getTime()));
         orderDoc.setDocType(DocumentType.getByValue(docDTO.getDocType()));
         orderDoc.setProject(projectService.getByName(docDTO.getProject().getName()));
         orderDoc.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));

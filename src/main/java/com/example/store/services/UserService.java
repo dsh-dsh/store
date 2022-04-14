@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -60,10 +61,8 @@ public class UserService {
         if(dto.getLastName() != null && !dto.getLastName().equals("")) user.setLastName(dto.getLastName());
         if(dto.getEmail() != null && !dto.getEmail().equals("")) user.setEmail(dto.getEmail());
         if(dto.getPhone() != null && !dto.getPhone().equals("")) user.setPhone(dto.getPhone());
-        if(dto.getRegDate() !=0) user.setRegTime(Instant
-                .ofEpochMilli(dto.getRegDate()).atZone(ZoneId.systemDefault()).toLocalDateTime());
-        if(dto.getBirthDate() !=0) user.setBirthDate(Instant
-                .ofEpochMilli(dto.getBirthDate()).atZone(ZoneId.systemDefault()).toLocalDate());
+        if(dto.getRegDate() != null && !dto.getRegDate().equals("")) user.setRegTime(LocalDateTime.parse(dto.getRegDate()));
+        if(dto.getBirthDate() != null && !dto.getBirthDate().equals("")) user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
     }
 

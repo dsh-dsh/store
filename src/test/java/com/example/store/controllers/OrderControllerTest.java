@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrderDocsControllerTest {
+public class OrderControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/orders";
     private static final float AMOUNT = 1500.00f;

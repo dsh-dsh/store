@@ -334,7 +334,7 @@ public class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime(testService.dateTimeToLong("2022-01-01T10:30:00"));
+        docDTO.setTime("2022-01-01T10:30:00");
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -361,7 +361,7 @@ public class DocumentControllerTest {
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime(testService.dateTimeToLong("2022-02-01T10:30:00"));
+        docDTO.setTime("2022-02-01T10:30:00");
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(

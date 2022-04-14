@@ -13,18 +13,17 @@ import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Component
-public class QuantityMapper {
+public class QuantityMapper extends MappingConverters{
 
     private final ModelMapper modelMapper;
 
-    private final Converter<String, LocalDate> dateConverter = str -> LocalDate.parse(str.getSource());
     private final Converter<String, QuantityType> typeConverter = str -> QuantityType.valueOf(str.getSource());
 
     @PostConstruct
     private void init() {
         modelMapper.createTypeMap(Quantity.class, QuantityDTO.class);
         modelMapper.createTypeMap(QuantityDTO.class, Quantity.class)
-                .addMappings(mapper -> mapper.using(dateConverter).map(QuantityDTO::getDate, Quantity::setDate))
+                .addMappings(mapper -> mapper.using(stringToDate).map(QuantityDTO::getDate, Quantity::setDate))
                 .addMappings(mapper -> mapper.using(typeConverter).map(QuantityDTO::getType, Quantity::setType));
     }
 

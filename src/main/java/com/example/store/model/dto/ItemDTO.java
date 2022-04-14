@@ -22,7 +22,7 @@ public class ItemDTO {
     private String printName;
 
     @JsonProperty("reg_time")
-    private long regTime;
+    private String regTime;
 
     @JsonProperty("is_weight")
     private boolean isWeight;

@@ -21,7 +21,7 @@ public class DocDTO {
 
     private int number;
 
-    private long time;
+    private String time;
 
     @JsonProperty("doc_type")
     private String docType;

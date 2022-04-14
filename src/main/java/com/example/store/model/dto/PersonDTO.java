@@ -25,10 +25,10 @@ public class PersonDTO {
     private String phone;
 
     @JsonProperty("reg_date")
-    private long regDate;
+    private String regDate;
 
     @JsonProperty("birth_date")
-    private long birthDate;
+    private String birthDate;
 
     private String role;
 

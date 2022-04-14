@@ -37,7 +37,6 @@ public class DocMapper extends MappingConverters {
     public DocMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(ItemDoc.class, DocDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(ItemDoc::getDateTime, DocDTO::setTime))
                 .addMappings(mapper -> mapper.using(docItemsConverter).map(ItemDoc::getThis, DocDTO::setDocItems))
                 .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(ItemDoc::getThis, DocDTO::setCheckInfo));
     }

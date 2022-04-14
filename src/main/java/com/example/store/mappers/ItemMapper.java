@@ -28,12 +28,12 @@ public class ItemMapper extends MappingConverters {
     public void init() {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         this.modelMapper.createTypeMap(Item.class, ItemDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(Item::getRegTime, ItemDTO::setRegTime))
+//                .addMappings(mapper -> mapper.using(dateTimeConverter).map(Item::getRegTime, ItemDTO::setRegTime))
                 .addMappings(mapper -> mapper.using(workshopConverter).map(Item::getWorkshop, ItemDTO::setWorkshop))
                 .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTO::setParentId));
         this.modelMapper.createTypeMap(ItemDTO.class, Item.class)
-                .addMappings(mapper -> mapper.using(longToDateTime).map(ItemDTO::getRegTime, Item::setRegTime))
+                .addMappings(mapper -> mapper.using(stringToDateTime).map(ItemDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(ItemDTO::getParentId, Item::setParent));
