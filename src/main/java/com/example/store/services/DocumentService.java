@@ -42,6 +42,8 @@ public class DocumentService {
     @Autowired
     private DocToListMapper docToListMapper;
 
+    // TODO test all methods
+
     public void addDocument(DocDTO docDTO) {
         itemDocFactory.addDocument(docDTO);
     }
@@ -91,8 +93,21 @@ public class DocumentService {
         itemDocFactory.deleteDocument(docId);
     }
 
-    public void setItemDocHolden(ItemDoc doc) {
+    public void setCheckDocHolden(ItemDoc doc) {
         doc.setHold(true);
         itemDocRepository.save(doc);
+    }
+
+    protected int getNextDocumentNumber(DocumentType type) {
+        try {
+            return documentRepository.getLastNumber(type.toString()) + 1;
+        } catch (Exception exception) {
+            return getStartDocNumber(type);
+        }
+    }
+
+    private int getStartDocNumber(DocumentType documentType) {
+        // todo add start number logic
+        return 1;
     }
 }

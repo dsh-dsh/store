@@ -6,6 +6,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.services.*;
@@ -13,9 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public abstract class AbstractDocFactory implements DocFactory {
 
@@ -35,6 +34,8 @@ public abstract class AbstractDocFactory implements DocFactory {
     protected CompanyService companyService;
     @Autowired
     protected ItemDocRepository itemDocRepository;
+    @Autowired
+    protected DocumentRepository documentRepository;
     @Autowired
     protected OrderDocRepository orderDocRepository;
     @Autowired
@@ -100,7 +101,7 @@ public abstract class AbstractDocFactory implements DocFactory {
 
     protected void setCommonFields(Document document) {
         if(docDTO.getNumber() == 0) {
-            document.setNumber(getNewNumber());
+            document.setNumber(getNextDocumentNumber());
         } else {
             document.setNumber(docDTO.getNumber());
         }
@@ -112,9 +113,9 @@ public abstract class AbstractDocFactory implements DocFactory {
         document.setHold(docDTO.isHold());
     }
 
-    protected int getNewNumber() {
+    protected int getNextDocumentNumber() {
         try {
-           return itemDocRepository.getLastNumber(documentType.toString()) + 1;
+           return documentRepository.getLastNumber(documentType.toString()) + 1;
         } catch (Exception exception) {
             return getStartDocNumber(documentType);
         }

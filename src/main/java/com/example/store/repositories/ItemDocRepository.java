@@ -13,14 +13,6 @@ import java.util.Optional;
 
 public interface ItemDocRepository extends JpaRepository<ItemDoc, Integer> {
 
-    @Query(value = "SELECT number " +
-            "FROM document " +
-            "WHERE doc_type = :docType " +
-            "ORDER BY number DESC " +
-            "LIMIT 1"
-            , nativeQuery = true)
-    int getLastNumber(String docType);
-
     Optional<ItemDoc> findByNumber(int number);
 
     List<ItemDoc> findByDocType(DocumentType docType);

@@ -11,7 +11,8 @@ public enum Role {
     ADMIN(Constants.ADMIN_ROLE, Set.of(Permission.WRITE)),
     CASHIER(Constants.CASHIER_ROLE, Set.of(Permission.WRITE)),
     ACCOUNTANT(Constants.ACCOUNTANT_ROLE, Set.of(Permission.WRITE)),
-    CUSTOMER(Constants.CUSTOMER_ROLE, Set.of(Permission.READ));
+    CUSTOMER(Constants.CUSTOMER_ROLE, Set.of(Permission.READ)),
+    SYSTEM(Constants.ADMIN_ROLE, Set.of(Permission.WRITE));
 
     private final String value;
     private final Set<Permission> permissions;

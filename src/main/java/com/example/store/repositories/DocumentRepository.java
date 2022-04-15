@@ -19,4 +19,12 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     Page<Document> getByDocType(DocumentType docType, Pageable pageable);
 
     List<Document> findByDocType(DocumentType docType);
+
+    @Query(value = "SELECT number " +
+            "FROM document " +
+            "WHERE doc_type = :docType " +
+            "ORDER BY number DESC " +
+            "LIMIT 1"
+            , nativeQuery = true)
+    int getLastNumber(String docType);
 }
