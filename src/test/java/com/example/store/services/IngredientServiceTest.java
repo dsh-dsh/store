@@ -7,6 +7,7 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.QuantityType;
+import com.example.store.repositories.IngredientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.collection.IsMapContaining.hasValue;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +39,33 @@ class IngredientServiceTest {
     private ItemService itemService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private IngredientRepository ingredientRepository;
+
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getIdIngredientMapTest() {
+        LocalDate date = LocalDate.parse("2022-03-16");
+        Item item = itemService.getItemById(10);
+        Item item1 = itemService.getItemById(14);
+        Item item2 = itemService.getItemById(15);
+        Item item3 = itemService.getItemById(16);
+        Item item4 = itemService.getItemById(17);
+        Map<Item, Float> itemMap = new HashMap<>();
+        itemMap.put(item, 2f);
+        Map<Item, Float> map = ingredientService.getIngredientMap(itemMap, date);
+        assertFalse(map.isEmpty());
+        assertThat(map, hasKey(item1));
+        assertEquals(3f, map.get(item1));
+        assertThat(map, hasKey(item2));
+        assertEquals(3.6f, map.get(item2));
+        assertThat(map, hasKey(item3));
+        assertEquals(4.8f, map.get(item3));
+        assertThat(map, hasKey(item4));
+        assertEquals(4.8f, map.get(item4));
+    }
 
     @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
