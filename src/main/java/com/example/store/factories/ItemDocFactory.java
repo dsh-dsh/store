@@ -79,6 +79,7 @@ public class ItemDocFactory extends AbstractDocFactory {
     public boolean holdDocument(Document document) {
         lotService.addLotMovements(document);
         document.setHold(true);
+        itemDocRepository.save((ItemDoc) document);
         return true;
     }
 
@@ -89,5 +90,6 @@ public class ItemDocFactory extends AbstractDocFactory {
                 docItemService.getItemsByDoc((ItemDoc) document);
         lotService.removeLots(items);
         document.setHold(false);
+        itemDocRepository.save((ItemDoc) document);
     }
 }

@@ -8,6 +8,7 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
@@ -46,19 +47,21 @@ public class Hold1CDocksService {
     @Autowired
     private IngredientService ingredientService;
 
+    // TODO test
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
-        storages.forEach(storage -> holdChecksByStoragesAndPeriod(storage, from, to));
+        storages.forEach(storage -> {
+            List<ItemDoc> documents = createDocsToHoldByStoragesAndPeriod(storage, from, to);
+            holdDocsAndChecksByStoragesAndPeriod(documents, storage, from, to);
+        });
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
     }
 
-    // TODO test all methods
-
+    // TODO test
     @Transactional
-    private void holdChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
-
+    public List<ItemDoc> createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         Project project = checks.get(0).getProject();
 
@@ -66,19 +69,31 @@ public class Hold1CDocksService {
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
-        ItemDoc postingDoc = createPostingDoc(storage, project, postingItemList);
-        ItemDoc writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap);
+        ItemDoc postingDoc = createPostingDoc(storage, project, postingItemList, from);
+        ItemDoc writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
+        return List.of(postingDoc, writeOffDoc);
+    }
 
-        if(itemDocFactory.holdDocument(postingDoc)) {
-            if (itemDocFactory.holdDocument(writeOffDoc)) {
-                checks.forEach(check -> documentService.setItemDocHolden(check));
+    // TODO test
+    @Transactional
+    public void holdDocsAndChecksByStoragesAndPeriod(List<ItemDoc> documents, Storage storage, LocalDateTime from, LocalDateTime to) {
+        List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
+        ItemDoc postingDoc = documents.get(0);
+        ItemDoc writeOffDoc = documents.get(1);
+        if (postingDoc != null) {
+            if (!itemDocFactory.holdDocument(postingDoc)) {
+                return;
             }
+        }
+        if (itemDocFactory.holdDocument(writeOffDoc)) {
+            checks.forEach(check -> documentService.setCheckDocHolden(check));
         }
     }
 
+    // TODO test
     @Transactional
-    private void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
-        List<OrderDoc> orders = getUnHoldenOrdersByStorageAndPeriod(project, from, to);
+    public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+        List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);
         for(OrderDoc order : orders) {
             if(!orderDocFactory.holdDocument(order)) {
                 throw new HoldDocumentException();
@@ -86,7 +101,7 @@ public class Hold1CDocksService {
         }
     }
 
-    private List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
+    public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
         Map<Item, Float> itemRestMap = itemRestService
                 .getItemRestMap(writeOffItemMap, storage, time);
         return writeOffItemMap.entrySet().stream()
@@ -98,7 +113,7 @@ public class Hold1CDocksService {
                 .collect(Collectors.toList());
     }
 
-    private Map<Item, Float> getItemMapFromCheckDocs(List<ItemDoc> checks) {
+    public Map<Item, Float> getItemMapFromCheckDocs(List<ItemDoc> checks) {
         return checks.stream()
                 .flatMap(check -> docItemService.getItemsByDoc(check).stream())
                 .collect(Collectors.toMap(
@@ -107,8 +122,9 @@ public class Hold1CDocksService {
                         Float::sum));
     }
 
-    private ItemDoc createPostingDoc(Storage storage, Project project, List<ItemQuantityPriceDTO> dtoList) {
-        ItemDoc postingDoc = getPostingDoc(storage, project);
+    public ItemDoc createPostingDoc(Storage storage, Project project, List<ItemQuantityPriceDTO> dtoList, LocalDateTime time) {
+        if(dtoList == null || dtoList.isEmpty()) return null;
+        ItemDoc postingDoc = getPostingDoc(storage, project, time);
         Set<DocumentItem> docItems = dtoList.stream().
                 map(dto -> {
                     DocumentItem item = getDocumentItem(postingDoc, dto.getItem(), dto.getQuantity());
@@ -116,59 +132,57 @@ public class Hold1CDocksService {
                     return item;
                 }).collect(Collectors.toSet());
         postingDoc.setDocumentItems(docItems);
+        itemDocRepository.save(postingDoc);
         return postingDoc;
     }
 
-    private ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap) {
-        ItemDoc writeOffDoc = getWriteOffDoc(storage, project);
+    public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap, LocalDateTime time) {
+        ItemDoc writeOffDoc = getWriteOffDoc(storage, project, time);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
                 .map(entry -> getDocumentItem(writeOffDoc, entry.getKey(), entry.getValue()))
                 .collect(Collectors.toSet());
         writeOffDoc.setDocumentItems(docItemSet);
+        itemDocRepository.save(writeOffDoc);
         return writeOffDoc;
     }
 
     @NotNull
-    private DocumentItem getDocumentItem(ItemDoc writeOffDoc, Item item, float quantity) {
+    public DocumentItem getDocumentItem(ItemDoc itemDoc, Item item, float quantity) {
         DocumentItem docItem = new DocumentItem();
-        docItem.setItemDoc(writeOffDoc);
+        docItem.setItemDoc(itemDoc);
         docItem.setItem(item);
         docItem.setQuantity(quantity);
         return docItem;
     }
 
-    // TODO test
-    private List<ItemDoc> getUnHoldenChecksByStorageAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+    public List<ItemDoc> getUnHoldenChecksByStorageAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         return documentService.getDocumentsByTypeAndStorageAndIsHold(DocumentType.CHECK_DOC, storage, false, from, to);
     }
 
-    // TODO test
-    private List<OrderDoc> getUnHoldenOrdersByStorageAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+    public List<OrderDoc> getUnHoldenOrdersByProjectAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_DOC_DOC);
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 
-    private ItemDoc getWriteOffDoc(Storage storage, Project project) {
-        ItemDoc writeOffDoc = addItemDocOfType(DocumentType.WRITE_OFF_DOC, project);
+    public ItemDoc getWriteOffDoc(Storage storage, Project project, LocalDateTime time) {
+        ItemDoc writeOffDoc = getItemDocOfType(DocumentType.WRITE_OFF_DOC, project, time);
         writeOffDoc.setStorageFrom(storage);
-        itemDocRepository.save(writeOffDoc);
         return writeOffDoc;
     }
 
-    private ItemDoc getPostingDoc(Storage storage, Project project) {
-        ItemDoc postingDoc = addItemDocOfType(DocumentType.POSTING_DOC, project);
+    public ItemDoc getPostingDoc(Storage storage, Project project, LocalDateTime time) {
+        ItemDoc postingDoc = getItemDocOfType(DocumentType.POSTING_DOC, project, time);
         postingDoc.setStorageTo(storage);
-        itemDocRepository.save(postingDoc);
         return postingDoc;
     }
 
-    private ItemDoc addItemDocOfType(DocumentType docType, Project project) {
-        ItemDoc writeOffDoc = new ItemDoc();
-        writeOffDoc.setNumber(itemDocRepository.getLastNumber(docType.toString()));
-        writeOffDoc.setDateTime(LocalDateTime.now()); // TODO
-        writeOffDoc.setDocType(docType);
-        writeOffDoc.setProject(project);
-        writeOffDoc.setAuthor(userService.getSystemAuthor());
-        return writeOffDoc;
+    public ItemDoc getItemDocOfType(DocumentType docType, Project project, LocalDateTime time) {
+        ItemDoc itemDoc = new ItemDoc();
+        itemDoc.setNumber(documentService.getNextDocumentNumber(docType));
+        itemDoc.setDateTime(time);
+        itemDoc.setDocType(docType);
+        itemDoc.setProject(project);
+        itemDoc.setAuthor(userService.getSystemAuthor());
+        return itemDoc;
     }
 }

@@ -8,6 +8,8 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Quantity;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +30,32 @@ public class IngredientService {
 
     private Map<Item, Float> ingredientMapOfItem;
 
+    private static final Logger logger = LogManager.getLogger("IngredientService");
+
     public boolean haveIngredients(Item item) {
         return ingredientRepository.existsByParentAndIsDeleted(item, false);
     }
 
     public Map<Item, Float> getIngredientMap(Map<Item, Float> itemMap, LocalDate date) {
-        return itemMap.entrySet().stream()
-                .flatMap(itemEntry -> getIngredientMapOfItem(itemEntry.getKey(), date)
-                            .entrySet().stream()
-                            .map(item -> new AbstractMap.SimpleImmutableEntry<>(
-                                    item.getKey(), item.getValue() * itemEntry.getValue())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Float::sum));
+        logger.info("getIngredientMap");
+
+        Map<Item, Float> map = new HashMap<>();
+        for(Map.Entry<Item, Float> entry : itemMap.entrySet()) {
+            logger.info(entry.getKey().getName() + " = " + entry.getValue());
+            Map<Item, Float> ingredientMapOfItem = getIngredientMapOfItem(entry.getKey(), date);
+            for (Map.Entry<Item, Float> innerEntry : ingredientMapOfItem.entrySet()) {
+                logger.info("--- " + innerEntry.getKey().getName() + " = " + innerEntry.getValue() * entry.getValue());
+                map.merge(innerEntry.getKey(), innerEntry.getValue() * entry.getValue(), Float::sum);
+            }
+        }
+        return map;
+
+//        return itemMap.entrySet().stream()
+//                .flatMap(itemEntry -> getIngredientMapOfItem(itemEntry.getKey(), date)
+//                            .entrySet().stream()
+//                            .map(item -> new AbstractMap.SimpleImmutableEntry<>(
+//                                    item.getKey(), item.getValue() * itemEntry.getValue())))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Float::sum));
     }
 
     public Map<Item, Float> getIngredientMapOfItem(Item item, LocalDate date) {
