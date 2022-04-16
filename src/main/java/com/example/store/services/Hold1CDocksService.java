@@ -13,6 +13,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.ItemDocRepository;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
 @Service
 public class Hold1CDocksService {
 
@@ -47,14 +49,16 @@ public class Hold1CDocksService {
     @Autowired
     private IngredientService ingredientService;
 
+    private ItemDoc postingDoc, writeOffDoc;
+    private List<ItemDoc> checks;
 
     // TODO test
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> {
-            ItemDoc[] documents = createDocsToHoldByStoragesAndPeriod(storage, from, to);
-            holdDocsAndChecksByStoragesAndPeriod(documents, storage, from, to);
+            createDocsToHoldByStoragesAndPeriod(storage, from, to);
+            holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
         });
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
@@ -62,32 +66,27 @@ public class Hold1CDocksService {
 
     // TODO test
     @Transactional
-    public ItemDoc[] createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
-        List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
+    public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+        checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         Project project = checks.get(0).getProject();
 
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
-        ItemDoc[] docs = new ItemDoc[2];
-        docs[0] = createPostingDoc(storage, project, postingItemList, from);
-        docs[1] = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
-        return docs;
+        postingDoc = createPostingDoc(storage, project, postingItemList, from);
+        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
     }
 
     // TODO test
     @Transactional
-    public void holdDocsAndChecksByStoragesAndPeriod(ItemDoc[] documents, Storage storage, LocalDateTime from, LocalDateTime to) {
-        List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
-        ItemDoc postingDoc = documents[0];
-        ItemDoc writeOffDoc = documents[1];
+    public void holdDocsAndChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         if (postingDoc != null) {
-            itemDocFactory.holdDocument(postingDoc);
+            itemDocFactory.holdItemDocument(postingDoc);
         }
-        if (itemDocFactory.holdDocument(writeOffDoc)) {
-            checks.forEach(check -> documentService.setCheckDocHolden(check));
-        }
+        itemDocFactory.holdItemDocument(writeOffDoc);
+        checks.forEach(check -> documentService.setCheckDocHolden(check));
+
     }
 
     // TODO test

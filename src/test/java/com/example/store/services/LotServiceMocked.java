@@ -35,30 +35,6 @@ public class LotServiceMocked {
     private IngredientService ingredientService;
 
     @Test
-    void addLotMovementsOfReceiptDocTest() {
-        ItemDoc document = mock(ItemDoc.class);
-        document.setDocType(DocumentType.RECEIPT_DOC);
-        List<DocumentItem> items = mock(List.class);
-        when(docItemService.getItemsByDoc(document)).thenReturn(items);
-        lotService.addLotMovements(document);
-        verify(lotService, times(1)).addLots(document);
-    }
-
-    @Test
-    void addLotMovementsOfWriteOffDocTest() {
-        ItemDoc document = mock(ItemDoc.class);
-        document.setDocType(DocumentType.WRITE_OFF_DOC);
-        List<DocumentItem> items = new ArrayList<>();
-        items.add(mock(DocumentItem.class));
-        items.add(mock(DocumentItem.class));
-        items.add(mock(DocumentItem.class));
-        when(docItemService.getItemsByDoc(document)).thenReturn(items);
-        lotService.addLotMovements(document);
-        verify(ingredientService, times(1)).addInnerItems(items, LocalDate.now());
-        verify(lotService, times(3)).addStorageDocMovement(mock(DocumentItem.class));
-    }
-
-    @Test
     void addLotMovementsWhenDocItemListIsEmptyTest() {
         ItemDoc document = mock(ItemDoc.class);
         document.setDocType(DocumentType.WRITE_OFF_DOC);

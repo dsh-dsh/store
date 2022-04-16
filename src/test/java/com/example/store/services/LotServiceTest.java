@@ -3,7 +3,6 @@ package com.example.store.services;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
-import com.example.store.repositories.LotMoveRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,11 +17,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasValue;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
@@ -33,7 +34,11 @@ class LotServiceTest {
     @Autowired
     private LotService lotService;
     @Autowired
-    private LotMoveRepository lotMoveRepository;
+    private ItemRestService itemRestService;
+//    @Autowired
+//    private LotMoveRepository lotMoveRepository;
+    @Autowired
+    private DocumentService documentService;
 
     @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -105,6 +110,56 @@ class LotServiceTest {
         assertThrows(HoldDocumentException.class, () -> {
             lotService.checkQuantityShortage(mapOfLotAndFloat, 20.00f);
         });
+    }
+
+    @Sql(value = "/sql/lots/addTwoDocsAndLots.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void addLotMovementsOfWriteOffDocTest() {
+        ItemDoc document = documentService.getDocumentById(2);
+        lotService.addLotMovements(document);
+        List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
+        assertEquals(9, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageFrom(), LocalDateTime.now()));
+        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageFrom(), LocalDateTime.now()));
+    }
+
+    @Sql(value = "/sql/lots/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void addLotMovementsOfReceiptDocTest() {
+        ItemDoc document = documentService.getDocumentById(1);
+        lotService.addLotMovements(document);
+        List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
+        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
+        assertEquals(5, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()));
+    }
+
+    @Sql(value = "/sql/lots/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void addLotMovementsOfPostingDocTest() {
+        ItemDoc document = documentService.getDocumentById(1);
+        lotService.addLotMovements(document);
+        List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
+        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
+        assertEquals(13, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()));
+    }
+
+    @Sql(value = "/sql/lots/addPostingDocWithLotsAndMovementDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void addLotMovementsOfMovementDocTest() {
+        ItemDoc movementDocument = documentService.getDocumentById(2);
+        lotService.addLotMovements(movementDocument);
+        List<Item> items = movementDocument.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
+        assertEquals(4, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageFrom(), LocalDateTime.now()));
+        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageFrom(), LocalDateTime.now()));
+        assertEquals(6, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageTo(), LocalDateTime.now()));
+        assertEquals(7, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageTo(), LocalDateTime.now()));
     }
 
 //    @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

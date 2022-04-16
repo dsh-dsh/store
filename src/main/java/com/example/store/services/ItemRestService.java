@@ -35,4 +35,11 @@ public class ItemRestService {
         Lot lot = lotRepository.findTop1ByItem(item, Sort.by("lotTime").descending()).orElse(null);
         return lot == null ? 0f : lot.getPrice();
     }
+
+    public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime time) {
+        return (float) lotRepository
+                .getLotsOfItem(item.getId(), storage.getId(), time)
+                .stream()
+                .mapToDouble(LotFloat::getValue).sum();
+    }
 }

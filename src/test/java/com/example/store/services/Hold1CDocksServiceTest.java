@@ -273,11 +273,11 @@ public class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
-        assertEquals(DocumentType.POSTING_DOC, docs[0].getDocType());
-        assertEquals(DocumentType.WRITE_OFF_DOC, docs[1].getDocType());
-        List<DocumentItem> postingItems = docItemService.getItemsByDoc(docs[0]);
-        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(docs[1]);
+        hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        assertEquals(DocumentType.POSTING_DOC, hold1CDocksService.getPostingDoc().getDocType());
+        assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
+        List<DocumentItem> postingItems = docItemService.getItemsByDoc(hold1CDocksService.getPostingDoc());
+        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
         assertEquals(4, postingItems.size());
         assertEquals(4, writeOffItems.size());
     }
@@ -294,11 +294,11 @@ public class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
-        assertNull(docs[0]);
-        assertEquals(DocumentType.WRITE_OFF_DOC, docs[1].getDocType());
-        List<DocumentItem> postingItems = docItemService.getItemsByDoc(docs[0]);
-        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(docs[1]);
+        hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        assertNull(hold1CDocksService.getPostingDoc());
+        assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
+        List<DocumentItem> postingItems = docItemService.getItemsByDoc(hold1CDocksService.getPostingDoc());
+        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
         assertEquals(0, postingItems.size());
         assertEquals(4, writeOffItems.size());
     }
@@ -313,8 +313,8 @@ public class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
-        hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod(docs, storage, from, to);
+        hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
         List<Document> documents = documentService.getAllDocuments();
         assertEquals(5, documents.size());
         assertEquals(5, documents.stream().filter(Document::isHold).count());

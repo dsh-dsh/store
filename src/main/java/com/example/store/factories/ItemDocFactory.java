@@ -82,6 +82,13 @@ public class ItemDocFactory extends AbstractDocFactory {
         return true;
     }
 
+//    @Transaction
+    public void holdItemDocument(Document document) {
+        lotService.addLotMovements(document);
+        document.setHold(true);
+        itemDocRepository.save((ItemDoc) document);
+    }
+
 //    @Override
     @Transaction
     public void unHoldDocument(Document document) {

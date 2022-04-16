@@ -41,7 +41,6 @@ public class LotService {
 
     public static final Logger logger = LogManager.getLogger("LotService");
 
-    //TODO add test
     public void addLotMovements(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
@@ -115,8 +114,8 @@ public class LotService {
     private void addLot(DocumentItem item) {
         Lot lot = new Lot(item.getItemDoc(), item.getItem(),
                 LocalDateTime.now(), item.getQuantity(), item.getPrice());
-        lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
         lotRepository.save(lot);
+        lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
 
     //TODO add test
