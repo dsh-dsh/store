@@ -5,6 +5,7 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
@@ -42,6 +43,8 @@ public class Hold1CDocksServiceTest {
     private ItemService itemService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private DocItemService docItemService;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -270,22 +273,52 @@ public class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-        List<ItemDoc> docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
-        assertEquals(2, docs.size());
+        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        assertEquals(DocumentType.POSTING_DOC, docs[0].getDocType());
+        assertEquals(DocumentType.WRITE_OFF_DOC, docs[1].getDocType());
+        List<DocumentItem> postingItems = docItemService.getItemsByDoc(docs[0]);
+        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(docs[1]);
+        assertEquals(4, postingItems.size());
+        assertEquals(4, writeOffItems.size());
     }
 
-//    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-//            "/sql/hold1CDocs/addThreeChecks.sql",
-//            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = {"/sql/hold1CDocs/after.sql",
-//            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void holdDocsAndChecksByStoragesAndPeriodTest() {
-//        Storage storage = storageService.getById(3);
-//        LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
-//        LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-//        hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
-//    }
+    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
+            "/sql/hold1CDocs/addThreeChecks.sql",
+            "/sql/hold1CDocs/addRestDocs.sql",
+            "/sql/hold1CDocs/addRestLots.sql",
+            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/hold1CDocs/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void createDocsToHoldNoPostingDocByStoragesAndPeriodTest() {
+        Storage storage = storageService.getById(3);
+        LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
+        LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        assertNull(docs[0]);
+        assertEquals(DocumentType.WRITE_OFF_DOC, docs[1].getDocType());
+        List<DocumentItem> postingItems = docItemService.getItemsByDoc(docs[0]);
+        List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(docs[1]);
+        assertEquals(0, postingItems.size());
+        assertEquals(4, writeOffItems.size());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
+            "/sql/hold1CDocs/addThreeChecks.sql",
+            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/hold1CDocs/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void holdDocsAndChecksByStoragesAndPeriodTest() {
+        Storage storage = storageService.getById(3);
+        LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
+        LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        ItemDoc[] docs = hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
+        hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod(docs, storage, from, to);
+        List<Document> documents = documentService.getAllDocuments();
+        assertEquals(5, documents.size());
+        assertEquals(5, documents.stream().filter(Document::isHold).count());
+    }
 
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {
         ItemQuantityPriceDTO dto = new ItemQuantityPriceDTO();

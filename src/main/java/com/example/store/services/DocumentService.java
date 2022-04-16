@@ -98,6 +98,10 @@ public class DocumentService {
         itemDocRepository.save(doc);
     }
 
+    public List<Document> getAllDocuments() {
+        return documentRepository.findAll();
+    }
+
     protected int getNextDocumentNumber(DocumentType type) {
         try {
             return documentRepository.getLastNumber(type.toString()) + 1;

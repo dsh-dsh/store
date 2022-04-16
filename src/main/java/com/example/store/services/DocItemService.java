@@ -93,5 +93,9 @@ public class DocItemService {
     public void deleteByDoc(ItemDoc itemDoc) {
         docItemRepository.deleteByItemDoc(itemDoc);
     }
+
+    public void save(DocumentItem docItem) {
+        docItemRepository.save(docItem);
+    }
 }
 

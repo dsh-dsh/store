@@ -71,7 +71,6 @@ public class ItemDocFactory extends AbstractDocFactory {
         ItemDoc itemDoc = itemDocRepository.getById(docId);
         itemDoc.setDeleted(true);
         itemDocRepository.save(itemDoc);
-        //TODO if document isHold, removing is forbidden
     }
 
     @Override

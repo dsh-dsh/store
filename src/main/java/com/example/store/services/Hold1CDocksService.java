@@ -47,12 +47,13 @@ public class Hold1CDocksService {
     @Autowired
     private IngredientService ingredientService;
 
+
     // TODO test
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> {
-            List<ItemDoc> documents = createDocsToHoldByStoragesAndPeriod(storage, from, to);
+            ItemDoc[] documents = createDocsToHoldByStoragesAndPeriod(storage, from, to);
             holdDocsAndChecksByStoragesAndPeriod(documents, storage, from, to);
         });
         List<Project> projects = projectService.getProjectList();
@@ -61,7 +62,7 @@ public class Hold1CDocksService {
 
     // TODO test
     @Transactional
-    public List<ItemDoc> createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+    public ItemDoc[] createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         Project project = checks.get(0).getProject();
 
@@ -69,21 +70,20 @@ public class Hold1CDocksService {
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
-        ItemDoc postingDoc = createPostingDoc(storage, project, postingItemList, from);
-        ItemDoc writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
-        return List.of(postingDoc, writeOffDoc);
+        ItemDoc[] docs = new ItemDoc[2];
+        docs[0] = createPostingDoc(storage, project, postingItemList, from);
+        docs[1] = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
+        return docs;
     }
 
     // TODO test
     @Transactional
-    public void holdDocsAndChecksByStoragesAndPeriod(List<ItemDoc> documents, Storage storage, LocalDateTime from, LocalDateTime to) {
+    public void holdDocsAndChecksByStoragesAndPeriod(ItemDoc[] documents, Storage storage, LocalDateTime from, LocalDateTime to) {
         List<ItemDoc> checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
-        ItemDoc postingDoc = documents.get(0);
-        ItemDoc writeOffDoc = documents.get(1);
+        ItemDoc postingDoc = documents[0];
+        ItemDoc writeOffDoc = documents[1];
         if (postingDoc != null) {
-            if (!itemDocFactory.holdDocument(postingDoc)) {
-                return;
-            }
+            itemDocFactory.holdDocument(postingDoc);
         }
         if (itemDocFactory.holdDocument(writeOffDoc)) {
             checks.forEach(check -> documentService.setCheckDocHolden(check));
@@ -129,6 +129,7 @@ public class Hold1CDocksService {
                 map(dto -> {
                     DocumentItem item = getDocumentItem(postingDoc, dto.getItem(), dto.getQuantity());
                     item.setPrice(dto.getPrice());
+                    saveDocumentItem(item);
                     return item;
                 }).collect(Collectors.toSet());
         postingDoc.setDocumentItems(docItems);
@@ -139,19 +140,23 @@ public class Hold1CDocksService {
     public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap, LocalDateTime time) {
         ItemDoc writeOffDoc = getWriteOffDoc(storage, project, time);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
-                .map(entry -> getDocumentItem(writeOffDoc, entry.getKey(), entry.getValue()))
+                .map(entry -> saveDocumentItem(getDocumentItem(writeOffDoc, entry.getKey(), entry.getValue())))
                 .collect(Collectors.toSet());
         writeOffDoc.setDocumentItems(docItemSet);
         itemDocRepository.save(writeOffDoc);
         return writeOffDoc;
     }
 
-    @NotNull
     public DocumentItem getDocumentItem(ItemDoc itemDoc, Item item, float quantity) {
         DocumentItem docItem = new DocumentItem();
         docItem.setItemDoc(itemDoc);
         docItem.setItem(item);
         docItem.setQuantity(quantity);
+        return docItem;
+    }
+
+    public DocumentItem saveDocumentItem(DocumentItem docItem) {
+        docItemService.save(docItem);
         return docItem;
     }
 
