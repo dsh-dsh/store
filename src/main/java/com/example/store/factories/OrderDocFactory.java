@@ -47,9 +47,8 @@ public class OrderDocFactory  extends AbstractDocFactory {
     }
 
     @Override
-    public boolean holdDocument(Document document) {
+    public void holdDocument(Document document) {
         document.setHold(true);
-        return true;
     }
 
     @Override

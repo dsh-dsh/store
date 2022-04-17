@@ -11,7 +11,7 @@ public interface DocFactory {
     DocInterface addDocument(DocDTO docDTO);
     DocInterface updateDocument(DocDTO docDTO);
     void deleteDocument(int docId);
-    boolean holdDocument(Document document);
+    void holdDocument(Document document);
     void unHoldDocument(Document document);
 
 }

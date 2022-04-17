@@ -8,20 +8,19 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
-import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.ItemDocRepository;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -53,8 +52,7 @@ public class Hold1CDocksService {
     private List<ItemDoc> checks;
 
     // TODO test
-    @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
-    public void holdChecksByPeriod(LocalDateTime from, LocalDateTime to) {
+    public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> {
             createDocsToHoldByStoragesAndPeriod(storage, from, to);
@@ -75,16 +73,15 @@ public class Hold1CDocksService {
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
         postingDoc = createPostingDoc(storage, project, postingItemList, from);
-        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30l));
+        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
     }
 
-    // TODO test
     @Transactional
     public void holdDocsAndChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         if (postingDoc != null) {
-            itemDocFactory.holdItemDocument(postingDoc);
+            itemDocFactory.holdDocument(postingDoc);
         }
-        itemDocFactory.holdItemDocument(writeOffDoc);
+        itemDocFactory.holdDocument(writeOffDoc);
         checks.forEach(check -> documentService.setCheckDocHolden(check));
 
     }
@@ -94,9 +91,7 @@ public class Hold1CDocksService {
     public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);
         for(OrderDoc order : orders) {
-            if(!orderDocFactory.holdDocument(order)) {
-                throw new HoldDocumentException();
-            }
+            orderDocFactory.holdDocument(order);
         }
     }
 

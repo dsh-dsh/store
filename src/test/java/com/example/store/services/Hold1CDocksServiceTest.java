@@ -21,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -292,8 +293,8 @@ public class Hold1CDocksServiceTest {
     @Test
     void createDocsToHoldNoPostingDocByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
-        LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
-        LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
+        LocalDateTime to = from.plusDays(1);
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         assertNull(hold1CDocksService.getPostingDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -311,13 +312,28 @@ public class Hold1CDocksServiceTest {
     @Test
     void holdDocsAndChecksByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
-        LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
-        LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
+        LocalDateTime to = from.plusDays(1);
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
         List<Document> documents = documentService.getAllDocuments();
         assertEquals(5, documents.size());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addSixOrders.sql",
+            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/hold1CDocs/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void holdOrdersByProjectsAndPeriodTest() {
+        Project project = projectService.getById(3);
+        LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
+        LocalDateTime to = from.plusDays(1);
+        hold1CDocksService.holdOrdersByProjectsAndPeriod(project, from, to);
+        List<Document> documents = documentService.getAllDocuments();
+        assertEquals(6, documents.size());
+        assertEquals(6, documents.stream().filter(Document::isHold).count());
     }
 
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {

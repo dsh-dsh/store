@@ -27,7 +27,7 @@ public class LotMoveService {
     //TODO add test
     public void addPlusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
-                new LotMovement(lot, doc, LocalDateTime.now(), quantity);
+                new LotMovement(lot, doc, doc.getDateTime(), quantity);
         movement.setStorage(doc.getStorageTo());
         lotMoveRepository.save(movement);
     }
@@ -40,7 +40,7 @@ public class LotMoveService {
     //TODO add test
     public void addMinusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
-                new LotMovement(lot, doc, LocalDateTime.now(), quantity * -1);
+                new LotMovement(lot, doc, doc.getDateTime(), quantity * -1);
         movement.setStorage(doc.getStorageFrom());
         lotMoveRepository.save(movement);
     }

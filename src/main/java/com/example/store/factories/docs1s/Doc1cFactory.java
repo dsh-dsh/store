@@ -90,7 +90,7 @@ public class Doc1cFactory implements DocFactory {
     }
 
     @Override
-    public boolean holdDocument(Document document) {return true;}
+    public void holdDocument(Document document) {}
 
     @Override
     public void unHoldDocument(Document document){}
