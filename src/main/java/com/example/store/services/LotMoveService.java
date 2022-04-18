@@ -20,7 +20,7 @@ public class LotMoveService {
 
 
     //TODO add test
-    public void addPlusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+    public void addPlusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> addPlusLotMovement(key, document, value));
     }
 
@@ -33,7 +33,7 @@ public class LotMoveService {
     }
 
     //TODO add test
-    public void addMinusMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+    public void addMinusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> addMinusLotMovement(key, document, value));
     }
 
@@ -45,8 +45,7 @@ public class LotMoveService {
         lotMoveRepository.save(movement);
     }
 
-    //TODO add test
-    private List<LotMovement> getLotMovements(Lot lot) {
+    public List<LotMovement> getLotMovements(Lot lot) {
         return lotMoveRepository.findByLot(lot);
     }
 

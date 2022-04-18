@@ -3,7 +3,6 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.exceptions.NoDocumentItemsException;
-import com.example.store.exceptions.UnHoldDocumentException;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
@@ -19,9 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,9 +57,9 @@ public class LotService {
         Storage storage = document.getStorageFrom();
         LocalDateTime time = document.getDateTime();
         Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
-        lotMoveService.addMinusMovements(document, lotMap);
+        lotMoveService.addMinusLotMovements(document, lotMap);
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
-            lotMoveService.addPlusMovements(document, lotMap);
+            lotMoveService.addPlusLotMovements(document, lotMap);
         }
     }
 
