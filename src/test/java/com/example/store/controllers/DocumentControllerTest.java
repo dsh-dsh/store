@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DocumentControllerTest {
+class DocumentControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/docs";
     private static final int INDIVIDUAL_ID = 1;
@@ -61,8 +61,6 @@ public class DocumentControllerTest {
     private CheckInfoService checkInfoService;
 
     // todo add fields validation tests
-    // todo add security tests
-    // todo add delete tests
 
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

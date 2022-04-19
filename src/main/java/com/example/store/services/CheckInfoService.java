@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class CheckInfoService {
@@ -25,8 +24,6 @@ public class CheckInfoService {
         return checkInfoRepository.findByCheck(check)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_CHECK_INFO_MESSAGE));
     }
-
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
 
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
         CheckInfo checkInfo = new CheckInfo();
@@ -48,14 +45,14 @@ public class CheckInfoService {
                 .orElseThrow(BadRequestException::new);
     }
 
-    private void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
+    protected void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());
         checkInfo.setCashRegisterNumber(checkInfoDTO.getCashRegisterNumber());
         checkInfo.setAmountReceived(checkInfoDTO.getAmountReceived());
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime(), timeFormatter));
+        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime()));
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

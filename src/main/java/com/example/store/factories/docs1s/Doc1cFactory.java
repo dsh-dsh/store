@@ -13,13 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 
 @Component
 public class Doc1cFactory implements DocFactory {
-
-    private DocDTO docDTO;
-    private DocumentType docType;
 
     @Autowired
     private ProjectService projectService;
@@ -34,15 +30,13 @@ public class Doc1cFactory implements DocFactory {
     @Autowired
     private ItemDocRepository itemDocRepository;
     @Autowired
-    private CheckInfoService checkInfoService;
+    private CheckInfoServiceFor1CDock checkInfoServiceFor1CDock;
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
 
     @Override
     public ItemDoc addDocument(DocDTO docDTO) {
-
-        docType = DocumentType.valueOf(docDTO.getDocType());
-
+        DocumentType docType = DocumentType.valueOf(docDTO.getDocType());
         ItemDoc check = new ItemDoc();
         check.setNumber(docDTO.getNumber());
         check.setDateTime(LocalDateTime.parse(docDTO.getTime(), timeFormatter));
@@ -51,25 +45,13 @@ public class Doc1cFactory implements DocFactory {
         check.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
         check.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
         check.setDocType(docType);
-
-        switch (docType) {
-            case CHECK_DOC:
+        if(docType == DocumentType.CHECK_DOC) {
                 check.setIndividual(userService.getByEmail(docDTO.getIndividual().getEmail()));
-                break;
-//            case WRITE_OFF_DOC:
-//                System.out.println("");
-//                break;
-//            case MOVEMENT_DOC:
-//                check.setStorageTo(storageService.getByName(docDTO.getStorageTo().getName()));
-//                break;
         }
-
         itemDocRepository.save(check);
-
         if(docType.equals(DocumentType.CHECK_DOC)) {
-            checkInfoService.addCheckInfo(docDTO.getCheckInfo(), check);
+            checkInfoServiceFor1CDock.addCheckInfo(docDTO.getCheckInfo(), check);
         }
-
         addDocItems(docDTO, check);
 
         return check;
@@ -87,10 +69,6 @@ public class Doc1cFactory implements DocFactory {
     private void addDocItems(DocDTO docDTO, ItemDoc check) {
         docDTO.getDocItems()
                 .forEach(docItemDTO -> docItemServiceFor1CDocs.addDocItem(docItemDTO, check));
-    }
-
-    public void setItemDocDTO(DocDTO docDTO) {
-        this.docDTO = docDTO;
     }
 
     @Override

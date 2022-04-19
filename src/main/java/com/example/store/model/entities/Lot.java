@@ -27,7 +27,7 @@ public class Lot implements Comparable{
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_id")
-    private ItemDoc document;  // TODO is this field necessary
+    private ItemDoc document;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "item_id")
