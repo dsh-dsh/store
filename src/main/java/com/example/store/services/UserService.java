@@ -37,7 +37,7 @@ public class UserService {
     // TODO test
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + email));
     }
 
     // TODO test

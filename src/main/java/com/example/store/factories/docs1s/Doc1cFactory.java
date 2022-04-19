@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 @Component
 public class Doc1cFactory implements DocFactory {
@@ -24,7 +26,7 @@ public class Doc1cFactory implements DocFactory {
     @Autowired
     private UserService userService;
     @Autowired
-    private DocItemService docItemService;
+    private DocItemServiceFor1CDocs docItemServiceFor1CDocs;
     @Autowired
     private StorageService storageService;
     @Autowired
@@ -34,14 +36,16 @@ public class Doc1cFactory implements DocFactory {
     @Autowired
     private CheckInfoService checkInfoService;
 
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
+
     @Override
     public ItemDoc addDocument(DocDTO docDTO) {
 
-        docType = DocumentType.getByValue(docDTO.getDocType());
+        docType = DocumentType.valueOf(docDTO.getDocType());
 
         ItemDoc check = new ItemDoc();
         check.setNumber(docDTO.getNumber());
-        check.setDateTime(LocalDateTime.parse(docDTO.getTime()));
+        check.setDateTime(LocalDateTime.parse(docDTO.getTime(), timeFormatter));
         check.setProject(projectService.getByName(docDTO.getProject().getName()));
         check.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
         check.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
@@ -52,12 +56,12 @@ public class Doc1cFactory implements DocFactory {
             case CHECK_DOC:
                 check.setIndividual(userService.getByEmail(docDTO.getIndividual().getEmail()));
                 break;
-            case WRITE_OFF_DOC:
-                System.out.println("");
-                break;
-            case MOVEMENT_DOC:
-                check.setStorageTo(storageService.getByName(docDTO.getStorageTo().getName()));
-                break;
+//            case WRITE_OFF_DOC:
+//                System.out.println("");
+//                break;
+//            case MOVEMENT_DOC:
+//                check.setStorageTo(storageService.getByName(docDTO.getStorageTo().getName()));
+//                break;
         }
 
         itemDocRepository.save(check);
@@ -82,7 +86,7 @@ public class Doc1cFactory implements DocFactory {
 
     private void addDocItems(DocDTO docDTO, ItemDoc check) {
         docDTO.getDocItems()
-                .forEach(docItemDTO -> docItemService.addDocItem(docItemDTO, check));
+                .forEach(docItemDTO -> docItemServiceFor1CDocs.addDocItem(docItemDTO, check));
     }
 
     public void setItemDocDTO(DocDTO docDTO) {

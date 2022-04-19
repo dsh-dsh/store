@@ -6,6 +6,7 @@ import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.repositories.ProjectRepository;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class ProjectService {
 
     public Project getByName(String name) {
         return projectRepository.findByNameIgnoreCase(name)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
     }
 
     public Project getById(int id) {

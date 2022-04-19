@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class ItemDocListRequestDTO {
     @JsonProperty("item_doc_dto_list")
     private List<DocDTO> checkDTOList;

@@ -15,8 +15,9 @@ public class Document1cController {
     @Autowired
     private DocsFrom1cService docsFrom1cService;
 
-    @PostMapping("/docs/1с")
-    public ResponseEntity<Response<String>> addDocsFrom1C(@RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
+    @PostMapping("/docs")
+    public ResponseEntity<Response<String>> addDocsFrom1CTest(@RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
+        System.out.println(itemDocListRequestDTO);
         docsFrom1cService.addDocsFrom1C(itemDocListRequestDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }

@@ -128,7 +128,7 @@ public class TestService {
     CheckInfoDTO setCHeckInfo(int value) {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setCheckNumber(CHECK_NUMBER + value);
-        dto.setDateTime(LocalDateTime.now());
+        dto.setDateTime(LocalDateTime.now().toString());
         dto.setAmountReceived(1000 * (value + 1));
         dto.setCashRegisterNumber(63214823871L);
         dto.setGuestNumber(1 + value);

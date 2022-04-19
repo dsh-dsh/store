@@ -2,6 +2,7 @@ package com.example.store.repositories;
 
 import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
+import com.example.store.utils.annotations.Loggable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +21,11 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Optional<Item> findByName(String name);
 
     Item getByName(String name);
+
+    Item getByNumber(int number);
+
+    @Query(value = "select id from item where number = :number", nativeQuery = true)
+    int getItemIdByNumber(int number);
 
     @Query(value = "select i.id, i.name, i.parent_id as parentId from item as i", nativeQuery = true)
     List<ItemDTOForListInterface> getItemDTOList();

@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class CheckInfoDTO {
 
     @JsonProperty("check_number")
@@ -31,7 +33,7 @@ public class CheckInfoDTO {
     private String waiter;
 
     @JsonProperty("date_time")
-    private LocalDateTime dateTime;
+    private String dateTime;
 
     @JsonProperty("is_return")
     private boolean isReturn;

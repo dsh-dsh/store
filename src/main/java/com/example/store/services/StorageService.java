@@ -36,7 +36,7 @@ public class StorageService {
 
     public Storage getByName(String name) {
         return storageRepository.findByNameIgnoreCase(name)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_STORAGE_MESSAGE));
     }
 
     private StorageDTO mapToDTO(Storage storage) {

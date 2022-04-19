@@ -82,6 +82,14 @@ public class ItemService {
         return itemRepository.getById(id);
     }
 
+    public Item getItemByNumber(int number) {
+        return itemRepository.getById(number);
+    }
+
+    public int getItemIdByNumber(int number) {
+        return itemRepository.getItemIdByNumber(number);
+    }
+
     public ItemDTO getItemDTOById(int id, String stringDate) {
         LocalDate date = LocalDate.parse(stringDate);
         Item item = itemRepository.findById(id)

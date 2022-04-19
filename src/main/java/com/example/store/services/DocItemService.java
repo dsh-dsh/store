@@ -6,6 +6,7 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
+import com.example.store.utils.annotations.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
 public class DocItemService {
 
     @Autowired
-    private DocItemRepository docItemRepository;
+    protected DocItemRepository docItemRepository;
     @Autowired
-    private ItemService itemService;
+    protected ItemService itemService;
     @Autowired
     private DocItemMapper docItemMapper;
 
@@ -31,12 +32,11 @@ public class DocItemService {
     }
 
     @NotNull
-    private DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
+    protected DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.getItemById(docItemDTO.getItemId()));
         item.setQuantity(docItemDTO.getQuantity());
-        float qf = docItemDTO.getQuantityFact();
         item.setQuantityFact(docItemDTO.getQuantityFact());
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
