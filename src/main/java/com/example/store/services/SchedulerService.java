@@ -11,7 +11,6 @@ public class SchedulerService {
     @Autowired
     private Hold1CDocksService hold1CDocksService;
 
-    // TODO test
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksForADay() {
         LocalDateTime to = LocalDateTime.now(ZoneId.systemDefault());
