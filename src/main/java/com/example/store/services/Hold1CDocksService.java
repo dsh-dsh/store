@@ -51,7 +51,6 @@ public class Hold1CDocksService {
     private ItemDoc postingDoc, writeOffDoc;
     private List<ItemDoc> checks;
 
-    // TODO test
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> {
@@ -62,7 +61,6 @@ public class Hold1CDocksService {
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
     }
 
-    // TODO test
     @Transactional
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
@@ -86,7 +84,6 @@ public class Hold1CDocksService {
 
     }
 
-    // TODO test
     @Transactional
     public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);

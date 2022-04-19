@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectService {
 
-    //TODO test all methods
-
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -41,7 +39,7 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    private ProjectDTO mapToDTO(Project project) {
+    public ProjectDTO mapToDTO(Project project) {
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());
         dto.setName(project.getName());
