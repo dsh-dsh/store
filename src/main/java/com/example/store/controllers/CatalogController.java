@@ -1,7 +1,6 @@
 package com.example.store.controllers;
 
 import com.example.store.model.dto.*;
-import com.example.store.model.enums.PriceType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +44,7 @@ public class CatalogController {
 
     @GetMapping("/api/v1/catalogs/users")
     public ResponseEntity<ListResponse<PersonDTO>> getUsers() {
-        List<PersonDTO> projectDTOList = userService.getProjectDTOList();
+        List<PersonDTO> projectDTOList = userService.getPersonDTOList();
         return ResponseEntity.ok(new ListResponse<>(projectDTOList));
     }
 

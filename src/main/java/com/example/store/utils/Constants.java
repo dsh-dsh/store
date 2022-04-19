@@ -2,6 +2,7 @@ package com.example.store.utils;
 
 public class Constants {
 
+    public static final String SYSTEM_USER_EMAIL = "system@user.com";
     public static final String ADMIN_ROLE = "администратор";
     public static final String CASHIER_ROLE = "кассир";
     public static final String ACCOUNTANT_ROLE = "бухгалтер";

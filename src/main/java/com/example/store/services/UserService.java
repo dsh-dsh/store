@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,25 +26,21 @@ public class UserService {
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
 
-    // TODO test
     public PersonDTO getPersonById(int id) {
         User user = getById(id);
         return personMapper.mapToUserDTO(user);
     }
 
-    // TODO test
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + email));
     }
 
-    // TODO test
     public User getById(int id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
     }
 
-    // TODO test
     public void setPerson(PersonDTO personDTO) {
         User user = personMapper.mapToUser(personDTO);
         user.setRegTime(LocalDateTime.now());
@@ -54,15 +48,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // TODO test
     public void updatePerson(PersonDTO personDTO) {
         User user = getByEmail(personDTO.getEmail());
         updateUserFields(user, personDTO);
         userRepository.save(user);
     }
 
-    // TODO test
-    private void updateUserFields(User user, PersonDTO dto) {
+    public void updateUserFields(User user, PersonDTO dto) {
         if(dto.getFirstName() != null && !dto.getFirstName().equals("")) user.setFirstName(dto.getFirstName());
         if(dto.getLastName() != null && !dto.getLastName().equals("")) user.setLastName(dto.getLastName());
         if(dto.getEmail() != null && !dto.getEmail().equals("")) user.setEmail(dto.getEmail());
@@ -72,16 +64,14 @@ public class UserService {
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
     }
 
-    // TODO test
-    public List<PersonDTO> getProjectDTOList() {
+    public List<PersonDTO> getPersonDTOList() {
         return userRepository.findAll().stream()
                 .map(personMapper::mapToUserDTO)
                 .collect(Collectors.toList());
     }
 
-    // TODO test
     public User getSystemAuthor() {
-        String systemUserEmail = "system@user.com"; // TODO вынести в будущие настройки
+        String systemUserEmail = Constants.SYSTEM_USER_EMAIL;
         return userRepository.findByEmailIgnoreCase(systemUserEmail)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
     }

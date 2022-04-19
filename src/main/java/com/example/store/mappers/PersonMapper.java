@@ -22,8 +22,6 @@ public class PersonMapper extends MappingConverters {
     public void init() {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.createTypeMap(User.class, PersonDTO.class)
-//                .addMappings(mapper -> mapper.using(dateTimeConverter).map(User::getRegTime, PersonDTO::setRegDate))
-//                .addMappings(mapper -> mapper.using(dateConverter).map(User::getBirthDate, PersonDTO::setBirthDate))
                 .addMappings(mapper -> mapper.skip(User::getPassword, PersonDTO::setPassword));
         modelMapper.createTypeMap(PersonDTO.class, User.class)
                 .addMappings(mapper -> mapper.using(stringToDateTime).map(PersonDTO::getRegDate, User::setRegTime))
