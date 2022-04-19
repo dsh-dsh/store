@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 @Service
 public class StorageService {
 
-    //TODO test all methods
-
     @Autowired
     private StorageRepository storageRepository;
 
@@ -39,7 +37,7 @@ public class StorageService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_STORAGE_MESSAGE));
     }
 
-    private StorageDTO mapToDTO(Storage storage) {
+    public StorageDTO mapToDTO(Storage storage) {
         StorageDTO dto = new StorageDTO();
         dto.setId(storage.getId());
         dto.setName(storage.getName());
