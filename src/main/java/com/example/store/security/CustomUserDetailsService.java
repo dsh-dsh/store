@@ -1,7 +1,10 @@
 package com.example.store.security;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.User;
+import com.example.store.repositories.UserRepository;
 import com.example.store.services.UserService;
+import com.example.store.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public CustomUserDetails setUserDetails(User user) {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("USER");
@@ -28,7 +31,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.getByEmail(username);
+        User user = userRepository.findByEmailIgnoreCase(username)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
         return user == null ? null : setUserDetails(user);
     }
 }

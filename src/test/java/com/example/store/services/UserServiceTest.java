@@ -48,7 +48,6 @@ class UserServiceTest {
     private static final String LAST_NAME = "Smiths";
     private static final String PASSWORD = "password";
     private static final String BIRTH_DATE = "2001-01-01";
-//    private static final String REG_DATE = "2022-01-01T10:30:00";
     private static final String PHONE = "+7(900)0000000";
 
     @Test
@@ -108,6 +107,7 @@ class UserServiceTest {
     @Test
     void setPersonTest() {
         PersonDTO personDTO = getPersonDTO();
+        personDTO.setPassword(PASSWORD);
         userService.setPerson(personDTO);
         userRepository.findByEmailIgnoreCase(NEW_USER_EMAIL).get();
         assertFalse(userRepository.findByEmailIgnoreCase(NEW_USER_EMAIL).isEmpty());
