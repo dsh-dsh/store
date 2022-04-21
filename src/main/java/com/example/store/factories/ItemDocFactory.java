@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.services.LotService;
+import com.example.store.services.ReHoldDocumentsService;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ public class ItemDocFactory extends AbstractDocFactory {
 
     @Autowired
     private LotService lotService;
+    @Autowired
+    private ReHoldDocumentsService reHoldDocumentsService;
 
     @Override
     @Transaction
@@ -77,6 +80,12 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Transaction
     public void holdDocument(Document document) {
         lotService.addLotMovements(document);
+        document.setHold(true);
+        itemDocRepository.save((ItemDoc) document);
+    }
+
+    public void reHoldDocument(Document document) {
+        reHoldDocumentsService.reHold((ItemDoc) document);
         document.setHold(true);
         itemDocRepository.save((ItemDoc) document);
     }

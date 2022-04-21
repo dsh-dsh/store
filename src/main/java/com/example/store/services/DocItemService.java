@@ -45,24 +45,23 @@ public class DocItemService {
     }
 
     public void updateDocItems(List<DocItemDTO> docItemDTOList, ItemDoc doc) {
-        List<DocumentItem> currentItems = getItemsByDoc(doc);
+        List<DocumentItem> currentDocumentItems = getItemsByDoc(doc);
         List<Integer> ids = new ArrayList<>();
-        for(DocumentItem currentItem : currentItems) {
-            for(DocItemDTO dto : docItemDTOList) {
-                if(Objects.equals(dto.getItemId(), currentItem.getItem().getId())) {
-                    updateDocItem(currentItem, dto);
-
-                    ids.add(dto.getItemId());
+        for(DocumentItem currentDocumentItem : currentDocumentItems) {
+            for(DocItemDTO docItemDTO : docItemDTOList) {
+                if(Objects.equals(docItemDTO.getItemId(), currentDocumentItem.getItem().getId())) {
+                    updateDocItem(currentDocumentItem, docItemDTO);
+                    ids.add(docItemDTO.getItemId());
                 }
             }
         }
-        currentItems.stream()
-                .filter(item -> !ids.contains(item.getItem().getId()))
-                .forEach(item -> docItemRepository.delete(item));
+        currentDocumentItems.stream()
+                .filter(documentItem -> !ids.contains(documentItem.getItem().getId()))
+                .forEach(documentItem -> docItemRepository.delete(documentItem));
         docItemDTOList.stream()
                 .filter(dto -> !ids.contains(dto.getItemId()))
                 .map(dto -> createDocItem(dto, doc))
-                .forEach(item -> docItemRepository.save(item));
+                .forEach(documentItem -> docItemRepository.save(documentItem));
     }
 
     private void updateDocItem(DocumentItem item, DocItemDTO dto) {
@@ -77,17 +76,9 @@ public class DocItemService {
         return docItemRepository.findByItemDoc(doc);
     }
 
-    public DocItemDTO getItemDTO(DocumentItem item) {
-        return docItemMapper.mapToDocItemDTO(item);
-    }
-
     public List<DocItemDTO> getItemDTOListByDoc(ItemDoc doc) {
         List<DocumentItem> items = getItemsByDoc(doc);
         return items.stream().map(docItemMapper::mapToDocItemDTO).collect(Collectors.toList());
-    }
-
-    public int countItemsByDoc(int docId) {
-        return docItemRepository.countItemsByDocId(docId);
     }
 
     public void deleteByDoc(ItemDoc itemDoc) {
