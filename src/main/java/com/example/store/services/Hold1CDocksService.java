@@ -1,6 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.factories.OrderDocFactory;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
@@ -48,7 +47,8 @@ public class Hold1CDocksService {
     @Autowired
     private IngredientService ingredientService;
 
-    private ItemDoc postingDoc, writeOffDoc;
+    private ItemDoc postingDoc;
+    private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
 
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
@@ -81,7 +81,6 @@ public class Hold1CDocksService {
         }
         itemDocFactory.holdDocument(writeOffDoc);
         checks.forEach(check -> documentService.setCheckDocHolden(check));
-
     }
 
     @Transactional
@@ -90,6 +89,11 @@ public class Hold1CDocksService {
         for(OrderDoc order : orders) {
             orderDocFactory.holdDocument(order);
         }
+    }
+
+    public void deleteCreatedDocumentsOnFail() {
+        if(postingDoc != null) itemDocFactory.deleteDocument(postingDoc.getId());
+        if(writeOffDoc != null) itemDocFactory.deleteDocument(writeOffDoc.getId());
     }
 
     public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
@@ -115,27 +119,27 @@ public class Hold1CDocksService {
 
     public ItemDoc createPostingDoc(Storage storage, Project project, List<ItemQuantityPriceDTO> dtoList, LocalDateTime time) {
         if(dtoList == null || dtoList.isEmpty()) return null;
-        ItemDoc postingDoc = getPostingDoc(storage, project, time);
+        ItemDoc doc = getPostingDoc(storage, project, time);
         Set<DocumentItem> docItems = dtoList.stream().
                 map(dto -> {
-                    DocumentItem item = getDocumentItem(postingDoc, dto.getItem(), dto.getQuantity());
+                    DocumentItem item = getDocumentItem(doc, dto.getItem(), dto.getQuantity());
                     item.setPrice(dto.getPrice());
                     saveDocumentItem(item);
                     return item;
                 }).collect(Collectors.toSet());
-        postingDoc.setDocumentItems(docItems);
-        itemDocRepository.save(postingDoc);
-        return postingDoc;
+        doc.setDocumentItems(docItems);
+        itemDocRepository.save(doc);
+        return doc;
     }
 
     public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap, LocalDateTime time) {
-        ItemDoc writeOffDoc = getWriteOffDoc(storage, project, time);
+        ItemDoc doc = getWriteOffDoc(storage, project, time);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
-                .map(entry -> saveDocumentItem(getDocumentItem(writeOffDoc, entry.getKey(), entry.getValue())))
+                .map(entry -> saveDocumentItem(getDocumentItem(doc, entry.getKey(), entry.getValue())))
                 .collect(Collectors.toSet());
-        writeOffDoc.setDocumentItems(docItemSet);
-        itemDocRepository.save(writeOffDoc);
-        return writeOffDoc;
+        doc.setDocumentItems(docItemSet);
+        itemDocRepository.save(doc);
+        return doc;
     }
 
     public DocumentItem getDocumentItem(ItemDoc itemDoc, Item item, float quantity) {
@@ -161,15 +165,15 @@ public class Hold1CDocksService {
     }
 
     public ItemDoc getWriteOffDoc(Storage storage, Project project, LocalDateTime time) {
-        ItemDoc writeOffDoc = getItemDocOfType(DocumentType.WRITE_OFF_DOC, project, time);
-        writeOffDoc.setStorageFrom(storage);
-        return writeOffDoc;
+        ItemDoc itemDocOfType = getItemDocOfType(DocumentType.WRITE_OFF_DOC, project, time);
+        itemDocOfType.setStorageFrom(storage);
+        return itemDocOfType;
     }
 
     public ItemDoc getPostingDoc(Storage storage, Project project, LocalDateTime time) {
-        ItemDoc postingDoc = getItemDocOfType(DocumentType.POSTING_DOC, project, time);
-        postingDoc.setStorageTo(storage);
-        return postingDoc;
+        ItemDoc itemDocOfType = getItemDocOfType(DocumentType.POSTING_DOC, project, time);
+        itemDocOfType.setStorageTo(storage);
+        return itemDocOfType;
     }
 
     public ItemDoc getItemDocOfType(DocumentType docType, Project project, LocalDateTime time) {
