@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ public class Item1CService extends ItemService{
     public void setItems(ItemList1CRequestDTO itemList1CRequestDTO) {
         date = LocalDate.now();
         List<Item1CDTO> dtoList = itemList1CRequestDTO.getItem1CDTOList();
+        dtoList.sort(Comparator.comparing(Item1CDTO::getNumber));
         dtoList.forEach(this::setItem);
     }
 
@@ -36,7 +38,7 @@ public class Item1CService extends ItemService{
         }
     }
 
-    public Item setNewItem(Item1CDTO item1CDTO) {
+    public void setNewItem(Item1CDTO item1CDTO) {
         Item parent = findItemByNumber(item1CDTO.getParentNumber())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         Item item = itemMapper.mapToItem(item1CDTO);
@@ -45,7 +47,6 @@ public class Item1CService extends ItemService{
         priceService.addPrices(item, item1CDTO);
         setService.setSets(item, item1CDTO.getSets());
         ingredientService.setIngredients(item, item1CDTO.getIngredients());
-        return item;
     }
 
     public void updateItem(Item item, Item1CDTO itemDTO, LocalDate date) {
