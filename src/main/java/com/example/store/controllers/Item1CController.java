@@ -1,8 +1,8 @@
 package com.example.store.controllers;
 
-import com.example.store.model.dto.requests.ItemDocListRequestDTO;
+import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.responses.Response;
-import com.example.store.services.DocsFrom1cService;
+import com.example.store.services.Item1CService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class Document1cController {
+public class Item1CController {
 
     @Autowired
-    private DocsFrom1cService docsFrom1cService;
+    private Item1CService item1CService;
 
-    @PostMapping("/docs")
-    public ResponseEntity<Response<String>> addDocsFrom1CTest(
-            @RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
-        docsFrom1cService.addDocsFrom1C(itemDocListRequestDTO);
+    @PostMapping("/items")
+    public ResponseEntity<Response<String>>  setItems(
+            @RequestBody ItemList1CRequestDTO itemList1CRequestDTO) {
+        item1CService.setItems(itemList1CRequestDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

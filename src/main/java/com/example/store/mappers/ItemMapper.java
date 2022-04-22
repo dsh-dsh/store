@@ -1,5 +1,6 @@
 package com.example.store.mappers;
 
+import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
@@ -28,7 +29,6 @@ public class ItemMapper extends MappingConverters {
     public void init() {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         this.modelMapper.createTypeMap(Item.class, ItemDTO.class)
-//                .addMappings(mapper -> mapper.using(dateTimeConverter).map(Item::getRegTime, ItemDTO::setRegTime))
                 .addMappings(mapper -> mapper.using(workshopConverter).map(Item::getWorkshop, ItemDTO::setWorkshop))
                 .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTO::setParentId));
@@ -37,6 +37,11 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(ItemDTO::getParentId, Item::setParent));
+        this.modelMapper.createTypeMap(Item1CDTO.class, Item.class)
+                .addMappings(mapper -> mapper.using(stringToDateTime).map(Item1CDTO::getRegTime, Item::setRegTime))
+                .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(Item1CDTO::getWorkshop, Item::setWorkshop))
+                .addMappings(mapper -> mapper.using(stringUnitConverter).map(Item1CDTO::getUnit, Item::setUnit))
+                .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));
     }
 
     public ItemDTO mapToDTO(Item item) {

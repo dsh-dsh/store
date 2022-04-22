@@ -2,6 +2,8 @@ package com.example.store.mappers;
 
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.Converter;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +16,12 @@ import java.time.ZoneId;
 @Component
 public class MappingConverters {
 
+    private final Logger logger = LogManager.getLogger("MappingConverters");
+
     protected final Converter<String, LocalDateTime> stringToDateTime = value -> {
         String date = value.getSource();
         if(date != null && !date.equals("")) {
+            logger.info(String.format("Date is - ", date));
             return LocalDateTime.parse(value.getSource());
         } else {
             return null;

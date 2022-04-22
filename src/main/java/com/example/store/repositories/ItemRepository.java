@@ -22,7 +22,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     Item getByName(String name);
 
-    Item getByNumber(int number);
+    Optional<Item> findByNumber(int number);
 
     @Query(value = "select id from item where number = :number", nativeQuery = true)
     int getItemIdByNumber(int number);

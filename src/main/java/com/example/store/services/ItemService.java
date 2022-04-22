@@ -17,23 +17,24 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ItemService {
 
     @Autowired
-    private ItemRepository itemRepository;
+    protected ItemRepository itemRepository;
     @Autowired
-    private ItemMapper itemMapper;
+    protected ItemMapper itemMapper;
     @Autowired
-    private PriceService priceService;
+    protected PriceService priceService;
     @Autowired
-    private SetService setService;
+    protected SetService setService;
     @Autowired
-    private IngredientService ingredientService;
+    protected IngredientService ingredientService;
 
-    private List<ItemDTOForList> allItems = new ArrayList<>();
+    protected List<ItemDTOForList> allItems = new ArrayList<>();
 
     public List<ItemDTOForList> getItemDTOTree() {
         setItemDTOList();
@@ -63,7 +64,7 @@ public class ItemService {
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }
 
-    private void updateItemFields(Item item, ItemDTO dto) {
+    protected void updateItemFields(Item item, ItemDTO dto) {
         item.setName(dto.getName());
         item.setPrintName(dto.getPrintName());
         item.setWeight(dto.isWeight());
@@ -82,8 +83,8 @@ public class ItemService {
         return itemRepository.getById(id);
     }
 
-    public Item getItemByNumber(int number) {
-        return itemRepository.getById(number);
+    public Optional<Item> findItemByNumber(int number) {
+        return itemRepository.findByNumber(number);
     }
 
     public int getItemIdByNumber(int number) {
