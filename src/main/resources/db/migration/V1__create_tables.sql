@@ -27,11 +27,11 @@ is_payed bit not null, is_payed_by_card bit not null, is_return bit not null, ta
 date_time datetime(6), waiter varchar(255), check_id integer, primary key (id));
 
 create table if not exists item
-(id integer not null auto_increment, is_alcohol bit not null, is_garnish bit not null,
-is_in_employee_menu bit not null, is_include_garnish bit not null, is_include_sauce bit not null,
-is_sauce bit not null, is_weight bit not null, name varchar(255), print_name varchar(255),
-reg_time datetime(6) not null, unit varchar(255), workshop varchar(255), parent_id integer,
-is_deleted bit not null, number integer not null, primary key (id));
+(id integer not null auto_increment, is_alcohol bit not null, is_not_in_price_list bit not null,
+is_garnish bit not null, is_in_employee_menu bit not null, is_include_garnish bit not null,
+is_include_sauce bit not null, is_sauce bit not null, is_weight bit not null, name varchar(255),
+print_name varchar(255), comment varchar(255), reg_time datetime(6) not null, unit varchar(255),
+workshop varchar(255), parent_id integer, is_deleted bit not null, number integer not null, primary key (id));
 
 create table if not exists price
 (id integer not null auto_increment, price_date date, price_value float, item_id integer, price_type varchar(255),

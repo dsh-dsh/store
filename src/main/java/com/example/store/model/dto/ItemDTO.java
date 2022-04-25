@@ -21,6 +21,8 @@ public class ItemDTO {
     @JsonProperty("print_name")
     private String printName;
 
+    private String comment;
+
     @JsonProperty("reg_time")
     private String regTime;
 
@@ -32,6 +34,9 @@ public class ItemDTO {
 
     @JsonProperty("is_alcohol")
     private boolean isAlcohol;
+
+    @JsonProperty("is_not_in_price_list")
+    private boolean isNotInPriceList;
 
     @JsonProperty("is_garnish")
     private boolean isGarnish;

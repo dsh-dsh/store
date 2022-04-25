@@ -27,13 +27,16 @@ public class Item {
 
     private String name;
     private String printName;
+    private String comment;
 
     @Column(nullable = false)
     private LocalDateTime regTime;
 
+
     private boolean isWeight;
     private boolean isInEmployeeMenu;
 
+    private boolean isNotInPriceList;
     private boolean isAlcohol;
 
     private boolean isGarnish;
