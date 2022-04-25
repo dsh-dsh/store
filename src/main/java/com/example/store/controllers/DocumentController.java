@@ -39,6 +39,12 @@ public class DocumentController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @PostMapping("/api/v1/docs/hold/{id}")
+    public ResponseEntity<Response<String>> holdDocument(@PathVariable int docId) {
+        documentService.holdDocument(docId);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
     @PutMapping("/api/v1/docs")
     public ResponseEntity<Response<String>> updateDocument(@RequestBody DocRequestDTO docRequestDTO) {
         documentService.updateDocument(docRequestDTO.getDocDTO());

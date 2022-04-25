@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.mappers.DocMapper;
 import com.example.store.mappers.DocToListMapper;
@@ -42,6 +43,25 @@ public class DocumentService {
     @Autowired
     private DocToListMapper docToListMapper;
 
+    public boolean existsNotHoldenDocsBefore(Document document) {
+        Storage storageFrom = null;
+        Storage storageTo = null;
+        if(document instanceof ItemDoc) {
+            storageFrom = ((ItemDoc) document).getStorageFrom();
+            storageTo = ((ItemDoc) document).getStorageTo();
+        }
+        return documentRepository.existsNotHoldenDocs(
+                document.getDocType(), storageFrom, storageTo, document.getDateTime());
+    }
+
+    public void holdDocument(int docId) {
+        ItemDoc document = getDocumentById(docId);
+        if(existsNotHoldenDocsBefore(document)) {
+            throw new HoldDocumentException(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE);
+        }
+        itemDocFactory.holdDocument(document);
+    }
+
     // TODO test all methods
 
     public void addDocument(DocDTO docDTO) {
@@ -50,11 +70,6 @@ public class DocumentService {
 
     public void updateDocument(DocDTO docDTO) {
         itemDocFactory.updateDocument(docDTO);
-    }
-
-    public ItemDoc getDocumentByNumber(int number) {
-        return itemDocRepository.findByNumber(number)
-                .orElseThrow(BadRequestException::new);
     }
 
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
@@ -79,7 +94,7 @@ public class DocumentService {
 
     public ItemDoc getDocumentById(int docId) {
         return itemDocRepository.findById(docId)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
     }
 
     public DocDTO getDocDTOById(int docId) {

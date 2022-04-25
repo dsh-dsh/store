@@ -31,6 +31,8 @@ public class Doc1cFactory implements DocFactory {
     private ItemDocRepository itemDocRepository;
     @Autowired
     private CheckInfoServiceFor1CDock checkInfoServiceFor1CDock;
+    @Autowired
+    private LotService lotService;
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
 
@@ -72,7 +74,11 @@ public class Doc1cFactory implements DocFactory {
     }
 
     @Override
-    public void holdDocument(Document document) {}
+    public void holdDocument(Document document) {
+        lotService.addLotMovements(document);
+        document.setHold(true);
+        itemDocRepository.save((ItemDoc) document);
+    }
 
     @Override
     public void unHoldDocument(Document document){}
