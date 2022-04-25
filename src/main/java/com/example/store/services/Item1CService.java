@@ -12,9 +12,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Setter
 @Service
@@ -22,11 +20,29 @@ public class Item1CService extends ItemService{
 
     private LocalDate date;
 
-    public void setItems(ItemList1CRequestDTO itemList1CRequestDTO) {
+    public void setItemsFrom1C(ItemList1CRequestDTO itemList1CRequestDTO) {
         date = LocalDate.now();
         List<Item1CDTO> dtoList = itemList1CRequestDTO.getItem1CDTOList();
         dtoList.sort(Comparator.comparing(Item1CDTO::getNumber));
-        dtoList.forEach(this::setItem);
+
+        List<Item1CDTO> list = new ArrayList<>(dtoList);
+        setItemsRecursive(list);
+
+        dtoList.forEach(this::setIngredientsAndSets);
+    }
+
+    private void setItemsRecursive(List<Item1CDTO> dtoList) {
+        if(!dtoList.isEmpty()) {
+            Iterator<Item1CDTO> iterator = dtoList.iterator();
+            while (iterator.hasNext()) {
+                Item1CDTO dto = iterator.next();
+                if (itemRepository.existsByNumber(dto.getParentNumber())) {
+                    setItem(dto);
+                    iterator.remove();
+                }
+            }
+            setItemsRecursive(dtoList);
+        }
     }
 
     public void setItem(Item1CDTO dto) {
@@ -38,6 +54,11 @@ public class Item1CService extends ItemService{
         }
     }
 
+    public void setIngredientsAndSets(Item1CDTO dto) {
+        Optional<Item> itemOptional = findItemByNumber(dto.getNumber());
+        itemOptional.ifPresent(item -> updateIngredientAndSet(item, dto));
+    }
+
     public void setNewItem(Item1CDTO item1CDTO) {
         Item parent = findItemByNumber(item1CDTO.getParentNumber())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
@@ -45,14 +66,15 @@ public class Item1CService extends ItemService{
         item.setParent(parent);
         itemRepository.save(item);
         priceService.addPrices(item, item1CDTO);
-        setService.setSets(item, item1CDTO.getSets());
-        ingredientService.setIngredients(item, item1CDTO.getIngredients());
     }
 
     public void updateItem(Item item, Item1CDTO itemDTO, LocalDate date) {
         updateItemFields(item, itemDTO);
         itemRepository.save(item);
         priceService.updateItemPrices(item, itemDTO.getPrices(), date);
+    }
+
+    public void updateIngredientAndSet(Item item, Item1CDTO itemDTO) {
         setService.updateSets(item, itemDTO.getSets());
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }

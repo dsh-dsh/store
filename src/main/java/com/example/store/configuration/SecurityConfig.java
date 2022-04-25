@@ -2,7 +2,6 @@ package com.example.store.configuration;
 
 import com.example.store.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,9 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +36,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             "/static/**", "/webjars/**", "/favicon.ico",
             "/js/**", "/css/**", "/app.js",
             "/login", "/profile", "/push", "/friends", "/im", "/statistics", "/settings",
-            "/docs"
+            "/docs", "/items"
     };
 
     @Override

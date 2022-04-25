@@ -1,6 +1,7 @@
 package com.example.store;
 
 import com.example.store.model.dto.Item1CDTO;
+import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.PriceDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.enums.PriceType;
@@ -11,17 +12,14 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class UtilTest {
+class UtilTest {
 
     public Map<Integer, Integer> getIntegerMap(List<Integer> list) {
         return list.stream().collect(Collectors.toMap(
@@ -32,6 +30,33 @@ public class UtilTest {
 
     public Map<Integer, Long> getIntegerMapGroupingBy(List<Integer> list) {
         return list.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    @Test
+    void RemovingListItemsInLoopTest() {
+        List<ItemDTO> list = new ArrayList<>();
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        ItemDTO itemDTO = new ItemDTO();
+        itemDTO.setParentId(100);
+        list.add(itemDTO);
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+        list.add(new ItemDTO());
+
+        Iterator<ItemDTO> iterator = list.iterator();
+
+        while(iterator.hasNext()) {
+            if(iterator.next().getParentId() == 100) {
+                iterator.remove();
+            }
+        }
+
+        assertEquals(9, list.size());
     }
 
     @Test

@@ -18,7 +18,7 @@ public class Item1CController {
     @PostMapping("/items")
     public ResponseEntity<Response<String>>  setItems(
             @RequestBody ItemList1CRequestDTO itemList1CRequestDTO) {
-        item1CService.setItems(itemList1CRequestDTO);
+        item1CService.setItemsFrom1C(itemList1CRequestDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

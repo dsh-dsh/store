@@ -53,7 +53,7 @@ class Item1CControllerTest {
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void setItemsTest() throws Exception {
+    void setItemsFrom1CTest() throws Exception {
 
         ItemList1CRequestDTO itemList1CRequestDTO = new ItemList1CRequestDTO();
         itemList1CRequestDTO.setItem1CDTOList(getItemDTOList());
@@ -66,20 +66,22 @@ class Item1CControllerTest {
                 .andExpect(status().isOk());
 
         List<Item> items = itemRepository.findAll();
-        assertEquals(14, items.size());
+        assertEquals(16 , items.size());
     }
 
     private List<Item1CDTO> getItemDTOList() {
         List<Item1CDTO> list = new ArrayList<>();
         list.add(getItemDTO(11, 2, "Бар", List.of()));
         list.add(getItemDTO(12, 11, "Ингредиент 1", List.of()));
-        list.add(getItemDTO(13, 11, "Ингредиент 2", List.of()));
+        list.add(getItemDTO(13, 16, "Ингредиент 2", List.of()));
         list.add(getItemDTO(14, 1, "Блюдо 1",
                 getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
         list.add(getItemDTO(444, 1, "Блюдо 10",
                 getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
         list.add(getItemDTO(3611, 1, "Cуп лапша (1)",
                 getPrices(LocalDate.now().toString(), 180.00f, 220.00f)));
+        list.add(getItemDTO(15, 11, "Ингредиент 1", List.of()));
+        list.add(getItemDTO(16, 11, "Ингредиент 2", List.of()));
         return list;
     }
 
