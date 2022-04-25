@@ -3,7 +3,6 @@ package com.example.store.services;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +185,6 @@ class LotServiceTest {
         });
     }
 
-    @NotNull
     private Map<Lot, Float> getMapOfLotAndFloat() {
         Lot lot1 = new Lot(
                 getDocument(1, 3), getItem(8),
@@ -204,7 +202,6 @@ class LotServiceTest {
         return map;
     }
 
-    @NotNull
     private DocumentItem getDocItem(int id, float quantity) {
         DocumentItem item = new DocumentItem();
         item.setItem(getItem(id));
@@ -213,7 +210,6 @@ class LotServiceTest {
         return item;
     }
 
-    @NotNull
     private ItemDoc getDocument(int id, int storageId) {
         ItemDoc itemDoc = new ItemDoc();
         itemDoc.setId(id);
@@ -221,7 +217,6 @@ class LotServiceTest {
         return itemDoc;
     }
 
-//    @NotNull
 //    private List<LotFloat> getListOfLotFloatsOn20220311() {
 //        LotFloat lotFloat1 = new LotFloat() {
 //            public long getId() {
@@ -243,14 +238,12 @@ class LotServiceTest {
 //        return list;
 //    }
 
-    @NotNull
     private Item getItem(int id) {
         Item item = new Item();
         item.setId(id);
         return item;
     }
 
-    @NotNull
     private Storage getStorage(int id) {
         Storage storage = new Storage();
         storage.setId(id);

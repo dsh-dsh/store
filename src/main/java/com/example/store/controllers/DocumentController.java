@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 public class DocumentController {
@@ -40,8 +39,8 @@ public class DocumentController {
     }
 
     @PostMapping("/api/v1/docs/hold/{id}")
-    public ResponseEntity<Response<String>> holdDocument(@PathVariable int docId) {
-        documentService.holdDocument(docId);
+    public ResponseEntity<Response<String>> holdDocument(@PathVariable int id) {
+        documentService.holdDocument(id);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

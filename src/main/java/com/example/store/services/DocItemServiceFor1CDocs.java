@@ -4,7 +4,6 @@ import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +17,6 @@ public class DocItemServiceFor1CDocs extends DocItemService {
     }
 
     @Override
-    @NotNull
     protected DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);

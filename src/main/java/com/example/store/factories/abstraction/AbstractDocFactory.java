@@ -10,7 +10,6 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.services.*;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,6 @@ public abstract class AbstractDocFactory implements DocFactory {
     @Autowired
     protected CheckInfoService checkInfoService;
 
-    @NotNull
     protected ItemDoc getItemDoc(DocDTO docDTO) {
         this.docDTO = docDTO;
         ItemDoc check = getOrAddItemDoc();
@@ -51,7 +49,6 @@ public abstract class AbstractDocFactory implements DocFactory {
         return check;
     }
 
-    @NotNull
     protected OrderDoc getOrderDoc(DocDTO docDTO) {
         this.docDTO = docDTO;
         OrderDoc order = getOrAddOrderDoc();
@@ -72,13 +69,11 @@ public abstract class AbstractDocFactory implements DocFactory {
         itemDocRepository.deleteById(document.getId());
     }
 
-    @NotNull
     protected ItemDoc getItemDoc(int docId) {
             return itemDocRepository.findById(docId)
                     .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
     }
 
-    @NotNull
     protected OrderDoc getOrAddOrderDoc() {
         int docId = docDTO.getId();
         if(docId != 0) {
@@ -88,7 +83,6 @@ public abstract class AbstractDocFactory implements DocFactory {
         }
     }
 
-    @NotNull
     protected ItemDoc getOrAddItemDoc() {
         int docId = docDTO.getId();
         if(docId != 0) {

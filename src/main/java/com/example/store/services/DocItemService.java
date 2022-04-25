@@ -7,7 +7,6 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.utils.annotations.Loggable;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +30,6 @@ public class DocItemService {
         docItemRepository.save(documentItem);
     }
 
-    @NotNull
     protected DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);

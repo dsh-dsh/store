@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode(of = {"item", "lotTime"})
-public class Lot implements Comparable{
+public class Lot implements Comparable {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -48,7 +47,7 @@ public class Lot implements Comparable{
     }
 
     @Override
-    public int compareTo(@NotNull Object o) {
+    public int compareTo(Object o) {
         LocalDateTime current = this.getLotTime();
         LocalDateTime other = ((Lot)o).getLotTime();
         return current.compareTo(other);

@@ -244,28 +244,39 @@ class DocumentControllerTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void holdReceiptDocTest() throws Exception {
-
-        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
-        docDTO.setSupplier(testService.setCompanyDTO(2));
-        docDTO.setRecipient(testService.setCompanyDTO(1));
-        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
-        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+    void holdDocTest() throws Exception {
 
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestDTO)))
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-//        List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.RECEIPT_DOC);
-//        assertEquals(TestService.ONE_DOCUMENT, docs.size());
-//
-//        assertEquals(TestService.RECEIPT_FIELDS_ID, docs.get(0).getProject().getId());
-//        assertEquals(TestService.RECEIPT_FIELDS_ID, docs.get(0).getStorageTo().getId());
+        List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.POSTING_DOC);
+        assertTrue(docs.get(0).isHold());
+    }
+
+
+    @Sql(value = "/sql/documents/addTwoPostingDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void notHoldDocThenExistsNotHoldenDocBeforeTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/" + 2)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void holdDocUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/" + 1)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
