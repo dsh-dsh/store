@@ -26,6 +26,8 @@ public class ReHoldDocumentsService {
     @Autowired
     private DocItemService docItemService;
 
+    // TODO add tests
+
     public void checkReHoldingIsPossible(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return;
         Map<DocumentItem, Float> changedDocItemMap = getChangedDocItems(itemDoc, docDTO);
