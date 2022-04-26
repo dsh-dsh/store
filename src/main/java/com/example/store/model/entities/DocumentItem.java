@@ -43,4 +43,11 @@ public class DocumentItem {
         this.item = item;
         this.quantity = quantity;
     }
+
+    public DocumentItem(ItemDoc itemDoc, Item item, float quantity, float price) {
+        this.itemDoc = itemDoc;
+        this.item = item;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }

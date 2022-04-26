@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = {"item", "lotTime"})
-public class Lot implements Comparable {
+@EqualsAndHashCode(of = {"documentItem", "lotTime"})
+public class Lot implements Comparable<Lot> {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -25,31 +25,26 @@ public class Lot implements Comparable {
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "document_id")
-    private ItemDoc document;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @JoinColumn(name = "document_item_id")
+    private DocumentItem documentItem;
 
     @Column(name = "lot_time")
     private LocalDateTime lotTime;
 
-    private float quantity;
-    private float price;
-
     public Lot(ItemDoc document, Item item, LocalDateTime lotTime, float quantity, float price) {
-        this.document = document;
-        this.item = item;
+        this.documentItem = new DocumentItem(document, item, quantity, price);
         this.lotTime = lotTime;
-        this.quantity = quantity;
-        this.price = price;
+    }
+
+    public Lot(DocumentItem documentItem, LocalDateTime lotTime) {
+        this.documentItem = documentItem;
+        this.lotTime = lotTime;
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(Lot lot) {
         LocalDateTime current = this.getLotTime();
-        LocalDateTime other = ((Lot)o).getLotTime();
+        LocalDateTime other = lot.getLotTime();
         return current.compareTo(other);
     }
 }

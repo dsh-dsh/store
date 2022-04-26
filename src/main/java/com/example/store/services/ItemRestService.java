@@ -25,15 +25,14 @@ public class ItemRestService {
                 .collect(Collectors.toMap(
                         Function.identity(),
                         item -> (float) lotRepository
-                                .getLotsOfItem(item.getId(), storage.getId(), time)
-                                .stream()
+                                .getLotsOfItem(item.getId(), storage.getId(), time).stream()
                                 .mapToDouble(LotFloat::getValue).sum()));
 
     }
 
     public float getLastPriceOfItem(Item item) {
         Lot lot = lotRepository.findTop1ByItem(item, Sort.by("lotTime").descending()).orElse(null);
-        return lot == null ? 0f : lot.getPrice();
+        return lot == null ? 0f : lot.getDocumentItem().getPrice();
     }
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime time) {

@@ -16,17 +16,25 @@ import java.util.Optional;
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Long> {
 
-    Optional<Lot> findByDocument(ItemDoc document);
+    @Query("SELECT lot " +
+            "FROM Lot lot " +
+            "JOIN FETCH DocumentItem docItem " +
+            "WHERE docItem.itemDoc = :itemDoc")
+    Optional<Lot> findByDocument(ItemDoc itemDoc);
 
     @Query(value = "select lot.id, sum(movement.quantity) as value from lot " +
             "left join lot_movement as movement on lot.id = movement.lot_id " +
-            "where lot.item_id = :itemId and movement.storage_id = :storageId " +
+            "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
+            "where doc_item.item_id = :itemId and movement.storage_id = :storageId " +
             "and movement.movement_time < :time " +
             "group by lot.id " +
             "having sum(movement.quantity) > 0"
             , nativeQuery = true)
     List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
 
-
+    @Query("SELECT lot " +
+            "FROM Lot lot " +
+            "JOIN FETCH lot.documentItem AS docItem " +
+            "WHERE docItem.item = :item" )
     Optional<Lot> findTop1ByItem(Item item, Sort sort);
 }

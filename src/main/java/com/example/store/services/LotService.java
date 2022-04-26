@@ -109,8 +109,7 @@ public class LotService {
 
     //TODO add test
     private void addLot(DocumentItem item) {
-        Lot lot = new Lot(item.getItemDoc(), item.getItem(),
-                item.getItemDoc().getDateTime(), item.getQuantity(), item.getPrice());
+        Lot lot = new Lot(item, item.getItemDoc().getDateTime());
         lotRepository.save(lot);
         lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
