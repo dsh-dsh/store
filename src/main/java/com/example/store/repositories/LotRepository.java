@@ -1,5 +1,6 @@
 package com.example.store.repositories;
 
+import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Long> {
 
+    Optional<Lot> findByDocumentItem(DocumentItem documentItem);
+
     @Query("SELECT lot " +
             "FROM Lot lot " +
             "JOIN FETCH DocumentItem docItem " +
@@ -28,8 +31,7 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "where doc_item.item_id = :itemId and movement.storage_id = :storageId " +
             "and movement.movement_time < :time " +
             "group by lot.id " +
-            "having sum(movement.quantity) > 0"
-            , nativeQuery = true)
+            "having sum(movement.quantity) > 0", nativeQuery = true)
     List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
 
     @Query("SELECT lot " +
@@ -37,4 +39,9 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "JOIN FETCH lot.documentItem AS docItem " +
             "WHERE docItem.item = :item" )
     Optional<Lot> findTop1ByItem(Item item, Sort sort);
+
+    @Query(value = "select sum(movement.quantity) from lot " +
+            "inner join lot_movement as movement on lot.id = movement.lot_id " +
+            "where lot.id = :lotId and movement.storage_id = :storageId", nativeQuery = true)
+    float getQuantityRestOfLot(long lotId, int storageId);
 }

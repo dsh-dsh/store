@@ -7,6 +7,7 @@ import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
 import com.example.store.services.ReHoldDocumentsService;
 import com.example.store.utils.annotations.Transaction;
@@ -21,6 +22,8 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Autowired
     private LotService lotService;
     @Autowired
+    private ItemRestService itemRestService;
+    @Autowired
     private ReHoldDocumentsService reHoldDocumentsService;
 
     @Override
@@ -32,7 +35,6 @@ public class ItemDocFactory extends AbstractDocFactory {
         if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
             addCheckInfo(itemDoc);
         }
-
         return itemDoc;
     }
 
@@ -40,12 +42,13 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Transaction
     public DocInterface updateDocument(DocDTO docDTO) {
         ItemDoc itemDoc = getItemDoc(docDTO);
+        reHoldDocumentsService.checkReHoldingIsPossible(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
         updateDocItems(itemDoc);
+        reHoldDocumentsService.reHoldDocument(itemDoc);
         if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
             updateCheckInfo(itemDoc);
         }
-
         return itemDoc;
     }
 
@@ -84,11 +87,11 @@ public class ItemDocFactory extends AbstractDocFactory {
         itemDocRepository.save((ItemDoc) document);
     }
 
-    public void reHoldDocument(Document document) {
-        reHoldDocumentsService.reHold((ItemDoc) document);
-        document.setHold(true);
-        itemDocRepository.save((ItemDoc) document);
-    }
+//    public void reHoldDocument(Document document) {
+//        reHoldDocumentsService.reHold((ItemDoc) document);
+//        document.setHold(true);
+//        itemDocRepository.save((ItemDoc) document);
+//    }
 
     @Override
     @Transaction

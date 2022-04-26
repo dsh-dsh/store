@@ -30,6 +30,17 @@ public class DocItemService {
         docItemRepository.save(documentItem);
     }
 
+    public DocumentItem createNewDocItem(DocItemDTO docItemDTO) {
+        DocumentItem item = new DocumentItem();
+        item.setItem(itemService.getItemById(docItemDTO.getItemId()));
+        item.setQuantity(docItemDTO.getQuantity());
+        item.setQuantityFact(docItemDTO.getQuantityFact());
+        item.setPrice(docItemDTO.getPrice());
+        item.setDiscount(docItemDTO.getDiscount());
+
+        return item;
+    }
+
     protected DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);

@@ -20,6 +20,8 @@ public class ItemRestService {
     @Autowired
     private LotRepository lotRepository;
 
+    // TODO add tests
+
     public Map<Item, Float> getItemRestMap(Map<Item, Float> itemMap, Storage storage, LocalDateTime time) {
         return itemMap.keySet().stream()
                 .collect(Collectors.toMap(
@@ -40,5 +42,9 @@ public class ItemRestService {
                 .getLotsOfItem(item.getId(), storage.getId(), time)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
+    }
+
+    public float getRestOfLot(Lot lot, Storage storage) {
+        return lotRepository.getQuantityRestOfLot(lot.getId(), storage.getId());
     }
 }

@@ -22,6 +22,12 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HoldDocumentException.class)
+    protected ResponseEntity<ErrorResponse> handleHoldDocumentException(
+            HoldDocumentException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
 //    protected ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFoundException(
 //            AuthenticationCredentialsNotFoundException ex) {

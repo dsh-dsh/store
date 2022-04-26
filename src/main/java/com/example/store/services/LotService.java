@@ -38,6 +38,12 @@ public class LotService {
 
     public static final Logger logger = LogManager.getLogger("LotService");
 
+    //TODO add test
+    public Lot getLotByDocumentItem(DocumentItem documentItem) {
+        return lotRepository.findByDocumentItem(documentItem)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+    }
+
     public void addLotMovements(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
