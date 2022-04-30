@@ -34,11 +34,14 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "having sum(movement.quantity) > 0", nativeQuery = true)
     List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time);
 
-    @Query("SELECT lot " +
-            "FROM Lot lot " +
-            "JOIN FETCH lot.documentItem AS docItem " +
-            "WHERE docItem.item = :item" )
-    Optional<Lot> findTop1ByItem(Item item, Sort sort);
+    @Query(value = "select doc_item.price " +
+            "from document_item as doc_item " +
+            "inner join lot on lot.document_item_id = doc_item.id " +
+            "inner join item on item.id = doc_item.item_id " +
+            "where item.id = :itemId " +
+            "order by lot.lot_time desc " +
+            "limit 1", nativeQuery = true)
+    float findLastPrice(int itemId);
 
     @Query(value = "select sum(movement.quantity) from lot " +
             "inner join lot_movement as movement on lot.id = movement.lot_id " +

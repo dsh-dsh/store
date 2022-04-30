@@ -6,7 +6,6 @@ import com.example.store.model.entities.Storage;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,8 +32,7 @@ public class ItemRestService {
     }
 
     public float getLastPriceOfItem(Item item) {
-        Lot lot = lotRepository.findTop1ByItem(item, Sort.by("lotTime").descending()).orElse(null);
-        return lot == null ? 0f : lot.getDocumentItem().getPrice();
+        return lotRepository.findLastPrice(item.getId());
     }
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime time) {
