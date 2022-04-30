@@ -19,8 +19,6 @@ public class ItemRestService {
     @Autowired
     private LotRepository lotRepository;
 
-    // TODO add tests
-
     public Map<Item, Float> getItemRestMap(Map<Item, Float> itemMap, Storage storage, LocalDateTime time) {
         return itemMap.keySet().stream()
                 .collect(Collectors.toMap(
@@ -28,7 +26,6 @@ public class ItemRestService {
                         item -> (float) lotRepository
                                 .getLotsOfItem(item.getId(), storage.getId(), time).stream()
                                 .mapToDouble(LotFloat::getValue).sum()));
-
     }
 
     public float getLastPriceOfItem(Item item) {
