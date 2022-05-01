@@ -1,10 +1,6 @@
 package com.example.store.exceptions;
 
-import com.example.store.model.entities.Item;
 import com.example.store.utils.Constants;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class HoldDocumentException  extends RuntimeException {
 

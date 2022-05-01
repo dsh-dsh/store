@@ -3,6 +3,8 @@ package com.example.store.services;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.repositories.LotMoveRepository;
+import com.example.store.repositories.LotRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +36,10 @@ class LotServiceTest {
     private LotService lotService;
     @Autowired
     private ItemRestService itemRestService;
-//    @Autowired
-//    private LotMoveRepository lotMoveRepository;
+    @Autowired
+    private LotRepository lotRepository;
+    @Autowired
+    private LotMoveRepository lotMoveRepository;
     @Autowired
     private DocumentService documentService;
 

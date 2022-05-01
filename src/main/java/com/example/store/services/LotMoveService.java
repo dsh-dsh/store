@@ -8,7 +8,7 @@ import com.example.store.repositories.LotMoveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +18,7 @@ public class LotMoveService {
     @Autowired
     private LotMoveRepository lotMoveRepository;
 
+    Map<String, String> map = new HashMap<>();
 
     //TODO add test
     public void addPlusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
@@ -27,9 +28,14 @@ public class LotMoveService {
     //TODO add test
     public void addPlusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
-                new LotMovement(lot, doc, doc.getDateTime(), quantity);
-        movement.setStorage(doc.getStorageTo());
+                new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageTo(), quantity);
         lotMoveRepository.save(movement);
+    }
+
+    public void updatePlusLotMovement(Lot lot, ItemDoc itemDoc, float quantity) {
+        LotMovement lotMovement = lotMoveRepository.findByLotAndDocument(lot, itemDoc);
+        lotMovement.setQuantity(quantity);
+        lotMoveRepository.save(lotMovement);
     }
 
     //TODO add test
@@ -40,8 +46,7 @@ public class LotMoveService {
     //TODO add test
     public void addMinusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
-                new LotMovement(lot, doc, doc.getDateTime(), quantity * -1);
-        movement.setStorage(doc.getStorageFrom());
+                new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageFrom(), quantity * -1);
         lotMoveRepository.save(movement);
     }
 
@@ -54,6 +59,16 @@ public class LotMoveService {
         List<LotMovement> movements = getLotMovements(lot);
         if(movements.size() > 1) throw new UnHoldDocumentException();
         lotMoveRepository.delete(movements.get(0));
+    }
+
+    public void removeByDocument(ItemDoc document) {
+        lotMoveRepository.deleteByDocument(document);
+    }
+
+
+
+    public List<LotMovement> getAll() {
+        return lotMoveRepository.findAll();
     }
 
 }

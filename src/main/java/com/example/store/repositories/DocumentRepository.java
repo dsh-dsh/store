@@ -5,6 +5,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,7 +28,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     @Query("SELECT doc " +
             "FROM Document doc " +
             "WHERE (:docType is null OR doc.docType = :docType)")
-    Page<Document> getByDocType(DocumentType docType, Pageable pageable);
+    Page<Document> findByDocType(DocumentType docType, Pageable pageable);
 
     @Query(value = "SELECT number " +
             "FROM document " +
@@ -37,5 +38,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             , nativeQuery = true)
     int getLastNumber(String docType);
 
+    List<Document> findByDateTimeAfter(LocalDateTime dateTime, Sort sort);
 
 }

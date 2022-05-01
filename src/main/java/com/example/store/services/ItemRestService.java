@@ -29,7 +29,8 @@ public class ItemRestService {
     }
 
     public float getLastPriceOfItem(Item item) {
-        return lotRepository.findLastPrice(item.getId());
+        Float value = lotRepository.findLastPrice(item.getId());
+        return value == null ? 0 : value;
     }
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime time) {

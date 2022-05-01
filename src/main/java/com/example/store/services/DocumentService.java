@@ -20,6 +20,7 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -71,6 +72,13 @@ public class DocumentService {
         itemDocFactory.updateDocument(docDTO);
     }
 
+    public List<Document> getDocumentsAfterAndInclude(Document document) {
+        List<Document> documents = documentRepository
+                .findByDateTimeAfter(document.getDateTime(), Sort.by("dateTime").ascending());
+        documents.add(document);
+        return documents;
+    }
+
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(type, storage, isHold, from, to);
     }
@@ -80,7 +88,7 @@ public class DocumentService {
     }
 
     public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {
-        Page<Document> page = documentRepository.getByDocType(documentType, pageable);
+        Page<Document> page = documentRepository.findByDocType(documentType, pageable);
         List<DocToListDTO> dtoList = page.stream()
                 .map(docToListMapper::mapToDocDTO)
                 .collect(Collectors.toList());
@@ -100,6 +108,11 @@ public class DocumentService {
         ItemDoc itemDoc = itemDocRepository.findById(docId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         return docMapper.mapToDocDTO(itemDoc);
+    }
+
+    public void setHoldAndSave(boolean hold, Document document) {
+        document.setHold(hold);
+        documentRepository.save(document);
     }
 
     public void softDeleteDocument(DocDTO docDTO) {

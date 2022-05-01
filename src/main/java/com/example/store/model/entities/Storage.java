@@ -25,4 +25,7 @@ public class Storage {
     @Enumerated(EnumType.STRING)
     private StorageType type;
 
+    public Storage(int id) {
+        this.id = id;
+    }
 }

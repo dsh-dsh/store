@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,6 +32,9 @@ public class Lot implements Comparable<Lot> {
 
     @Column(name = "lot_time")
     private LocalDateTime lotTime;
+
+    @OneToMany(mappedBy = "lot", fetch = FetchType.LAZY)
+    private List<LotMovement> movements = new ArrayList<>();
 
     public Lot(ItemDoc document, Item item, LocalDateTime lotTime, float quantity, float price) {
         this.documentItem = new DocumentItem(document, item, quantity, price);

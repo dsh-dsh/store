@@ -5,7 +5,6 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.projections.LotFloat;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,6 +24,14 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "WHERE docItem.itemDoc = :itemDoc")
     Optional<Lot> findByDocument(ItemDoc itemDoc);
 
+    @Query("SELECT lot " +
+            "FROM Lot lot " +
+            "JOIN FETCH DocumentItem docItem " +
+            "JOIN FETCH LotMovement movement " +
+            "WHERE docItem.item = :item " +
+            "AND movement.document = :document")
+    Optional<Lot> findByItemAndDoc(Item item, ItemDoc document);
+
     @Query(value = "select lot.id, sum(movement.quantity) as value from lot " +
             "left join lot_movement as movement on lot.id = movement.lot_id " +
             "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
@@ -41,7 +48,7 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "where item.id = :itemId " +
             "order by lot.lot_time desc " +
             "limit 1", nativeQuery = true)
-    float findLastPrice(int itemId);
+    Float findLastPrice(int itemId);
 
     @Query(value = "select sum(movement.quantity) from lot " +
             "inner join lot_movement as movement on lot.id = movement.lot_id " +

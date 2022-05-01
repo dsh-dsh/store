@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class LotServiceMocked {
+class LotServiceMockedTest {
 
     @InjectMocks
     private LotService lotService;
@@ -43,11 +43,6 @@ public class LotServiceMocked {
         assertThrows(NoDocumentItemsException.class, () -> {
             lotService.addLotMovements(document);
         });
-    }
-
-    @Test
-    void addStorageDocMovementTest() {
-
     }
 
 }

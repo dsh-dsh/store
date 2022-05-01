@@ -125,7 +125,9 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     protected void updateCheckInfo(ItemDoc check) {
-        checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), check);
+        if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
+            checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), check);
+        }
     }
 
     protected void addDocumentItems(ItemDoc document) {

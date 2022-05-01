@@ -3,10 +3,7 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.exceptions.NoDocumentItemsException;
-import com.example.store.model.entities.DocumentItem;
-import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Lot;
-import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
@@ -40,8 +37,35 @@ public class LotService {
 
     //TODO add test
     public Lot getLotByDocumentItem(DocumentItem documentItem) {
-        return lotRepository.findByDocumentItem(documentItem)
+        ItemDoc itemDoc = documentItem.getItemDoc();
+        if(itemDoc == null) {
+            return null;
+        }
+        if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
+            return lotRepository.findByDocumentItem(documentItem)
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+        } else {
+            return lotRepository.findByItemAndDoc(documentItem.getItem(), itemDoc)
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+        }
+    }
+
+    public void updateLotMovements(ItemDoc itemDoc) {
+        List<DocumentItem> items =
+                docItemService.getItemsByDoc(itemDoc);
+        if(items.isEmpty()) throw new NoDocumentItemsException();
+        updateLots(itemDoc);
+    }
+
+    public void updateLots(ItemDoc itemDoc) {
+        List<DocumentItem> items = docItemService.getItemsByDoc(itemDoc);
+        items.forEach(this::updateLot);
+    }
+
+    public void updateLot(DocumentItem item) {
+        Lot lot = lotRepository.findByDocumentItem(item)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+        lotMoveService.updatePlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
 
     public void addLotMovements(Document document) {
@@ -75,6 +99,7 @@ public class LotService {
         return getLotMapToUse(lotMap, docItem.getQuantity());
     }
 
+    // не работает
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
         List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), time);
         return lotsOfItem.stream()
@@ -108,8 +133,7 @@ public class LotService {
 
     //TODO add test
     public void addLots(Document document) {
-        List<DocumentItem> items =
-            docItemService.getItemsByDoc((ItemDoc) document);
+        List<DocumentItem> items = docItemService.getItemsByDoc((ItemDoc) document);
         items.forEach(this::addLot);
     }
 
@@ -126,11 +150,9 @@ public class LotService {
     }
 
     //TODO add test
-    private void removeLot(DocumentItem item) {
-        Lot lot = lotRepository.findByDocument(item.getItemDoc())
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
-        lotMoveService.removeLotMovement(lot);
-        lotRepository.delete(lot);
+    private void removeLot(DocumentItem docItem) {
+        lotRepository.findByDocumentItem(docItem)
+                .ifPresent(value -> lotRepository.delete(value));
     }
 
 }

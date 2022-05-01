@@ -1,5 +1,6 @@
 package com.example.store.factories;
 
+import com.example.store.components.UnHoldDocs;
 import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.DocumentItem;
@@ -9,7 +10,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
-import com.example.store.services.ReHoldDocumentsService;
+import com.example.store.components.ReHoldCheck;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,9 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Autowired
     private ItemRestService itemRestService;
     @Autowired
-    private ReHoldDocumentsService reHoldDocumentsService;
+    private ReHoldCheck reHoldCheck;
+    @Autowired
+    private UnHoldDocs unHoldDocs;
 
     @Override
     @Transaction
@@ -42,13 +45,15 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Transaction
     public DocInterface updateDocument(DocDTO docDTO) {
         ItemDoc itemDoc = getItemDoc(docDTO);
-        reHoldDocumentsService.checkReHoldingIsPossible(itemDoc, docDTO);
+        boolean reHoldPossible = reHoldCheck.checkPossibility(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
         updateDocItems(itemDoc);
-        reHoldDocumentsService.reHoldDocument(itemDoc);
-        if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
-            updateCheckInfo(itemDoc);
+        if(reHoldPossible) {
+            lotService.updateLotMovements(itemDoc);
+        } else {
+            unHoldDocs.unHoldAllDocsAfter(itemDoc);
         }
+        updateCheckInfo(itemDoc);
         return itemDoc;
     }
 
@@ -87,14 +92,9 @@ public class ItemDocFactory extends AbstractDocFactory {
         itemDocRepository.save((ItemDoc) document);
     }
 
-//    public void reHoldDocument(Document document) {
-//        reHoldDocumentsService.reHold((ItemDoc) document);
-//        document.setHold(true);
-//        itemDocRepository.save((ItemDoc) document);
-//    }
-
     @Override
     @Transaction
+    @Deprecated(forRemoval = true)
     public void unHoldDocument(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);

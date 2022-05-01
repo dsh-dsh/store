@@ -42,10 +42,11 @@ public class LotMovement {
     private float quantity;
 
 
-    public LotMovement(Lot lot, ItemDoc document, LocalDateTime movementTime, float quantity) {
+    public LotMovement(Lot lot, ItemDoc document, LocalDateTime movementTime, Storage storage, float quantity) {
         this.lot = lot;
         this.document = document;
         this.movementTime = movementTime;
+        this.storage = storage;
         this.quantity = quantity;
     }
 }
