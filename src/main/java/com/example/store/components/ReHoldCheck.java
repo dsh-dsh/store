@@ -30,7 +30,7 @@ public class ReHoldCheck {
     // TODO add tests
 
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
-        if(!itemDoc.isHold()) return true;
+        if(!itemDoc.isHold()) return false;
         if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
         if(!itemDoc.getDateTime().toString().equals(docDTO.getTime())) return false;
         if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {

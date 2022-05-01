@@ -24,8 +24,6 @@ public class UnHoldDocs {
     @Autowired
     private DocItemService docItemService;
 
-    //TODO add tests
-
     public void unHoldAllDocsAfter(Document document) {
         List<Document> documents = documentService.getDocumentsAfterAndInclude(document);
         documents.forEach(this::unHoldDocument);
