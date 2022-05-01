@@ -1,8 +1,5 @@
 package com.example.store.components;
 
-import com.example.store.model.entities.Lot;
-import com.example.store.model.entities.LotMovement;
-import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
@@ -11,8 +8,6 @@ import com.example.store.services.Hold1CDocksService;
 import com.example.store.services.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -20,13 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.Doc;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =

@@ -10,7 +10,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
-import com.example.store.components.ReHoldCheck;
+import com.example.store.components.ReHoldChecking;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Autowired
     private ItemRestService itemRestService;
     @Autowired
-    private ReHoldCheck reHoldCheck;
+    private ReHoldChecking reHoldChecking;
     @Autowired
     private UnHoldDocs unHoldDocs;
 
@@ -45,7 +45,7 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Transaction
     public DocInterface updateDocument(DocDTO docDTO) {
         ItemDoc itemDoc = getItemDoc(docDTO);
-        boolean reHoldPossible = reHoldCheck.checkPossibility(itemDoc, docDTO);
+        boolean reHoldPossible = reHoldChecking.checkPossibility(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
         updateDocItems(itemDoc);
         if(reHoldPossible) {

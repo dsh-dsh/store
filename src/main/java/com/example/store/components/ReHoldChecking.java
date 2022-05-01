@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
-public class ReHoldCheck {
+public class ReHoldChecking {
 
     @Autowired
     private LotService lotService;
@@ -27,29 +27,29 @@ public class ReHoldCheck {
     @Autowired
     private DocItemService docItemService;
 
-    // TODO add tests
 
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
         if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
-        if(!itemDoc.getDateTime().toString().equals(docDTO.getTime())) return false;
+        if(!itemDoc.getDateTime().equals(LocalDateTime.parse(docDTO.getTime()))) return false;
         if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
             Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
             if(!setChangedDocItems(changedDocItemMap, itemDoc, docDTO)) return false;
             Map<Item, Float> quantityDiffMap = getQuantityDiffMap(itemDoc, changedDocItemMap);
-            return quantityDiffMap.isEmpty();
+            return !quantityDiffMap.isEmpty();
         } else {
             return false;
         }
     }
 
-    private Map<Item, Float> getQuantityDiffMap(ItemDoc itemDoc, Map<DocumentItem, Float> changedDocItemMap) {
+    // TODO add tests
+    public Map<Item, Float> getQuantityDiffMap(ItemDoc itemDoc, Map<DocumentItem, Float> changedDocItemMap) {
         Map<Item, Float> quantityDiffMap = new HashMap<>();
         setQuantityDiffMap(quantityDiffMap, itemDoc.getStorageTo(), changedDocItemMap);
         return quantityDiffMap;
     }
 
-    private void setQuantityDiffMap(
+    public void setQuantityDiffMap(
             Map<Item, Float> quantityDiffMap, Storage storage,
             Map<DocumentItem, Float> changedDocItemMap) {
         for(Map.Entry<DocumentItem, Float> entry : changedDocItemMap.entrySet()) {
@@ -73,7 +73,7 @@ public class ReHoldCheck {
         for (DocumentItem docItem : itemDoc.getDocumentItems()) {
             Optional<DocItemDTO> itemDTO = findDocItemDTOByItemId(itemDTOList, docItem.getItem().getId());
             if (itemDTO.isPresent()) {
-                if (docItem.getQuantity() != itemDTO.get().getQuantity()) {
+                if (docItem.getQuantity() <= itemDTO.get().getQuantity()) {
                     map.put(docItem, docItem.getQuantity() - itemDTO.get().getQuantity());
                     itemDTOList.remove(itemDTO.get());
                 }
@@ -84,7 +84,7 @@ public class ReHoldCheck {
         return itemDTOList.isEmpty();
     }
 
-    Optional<DocItemDTO> findDocItemDTOByItemId(List<DocItemDTO> list, int itemId) {
+    public Optional<DocItemDTO> findDocItemDTOByItemId(List<DocItemDTO> list, int itemId) {
         return list.stream().filter(dto -> dto.getItemId() == itemId).findFirst();
     }
 
