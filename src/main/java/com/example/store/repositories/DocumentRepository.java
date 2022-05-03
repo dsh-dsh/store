@@ -38,6 +38,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             , nativeQuery = true)
     int getLastNumber(String docType);
 
-    List<Document> findByDateTimeAfter(LocalDateTime dateTime, Sort sort);
+    List<Document> findByIsHoldAndDateTimeAfter(boolean isHold, LocalDateTime dateTime, Sort sort);
 
+    List<Document> findByIsHoldAndDateTimeBetween(boolean isHold, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 }

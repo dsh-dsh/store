@@ -55,7 +55,7 @@ public class DocumentService {
     }
 
     public void holdDocument(int docId) {
-        ItemDoc document = getDocumentById(docId);
+        ItemDoc document = (ItemDoc) getDocumentById(docId);
         if(existsNotHoldenDocsBefore(document)) {
             throw new BadRequestException(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE);
         }
@@ -74,9 +74,16 @@ public class DocumentService {
 
     public List<Document> getDocumentsAfterAndInclude(Document document) {
         List<Document> documents = documentRepository
-                .findByDateTimeAfter(document.getDateTime(), Sort.by("dateTime").ascending());
+                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(), Sort.by("dateTime").descending());
         documents.add(document);
         return documents;
+    }
+
+    public List<Document> getDocumentsByPeriod(Document currentDoc, Document limitDoc) {
+        return documentRepository
+                .findByIsHoldAndDateTimeBetween(
+                        false, currentDoc.getDateTime(),
+                        limitDoc.getDateTime(), Sort.by("dateTime"));
     }
 
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
@@ -99,8 +106,8 @@ public class DocumentService {
         return itemDocRepository.findByDocType(documentType);
     }
 
-    public ItemDoc getDocumentById(int docId) {
-        return itemDocRepository.findById(docId)
+    public Document getDocumentById(int docId) {
+        return documentRepository.findById(docId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
     }
 

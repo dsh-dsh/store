@@ -302,7 +302,7 @@ class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
 
         List<DocumentItem> items = docItemService.getItemsByDoc(doc);
@@ -348,7 +348,7 @@ class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
 
         List<DocumentItem> items = docItemService.getItemsByDoc(doc);
@@ -382,7 +382,7 @@ class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(1, doc.getDateTime().getDayOfMonth());
         assertEquals(10, doc.getDateTime().getHour());
@@ -409,7 +409,7 @@ class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
         assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
@@ -439,7 +439,7 @@ class DocumentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        ItemDoc doc = documentService.getDocumentById(TestService.DOC_ID);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.INVENTORY_DOC, doc.getDocType());
 

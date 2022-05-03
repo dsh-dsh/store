@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @TestPropertySource(properties =
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
-public class LotMoveServiceTest {
+class LotMoveServiceTest {
 
     @Autowired
     private LotMoveService lotMoveService;
@@ -29,7 +29,7 @@ public class LotMoveServiceTest {
     @Sql(value = {"/sql/lotMovements/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void addPlusLotMovementsTest() {
-        ItemDoc itemDoc = documentService.getDocumentById(1);
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
 
     }
 

@@ -69,7 +69,7 @@ class ReHoldCheckingTest {
     @Test
     @Transactional
     void checkPossibility_QuantitiesDidNotChanged_Test() {
-        ItemDoc doc = documentService.getDocumentById(1);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 10f), getDocItemDTO(1,8, 10f));
         dto.setDocItems(items);
@@ -81,7 +81,7 @@ class ReHoldCheckingTest {
     @Test
     @Transactional
     void checkPossibility_IncrementQuantities_Test() {
-        ItemDoc doc = documentService.getDocumentById(1);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 20f), getDocItemDTO(1,8, 20f));
         dto.setDocItems(items);
@@ -101,7 +101,7 @@ class ReHoldCheckingTest {
     @Test
     @Transactional
     void checkPossibility_DecrementQuantities_Test() {
-        ItemDoc doc = documentService.getDocumentById(1);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 5f), getDocItemDTO(1,8, 5f));
         dto.setDocItems(items);
@@ -113,7 +113,7 @@ class ReHoldCheckingTest {
     @Test
     @Transactional
     void checkPossibility_AddItem_Test() {
-        ItemDoc doc = documentService.getDocumentById(1);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(
                 getDocItemDTO(1,7, 15f),
@@ -128,7 +128,7 @@ class ReHoldCheckingTest {
     @Test
     @Transactional
     void checkPossibility_DeleteItem_Test() {
-        ItemDoc doc = documentService.getDocumentById(1);
+        ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(
                 getDocItemDTO(1,7, 15f));

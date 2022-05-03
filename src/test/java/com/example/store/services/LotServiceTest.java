@@ -120,7 +120,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfWriteOffDocTest() {
-        ItemDoc document = documentService.getDocumentById(2);
+        ItemDoc document = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
         assertEquals(9, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageFrom(), LocalDateTime.now()));
@@ -132,7 +132,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfReceiptDocTest() {
-        ItemDoc document = documentService.getDocumentById(1);
+        ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
         assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
@@ -144,7 +144,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfPostingDocTest() {
-        ItemDoc document = documentService.getDocumentById(1);
+        ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
         assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
@@ -156,7 +156,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfMovementDocTest() {
-        ItemDoc movementDocument = documentService.getDocumentById(2);
+        ItemDoc movementDocument = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(movementDocument);
         List<Item> items = movementDocument.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
         assertEquals(4, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageFrom(), LocalDateTime.now()));
