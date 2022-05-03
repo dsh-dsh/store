@@ -100,11 +100,19 @@ public abstract class AbstractDocFactory implements DocFactory {
             document.setNumber(docDTO.getNumber());
         }
         document.setDocType(documentType);
-        document.setDateTime(LocalDateTime.parse(docDTO.getTime()));
+        document.setDateTime(getNewTime(docDTO.getTime()));
         document.setProject(projectService.getById(docDTO.getProject().getId()));
         document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
         document.setPayed(docDTO.isPayed());
         document.setHold(docDTO.isHold());
+    }
+
+    public LocalDateTime getNewTime(String strTime) {
+        LocalDateTime newTime = LocalDateTime.parse(strTime);
+        while (documentRepository.existsByDateTime(newTime)) {
+            newTime = newTime.plusNanos(1);
+        }
+        return newTime;
     }
 
     protected int getNextDocumentNumber() {

@@ -57,6 +57,23 @@ public class ItemDocFactory extends AbstractDocFactory {
         return itemDoc;
     }
 
+    @Override
+    @Transaction
+    public void deleteDocument(int docId) {
+        ItemDoc itemDoc = itemDocRepository.getById(docId);
+        unHoldDocs.unHoldAllDocsAfter(itemDoc);
+        itemDoc.setDeleted(true);
+        itemDocRepository.save(itemDoc);
+    }
+
+    @Override
+    @Transaction
+    public void holdDocument(Document document) {
+        lotService.addLotMovements(document);
+        document.setHold(true);
+        itemDocRepository.save((ItemDoc) document);
+    }
+
     private void setAdditionalFieldsAndSave(ItemDoc itemDoc) {
         if(docDTO.getIndividual() != null) {
             itemDoc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
@@ -74,22 +91,6 @@ public class ItemDocFactory extends AbstractDocFactory {
             itemDoc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
         }
         itemDocRepository.save(itemDoc);
-    }
-
-    @Override
-    @Transaction
-    public void deleteDocument(int docId) {
-        ItemDoc itemDoc = itemDocRepository.getById(docId);
-        itemDoc.setDeleted(true);
-        itemDocRepository.save(itemDoc);
-    }
-
-    @Override
-    @Transaction
-    public void holdDocument(Document document) {
-        lotService.addLotMovements(document);
-        document.setHold(true);
-        itemDocRepository.save((ItemDoc) document);
     }
 
     @Override

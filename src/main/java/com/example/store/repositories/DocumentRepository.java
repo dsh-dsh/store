@@ -41,4 +41,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     List<Document> findByIsHoldAndDateTimeAfter(boolean isHold, LocalDateTime dateTime, Sort sort);
 
     List<Document> findByIsHoldAndDateTimeBetween(boolean isHold, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
+
+    boolean existsByDateTime(LocalDateTime dateTime);
 }
