@@ -12,17 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/items")
 public class ItemController {
 
     @Autowired
     private ItemService itemService;
 
-    @GetMapping("/api/v1/items/tree")
+    @GetMapping("/tree")
     public ResponseEntity<ListResponse<ItemDTOForList>> getItemTree() {
         return ResponseEntity.ok(new ListResponse<>(itemService.getItemDTOTree()));
     }
 
-    @GetMapping("/api/v1/items")
+    @GetMapping
     public ResponseEntity<Response<ItemDTO>> getItemById(
             @RequestParam String date,
             @RequestParam int id) {
@@ -30,13 +31,13 @@ public class ItemController {
         return ResponseEntity.ok(new Response<>(itemDTO));
     }
 
-    @PostMapping("/api/v1/items")
+    @PostMapping
     public ResponseEntity<Response<Integer>> getItemById(@RequestBody ItemDTO itemDTO) {
         Item item = itemService.setNewItem(itemDTO);
         return ResponseEntity.ok(new Response<>(item.getId()));
     }
 
-    @PutMapping("/api/v1/items/{date}")
+    @PutMapping("/{date}")
     public ResponseEntity<Response<String>> updateItemById(
             @PathVariable String date,
             @RequestBody ItemDTO itemDTO) {
@@ -44,7 +45,7 @@ public class ItemController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    @DeleteMapping("/api/v1/items/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Response<String>> softDeleteItemById(@PathVariable int id) {
         itemService.softDeleteItem(id);
         return ResponseEntity.ok(new Response<>(Constants.OK));

@@ -1,17 +1,12 @@
 package com.example.store.controllers;
 
-import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
-import com.example.store.model.entities.Item;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.utils.Constants;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -29,19 +24,7 @@ public class TestService {
     static final int ONE_DOCUMENT = 1;
     static final int NO_DOCUMENTS = 0;
     static final String EXISTING_EMAIL = "customer@mail.ru";
-    static final String PAGE_NUMBER = "0";
-    static final String LIMIT = "20";
 
-
-
-
-    long dateTimeToLong(String dateTime) {
-        return LocalDateTime.parse(dateTime).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-    }
-
-    long dateToLong(String date) {
-        return LocalDate.parse(date).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-    }
 
     void addTo(DocDTO dto, int docId, int docNumber) {
         dto.setId(docId);
@@ -68,59 +51,6 @@ public class TestService {
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
         dto.setHold(false);
-
-        return dto;
-    }
-
-    DocDTO setRequestDocDTO() {
-        DocDTO dto = new DocDTO();
-//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        dto.setProject(setProject(1));
-        dto.setAuthor(setAuthorDTO(AUTHOR_ID));
-        dto.setPayed(false);
-        dto.setHold(false);
-        dto.setStorageTo(setStorageDTO(1));
-
-        return dto;
-    }
-
-    DocDTO setPostingDocDTO() {
-        DocDTO dto = new DocDTO();
-//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        dto.setProject(setProject(1));
-        dto.setAuthor(setAuthorDTO(2));
-        dto.setPayed(false);
-        dto.setHold(false);
-        dto.setRecipient(setCompanyDTO(1));
-        dto.setStorageTo(setStorageDTO(1));
-
-        return dto;
-    }
-
-    DocDTO setReceiptDocDTO() {
-        DocDTO dto = new DocDTO();
-//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        dto.setProject(setProject(RECEIPT_FIELDS_ID));
-        dto.setAuthor(setAuthorDTO(2));
-        dto.setPayed(true);
-        dto.setHold(true);
-        dto.setSupplier(setCompanyDTO(2));
-        dto.setRecipient(setCompanyDTO(1));
-        dto.setStorageTo(setStorageDTO(RECEIPT_FIELDS_ID));
-
-        return dto;
-    }
-
-    DocDTO setCheckDocDTO() {
-        DocDTO dto = new DocDTO();
-//        dto.setTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-        dto.setProject(setProject(3));
-        dto.setAuthor(setAuthorDTO(2));
-        dto.setPayed(true);
-        dto.setHold(true);
-        dto.setIndividual(setIndividualDTO(1));
-        dto.setSupplier(setCompanyDTO(1));
-        dto.setStorageFrom(setStorageDTO(3));
 
         return dto;
     }

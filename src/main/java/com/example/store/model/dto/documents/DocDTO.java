@@ -63,4 +63,7 @@ public class DocDTO {
     @JsonProperty("doc_items")
     private List<DocItemDTO> docItems;
 
+    @JsonProperty("base_document_id")
+    private int baseDocumentId;
+
 }

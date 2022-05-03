@@ -8,8 +8,6 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Quantity;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

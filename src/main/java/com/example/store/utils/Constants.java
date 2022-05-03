@@ -54,6 +54,7 @@ public class Constants {
     public static final String NO_SUCH_COMPANY_MESSAGE = "No such company";
     public static final String NO_SUCH_STORAGE_MESSAGE = "no such storage";
     public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
+    public static final String NO_SUCH_BASE_DOCUMENT_MESSAGE = "no such base document";
     public static final String NO_SUCH_CHECK_INFO_MESSAGE = "no such check info";
     public static final String NO_SUCH_ITEM_MESSAGE = "no such item";
     public static final String NO_SUCH_LOT_MESSAGE = "no such lot";

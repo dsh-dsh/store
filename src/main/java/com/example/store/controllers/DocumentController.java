@@ -14,43 +14,44 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequestMapping("/api/v1/docs")
 public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
 
-    @GetMapping("/api/v1/docs/list")
+    @GetMapping("/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
             @RequestParam(required = false) DocumentType type,
             Pageable pageable) {
         return ResponseEntity.ok(documentService.getDocumentsByType(type, pageable));
     }
 
-    @GetMapping("/api/v1/docs")
+    @GetMapping
     public ResponseEntity<Response<DocDTO>> getDocumentById(@RequestParam int id) {
         DocDTO docDTO = documentService.getDocDTOById(id);
         return ResponseEntity.ok(new Response<>(docDTO));
     }
 
-    @PostMapping("/api/v1/docs")
+    @PostMapping
     public ResponseEntity<Response<String>> addDocument(@RequestBody DocRequestDTO docRequestDTO) {
         documentService.addDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @PostMapping("/api/v1/docs/hold/{id}")
+    @PostMapping("/hold/{id}")
     public ResponseEntity<Response<String>> holdDocument(@PathVariable int id) {
         documentService.holdDocument(id);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @PutMapping("/api/v1/docs")
+    @PutMapping
     public ResponseEntity<Response<String>> updateDocument(@RequestBody DocRequestDTO docRequestDTO) {
         documentService.updateDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @DeleteMapping("/api/v1/docs")
+    @DeleteMapping
     public ResponseEntity<Response<String>> softDeleteDocument(@RequestBody DocRequestDTO docRequestDTO) {
         documentService.softDeleteDocument(docRequestDTO.getDocDTO());
         return ResponseEntity.ok(new Response<>("ok"));

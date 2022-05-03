@@ -10,8 +10,6 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +30,6 @@ public class LotService {
     private DocItemService docItemService;
     @Autowired
     private IngredientService ingredientService;
-
-    public static final Logger logger = LogManager.getLogger("LotService");
 
     //TODO add test
     public Lot getLotByDocumentItem(DocumentItem documentItem) {

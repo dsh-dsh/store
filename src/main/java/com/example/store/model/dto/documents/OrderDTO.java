@@ -41,4 +41,7 @@ public class OrderDTO {
     @JsonProperty("is_hold")
     private boolean isHold;
 
+    @JsonProperty("base_document_id")
+    private int baseDocumentId;
+
 }

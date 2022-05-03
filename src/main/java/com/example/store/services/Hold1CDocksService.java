@@ -70,8 +70,8 @@ public class Hold1CDocksService {
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
         List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
 
-        postingDoc = createPostingDoc(storage, project, postingItemList, from);
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
+        postingDoc = createPostingDoc(storage, project, postingItemList, from);
     }
 
     @Transactional
@@ -128,6 +128,7 @@ public class Hold1CDocksService {
                     return item;
                 }).collect(Collectors.toSet());
         doc.setDocumentItems(docItems);
+        doc.setBaseDocument(writeOffDoc);
         itemDocRepository.save(doc);
         return doc;
     }

@@ -10,6 +10,7 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.services.*;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 
 public abstract class AbstractDocFactory implements DocFactory {
 
-    public static final String NO_SUCH_DOCUMENT_MESSAGE = "no such document";
     protected DocDTO docDTO;
     protected DocumentType documentType;
 
@@ -71,7 +71,7 @@ public abstract class AbstractDocFactory implements DocFactory {
 
     protected ItemDoc getItemDoc(int docId) {
             return itemDocRepository.findById(docId)
-                    .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
     }
 
     protected OrderDoc getOrAddOrderDoc() {
@@ -87,7 +87,7 @@ public abstract class AbstractDocFactory implements DocFactory {
         int docId = docDTO.getId();
         if(docId != 0) {
             return itemDocRepository.findById(docId)
-                    .orElseThrow(() -> new BadRequestException(NO_SUCH_DOCUMENT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         } else {
             return new ItemDoc();
         }
@@ -105,6 +105,15 @@ public abstract class AbstractDocFactory implements DocFactory {
         document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
         document.setPayed(docDTO.isPayed());
         document.setHold(docDTO.isHold());
+        setBaseDocument(document);
+    }
+
+    private void setBaseDocument(Document document) {
+        if(docDTO.getBaseDocumentId() > 0) {
+            Document baseDoc = documentRepository.findById(docDTO.getBaseDocumentId())
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_BASE_DOCUMENT_MESSAGE));
+            document.setBaseDocument(baseDoc);
+        }
     }
 
     public LocalDateTime getNewTime(String strTime) {

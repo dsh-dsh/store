@@ -6,7 +6,6 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
-import com.example.store.utils.annotations.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

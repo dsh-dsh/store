@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     @Autowired
@@ -22,19 +23,19 @@ public class UserController {
     @Autowired
     private PersonMapper personMapper;
 
-    @GetMapping("/api/v1/users")
+    @GetMapping
     public ResponseEntity<Response<PersonDTO>> getPerson(@RequestParam int id) {
         PersonDTO person = userService.getPersonById(id);
         return ResponseEntity.ok(new Response<>(person));
     }
 
-    @PostMapping("/api/v1/users")
+    @PostMapping
     public ResponseEntity<Response<String>> setPerson(@RequestBody PersonDTO personDTO) {
         userService.setPerson(personDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    @PutMapping("/api/v1/users")
+    @PutMapping
     public ResponseEntity<Response<String>> updatePerson(@RequestBody PersonDTO personDTO) {
         userService.updatePerson(personDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
