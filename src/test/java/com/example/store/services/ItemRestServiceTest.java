@@ -53,7 +53,8 @@ class ItemRestServiceTest {
         assertEquals(200, itemRestService.getLastPriceOfItem(new Item(7)));
     }
 
-    @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addWriteOff.sql", "/sql/lotMovements/addMovement.sql"},
+    @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",
+            "/sql/lotMovements/addWriteOff.sql", "/sql/lotMovements/addMovement.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -64,7 +65,8 @@ class ItemRestServiceTest {
         assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(1), LocalDateTime.now()));
     }
 
-    @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addWriteOff.sql", "/sql/lotMovements/addMovement.sql"},
+    @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",
+            "/sql/lotMovements/addWriteOff.sql", "/sql/lotMovements/addMovement.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

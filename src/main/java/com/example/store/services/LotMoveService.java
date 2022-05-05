@@ -20,12 +20,10 @@ public class LotMoveService {
 
     Map<String, String> map = new HashMap<>();
 
-    //TODO add test
     public void addPlusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> addPlusLotMovement(key, document, value));
     }
 
-    //TODO add test
     public void addPlusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
                 new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageTo(), quantity);
@@ -38,12 +36,10 @@ public class LotMoveService {
         lotMoveRepository.save(lotMovement);
     }
 
-    //TODO add test
     public void addMinusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
         newLotMap.forEach((key, value) -> addMinusLotMovement(key, document, value));
     }
 
-    //TODO add test
     public void addMinusLotMovement(Lot lot, ItemDoc doc, float quantity) {
         LotMovement movement =
                 new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageFrom(), quantity * -1);
@@ -54,7 +50,6 @@ public class LotMoveService {
         return lotMoveRepository.findByLot(lot);
     }
 
-    //TODO add test
     public void removeLotMovement(Lot lot) {
         List<LotMovement> movements = getLotMovements(lot);
         if(movements.size() > 1) throw new UnHoldDocumentException();
@@ -64,8 +59,6 @@ public class LotMoveService {
     public void removeByDocument(ItemDoc document) {
         lotMoveRepository.deleteByDocument(document);
     }
-
-
 
     public List<LotMovement> getAll() {
         return lotMoveRepository.findAll();

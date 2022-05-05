@@ -31,6 +31,10 @@ public class LotService {
     @Autowired
     private IngredientService ingredientService;
 
+    public Lot getById(long id) {
+        return lotRepository.getById(id);
+    }
+
     //TODO add test
     public Lot getLotByDocumentItem(DocumentItem documentItem) {
         ItemDoc itemDoc = documentItem.getItemDoc();
