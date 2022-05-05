@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CatalogControllerTest {
+class CatalogControllerTest {
 
     @Autowired
     private ItemTestService itemTestService;
@@ -132,8 +132,8 @@ public class CatalogControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[5]").exists())
-                .andExpect(jsonPath("$.data.[6]").doesNotExist());
+                .andExpect(jsonPath("$.data.[6]").exists())
+                .andExpect(jsonPath("$.data.[7]").doesNotExist());
 
     }
 

@@ -2,9 +2,7 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.ProjectDTO;
-import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.entities.Project;
-import com.example.store.model.entities.Storage;
 import com.example.store.repositories.ProjectRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public class ProjectService {
 
     public Project getByName(String name) {
         return projectRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
     }
 
     public Project getById(int id) {
@@ -44,5 +42,9 @@ public class ProjectService {
         dto.setId(project.getId());
         dto.setName(project.getName());
         return dto;
+    }
+
+    public Project getProjectByStorageName(String name) {
+        return getByName(name);
     }
 }

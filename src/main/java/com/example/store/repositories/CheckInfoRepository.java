@@ -18,4 +18,6 @@ public interface CheckInfoRepository extends JpaRepository<CheckInfo, Integer> {
     @Query(value = "select count(*) from check_kkm_info where check_id = :checkId", nativeQuery = true)
     int countRowsByDocId(int checkId);
 
+
+
 }

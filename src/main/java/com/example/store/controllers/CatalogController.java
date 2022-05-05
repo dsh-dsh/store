@@ -40,7 +40,7 @@ public class CatalogController {
 
     @GetMapping("/companies")
     public ResponseEntity<ListResponse<CompanyDTO>> getCompanies() {
-        List<CompanyDTO> companyDTOList = companyService.getProjectDTOList();
+        List<CompanyDTO> companyDTOList = companyService.getCompanyDTOList();
         return ResponseEntity.ok(new ListResponse<>(companyDTOList));
     }
 

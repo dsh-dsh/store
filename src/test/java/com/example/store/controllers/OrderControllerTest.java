@@ -34,13 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OrderControllerTest {
+class OrderControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/orders";
     private static final float AMOUNT = 1500.00f;
     private static final float TAX = 0.00f;
     private static final String SALARY_TYPE_STRING = Constants.SALARY_PAYMENT_TYPE;
-    private static final String SALE_TYPE_STRING = Constants.SALE_PAYMENT_TYPE;
+    private static final String SALE_TYPE_STRING = Constants.SALE_CASH_PAYMENT_TYPE;
     private static final String SUPPLIER_TYPE_STRING = Constants.SUPPLIER_PAYMENT_TYPE;
     private static final String OTHER_PAYMENT_STRING = Constants.OTHER_PAYMENT_TYPE;
     private static final int INDIVIDUAL_ID = 3;
@@ -115,7 +115,7 @@ public class OrderControllerTest {
         assertEquals(INDIVIDUAL_ID, docs.get(0).getIndividual().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
-        assertEquals(PaymentType.SALE_PAYMENT, docs.get(0).getPaymentType());
+        assertEquals(PaymentType.SALE_CASH_PAYMENT, docs.get(0).getPaymentType());
     }
 
     @Test
@@ -266,7 +266,7 @@ public class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(TestService.DOC_ID))
                 .andExpect(jsonPath("$.data.doc_type").value(DocumentType.CREDIT_ORDER_DOC.toString()))
-                .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALE_PAYMENT.toString()));
+                .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALE_CASH_PAYMENT.toString()));
     }
 
     @Test

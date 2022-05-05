@@ -27,7 +27,8 @@ public class Constants {
     public static final String SUPPLIER_PAYMENT_TYPE = "Оплата поставщику";
     public static final String OTHER_PAYMENT_TYPE = "Прочее";
     public static final String SALARY_PAYMENT_TYPE = "Выплата заработной платы";
-    public static final String SALE_PAYMENT_TYPE = "Выручка";
+    public static final String SALE_CASH_PAYMENT_TYPE = "Выручка наличными";
+    public static final String SALE_CARD_PAYMENT_TYPE = "Выручка по картам";
 
     public static final String RETAIL_PRICE_TYPE = "Розничная";
     public static final String DELIVERY_PRICE_TYPE = "На доставку";

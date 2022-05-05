@@ -23,3 +23,5 @@ server.port : 8081
 
 # every night at 3.00
 hold.docs.scheduling.cron.expression : 0 0 3 * * ?
+
+our.company.id : 1

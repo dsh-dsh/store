@@ -9,7 +9,8 @@ public enum PaymentType implements EnumeratedInterface {
     SUPPLIER_PAYMENT(Constants.SUPPLIER_PAYMENT_TYPE),
     OTHER_PAYMENT(Constants.OTHER_PAYMENT_TYPE),
     SALARY_PAYMENT(Constants.SALARY_PAYMENT_TYPE),
-    SALE_PAYMENT(Constants.SALE_PAYMENT_TYPE);
+    SALE_CASH_PAYMENT(Constants.SALE_CASH_PAYMENT_TYPE),
+    SALE_CARD_PAYMENT(Constants.SALE_CARD_PAYMENT_TYPE);
 
     private final String value;
 

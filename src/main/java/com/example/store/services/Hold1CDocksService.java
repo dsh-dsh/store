@@ -3,13 +3,11 @@ package com.example.store.services;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.factories.OrderDocFactory;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
-import com.example.store.model.entities.DocumentItem;
-import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Project;
-import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.ItemDocRepository;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class Hold1CDocksService {
 
+    public static final boolean BY_CARD_KEY = true;
+    public static final boolean BY_CASH_KEY = false;
     @Autowired
     private DocumentService documentService;
     @Autowired
@@ -46,19 +47,65 @@ public class Hold1CDocksService {
     private ItemRestService itemRestService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private CheckInfoService checkInfoService;
+    @Autowired
+    private CompanyService companyService;
 
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
 
+    //TODO add tests for createSaleOrders
+
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> {
             createDocsToHoldByStoragesAndPeriod(storage, from, to);
+            createSaleOrders(storage, from);
             holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
         });
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
+    }
+
+    public void createSaleOrders(Storage storage, LocalDateTime time) {
+        Project project = projectService.getProjectByStorageName(storage.getName());
+        Map<Boolean, Float> sumMap = getSumMap();
+        if(sumMap.get(BY_CARD_KEY) > 0) {
+            createOrderDoc(sumMap.get(BY_CARD_KEY), PaymentType.SALE_CARD_PAYMENT, project, time);
+        }
+        if(sumMap.get(BY_CASH_KEY) > 0) {
+            createOrderDoc(sumMap.get(BY_CASH_KEY), PaymentType.SALE_CASH_PAYMENT, project, time);
+        }
+    }
+
+    public void createOrderDoc(float sum, PaymentType type, Project project, LocalDateTime time) {
+        DocumentType docType = DocumentType.CREDIT_ORDER_DOC;
+        OrderDoc order = new OrderDoc();
+        order.setNumber(documentService.getNextDocumentNumber(docType));
+        order.setDateTime(time);
+        order.setDocType(docType);
+        order.setProject(project);
+        order.setAuthor(userService.getSystemAuthor());
+        order.setRecipient(companyService.getOurCompany());
+        order.setPayed(true);
+        order.setBaseDocument(writeOffDoc);
+        order.setPaymentType(type);
+        order.setAmount(sum);
+    }
+
+    public Map<Boolean, Float> getSumMap() {
+        Map<Boolean, Float> sumMap = new HashMap<>();
+        List<DocumentItem> items;
+        CheckInfo checkInfo;
+        for(ItemDoc check : checks) {
+            items = docItemService.getItemsByDoc(check);
+            checkInfo = checkInfoService.getCheckInfo(check);
+            float sum = (float)items.stream().mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount()).sum();
+            sumMap.merge(checkInfo.isPayedByCard(), sum, Float::sum);
+        }
+        return sumMap;
     }
 
     @Transactional

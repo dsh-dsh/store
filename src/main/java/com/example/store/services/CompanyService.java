@@ -2,13 +2,11 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.CompanyDTO;
-import com.example.store.model.dto.PersonDTO;
-import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.entities.Company;
-import com.example.store.model.entities.Storage;
 import com.example.store.repositories.CompanyRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +18,9 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Value("${our.company.id}")
+    private int ourCompanyId;
+
     public Company getById(int id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));
@@ -30,10 +31,14 @@ public class CompanyService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));
     }
 
-    public List<CompanyDTO> getProjectDTOList() {
+    public List<CompanyDTO> getCompanyDTOList() {
         return companyRepository.findAll().stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Company getOurCompany() {
+        return companyRepository.getById(ourCompanyId);
     }
 
     private CompanyDTO mapToDTO(Company company) {
