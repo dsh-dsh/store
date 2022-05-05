@@ -20,14 +20,14 @@ class SchedulerServiceTest {
     @InjectMocks
     private SchedulerService schedulerService;
     @Mock
-    private Hold1CDocksService hold1CDocksService;
+    private SchedulerService schedulerServiceMocked;
 
     @Test
     void holdChecksForADayTest() {
         LocalDateTime to = LocalDateTime.now(ZoneId.systemDefault());
         LocalDateTime from = to.minusDays(1);
-        schedulerService.holdChecksForADay();
-        verify(hold1CDocksService, times(1)).hold1CDocsByPeriod(from, to);
+        schedulerServiceMocked.holdChecksForADay();
+        verify(schedulerServiceMocked, times(1)).hold1CDocsByPeriod(from, to);
     }
 
 }

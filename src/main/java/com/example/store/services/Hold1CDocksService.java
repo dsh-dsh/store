@@ -32,8 +32,6 @@ public class Hold1CDocksService {
     @Autowired
     private DocItemService docItemService;
     @Autowired
-    private StorageService storageService;
-    @Autowired
     private ProjectService projectService;
     @Autowired
     private ItemDocFactory itemDocFactory;
@@ -57,17 +55,6 @@ public class Hold1CDocksService {
     private List<ItemDoc> checks;
 
     //TODO add tests for createSaleOrders
-
-    public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
-        List<Storage> storages = storageService.getStorageList();
-        storages.forEach(storage -> {
-            createDocsToHoldByStoragesAndPeriod(storage, from, to);
-            createSaleOrders(storage, from);
-            holdDocsAndChecksByStoragesAndPeriod(storage, from, to);
-        });
-        List<Project> projects = projectService.getProjectList();
-        projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
-    }
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
         Project project = projectService.getProjectByStorageName(storage.getName());
