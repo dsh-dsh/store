@@ -1,11 +1,13 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,6 +80,11 @@ public class DocItemService {
         item.setPrice(dto.getPrice());
         item.setDiscount(dto.getDiscount());
         docItemRepository.save(item);
+    }
+
+    public DocumentItem getItemById(int id) {
+        return docItemRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_ITEM_MESSAGE));
     }
 
     public List<DocumentItem> getItemsByDoc(ItemDoc doc) {

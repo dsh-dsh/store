@@ -50,14 +50,14 @@ public class ReHoldChecking {
         return quantityDiffMap;
     }
 
-    public void setQuantityDiffMap(
-            Map<Item, Float> quantityDiffMap, Storage storage,
+    public void setQuantityDiffMap(Map<Item, Float> quantityDiffMap, Storage storage,
             Map<DocumentItem, Float> changedDocItemMap) {
+
         for(Map.Entry<DocumentItem, Float> entry : changedDocItemMap.entrySet()) {
             DocumentItem docItem = entry.getKey();
             float quantityDiff;
             if(docItem.getItemDoc() != null) {
-                Lot lot = lotService.getLotByDocumentItem(docItem);
+                Lot lot = lotService.getLotByDocumentItemForPosting(docItem);
                 quantityDiff = entry.getValue() - itemRestService.getRestOfLot(lot, storage);
             } else {
                 quantityDiff = entry.getValue() - itemRestService

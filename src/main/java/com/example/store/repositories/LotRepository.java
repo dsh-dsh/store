@@ -1,7 +1,6 @@
 package com.example.store.repositories;
 
 import com.example.store.model.entities.DocumentItem;
-import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.projections.LotFloat;
@@ -24,13 +23,15 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "WHERE docItem.itemDoc = :itemDoc")
     Optional<Lot> findByDocument(ItemDoc itemDoc);
 
-    @Query("SELECT lot " +
-            "FROM Lot lot " +
-            "JOIN FETCH DocumentItem docItem " +
-            "JOIN FETCH LotMovement movement " +
-            "WHERE docItem.item = :item " +
-            "AND movement.document = :document")
-    Optional<Lot> findByItemAndDoc(Item item, ItemDoc document);
+    @Query(value = "select distinct lot.id, lot.document_item_id, lot.lot_time " +
+            "from lot " +
+            "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
+            "left join lot_movement as lot_move on lot_move.lot_id = lot.id " +
+            "left join document as doc on doc.id = lot_move.document_id " +
+            "left join item on item.id = doc_item.item_id " +
+            "where item.id = :itemId " +
+            "and doc.id = :docId", nativeQuery = true)
+    List<Lot> findLotsByItemAndDoc(int itemId, int docId);
 
     @Query(value = "select lot.id, sum(movement.quantity) as value from lot " +
             "left join lot_movement as movement on lot.id = movement.lot_id " +

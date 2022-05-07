@@ -35,19 +35,13 @@ public class LotService {
         return lotRepository.getById(id);
     }
 
-    //TODO add test
-    public Lot getLotByDocumentItem(DocumentItem documentItem) {
-        ItemDoc itemDoc = documentItem.getItemDoc();
-        if(itemDoc == null) {
-            return null;
-        }
-        if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
-            return lotRepository.findByDocumentItem(documentItem)
+    public Lot getLotByDocumentItemForPosting(DocumentItem documentItem) {
+        return lotRepository.findByDocumentItem(documentItem)
                     .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
-        } else {
-            return lotRepository.findByItemAndDoc(documentItem.getItem(), itemDoc)
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
-        }
+    }
+
+    public List<Lot> getLotsByDocumentItemForStorageDocs(DocumentItem docItem) {
+        return lotRepository.findLotsByItemAndDoc(docItem.getItem().getId(), docItem.getItemDoc().getId());
     }
 
     public void updateLotMovements(ItemDoc itemDoc) {
@@ -81,7 +75,6 @@ public class LotService {
         }
     }
 
-    //TODO add test
     protected void addStorageDocMovement(DocumentItem docItem) {
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
@@ -99,7 +92,6 @@ public class LotService {
         return getLotMapToUse(lotMap, docItem.getQuantity());
     }
 
-    // не работает
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
         List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), time);
         return lotsOfItem.stream()
@@ -131,26 +123,22 @@ public class LotService {
         return newLotMap;
     }
 
-    //TODO add test
     public void addLots(Document document) {
         List<DocumentItem> items = docItemService.getItemsByDoc((ItemDoc) document);
         items.forEach(this::addLot);
     }
 
-    //TODO add test
-    private void addLot(DocumentItem item) {
+    public void addLot(DocumentItem item) {
         Lot lot = new Lot(item, item.getItemDoc().getDateTime());
         lotRepository.save(lot);
         lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
 
-    //TODO add test
     public void removeLots(List<DocumentItem> items) {
         items.forEach(this::removeLot);
     }
 
-    //TODO add test
-    private void removeLot(DocumentItem docItem) {
+    public void removeLot(DocumentItem docItem) {
         lotRepository.findByDocumentItem(docItem)
                 .ifPresent(value -> lotRepository.delete(value));
     }
