@@ -126,7 +126,7 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
-    // TODO test all methods
+    // TODO add test to getNextDocumentNumber
 
     protected int getNextDocumentNumber(DocumentType type) {
         try {

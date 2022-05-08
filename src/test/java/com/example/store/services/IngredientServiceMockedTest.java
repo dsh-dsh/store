@@ -9,14 +9,12 @@ import com.example.store.model.enums.QuantityType;
 import com.example.store.repositories.IngredientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class IngredientServiceMockedTest {
+class IngredientServiceMockedTest {
 
     @InjectMocks
     private IngredientService ingredientService;
@@ -61,9 +59,8 @@ public class IngredientServiceMockedTest {
                 .thenReturn(ingredients);
         ingredientService.softDeleteIngredients(item, LocalDate.now());
         verify(ingredientRepository, times(3)).save(ingredientArgumentCaptor.capture());
-        // TODO verify quantities deletion
-//        verify(quantityService, times(3))
-//                .softDeleteQuantities(ingredientArgumentCaptor.capture(), LocalDate.now());
+        verify(quantityService, times(3))
+                .softDeleteQuantities(ingredientArgumentCaptor.capture(), eq(LocalDate.now()));
     }
 
     @Test

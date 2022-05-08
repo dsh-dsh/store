@@ -9,6 +9,7 @@ import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.ItemDocRepository;
+import com.example.store.repositories.OrderDocRepository;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,12 +50,12 @@ public class Hold1CDocksService {
     private CheckInfoService checkInfoService;
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private OrderDocRepository orderDocRepository;
 
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
-
-    //TODO add tests for createSaleOrders
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
         Project project = projectService.getProjectByStorageName(storage.getName());
@@ -80,6 +81,7 @@ public class Hold1CDocksService {
         order.setBaseDocument(writeOffDoc);
         order.setPaymentType(type);
         order.setAmount(sum);
+        orderDocRepository.save(order);
     }
 
     public Map<Boolean, Float> getSumMap() {
