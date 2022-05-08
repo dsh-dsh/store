@@ -36,8 +36,6 @@ public class ItemService {
 
     protected List<ItemDTOForList> allItems = new ArrayList<>();
 
-    // TODO add tests
-
     public List<ItemDTOForList> getItemDTOTree() {
         setItemDTOList();
         return allItems.stream()
@@ -55,6 +53,8 @@ public class ItemService {
         ingredientService.setIngredients(item, itemDTO.getIngredients());
         return item;
     }
+
+    // TODO add tests
 
     public void updateItem(ItemDTO itemDTO, String stringDate) {
         LocalDate date = LocalDate.parse(stringDate);
@@ -114,18 +114,18 @@ public class ItemService {
         ingredientService.softDeleteIngredients(item, LocalDate.now());
     }
 
-    private Item findItemById(int id) {
+    public Item findItemById(int id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
-    private Item getParent(Item child) {
+    public Item getParent(Item child) {
         int parentId = itemRepository.getParentId(child.getId());
         return itemRepository.findById(parentId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
-    private void setItemDTOList() {
+    public void setItemDTOList() {
         if(allItems.isEmpty()) {
             List<ItemDTOForListInterface> items = itemRepository.getItemDTOList();
             allItems = items.stream()
@@ -134,7 +134,7 @@ public class ItemService {
         }
     }
 
-    private ItemDTOForList getItemDTOForList(ItemDTOForListInterface item) {
+    public ItemDTOForList getItemDTOForList(ItemDTOForListInterface item) {
         ItemDTOForList dto = new ItemDTOForList();
         dto.setId(item.getId());
         dto.setName(item.getName());

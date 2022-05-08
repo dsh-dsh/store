@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ItemControllerTest {
+class ItemControllerTest {
 
     private static final String URL_PREFIX = "/api/v1/items";
     private static final int ITEM_ID = 4;

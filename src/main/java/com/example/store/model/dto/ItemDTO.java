@@ -57,6 +57,8 @@ public class ItemDTO {
     @JsonProperty("parent_id")
     private int parentId;
 
+    private int number;
+
     private List<PriceDTO> prices;
 
     private List<Integer> sets = new ArrayList<>();
