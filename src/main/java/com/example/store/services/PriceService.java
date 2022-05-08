@@ -24,6 +24,8 @@ public class PriceService {
     @Autowired
     private PriceRepository priceRepository;
 
+    // TODO add tests
+
     public void updateItemPrices(Item item, List<PriceDTO> priceDTOList, LocalDate date) {
         List<Price> priceListOnDate = getPriceListOfItem(item, date);
         priceDTOList.forEach(priceDTO -> updatePrice(priceDTO, priceListOnDate, item));
@@ -47,10 +49,9 @@ public class PriceService {
             setNewPrice(item, dto);
             return;
         }
-        if (LocalDate.parse(dto.getDate()).isAfter(price.getDate())) {
-            if (price.getValue() != dto.getValue()) {
+        if (LocalDate.parse(dto.getDate()).isAfter(price.getDate())
+                && price.getValue() != dto.getValue()) {
                 setNewPrice(item, dto);
-            }
         }
         if (LocalDate.parse(dto.getDate()).isEqual(price.getDate())){
             price.setValue(dto.getValue());

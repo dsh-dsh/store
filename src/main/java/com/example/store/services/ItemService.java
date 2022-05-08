@@ -36,6 +36,8 @@ public class ItemService {
 
     protected List<ItemDTOForList> allItems = new ArrayList<>();
 
+    // TODO add tests
+
     public List<ItemDTOForList> getItemDTOTree() {
         setItemDTOList();
         return allItems.stream()

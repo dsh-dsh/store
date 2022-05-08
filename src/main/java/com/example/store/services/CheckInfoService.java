@@ -34,18 +34,13 @@ public class CheckInfoService {
     }
 
     public void updateCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
-        CheckInfo checkInfo = getCheckKKMInfo(check);
+        CheckInfo checkInfo = getCheckInfo(check);
         setFields(checkInfoDTO, checkInfo);
 
         checkInfoRepository.save(checkInfo);
     }
 
-    private CheckInfo getCheckKKMInfo(ItemDoc check) {
-        return checkInfoRepository.findByCheck(check)
-                .orElseThrow(BadRequestException::new);
-    }
-
-    protected void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
+    public void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());
         checkInfo.setCashRegisterNumber(checkInfoDTO.getCashRegisterNumber());
         checkInfo.setAmountReceived(checkInfoDTO.getAmountReceived());
@@ -60,7 +55,7 @@ public class CheckInfoService {
         checkInfo.setDelivery(checkInfoDTO.isDelivery());
     }
 
-    public void deleteByDocId(ItemDoc check) {
+    public void deleteByDoc(ItemDoc check) {
         checkInfoRepository.deleteByCheck(check);
     }
 

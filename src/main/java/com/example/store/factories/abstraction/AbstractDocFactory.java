@@ -63,7 +63,7 @@ public abstract class AbstractDocFactory implements DocFactory {
     public void deleteDocument(int docId) {
         ItemDoc document = getItemDoc(docId);
         if(document.getDocType() == DocumentType.CHECK_DOC) {
-            checkInfoService.deleteByDocId(document);
+            checkInfoService.deleteByDoc(document);
         }
         docItemService.deleteByDoc(document);
         itemDocRepository.deleteById(document.getId());

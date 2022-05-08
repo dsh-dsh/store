@@ -23,6 +23,8 @@ public class OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
+    // TODO add tests
+
     public OrderDTO getOrderById(int id) {
         OrderDoc order = orderDocRepository.findById(id)
                 .orElseThrow(BadRequestException::new);

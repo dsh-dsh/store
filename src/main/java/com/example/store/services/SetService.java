@@ -19,13 +19,15 @@ public class SetService {
     @Autowired
     private ItemRepository itemRepository;
 
+    // TODO add tests
+
     public List<Integer> getSets(Item item) {
         List<ItemSet> setList = setRepository.findSetsByItem(item);
         return setList.stream().map(itemSet -> itemSet.getSet().getId()).collect(Collectors.toList());
     }
 
     public void setSets(Item item, List<Integer> idList) {
-        if(idList.size() == 0) return;
+        if(idList.isEmpty()) return;
         idList.forEach(id -> addSet(item, id));
     }
 
@@ -38,7 +40,7 @@ public class SetService {
 
     public void updateSets(Item item, List<Integer> idList) {
         List<ItemSet> currentSetList = setRepository.findSetsByItem(item);
-        if(currentSetList.size() == 0 && idList.size() == 0) return;
+        if(currentSetList.isEmpty() && idList.isEmpty()) return;
         List<Integer> currentIdList = currentSetList.stream()
                 .map(itemSet -> itemSet.getSet().getId())
                 .collect(Collectors.toList());

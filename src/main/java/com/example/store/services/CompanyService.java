@@ -21,6 +21,8 @@ public class CompanyService {
     @Value("${our.company.id}")
     private int ourCompanyId;
 
+    // TODO add tests
+
     public Company getById(int id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));

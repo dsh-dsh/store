@@ -26,6 +26,8 @@ public class DocItemService {
     @Autowired
     private DocItemMapper docItemMapper;
 
+    // TODO add tests
+
     public void addDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
         docItemRepository.save(documentItem);
