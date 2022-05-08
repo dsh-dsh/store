@@ -60,7 +60,7 @@ class OrderControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addSalaryOrderTest() throws Exception {
-        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_ORDER_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SALARY_TYPE_STRING, AMOUNT, TAX);
@@ -73,7 +73,7 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_ORDER_DOC);
         assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertEquals(AMOUNT, docs.get(0).getAmount());
         assertEquals(TAX, docs.get(0).getTax());
@@ -82,7 +82,7 @@ class OrderControllerTest {
 
     @Test
     void addOrderUnauthorizedTest() throws Exception {
-        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_ORDER_DOC);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
         this.mockMvc.perform(
                         post(URL_PREFIX)
@@ -120,7 +120,7 @@ class OrderControllerTest {
 
     @Test
     void updateOrderDocUnauthorizedTest() throws Exception {
-        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_ORDER_DOC);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
         this.mockMvc.perform(
                         put(URL_PREFIX)
@@ -135,8 +135,8 @@ class OrderControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateWithdrawDocTest() throws Exception {
-        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_DOC_DOC);
-        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        DocDTO docDTO = testService.setDTOFields(DocumentType.WITHDRAW_ORDER_DOC);
+        testService.addTo(docDTO, 2, TestService.DOC_NUMBER);
         docDTO.setIndividual(testService.setIndividualDTO(INDIVIDUAL_ID));
         docDTO.setSupplier(testService.setCompanyDTO(SUPPLIER_ID));
         testService.setOrderFields(docDTO, SUPPLIER_TYPE_STRING, AMOUNT, TAX);
@@ -149,7 +149,7 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_ORDER_DOC);
         assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertEquals(SUPPLIER_ID, docs.get(0).getSupplier().getId());
         assertEquals(AMOUNT, docs.get(0).getAmount());
@@ -214,7 +214,7 @@ class OrderControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void softDeleteWithdrawDocTest() throws Exception {
         DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
-        testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
+        testService.addTo(docDTO, 2, TestService.DOC_NUMBER);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
         this.mockMvc.perform(
                         delete(URL_PREFIX)
@@ -224,7 +224,7 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("ok"));
 
-        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_DOC_DOC);
+        List<OrderDoc> docs = orderService.getDocumentsByType(DocumentType.WITHDRAW_ORDER_DOC);
         assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertTrue(docs.get(0).isDeleted());
     }
@@ -247,11 +247,11 @@ class OrderControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getWithdrawDocTest() throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX).param("id", String.valueOf(TestService.DOC_ID)))
+                        get(URL_PREFIX).param("id", String.valueOf(2)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(TestService.DOC_ID))
-                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.WITHDRAW_DOC_DOC.toString()))
+                .andExpect(jsonPath("$.data.id").value(2))
+                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.WITHDRAW_ORDER_DOC.toString()))
                 .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALARY_PAYMENT.toString()));
     }
 

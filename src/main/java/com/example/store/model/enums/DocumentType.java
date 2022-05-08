@@ -10,7 +10,7 @@ public enum DocumentType implements EnumeratedInterface{
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE),
     CHECK_DOC(Constants.CHECK_DOC_TYPE),
     CREDIT_ORDER_DOC(Constants.CREDIT_ORDER_DOC_TYPE),
-    WITHDRAW_DOC_DOC(Constants.WITHDRAW_DOC_DOC_TYPE),
+    WITHDRAW_ORDER_DOC(Constants.WITHDRAW_ORDER_DOC_TYPE),
     REQUEST_DOC(Constants.REQUEST_DOC_TYPE),
     INVENTORY_DOC(Constants.INVENTORY_DOC_TYPE);
 

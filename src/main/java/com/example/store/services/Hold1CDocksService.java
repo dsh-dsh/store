@@ -114,7 +114,7 @@ public class Hold1CDocksService {
             itemDocFactory.holdDocument(postingDoc);
         }
         itemDocFactory.holdDocument(writeOffDoc);
-        checks.forEach(check -> documentService.setCheckDocHolden(check));
+        checks.forEach(check -> documentService.setHoldAndSave(true, check));
     }
 
     @Transactional
@@ -195,7 +195,7 @@ public class Hold1CDocksService {
     }
 
     public List<OrderDoc> getUnHoldenOrdersByProjectAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
-        List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_DOC_DOC);
+        List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_ORDER_DOC);
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 

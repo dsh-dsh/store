@@ -62,8 +62,6 @@ public class DocumentService {
         itemDocFactory.holdDocument(document);
     }
 
-    // TODO test all methods
-
     public void addDocument(DocDTO docDTO) {
         itemDocFactory.addDocument(docDTO);
     }
@@ -79,11 +77,9 @@ public class DocumentService {
         return documents;
     }
 
-    public List<Document> getDocumentsByPeriod(Document currentDoc, Document limitDoc) {
-        return documentRepository
-                .findByIsHoldAndDateTimeBetween(
-                        false, currentDoc.getDateTime(),
-                        limitDoc.getDateTime(), Sort.by("dateTime"));
+    public List<Document> getDocumentsByPeriod(Document currentDoc, Document limitDoc, boolean isHold) {
+        return documentRepository.findByIsHoldAndDateTimeBetween(
+                isHold, currentDoc.getDateTime(), limitDoc.getDateTime(), Sort.by("dateTime"));
     }
 
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
@@ -112,8 +108,7 @@ public class DocumentService {
     }
 
     public DocDTO getDocDTOById(int docId) {
-        ItemDoc itemDoc = itemDocRepository.findById(docId)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+        ItemDoc itemDoc = (ItemDoc) getDocumentById(docId);
         return docMapper.mapToDocDTO(itemDoc);
     }
 
@@ -127,14 +122,11 @@ public class DocumentService {
         itemDocFactory.deleteDocument(docId);
     }
 
-    public void setCheckDocHolden(ItemDoc doc) {
-        doc.setHold(true);
-        itemDocRepository.save(doc);
-    }
-
     public List<Document> getAllDocuments() {
         return documentRepository.findAll();
     }
+
+    // TODO test all methods
 
     protected int getNextDocumentNumber(DocumentType type) {
         try {

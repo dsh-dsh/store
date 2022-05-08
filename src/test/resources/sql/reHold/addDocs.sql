@@ -8,7 +8,7 @@ values
 (4, 2, null, '2022-03-29T11:00:00.000', 'MOVEMENT_DOC', null, B'0', B'1', 4, 3, 1, 1, 3, 2, 0.00, 0.00, '', B'0', 1),
 (5, 2, null, '2022-03-30T11:00:00.000', 'MOVEMENT_DOC', null, B'0', B'1', 5, 3, 1, 1, 3, 1, 0.00, 0.00, '', B'0', 1),
 (6, 2, null, '2022-03-30T12:00:00.000', 'CREDIT_ORDER_DOC', 1, B'0', B'1', 6, 3, 1, 1, null, null, 0.00, 0.00, 'SALE_CASH_PAYMENT', B'0', 2),
-(7, 2, null, '2022-03-30T13:00:00.000', 'WITHDRAW_DOC_DOC', 1, B'0', B'1', 7, 3, 1, 1, null, null, 2000.00, 0.00, 'SALARY_PAYMENT', B'0', 2);
+(7, 2, null, '2022-03-30T13:00:00.000', 'WITHDRAW_ORDER_DOC', 1, B'0', B'1', 7, 3, 1, 1, null, null, 2000.00, 0.00, 'SALARY_PAYMENT', B'0', 2);
 
 insert into document_item
 (id, discount, item_id, document_id, price, quantity, quantity_fact)
