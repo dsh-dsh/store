@@ -27,7 +27,6 @@ public class ReHoldChecking {
     @Autowired
     private DocItemService docItemService;
 
-
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
         if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
@@ -41,8 +40,6 @@ public class ReHoldChecking {
             return false;
         }
     }
-
-    // TODO add tests
 
     public Map<Item, Float> getQuantityDiffMap(ItemDoc itemDoc, Map<DocumentItem, Float> changedDocItemMap) {
         Map<Item, Float> quantityDiffMap = new HashMap<>();
@@ -58,12 +55,13 @@ public class ReHoldChecking {
             float quantityDiff;
             if(docItem.getItemDoc() != null) {
                 Lot lot = lotService.getLotByDocumentItemForPosting(docItem);
-                quantityDiff = entry.getValue() - itemRestService.getRestOfLot(lot, storage);
+                float rest = itemRestService.getRestOfLot(lot, storage);
+                quantityDiff = entry.getValue() + rest;
             } else {
-                quantityDiff = entry.getValue() - itemRestService
+                quantityDiff = entry.getValue() + itemRestService
                         .getRestOfItemOnStorage(docItem.getItem(), storage, LocalDateTime.now());
             }
-            if(quantityDiff < 0) {
+            if(quantityDiff > 0) {
                 quantityDiffMap.put(docItem.getItem(), quantityDiff);
             }
         }
@@ -75,7 +73,7 @@ public class ReHoldChecking {
             Optional<DocItemDTO> itemDTO = findDocItemDTOByItemId(itemDTOList, docItem.getItem().getId());
             if (itemDTO.isPresent()) {
                 if (docItem.getQuantity() <= itemDTO.get().getQuantity()) {
-                    map.put(docItem, docItem.getQuantity() - itemDTO.get().getQuantity());
+                    map.put(docItem, itemDTO.get().getQuantity() - docItem.getQuantity());
                     itemDTOList.remove(itemDTO.get());
                 }
             } else {

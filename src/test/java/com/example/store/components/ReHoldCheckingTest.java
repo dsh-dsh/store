@@ -3,10 +3,14 @@ package com.example.store.components;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.services.DocItemService;
 import com.example.store.services.DocumentService;
+import com.example.store.services.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +37,13 @@ class ReHoldCheckingTest {
     private ReHoldChecking reHoldChecking;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private DocItemService docItemService;
+    @Autowired
+    private StorageService storageService;
+
+
+    private static final float REST_ON_STORAGE = 1f;
 
     @Test
     void checkPossibility_IfDocNotHolden_Test() {
@@ -86,14 +99,6 @@ class ReHoldCheckingTest {
         assertTrue(reHoldChecking.checkPossibility(doc, dto));
     }
 
-    DocItemDTO getDocItemDTO(int docId, int itemId, float quantity){
-        DocItemDTO dto = new DocItemDTO();
-        dto.setDocumentId(docId);
-        dto.setItemId(itemId);
-        dto.setQuantity(quantity);
-        return dto;
-    }
-
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -134,20 +139,75 @@ class ReHoldCheckingTest {
         assertFalse(reHoldChecking.checkPossibility(doc, dto));
     }
 
+    @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @Transactional
     void getQuantityDiffMap() {
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
+        Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
+        DocumentItem documentItem1 = docItemService.getItemById(1);
+        DocumentItem documentItem2 = docItemService.getItemById(2);
+        changedDocItemMap.put(documentItem1, 2f);
+        changedDocItemMap.put(documentItem2, 3f);
+
+        Map<Item, Float> map = reHoldChecking.getQuantityDiffMap(itemDoc, changedDocItemMap);
+
+        assertEquals(2, map.size());
+        assertEquals(2 + REST_ON_STORAGE, map.get(docItemService.getItemById(1).getItem()));
+        assertEquals(3 + REST_ON_STORAGE, map.get(docItemService.getItemById(2).getItem()));
+    }
+
+    @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void setQuantityDiffMapTest() {
+        Map<Item, Float> quantityDiffMap = new HashMap<>();
+        Storage storage = storageService.getById(3);
+        Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
+        DocumentItem documentItem1 = docItemService.getItemById(1);
+        DocumentItem documentItem2 = docItemService.getItemById(2);
+        changedDocItemMap.put(documentItem1, 2f);
+        changedDocItemMap.put(documentItem2, 3f);
+
+        reHoldChecking.setQuantityDiffMap(quantityDiffMap, storage, changedDocItemMap);
+
+        assertEquals(2, quantityDiffMap.size());
+        assertEquals(2 + REST_ON_STORAGE, quantityDiffMap.get(docItemService.getItemById(1).getItem()));
+        assertEquals(3 + REST_ON_STORAGE, quantityDiffMap.get(docItemService.getItemById(2).getItem()));
+
+    }
+
+    @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void setChangedDocItemsTest() {
+        Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
+        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 20f), getDocItemDTO(1,8, 20f));
+        dto.setDocItems(items);
+        reHoldChecking.setChangedDocItems(changedDocItemMap, itemDoc, dto);
+        assertEquals(2, changedDocItemMap.size());
+        assertEquals(10, changedDocItemMap.get(docItemService.getItemById(1)));
+        assertEquals(10, changedDocItemMap.get(docItemService.getItemById(2)));
     }
 
     @Test
-    void setQuantityDiffMap() {
+    void findDocItemDTOByItemIdTest() {
+        List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 20f), getDocItemDTO(1,8, 20f));
+        assertTrue(reHoldChecking.findDocItemDTOByItemId(items,7).isPresent());
+        assertEquals(7, reHoldChecking.findDocItemDTOByItemId(items,7).get().getItemId());
     }
 
-    @Test
-    void setChangedDocItems() {
-    }
-
-    @Test
-    void findDocItemDTOByItemId() {
+    DocItemDTO getDocItemDTO(int docId, int itemId, float quantity){
+        DocItemDTO dto = new DocItemDTO();
+        dto.setDocumentId(docId);
+        dto.setItemId(itemId);
+        dto.setQuantity(quantity);
+        return dto;
     }
 
     private ItemDoc getItemDoc(LocalDateTime time, int storageId, DocumentType type) {

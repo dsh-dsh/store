@@ -20,7 +20,7 @@ public class ReHoldDocs {
     private OrderDocFactory orderDocFactory;
 
     public void reHolding(Document fromDoc, Document toDoc) {
-        List<Document> documents = documentService.getDocumentsByPeriod(fromDoc, toDoc);
+        List<Document> documents = documentService.getDocumentsByPeriod(fromDoc, toDoc, false);
         documents.forEach(this::reHoldDocument);
     }
 
