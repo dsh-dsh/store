@@ -34,6 +34,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     private static final String[] AUTH_WHITELIST = {
             "/",
             "/api/v1/auth/**",
+            "/api/v1/auth/login",
             "/api/v1/account/register",
             "/api/v1/account/password/**",
             "/api/v1/account/shift-email",

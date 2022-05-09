@@ -33,7 +33,7 @@ public class UserService {
 
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + email));
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + " - " + email));
     }
 
     public User getById(int id) {

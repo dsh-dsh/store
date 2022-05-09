@@ -32,4 +32,6 @@ public class PersonDTO {
 
     private String role;
 
+    private String token;
+
 }
