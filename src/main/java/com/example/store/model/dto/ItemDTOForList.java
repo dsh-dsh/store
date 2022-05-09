@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDTOForList {
 
+    private String key;
+    private String label;
+    private String data;
+    private String icon;
+
     private int id;
     private String name;
 
@@ -24,16 +29,29 @@ public class ItemDTOForList {
 
     public ItemDTOForList getDTOForList(List<ItemDTOForList> items) {
         ItemDTOForList dto = new ItemDTOForList();
-        dto.setId(getId());
-        dto.setName(getName());
-        List<ItemDTOForList> children = items.stream()
+        dto.setId(getId()); dto.setData(String.valueOf(getId()));
+        dto.setName(getName()); dto.setLabel(getName());
+        List<ItemDTOForList> childrenList = items.stream()
                 .filter(item -> {
                     int parentId = item.getParentId();
                     return parentId == getId();
                 })
                 .map(item -> item.getDTOForList(items))
                 .collect(Collectors.toList());
-        dto.setChildren(children);
+        dto.setChildren(childrenList);
+
+        if(childrenList.isEmpty()) dto.setIcon(Icons.ITEM.value);
+        else dto.setIcon(Icons.FOLDER.value);
+
         return dto;
+    }
+
+     enum Icons {
+        FOLDER("pi pi-fw pi-folder-open"),
+        ITEM("pi pi-fw pi-inbox");
+        String value;
+        Icons(String value) {
+            this.value = value;
+        }
     }
 }

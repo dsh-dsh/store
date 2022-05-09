@@ -20,6 +20,8 @@ public class DocToListDTO {
 
     private int number;
 
+    private String type;
+
     private String time;
 
     private ProjectDTO project;

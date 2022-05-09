@@ -30,10 +30,10 @@ public class MappingConverters {
         }
     };
 
-    protected final Converter<LocalDateTime, Long> dateTimeConverter =
+    protected final Converter<LocalDateTime, String> dateTimeConverter =
             date -> {
                 LocalDateTime localDateTime = date.getSource();
-                return localDateTime == null ? 0 : localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return localDateTime == null ? "" : localDateTime.toString();
             };
 
     protected final Converter<LocalDate, Long> dateConverter =

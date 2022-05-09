@@ -3,6 +3,7 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.mappers.DocMapper;
+import com.example.store.mappers.DocToListDTOConverter;
 import com.example.store.mappers.DocToListMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
@@ -93,7 +94,7 @@ public class DocumentService {
     public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {
         Page<Document> page = documentRepository.findByDocType(documentType, pageable);
         List<DocToListDTO> dtoList = page.stream()
-                .map(docToListMapper::mapToDocDTO)
+                .map(DocToListDTOConverter::convertToDTO)
                 .collect(Collectors.toList());
         return new ListResponse<>(dtoList, page);
     }
