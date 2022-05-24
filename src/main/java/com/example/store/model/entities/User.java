@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @EqualsAndHashCode(of = "email")
-public class User {
+public class User implements EntityInterface{
 
     @Id
     @Column(name = "id", nullable = false)
@@ -43,4 +43,17 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private User parent;
+
+    @Override
+    public String getName() {
+        return lastName + " " + firstName;
+    }
+
+    @Override
+    public int getParentId() {
+        return parent.getId();
+    }
 }

@@ -27,6 +27,4 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     @Query(value = "select i.id, i.name, i.parent_id as parentId from item as i", nativeQuery = true)
     List<ItemDTOForListInterface> getItemDTOList();
 
-    List<Item> findAll(Sort sort);
-
 }

@@ -1,13 +1,16 @@
 package com.example.store.services;
 
+import com.example.store.components.TreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.PersonMapper;
+import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.Role;
 import com.example.store.repositories.UserRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,8 @@ public class UserService {
     private PersonMapper personMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TreeBuilder<User> treeBuilder;
 
     public PersonDTO getPersonById(int id) {
         User user = getById(id);
@@ -74,5 +79,10 @@ public class UserService {
         String systemUserEmail = Constants.SYSTEM_USER_EMAIL;
         return userRepository.findByEmailIgnoreCase(systemUserEmail)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
+    }
+
+    public List<ItemDTOForTree> getUserDTOTree() {
+        List<User> users = userRepository.findAll(Sort.by("id"));
+        return treeBuilder.getItemTree(users);
     }
 }

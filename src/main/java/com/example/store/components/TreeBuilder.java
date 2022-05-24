@@ -2,7 +2,7 @@ package com.example.store.components;
 
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTOForTree;
-import com.example.store.model.entities.Item;
+import com.example.store.model.entities.EntityInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,27 +12,23 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class ItemTreeBuilder {
-
+public class TreeBuilder <E extends EntityInterface>{
     @Autowired
     private ItemMapper itemMapper;
 
     private ItemDTOForTree[] itemArray;
     private List<ItemDTOForTree> itemList;
 
-    public List<ItemDTOForTree> getItemTree(List<Item> list) {
+    public List<ItemDTOForTree> getItemTree(List<E> list) {
         fillItemArray(list);
         fillChildren();
-
         itemList = Arrays.stream(itemArray)
                 .filter(Objects::nonNull)
                 .filter(dto -> dto.getParentId() == 0).collect(Collectors.toList());
-        
         setKeys(itemList, "");
-
         return itemList;
     }
-    
+
     private void setKeys(List<ItemDTOForTree> list, String key) {
         int i = 0;
         for(ItemDTOForTree item : list) {
@@ -55,13 +51,21 @@ public class ItemTreeBuilder {
         }
     }
 
-    private void fillItemArray(List<Item> list) {
+    private void fillItemArray(List<E> list) {
         int arraySize = list.get(list.size()-1).getId();
         itemArray = new ItemDTOForTree[arraySize+1];
-        for (Item item : list) {
-            ItemDTOForTree dto = itemMapper.mapToDTOForTree(item);
+        for (E item : list) {
+            ItemDTOForTree dto = mapToDTO(item);
             itemArray[item.getId()] = dto;
         }
+    }
+
+    private ItemDTOForTree mapToDTO(E item) {
+        ItemDTOForTree dto = new ItemDTOForTree();
+        dto.setData(String.valueOf(item.getId()));
+        dto.setLabel(item.getName());
+        dto.setParentId(item.getParentId());
+        return dto;
     }
 
 }

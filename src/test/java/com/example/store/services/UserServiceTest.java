@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.Role;
@@ -49,6 +50,14 @@ class UserServiceTest {
     private static final String PASSWORD = "password";
     private static final String BIRTH_DATE = "2001-01-01";
     private static final String PHONE = "+7(900)0000000";
+
+    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getUserTree() {
+        List<ItemDTOForTree> list = userService.getUserDTOTree();
+        assertEquals(1, list.size());
+    }
 
     @Test
     void getCustomerPersonByIdTest() {

@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ItemDTOForTree {
+public class ItemDTOForTree{
 
     private String key;
     private String label;

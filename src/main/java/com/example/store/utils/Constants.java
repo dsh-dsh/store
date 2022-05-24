@@ -7,6 +7,8 @@ public class Constants {
     public static final String CASHIER_ROLE = "кассир";
     public static final String ACCOUNTANT_ROLE = "бухгалтер";
     public static final String CUSTOMER_ROLE = "покупатель";
+    public static final String SYSTEM_ROLE = "покупатель";
+    public static final String NONE_ROLE = "";
 
     public static final String CHECK_DOC_TYPE = "Чек ККМ";
     public static final String POSTING_DOC_TYPE = "Оприходование";

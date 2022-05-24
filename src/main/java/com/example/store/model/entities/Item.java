@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode(of = {"name", "regTime"})
-public class Item {
+public class Item implements EntityInterface{
 
     @Id
     @Column(name = "id", nullable = false)
@@ -63,5 +63,10 @@ public class Item {
 
     public Item(int id) {
         this.id = id;
+    }
+
+    @Override
+    public int getParentId() {
+        return parent.getId();
     }
 }

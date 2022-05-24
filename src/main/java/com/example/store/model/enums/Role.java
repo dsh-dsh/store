@@ -8,11 +8,12 @@ import java.util.stream.Collectors;
 
 public enum Role {
 
-    ADMIN(Constants.ADMIN_ROLE, Set.of(Permission.WRITE)),
-    CASHIER(Constants.CASHIER_ROLE, Set.of(Permission.WRITE)),
-    ACCOUNTANT(Constants.ACCOUNTANT_ROLE, Set.of(Permission.WRITE)),
+    ADMIN(Constants.ADMIN_ROLE, Set.of(Permission.WRITE, Permission.READ)),
+    CASHIER(Constants.CASHIER_ROLE, Set.of(Permission.WRITE, Permission.READ)),
+    ACCOUNTANT(Constants.ACCOUNTANT_ROLE, Set.of(Permission.WRITE, Permission.READ)),
+    SYSTEM(Constants.SYSTEM_ROLE, Set.of(Permission.WRITE, Permission.READ)),
     CUSTOMER(Constants.CUSTOMER_ROLE, Set.of(Permission.READ)),
-    SYSTEM(Constants.ADMIN_ROLE, Set.of(Permission.WRITE));
+    NONE(Constants.NONE_ROLE, Set.of(Permission.READ));
 
     private final String value;
     private final Set<Permission> permissions;

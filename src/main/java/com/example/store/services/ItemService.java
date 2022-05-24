@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.ItemTreeBuilder;
+import com.example.store.components.TreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
@@ -37,21 +37,11 @@ public class ItemService {
     @Autowired
     protected IngredientService ingredientService;
     @Autowired
-    private ItemTreeBuilder itemTreeBuilder;
-
-    protected List<ItemDTOForList> allItems = new ArrayList<>();
+    private TreeBuilder<Item> treeBuilder;
 
     public List<ItemDTOForTree> getItemDTOTree() {
         List<Item> items = itemRepository.findAll(Sort.by("id"));
-        return itemTreeBuilder.getItemTree(items);
-    }
-
-    public List<ItemDTOForList> getItemDTOList() {
-        setItemDTOList();
-        return allItems.stream()
-                .filter(item -> item.getParentId() == 0)
-                .map(item -> item.getDTOForList(allItems))
-                .collect(Collectors.toList());
+        return treeBuilder.getItemTree(items);
     }
 
     public Item setNewItem(ItemDTO itemDTO) {
@@ -133,22 +123,5 @@ public class ItemService {
         int parentId = itemRepository.getParentId(child.getId());
         return itemRepository.findById(parentId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-    }
-
-    public void setItemDTOList() {
-        if(allItems.isEmpty()) {
-            List<ItemDTOForListInterface> items = itemRepository.getItemDTOList();
-            allItems = items.stream()
-                    .map(this::getItemDTOForList)
-                    .collect(Collectors.toList());
-        }
-    }
-
-    public ItemDTOForList getItemDTOForList(ItemDTOForListInterface item) {
-        ItemDTOForList dto = new ItemDTOForList();
-        dto.setId(item.getId());
-        dto.setName(item.getName());
-        dto.setParentId(item.getParentId());
-        return dto;
     }
 }
