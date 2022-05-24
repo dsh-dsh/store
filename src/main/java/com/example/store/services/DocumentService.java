@@ -109,8 +109,8 @@ public class DocumentService {
     }
 
     public DocDTO getDocDTOById(int docId) {
-        ItemDoc itemDoc = (ItemDoc) getDocumentById(docId);
-        return docMapper.mapToDocDTO(itemDoc);
+        Document document = getDocumentById(docId);
+        return docMapper.mapToDocDTO(document);
     }
 
     public void setHoldAndSave(boolean hold, Document document) {

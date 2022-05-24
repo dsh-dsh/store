@@ -3,6 +3,7 @@ package com.example.store.mappers;
 import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.services.CheckInfoService;
@@ -36,13 +37,13 @@ public class DocMapper extends MappingConverters {
 
     public DocMapper() {
         this.modelMapper = new ModelMapper();
-        modelMapper.createTypeMap(ItemDoc.class, DocDTO.class)
-                .addMappings(mapper -> mapper.using(docItemsConverter).map(ItemDoc::getThis, DocDTO::setDocItems))
-                .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(ItemDoc::getThis, DocDTO::setCheckInfo));
+        modelMapper.createTypeMap(Document.class, DocDTO.class)
+                .addMappings(mapper -> mapper.using(docItemsConverter).map(Document::getThis, DocDTO::setDocItems))
+                .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(Document::getThis, DocDTO::setCheckInfo));
     }
 
-    public DocDTO mapToDocDTO(ItemDoc itemDoc) {
-        return modelMapper.map(itemDoc, DocDTO.class);
+    public DocDTO mapToDocDTO(Document document) {
+        return modelMapper.map(document, DocDTO.class);
     }
 
 }
