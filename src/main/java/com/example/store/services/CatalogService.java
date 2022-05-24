@@ -48,8 +48,8 @@ public class CatalogService {
 
     private EnumDTO mapToDTO(EnumeratedInterface data) {
         EnumDTO dto = new EnumDTO();
-        dto.setName(data.toString());
-        dto.setValue(data.getValue());
+        dto.setName(data.getValue());
+        dto.setCode(data.toString());
         return dto;
     }
 }

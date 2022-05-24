@@ -26,4 +26,4 @@ hold.docs.scheduling.cron.expression : 0 0 3 * * ?
 
 our.company.id : 1
 
-cors.urls : http://localhost:8080
+cors.urls : http://localhost:8082

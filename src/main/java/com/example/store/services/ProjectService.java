@@ -41,6 +41,7 @@ public class ProjectService {
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());
         dto.setName(project.getName());
+        dto.setCode(String.valueOf(project.getId()));
         return dto;
     }
 
