@@ -42,7 +42,7 @@ class ItemServiceTest {
 
     @Test
     void getItemDTOTreeTest() {
-        List<ItemDTOForList> list = itemService.getItemDTOTree();
+        List<ItemDTOForTree> list = itemService.getItemDTOTree();
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
     }

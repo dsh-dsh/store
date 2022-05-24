@@ -2,6 +2,7 @@ package com.example.store.repositories;
 
 import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +26,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     @Query(value = "select i.id, i.name, i.parent_id as parentId from item as i", nativeQuery = true)
     List<ItemDTOForListInterface> getItemDTOList();
+
+    List<Item> findAll(Sort sort);
 
 }

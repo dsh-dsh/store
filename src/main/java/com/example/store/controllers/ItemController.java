@@ -2,6 +2,7 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
+import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/items")
 public class ItemController {
@@ -19,8 +22,9 @@ public class ItemController {
     private ItemService itemService;
 
     @GetMapping("/tree")
-    public ResponseEntity<ListResponse<ItemDTOForList>> getItemTree() {
-        return ResponseEntity.ok(new ListResponse<>(itemService.getItemDTOTree()));
+    public ResponseEntity<ListResponse<ItemDTOForTree>> getItemTree() {
+        List<ItemDTOForTree> list = itemService.getItemDTOTree();
+        return ResponseEntity.ok(new ListResponse<>(list));
     }
 
     @GetMapping

@@ -2,6 +2,7 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
@@ -42,13 +43,19 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(Item1CDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(Item1CDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));
+        this.modelMapper.createTypeMap(Item.class, ItemDTOForTree.class)
+                .addMappings(mapper -> mapper.map(Item::getId, ItemDTOForTree::setData))
+                .addMappings(mapper -> mapper.map(Item::getName, ItemDTOForTree::setLabel))
+                .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForTree::setParentId));
     }
 
     public ItemDTO mapToDTO(Item item) {
         return modelMapper.map(item, ItemDTO.class);
     }
-
     public Item mapToItem(ItemDTO dto) {
         return modelMapper.map(dto, Item.class);
+    }
+    public ItemDTOForTree mapToDTOForTree(Item item) {
+        return modelMapper.map(item, ItemDTOForTree.class);
     }
 }

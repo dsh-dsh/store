@@ -1,9 +1,11 @@
 package com.example.store.services;
 
+import com.example.store.components.ItemTreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
+import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
@@ -12,6 +14,7 @@ import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,10 +36,17 @@ public class ItemService {
     protected SetService setService;
     @Autowired
     protected IngredientService ingredientService;
+    @Autowired
+    private ItemTreeBuilder itemTreeBuilder;
 
     protected List<ItemDTOForList> allItems = new ArrayList<>();
 
-    public List<ItemDTOForList> getItemDTOTree() {
+    public List<ItemDTOForTree> getItemDTOTree() {
+        List<Item> items = itemRepository.findAll(Sort.by("id"));
+        return itemTreeBuilder.getItemTree(items);
+    }
+
+    public List<ItemDTOForList> getItemDTOList() {
         setItemDTOList();
         return allItems.stream()
                 .filter(item -> item.getParentId() == 0)
