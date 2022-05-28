@@ -9,7 +9,6 @@ import com.example.store.security.JwtProvider;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,7 @@ public class AuthService {
     private PersonMapper personMapper;
 
     public PersonDTO login(AuthUserRequest authUserRequest) {
-        User user = userService.getByEmail(authUserRequest.getEmail());
+        User user = userService.getByEmail(authUserRequest.getLogin());
         if(!passwordEncoder.matches(authUserRequest.getPassword(), user.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
