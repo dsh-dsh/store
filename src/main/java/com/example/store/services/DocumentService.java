@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,32 @@ public class DocumentService {
 
     public List<OrderDoc> getDocumentsByTypeInAndProjectAndIsHold(List<DocumentType> types, Project project, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return orderDocRepository.findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(types, project, isHold, from, to);
+    }
+
+    public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, Pageable pageable) {
+        List<DocumentType> types = null;
+        switch (filter) {
+            case "posting" :
+               types = List.of(DocumentType.POSTING_DOC);
+               break;
+            case "store" :
+                types = List.of(DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
+                break;
+            case "order" :
+                types = List.of(DocumentType.WITHDRAW_ORDER_DOC, DocumentType.CREDIT_ORDER_DOC);
+                break;
+            case "check" :
+                types = List.of(DocumentType.CHECK_DOC);
+                break;
+            case "invent" :
+                types = List.of(DocumentType.INVENTORY_DOC);
+                break;
+        }
+        Page<Document> page = documentRepository.findByDocInFilter(filter, types, pageable);
+        List<DocToListDTO> dtoList = page.stream()
+                .map(DocToListDTOConverter::convertToDTO)
+                .collect(Collectors.toList());
+        return new ListResponse<>(dtoList, page);
     }
 
     public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {

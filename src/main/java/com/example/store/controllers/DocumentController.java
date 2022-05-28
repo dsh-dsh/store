@@ -20,11 +20,12 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
+    // todo add test
     @GetMapping("/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
-            @RequestParam(required = false) DocumentType type,
+            @RequestParam(defaultValue = "") String filter,
             Pageable pageable) {
-        return ResponseEntity.ok(documentService.getDocumentsByType(type, pageable));
+        return ResponseEntity.ok(documentService.getDocumentsByFilter(filter, pageable));
     }
 
     @GetMapping

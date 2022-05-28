@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -29,6 +30,11 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "FROM Document doc " +
             "WHERE (:docType is null OR doc.docType = :docType)")
     Page<Document> findByDocType(DocumentType docType, Pageable pageable);
+
+    @Query("SELECT doc " +
+            "FROM Document doc " +
+            "WHERE :filter = '' OR doc.docType IN (:types)")
+    Page<Document> findByDocInFilter(String filter, Collection<DocumentType> types, Pageable pageable);
 
     @Query(value = "SELECT number " +
             "FROM document " +
