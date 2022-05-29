@@ -12,8 +12,6 @@ public class CheckInfoServiceFor1CDock extends CheckInfoService{
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
 
-    // TODO add tests
-
     @Override
     public void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());
