@@ -20,7 +20,6 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
-    // todo add test
     @GetMapping("/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
             @RequestParam(defaultValue = "") String filter,

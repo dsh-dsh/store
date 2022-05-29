@@ -137,6 +137,7 @@ public class DocumentService {
 
     public DocDTO getDocDTOById(int docId) {
         Document document = getDocumentById(docId);
+        System.out.println(document.getDocType());
         return docMapper.mapToDocDTO(document);
     }
 

@@ -26,7 +26,7 @@ public class DocMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
 
-    private final Condition<ItemDoc, ItemDoc> isCheck =
+    private final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType().equals(DocumentType.CHECK_DOC);
 
     private final Converter<ItemDoc, List<DocItemDTO>> docItemsConverter =
@@ -39,7 +39,7 @@ public class DocMapper extends MappingConverters {
         this.modelMapper = new ModelMapper();
         modelMapper.createTypeMap(Document.class, DocDTO.class)
                 .addMappings(mapper -> mapper.using(docItemsConverter).map(Document::getThis, DocDTO::setDocItems))
-                .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(Document::getThis, DocDTO::setCheckInfo));
+                .addMappings(mapper -> mapper.using(checkInfoConverter).map(Document::getThis, DocDTO::setCheckInfo));
     }
 
     public DocDTO mapToDocDTO(Document document) {
