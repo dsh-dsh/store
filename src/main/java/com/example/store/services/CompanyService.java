@@ -21,8 +21,6 @@ public class CompanyService {
     @Value("${our.company.id}")
     private int ourCompanyId;
 
-    // TODO add tests
-
     public Company getById(int id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));
@@ -43,10 +41,11 @@ public class CompanyService {
         return companyRepository.getById(ourCompanyId);
     }
 
-    private CompanyDTO mapToDTO(Company company) {
+    public CompanyDTO mapToDTO(Company company) {
         CompanyDTO dto = new CompanyDTO();
         dto.setId(company.getId());
         dto.setName(company.getName());
+        dto.setMine(company.getId() == ourCompanyId);
         return dto;
     }
 }
