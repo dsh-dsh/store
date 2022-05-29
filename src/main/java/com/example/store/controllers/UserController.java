@@ -21,7 +21,6 @@ public class UserController {
     @Autowired
     private PersonMapper personMapper;
 
-    // todo add test
     @GetMapping("/tree")
     public ResponseEntity<ListResponse<ItemDTOForTree>> getItemTree() {
         return ResponseEntity.ok(new ListResponse<>(userService.getUserDTOTree()));

@@ -53,6 +53,29 @@ public class UserControllerTest {
     @Autowired
     private UserService userService;
 
+    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemTreeTest() throws Exception {
+        this.mockMvc.perform(
+            get(URL_PREFIX + "/tree"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].data").value(5))
+                .andExpect(jsonPath("$.data[0].parent_id").value(0));
+    }
+
+    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getItemTreeUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/tree"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getPersonTest() throws Exception {
@@ -149,5 +172,4 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
-
 }
