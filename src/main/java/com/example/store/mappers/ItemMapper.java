@@ -2,6 +2,7 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
@@ -47,6 +48,8 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.map(Item::getId, ItemDTOForTree::setData))
                 .addMappings(mapper -> mapper.map(Item::getName, ItemDTOForTree::setLabel))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForTree::setParentId));
+        this.modelMapper.createTypeMap(Item.class, ItemDTOForList.class)
+                .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForList::setParentId));
     }
 
     public ItemDTO mapToDTO(Item item) {
@@ -57,5 +60,8 @@ public class ItemMapper extends MappingConverters {
     }
     public ItemDTOForTree mapToDTOForTree(Item item) {
         return modelMapper.map(item, ItemDTOForTree.class);
+    }
+    public ItemDTOForList mapToDTOForList(Item item) {
+        return modelMapper.map(item, ItemDTOForList.class);
     }
 }

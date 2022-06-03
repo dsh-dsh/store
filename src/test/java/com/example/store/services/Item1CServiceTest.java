@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,8 @@ class Item1CServiceTest {
     private static final float RETAIL_PRICE_VALUE = 200.00f;
     private static final float DELIVERY_PRICE_VALUE = 250.00f;
     private static final String NEW_ITEM_NAME = "Новое блюдо";
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -81,7 +84,7 @@ class Item1CServiceTest {
         Item1CDTO dto = new Item1CDTO();
         dto.setName(NEW_ITEM_NAME);
         dto.setPrintName(NEW_ITEM_NAME);
-        dto.setRegTime(LocalDateTime.now().toString());
+        dto.setRegTime(LocalDateTime.now().format(timeFormatter));
         dto.setUnit(Unit.PORTION.toString());
         dto.setWorkshop(Workshop.KITCHEN.toString());
         dto.setPrices(List.of(retailPrice, deliveryPrice));

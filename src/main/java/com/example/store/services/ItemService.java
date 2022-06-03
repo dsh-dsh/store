@@ -6,7 +6,6 @@ import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
-import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,6 +62,12 @@ public class ItemService {
         priceService.updateItemPrices(item, itemDTO.getPrices(), date);
         setService.updateSets(item, itemDTO.getSets());
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
+    }
+
+    public List<ItemDTOForList> getItemDTOList() {
+        List<Integer> parentIds = List.of(3);
+        List<Item> items = itemRepository.findByParentIds(parentIds);
+        return items.stream().map(itemMapper::mapToDTOForList).collect(Collectors.toList());
     }
 
     protected void updateItemFields(Item item, ItemDTO dto) {

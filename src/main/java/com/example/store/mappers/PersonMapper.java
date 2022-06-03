@@ -1,9 +1,11 @@
 package com.example.store.mappers;
 
 import com.example.store.model.dto.PersonDTO;
+import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.Condition;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ public class PersonMapper extends MappingConverters {
     private final ModelMapper modelMapper;
 
     private final Condition<String, String> passwordExists = str -> !str.getSource().equals("");
+    private final Converter<User, String> nameConverter = user -> user.getSource().getLastName();
 
     @PostConstruct
     public void init() {
@@ -27,7 +30,6 @@ public class PersonMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(stringToDateTime).map(PersonDTO::getRegDate, User::setRegTime))
                 .addMappings(mapper -> mapper.using(stringToDate).map(PersonDTO::getBirthDate, User::setBirthDate))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
-//                .addMappings(mapper -> mapper.when(passwordExists).map());
     }
 
     public PersonDTO mapToUserDTO(User user) {

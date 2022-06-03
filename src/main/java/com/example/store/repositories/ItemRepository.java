@@ -18,6 +18,9 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     Optional<Item> findByNumber(int number);
 
+    @Query(value = "select * from item where parent_id in (:ids) order by name", nativeQuery = true)
+    List<Item> findByParentIds(List<Integer> ids);
+
     @Query(value = "select parent_id from item where id = :childId", nativeQuery = true)
     int getParentId(@Param("childId") int childId);
 

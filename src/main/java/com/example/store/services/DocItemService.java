@@ -76,7 +76,7 @@ public class DocItemService {
                 .forEach(documentItem -> docItemRepository.save(documentItem));
     }
 
-    private void updateDocItem(DocumentItem item, DocItemDTO dto) {
+    public void updateDocItem(DocumentItem item, DocItemDTO dto) {
         item.setQuantity(dto.getQuantity());
         item.setQuantityFact(dto.getQuantityFact());
         item.setPrice(dto.getPrice());

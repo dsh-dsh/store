@@ -1,5 +1,6 @@
 package com.example.store.model.entities;
 
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.Role;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -55,5 +56,9 @@ public class User implements EntityInterface{
     @Override
     public int getParentId() {
         return parent.getId();
+    }
+
+    public User getThis() {
+        return this;
     }
 }

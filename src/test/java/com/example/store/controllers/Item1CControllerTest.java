@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,8 @@ class Item1CControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private ItemRepository itemRepository;
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -89,7 +92,7 @@ class Item1CControllerTest {
         Item1CDTO dto = new Item1CDTO();
         dto.setName(name);
         dto.setPrintName(name);
-        dto.setRegTime(LocalDateTime.now().toString());
+        dto.setRegTime(LocalDateTime.now().format(timeFormatter));
         dto.setUnit(Unit.PORTION.toString());
         dto.setWorkshop(Workshop.KITCHEN.toString());
         dto.setPrices(prices);

@@ -70,7 +70,7 @@ public class DocToListDTOConverter {
     private static void setAuthorDTO(Document document) {
         authorDTO.setId(document.getAuthor().getId());
         authorDTO.setEmail(document.getAuthor().getEmail());
-//        authorDTO.setName(document.getAuthor().getFirstName() + " " + document.getAuthor().getLastName());
+        authorDTO.setName(document.getAuthor().getFirstName() + " " + document.getAuthor().getLastName());
     }
 
     private static void setSupplier(Document document) {

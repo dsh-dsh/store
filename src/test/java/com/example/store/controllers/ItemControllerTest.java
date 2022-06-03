@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +58,8 @@ class ItemControllerTest {
     private static final String DATE = "2022-02-01";
     private static final String UPDATE_NAME = "Пиво";
     private static final  String UPDATE_DATE = "2022-01-15";
+
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     @Autowired
     private ItemTestService itemTestService;
@@ -393,7 +396,7 @@ class ItemControllerTest {
                 .name(NEW_ITEM_NAME)
                 .printName(NEW_ITEM_NAME)
                 .parentId(PARENT_ID)
-                .regTime(LocalDateTime.now().toString())
+                .regTime(LocalDateTime.now().format(timeFormatter))
                 .unit(Unit.PORTION.toString())
                 .workshop(Workshop.KITCHEN.toString())
                 .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
