@@ -25,7 +25,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,8 +41,11 @@ public class DocumentService {
     private DocumentRepository documentRepository;
     @Autowired
     private DocMapper docMapper;
+//    private ItemDocMapper docMapper;
     @Autowired
     private DocToListMapper docToListMapper;
+    @Autowired
+    private CheckInfoService checkInfoService;
 
     public boolean existsNotHoldenDocsBefore(Document document) {
         Storage storageFrom = null;
@@ -136,9 +138,14 @@ public class DocumentService {
     }
 
     public DocDTO getDocDTOById(int docId) {
+        DocDTO dto;
         Document document = getDocumentById(docId);
-        System.out.println(document.getDocType());
-        return docMapper.mapToDocDTO(document);
+        if(document instanceof ItemDoc) {
+            dto = docMapper.mapToDocDTO((ItemDoc) document);
+        } else {
+            dto = docMapper.mapToDocDTO((OrderDoc) document);
+        }
+        return dto;
     }
 
     public void setHoldAndSave(boolean hold, Document document) {

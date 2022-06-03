@@ -1,6 +1,5 @@
 package com.example.store.model.entities;
 
-import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import lombok.EqualsAndHashCode;

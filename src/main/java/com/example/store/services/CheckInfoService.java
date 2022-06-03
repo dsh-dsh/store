@@ -5,6 +5,7 @@ import com.example.store.mappers.CheckInfoMapper;
 import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.CheckInfoRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
