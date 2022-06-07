@@ -11,12 +11,15 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 
+import java.time.format.DateTimeFormatter;
+
 public class DocToListDTOConverter {
 
     private static float amount = 0f;
     private static StorageDTO storageDTO;
     private static UserDTO authorDTO;
     private static CompanyDTO supplierDTO;
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     private static void resetData() {
         amount = 0f;
@@ -40,7 +43,7 @@ public class DocToListDTOConverter {
         dto.setId(document.getId());
         dto.setType(document.getDocType().getValue());
         dto.setNumber(document.getNumber());
-        dto.setTime(document.getDateTime().toString());
+        dto.setTime(document.getDateTime().format(timeFormatter));
         dto.setAmount(amount);
         dto.setStorageFrom(storageDTO);
         dto.setHold(document.isHold());

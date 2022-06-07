@@ -44,10 +44,16 @@ public class CatalogController {
         return ResponseEntity.ok(new ListResponse<>(companyDTOList));
     }
 
+    @GetMapping("/persons")
+    public ResponseEntity<ListResponse<PersonDTO>> getPersons() {
+        List<PersonDTO> personDTOList = userService.getPersonDTOList();
+        return ResponseEntity.ok(new ListResponse<>(personDTOList));
+    }
+
     @GetMapping("/users")
-    public ResponseEntity<ListResponse<PersonDTO>> getUsers() {
-        List<PersonDTO> projectDTOList = userService.getPersonDTOList();
-        return ResponseEntity.ok(new ListResponse<>(projectDTOList));
+    public ResponseEntity<ListResponse<UserDTO>> getUsers() {
+        List<UserDTO> userDTOList = userService.getUserDTOList();
+        return ResponseEntity.ok(new ListResponse<>(userDTOList));
     }
 
     @GetMapping("/workshops")

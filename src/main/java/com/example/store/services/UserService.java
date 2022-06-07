@@ -5,6 +5,7 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.PersonMapper;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.dto.PersonDTO;
+import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.Role;
 import com.example.store.repositories.UserRepository;
@@ -33,7 +34,7 @@ public class UserService {
 
     public PersonDTO getPersonById(int id) {
         User user = getById(id);
-        return personMapper.mapToUserDTO(user);
+        return personMapper.mapToPersonDTO(user);
     }
 
     public User getByEmail(String email) {
@@ -70,6 +71,12 @@ public class UserService {
     }
 
     public List<PersonDTO> getPersonDTOList() {
+        return userRepository.findAll().stream()
+                .map(personMapper::mapToPersonDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserDTO> getUserDTOList() {
         return userRepository.findAll().stream()
                 .map(personMapper::mapToUserDTO)
                 .collect(Collectors.toList());

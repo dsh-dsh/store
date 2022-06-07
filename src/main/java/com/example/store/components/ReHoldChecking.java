@@ -11,6 +11,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.services.DocItemService;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ public class ReHoldChecking {
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
         if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
-        if(!itemDoc.getDateTime().equals(LocalDateTime.parse(docDTO.getTime()))) return false;
+        if(!itemDoc.getDateTime().equals(LocalDateTime.parse(docDTO.getTime(), Constants.TIME_FORMATTER))) return false;
         if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
             Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
             if(!setChangedDocItems(changedDocItemMap, itemDoc, docDTO)) return false;

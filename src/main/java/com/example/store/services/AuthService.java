@@ -31,7 +31,7 @@ public class AuthService {
         if(!passwordEncoder.matches(authUserRequest.getPassword(), user.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
-        PersonDTO personDTO = personMapper.mapToUserDTO(user);
+        PersonDTO personDTO = personMapper.mapToPersonDTO(user);
         personDTO.setToken(jwtProvider.generateToken(user));
 
         return personDTO;

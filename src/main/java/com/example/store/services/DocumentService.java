@@ -41,7 +41,6 @@ public class DocumentService {
     private DocumentRepository documentRepository;
     @Autowired
     private DocMapper docMapper;
-//    private ItemDocMapper docMapper;
     @Autowired
     private DocToListMapper docToListMapper;
     @Autowired
@@ -98,10 +97,13 @@ public class DocumentService {
         List<DocumentType> types = null;
         switch (filter) {
             case "posting" :
-               types = List.of(DocumentType.POSTING_DOC);
+               types = List.of(DocumentType.RECEIPT_DOC);
                break;
             case "store" :
-                types = List.of(DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
+                types = List.of(DocumentType.POSTING_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
+                break;
+            case "request" :
+                types = List.of(DocumentType.REQUEST_DOC);
                 break;
             case "order" :
                 types = List.of(DocumentType.WITHDRAW_ORDER_DOC, DocumentType.CREDIT_ORDER_DOC);

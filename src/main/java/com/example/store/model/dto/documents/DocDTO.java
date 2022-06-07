@@ -30,7 +30,7 @@ public class DocDTO {
 
     private UserDTO author;
 
-    private UserDTO individual;
+    private UserDTO individual = new UserDTO();
 
     @JsonProperty("payment_type")
     private String paymentType;
@@ -47,15 +47,15 @@ public class DocDTO {
     @JsonProperty("is_delivery")
     private boolean isDelivery;
 
-    private CompanyDTO supplier;
+    private CompanyDTO supplier = new CompanyDTO();
 
-    private CompanyDTO recipient;
+    private CompanyDTO recipient = new CompanyDTO();
 
     @JsonProperty("storage_from")
-    private StorageDTO storageFrom;
+    private StorageDTO storageFrom = new StorageDTO();
 
     @JsonProperty("storage_to")
-    private StorageDTO storageTo;
+    private StorageDTO storageTo = new StorageDTO();
 
     @JsonProperty("check_info")
     private CheckInfoDTO checkInfo;

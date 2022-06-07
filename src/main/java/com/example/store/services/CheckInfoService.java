@@ -5,7 +5,6 @@ import com.example.store.mappers.CheckInfoMapper;
 import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.documents.ItemDoc;
-import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.CheckInfoRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class CheckInfoService {
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime()));
+        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime(), Constants.TIME_FORMATTER));
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

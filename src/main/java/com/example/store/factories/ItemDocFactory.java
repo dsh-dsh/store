@@ -75,19 +75,19 @@ public class ItemDocFactory extends AbstractDocFactory {
     }
 
     private void setAdditionalFieldsAndSave(ItemDoc itemDoc) {
-        if(docDTO.getIndividual() != null) {
+        if(docDTO.getIndividual().getId() != 0) {
             itemDoc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
         }
-        if(docDTO.getIndividual() != null) {
+        if(docDTO.getSupplier().getId() != 0) {
             itemDoc.setSupplier(companyService.getById(docDTO.getSupplier().getId()));
         }
-        if(docDTO.getRecipient() != null) {
+        if(docDTO.getRecipient().getId() != 0) {
             itemDoc.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
         }
-        if(docDTO.getStorageTo() != null) {
+        if(docDTO.getStorageTo().getId() != 0) {
             itemDoc.setStorageTo(storageService.getById(docDTO.getStorageTo().getId()));
         }
-        if(docDTO.getStorageFrom() != null) {
+        if(docDTO.getStorageFrom().getId() != 0) {
             itemDoc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
         }
         itemDocRepository.save(itemDoc);

@@ -20,6 +20,9 @@ public class DocItemDTO {
     @JsonProperty("item_id")
     private int itemId;
 
+    @JsonProperty("item_name")
+    private String itemName;
+
     private float quantity;
 
     @JsonProperty("quantity_fact")

@@ -117,7 +117,7 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     public LocalDateTime getNewTime(String strTime) {
-        LocalDateTime newTime = LocalDateTime.parse(strTime);
+        LocalDateTime newTime = LocalDateTime.parse(strTime, Constants.TIME_FORMATTER);
         while (documentRepository.existsByDateTime(newTime)) {
             newTime = newTime.plusNanos(1);
         }

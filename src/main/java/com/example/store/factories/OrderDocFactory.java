@@ -31,7 +31,7 @@ public class OrderDocFactory  extends AbstractDocFactory {
         order.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
         order.setAmount(docDTO.getAmount());
         order.setTax(docDTO.getTax());
-        if(docDTO.getRecipient() != null) {
+        if(docDTO.getRecipient().getId() != 0) {
             order.setRecipient(companyService.getById(docDTO.getRecipient().getId()));
         }
         order.setIndividual(userService.getById(docDTO.getIndividual().getId()));
