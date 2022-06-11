@@ -15,8 +15,8 @@ public class Constants {
     public static final String NONE_ROLE = "";
 
     public static final String CHECK_DOC_TYPE = "Чек ККМ";
-    public static final String POSTING_DOC_TYPE = "Оприходование";
-    public static final String RECEIPT_DOC_TYPE = "Поступление";
+    public static final String POSTING_DOC_TYPE = "Поступление";
+    public static final String RECEIPT_DOC_TYPE = "Оприходование";
     public static final String MOVEMENT_DOC_TYPE = "Перемещение";
     public static final String WRITE_OFF_DOC_TYPE = "Списание";
     public static final String REQUEST_DOC_TYPE = "Заявка";

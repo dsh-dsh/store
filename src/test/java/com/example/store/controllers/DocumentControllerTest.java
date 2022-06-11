@@ -1,6 +1,7 @@
 package com.example.store.controllers;
 
 import com.example.store.model.dto.DocItemDTO;
+import com.example.store.model.dto.ProjectDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.entities.CheckInfo;
@@ -46,6 +47,7 @@ class DocumentControllerTest {
     private static final int STORAGE_ID = 1;
     private static final int SUPPLIER_ID = 1;
     private static final float QUANTITY_FACT = 10.00f;
+    private static final String DATE = "01.02.2022 10:30:00";
 
     @Autowired
     private TestService testService;
@@ -62,6 +64,26 @@ class DocumentControllerTest {
 
     // todo add fields validation tests
 
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void addDocWithOutProjectTest() throws Exception {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        docDTO.setSupplier(testService.setCompanyDTO(2));
+        docDTO.setRecipient(testService.setCompanyDTO(1));
+        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
+        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
+        docDTO.setProject(new ProjectDTO());
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -371,7 +393,7 @@ class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime("2022-01-01T10:30:00");
+        docDTO.setTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -398,7 +420,7 @@ class DocumentControllerTest {
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime("2022-02-01T10:30:00");
+        docDTO.setTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(

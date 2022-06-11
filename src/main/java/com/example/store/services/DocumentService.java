@@ -97,10 +97,10 @@ public class DocumentService {
         List<DocumentType> types = null;
         switch (filter) {
             case "posting" :
-               types = List.of(DocumentType.RECEIPT_DOC);
+               types = List.of(DocumentType.POSTING_DOC);
                break;
             case "store" :
-                types = List.of(DocumentType.POSTING_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
+                types = List.of(DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
                 break;
             case "request" :
                 types = List.of(DocumentType.REQUEST_DOC);

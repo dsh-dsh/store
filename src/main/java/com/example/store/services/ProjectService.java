@@ -22,9 +22,9 @@ public class ProjectService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
     }
 
-    public Project getById(int id) {
+    public Project getById(int id) throws BadRequestException {
         return projectRepository.findById(id)
-                .orElseThrow(BadRequestException::new);
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
     }
 
     public List<ProjectDTO> getProjectDTOList() {

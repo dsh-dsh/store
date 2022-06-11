@@ -27,6 +27,8 @@ class CheckInfoServiceTest {
     @Autowired
     private DocumentService documentService;
 
+    private static final String DATE = "16.03.2022 14:00:00";
+
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -101,7 +103,7 @@ class CheckInfoServiceTest {
         dto.setAmountReceived(1000.00f);
         dto.setCashRegisterNumber(123456789L);
         dto.setCheckNumber(12345);
-        dto.setDateTime("2022-03-16T06:30:36.395");
+        dto.setDateTime(DATE);
         dto.setGuestNumber(1);
         dto.setDelivery(false);
         dto.setKKMChecked(true);

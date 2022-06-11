@@ -44,6 +44,7 @@ class ReHoldCheckingTest {
 
 
     private static final float REST_ON_STORAGE = 1f;
+    private static final String DATE = "16.03.2022 14:00:00";
 
     @Test
     void checkPossibility_IfDocNotHolden_Test() {
@@ -81,7 +82,7 @@ class ReHoldCheckingTest {
     @Transactional
     void checkPossibility_QuantitiesDidNotChanged_Test() {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
-        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        DocDTO dto = getDocDTO(DATE,3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 10f), getDocItemDTO(1,8, 10f));
         dto.setDocItems(items);
         assertTrue(reHoldChecking.checkPossibility(doc, dto));
@@ -93,7 +94,7 @@ class ReHoldCheckingTest {
     @Transactional
     void checkPossibility_IncrementQuantities_Test() {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
-        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        DocDTO dto = getDocDTO(DATE,3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 20f), getDocItemDTO(1,8, 20f));
         dto.setDocItems(items);
         assertTrue(reHoldChecking.checkPossibility(doc, dto));
@@ -105,7 +106,7 @@ class ReHoldCheckingTest {
     @Transactional
     void checkPossibility_DecrementQuantities_Test() {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
-        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        DocDTO dto = getDocDTO(DATE,3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(getDocItemDTO(1,7, 5f), getDocItemDTO(1,8, 5f));
         dto.setDocItems(items);
         assertFalse(reHoldChecking.checkPossibility(doc, dto));
@@ -117,7 +118,7 @@ class ReHoldCheckingTest {
     @Transactional
     void checkPossibility_AddItem_Test() {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
-        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        DocDTO dto = getDocDTO(DATE,3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(
                 getDocItemDTO(1,7, 15f),
                 getDocItemDTO(1,8, 15f),
@@ -132,7 +133,7 @@ class ReHoldCheckingTest {
     @Transactional
     void checkPossibility_DeleteItem_Test() {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
-        DocDTO dto = getDocDTO("2022-03-16T14:00:00.000",3, DocumentType.POSTING_DOC.toString());
+        DocDTO dto = getDocDTO(DATE,3, DocumentType.POSTING_DOC.toString());
         List<DocItemDTO> items = List.of(
                 getDocItemDTO(1,7, 15f));
         dto.setDocItems(items);

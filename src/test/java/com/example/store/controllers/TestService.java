@@ -4,6 +4,7 @@ import com.example.store.model.dto.*;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.utils.Constants;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -46,7 +47,7 @@ public class TestService {
     DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
-        dto.setTime(LocalDateTime.now().toString());
+        dto.setTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
@@ -58,7 +59,7 @@ public class TestService {
     CheckInfoDTO setCHeckInfo(int value) {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setCheckNumber(CHECK_NUMBER + value);
-        dto.setDateTime(LocalDateTime.now().toString());
+        dto.setDateTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
         dto.setAmountReceived(1000 * (value + 1));
         dto.setCashRegisterNumber(63214823871L);
         dto.setGuestNumber(1 + value);
