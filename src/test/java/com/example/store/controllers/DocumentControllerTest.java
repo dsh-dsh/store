@@ -47,7 +47,7 @@ class DocumentControllerTest {
     private static final int STORAGE_ID = 1;
     private static final int SUPPLIER_ID = 1;
     private static final float QUANTITY_FACT = 10.00f;
-    private static final String DATE = "01.02.2022 10:30:00";
+    private static final String DATE = "02.01.2022 10:30:00";
 
     @Autowired
     private TestService testService;

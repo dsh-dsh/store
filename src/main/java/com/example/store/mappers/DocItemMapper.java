@@ -5,9 +5,6 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
-import org.modelmapper.spi.SourceGetter;
 import org.springframework.stereotype.Component;
 
 @Component

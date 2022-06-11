@@ -4,8 +4,6 @@ import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.Condition;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
@@ -26,8 +24,8 @@ public class PersonMapper extends MappingConverters {
         modelMapper.createTypeMap(User.class, UserDTO.class)
                 .addMappings(mapper -> mapper.using(nameConverter).map(src -> src, UserDTO::setName));
         modelMapper.createTypeMap(PersonDTO.class, User.class)
-                .addMappings(mapper -> mapper.using(stringToDateTime).map(PersonDTO::getRegDate, User::setRegTime))
-                .addMappings(mapper -> mapper.using(stringToDate).map(PersonDTO::getBirthDate, User::setBirthDate))
+                .addMappings(mapper -> mapper.using(stringToDateTimeConverter).map(PersonDTO::getRegDate, User::setRegTime))
+                .addMappings(mapper -> mapper.using(stringToDateConverter).map(PersonDTO::getBirthDate, User::setBirthDate))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
     }
 

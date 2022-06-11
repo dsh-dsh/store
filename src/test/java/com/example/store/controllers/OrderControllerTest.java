@@ -251,7 +251,7 @@ class OrderControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(2))
-                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.WITHDRAW_ORDER_DOC.toString()))
+                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.WITHDRAW_ORDER_DOC.getValue()))
                 .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALARY_PAYMENT.toString()));
     }
 
@@ -265,7 +265,7 @@ class OrderControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(TestService.DOC_ID))
-                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.CREDIT_ORDER_DOC.toString()))
+                .andExpect(jsonPath("$.data.doc_type").value(DocumentType.CREDIT_ORDER_DOC.getValue()))
                 .andExpect(jsonPath("$.data.payment_type").value(PaymentType.SALE_CASH_PAYMENT.toString()));
     }
 

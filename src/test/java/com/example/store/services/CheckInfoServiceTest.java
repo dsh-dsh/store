@@ -27,7 +27,7 @@ class CheckInfoServiceTest {
     @Autowired
     private DocumentService documentService;
 
-    private static final String DATE = "16.03.2022 14:00:00";
+    private static final String DATE = "03.16.2022 14:00:00";
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

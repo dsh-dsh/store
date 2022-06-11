@@ -5,10 +5,7 @@ import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
-import com.example.store.model.enums.Unit;
-import com.example.store.model.enums.Workshop;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
@@ -29,12 +26,12 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTO::setParentId));
         this.modelMapper.createTypeMap(ItemDTO.class, Item.class)
-                .addMappings(mapper -> mapper.using(stringToDateTime).map(ItemDTO::getRegTime, Item::setRegTime))
+                .addMappings(mapper -> mapper.using(stringToDateTimeConverter).map(ItemDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(ItemDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(ItemDTO::getParentId, Item::setParent));
         this.modelMapper.createTypeMap(Item1CDTO.class, Item.class)
-                .addMappings(mapper -> mapper.using(stringToDateTime).map(Item1CDTO::getRegTime, Item::setRegTime))
+                .addMappings(mapper -> mapper.using(stringToDateTimeConverter).map(Item1CDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(stringWorkshopConverter).map(Item1CDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(stringUnitConverter).map(Item1CDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));

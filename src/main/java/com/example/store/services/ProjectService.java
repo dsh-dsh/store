@@ -5,6 +5,7 @@ import com.example.store.model.dto.ProjectDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.repositories.ProjectRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.annotations.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class ProjectService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
     }
 
+    @Loggable
     public Project getById(int id) {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));

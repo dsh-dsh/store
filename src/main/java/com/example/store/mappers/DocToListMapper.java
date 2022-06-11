@@ -2,8 +2,6 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.entities.documents.Document;
-import com.example.store.model.enums.DocumentType;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;

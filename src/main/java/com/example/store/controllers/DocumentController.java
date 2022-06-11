@@ -3,7 +3,6 @@ package com.example.store.controllers;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
-import com.example.store.model.enums.DocumentType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.DocumentService;
@@ -11,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Date;
+import java.sql.Timestamp;
 
 
 @RestController

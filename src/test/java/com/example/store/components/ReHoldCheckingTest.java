@@ -44,7 +44,7 @@ class ReHoldCheckingTest {
 
 
     private static final float REST_ON_STORAGE = 1f;
-    private static final String DATE = "16.03.2022 14:00:00";
+    private static final String DATE = "03.16.2022 14:00:00";
 
     @Test
     void checkPossibility_IfDocNotHolden_Test() {
