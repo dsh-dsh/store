@@ -216,8 +216,8 @@ class CatalogControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[2]").exists())
-                .andExpect(jsonPath("$.data.[3]").doesNotExist());
+                .andExpect(jsonPath("$.data.[3]").exists())
+                .andExpect(jsonPath("$.data.[4]").doesNotExist());
     }
 
 

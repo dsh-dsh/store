@@ -7,6 +7,7 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MatchingStrategy;
+import org.modelmapper.spi.SourceGetter;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,9 +21,16 @@ public class DocItemMapper {
     private static final Converter<Item, Integer> idConverter =
             item -> item.getSource().getId();
 
+    private static final Converter<DocumentItem, Float> amountConverter =
+            item -> {
+                    DocumentItem docItem = item.getSource();
+                    return (docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount();
+            };
+
     public DocItemMapper() {
         this.modelMapper = new ModelMapper();
         this.modelMapper.createTypeMap(DocumentItem.class, DocItemDTO.class)
+                .addMappings(mapper -> mapper.using(amountConverter).map(src -> src, DocItemDTO::setAmount))
                 .addMappings(mapper -> mapper.using(idConverter).map(DocumentItem::getItem, DocItemDTO::setItemId))
                 .addMappings(mapper -> mapper.using(nameConverter).map(DocumentItem::getItem, DocItemDTO::setItemName));
     }

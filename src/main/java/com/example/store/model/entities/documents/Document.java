@@ -63,8 +63,4 @@ public class Document {
 
     private boolean isDeleted = false;
 
-    public Document getThis() {
-        return this;
-    }
-
 }

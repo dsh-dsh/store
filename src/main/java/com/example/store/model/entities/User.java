@@ -57,8 +57,4 @@ public class User implements EntityInterface{
     public int getParentId() {
         return parent.getId();
     }
-
-    public User getThis() {
-        return this;
-    }
 }

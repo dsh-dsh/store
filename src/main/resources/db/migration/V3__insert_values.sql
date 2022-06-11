@@ -1,6 +1,7 @@
 insert into project
 (name)
 values
+(" "),
 ("Жаровня 1"),
 ("Жаровня 2"),
 ("Жаровня 3");

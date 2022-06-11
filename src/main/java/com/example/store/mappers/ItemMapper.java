@@ -21,12 +21,6 @@ public class ItemMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
 
-    private final Converter<Workshop, String> workshopConverter = shop -> shop.getSource().toString();
-    private final Converter<String, Workshop> stringWorkshopConverter = str -> Workshop.valueOf(str.getSource());
-    private final Converter<Unit, String> unitConverter = unit -> unit.getSource().toString();
-    private final Converter<String, Unit> stringUnitConverter = str -> Unit.valueOf(str.getSource());
-    private final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
-
     @PostConstruct
     public void init() {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);

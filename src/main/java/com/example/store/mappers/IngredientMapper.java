@@ -17,13 +17,9 @@ import javax.annotation.PostConstruct;
 
 @RequiredArgsConstructor
 @Component
-public class IngredientMapper {
+public class IngredientMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
-    private final ItemService itemService;
-
-    private final Converter<Item, ItemDTO> itemConverter = item -> getItemDTO(item.getSource());
-    private final Converter<ItemDTO, Item> itemDTOConverter = dto -> getItem(dto.getSource());
 
     @PostConstruct
     private void init() {
@@ -43,18 +39,6 @@ public class IngredientMapper {
 
     public Ingredient mapToEntity(IngredientDTO ingredientDTO) {
         return modelMapper.map(ingredientDTO, Ingredient.class);
-    }
-
-    private ItemDTO getItemDTO(Item item) {
-        ItemDTO dto = new ItemDTO();
-        dto.setId(item.getId());
-        dto.setName(item.getName());
-        return dto;
-    }
-
-    private Item getItem(ItemDTO dto) {
-        if(dto == null) return null;
-        return itemService.getItemById(dto.getId());
     }
 
 }

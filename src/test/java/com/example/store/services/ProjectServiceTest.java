@@ -23,7 +23,7 @@ class ProjectServiceTest {
     private ProjectService projectService;
 
     public static final String PROJECT_NAME = "Жаровня 3";
-    public static final int PROJECT_ID = 3;
+    public static final int PROJECT_ID = 4;
 
     @Test
     void getByNameTest() {
@@ -40,14 +40,14 @@ class ProjectServiceTest {
     @Test
     void getProjectDTOListTest() {
         List<ProjectDTO> list = projectService.getProjectDTOList();
-        assertEquals(3, list.size());
-        assertEquals(PROJECT_NAME, list.get(2).getName());
+        assertEquals(4, list.size());
+        assertEquals(PROJECT_NAME, list.get(3).getName());
     }
 
     @Test
     void getProjectListTest() {
         List<Project> list = projectService.getProjectList();
-        assertEquals(3, list.size());
+        assertEquals(4, list.size());
     }
 
     @Test

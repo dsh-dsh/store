@@ -13,15 +13,12 @@ public class DocToListMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
 
-    private static final Converter<DocumentType, String> typeConverter = type -> type.getSource().getValue();
-
     public DocToListMapper() {
         this.modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.createTypeMap(Document.class, DocToListDTO.class)
                 .addMappings(mapper -> mapper.using(dateTimeConverter).map(Document::getDateTime, DocToListDTO::setTime))
-                .addMappings(mapper -> mapper.using(typeConverter).map(Document::getDocType, DocToListDTO::setType));
-//                .addMappings(mapper -> mapper.skip(Document::));
+                .addMappings(mapper -> mapper.using(docTypeConverter).map(Document::getDocType, DocToListDTO::setType));
     }
 
     public DocToListDTO mapToDocDTO(Document document) {

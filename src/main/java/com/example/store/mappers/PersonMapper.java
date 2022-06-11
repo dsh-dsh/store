@@ -18,16 +18,13 @@ public class PersonMapper extends MappingConverters {
 
     private final ModelMapper modelMapper;
 
-    private final Converter<User, String> nameConverter = user ->
-            user.getSource().getLastName() + " " + user.getSource().getFirstName();
-
     @PostConstruct
     public void init() {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.createTypeMap(User.class, PersonDTO.class)
                 .addMappings(mapper -> mapper.skip(User::getPassword, PersonDTO::setPassword));
         modelMapper.createTypeMap(User.class, UserDTO.class)
-                .addMappings(mapper -> mapper.using(nameConverter).map(User::getThis, UserDTO::setName));
+                .addMappings(mapper -> mapper.using(nameConverter).map(src -> src, UserDTO::setName));
         modelMapper.createTypeMap(PersonDTO.class, User.class)
                 .addMappings(mapper -> mapper.using(stringToDateTime).map(PersonDTO::getRegDate, User::setRegTime))
                 .addMappings(mapper -> mapper.using(stringToDate).map(PersonDTO::getBirthDate, User::setBirthDate))

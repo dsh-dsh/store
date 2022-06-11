@@ -9,7 +9,7 @@ spring.jpa.show-sql : true
 logging.level.org.hibernate.SQL : debug
 logging.level.org.hibernate.type.descriptor.sql.BasicBinder : trace
 
-spring.jpa.properties.hibernate.jdbc.batch_size : 10
+spring.jpa.properties.hibernate.jdbc.batch_size : 0
 spring.jpa.properties.hibernate.order_inserts : true
 spring.jpa.properties.hibernate.order_updates : true
 spring.jpa.properties.hibernate.batch_versioned_data : true

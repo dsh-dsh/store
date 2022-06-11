@@ -4,8 +4,8 @@ import com.example.store.utils.Constants;
 
 public enum DocumentType implements EnumeratedInterface{
 
-    RECEIPT_DOC(Constants.RECEIPT_DOC_TYPE),
     POSTING_DOC(Constants.POSTING_DOC_TYPE),
+    RECEIPT_DOC(Constants.RECEIPT_DOC_TYPE),
     MOVEMENT_DOC(Constants.MOVEMENT_DOC_TYPE),
     WRITE_OFF_DOC(Constants.WRITE_OFF_DOC_TYPE),
     CHECK_DOC(Constants.CHECK_DOC_TYPE),

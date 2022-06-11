@@ -17,8 +17,6 @@ public class QuantityMapper extends MappingConverters{
 
     private final ModelMapper modelMapper;
 
-    private final Converter<String, QuantityType> typeConverter = str -> QuantityType.valueOf(str.getSource());
-
     @PostConstruct
     private void init() {
         modelMapper.createTypeMap(Quantity.class, QuantityDTO.class);
