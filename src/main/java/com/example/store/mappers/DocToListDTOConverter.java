@@ -5,50 +5,40 @@ import com.example.store.model.dto.ProjectDTO;
 import com.example.store.model.dto.StorageDTO;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.utils.Constants;
 
 import java.time.format.DateTimeFormatter;
 
 public class DocToListDTOConverter {
 
-    private static float amount = 0f;
-    private static StorageDTO storageDTO;
-    private static UserDTO authorDTO;
-    private static CompanyDTO supplierDTO;
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
-    private static void resetData() {
-        amount = 0f;
-        storageDTO = new StorageDTO();
-        authorDTO = new UserDTO();
-        supplierDTO = new CompanyDTO();
-    }
-
     public static DocToListDTO convertToDTO(Document document){
-        resetData();
-        if(document instanceof OrderDoc) {
-            amount = ((OrderDoc) document).getAmount();
-        }
-        if(document instanceof ItemDoc) {
-            setStorageDTO((ItemDoc) document);
-        }
-        setAuthorDTO(document);
-        setSupplier(document);
         DocToListDTO dto = new DocToListDTO();
-        dto.setAuthor(authorDTO);
+        dto.setAuthor(getAuthorDTO(document.getAuthor()));
         dto.setId(document.getId());
         dto.setType(document.getDocType().getValue());
         dto.setNumber(document.getNumber());
         dto.setTime(document.getDateTime().format(timeFormatter));
-        dto.setAmount(amount);
-        dto.setStorageFrom(storageDTO);
         dto.setHold(document.isHold());
         dto.setPayed(document.isPayed());
+        dto.setDeleted(document.isDeleted());
         dto.setProject(getProjectDTO(document.getProject()));
+        dto.setSupplier(getSupplier(document.getSupplier()));
+        if(document instanceof OrderDoc) {
+            dto.setAmount(((OrderDoc) document).getAmount());
+        }
+        if(document instanceof ItemDoc) {
+            dto.setStorageFrom(getStorageDTO(((ItemDoc) document).getStorageFrom()));
+            dto.setStorageTo(getStorageDTO(((ItemDoc) document).getStorageTo()));
+        }
         return dto;
     }
 
@@ -62,25 +52,30 @@ public class DocToListDTOConverter {
         return projectDTO;
     }
 
-    private static void setStorageDTO(ItemDoc itemDoc) {
-        if(itemDoc.getStorageFrom() != null) {
-            Storage storage = itemDoc.getStorageFrom();
+    private static StorageDTO getStorageDTO(Storage storage) {
+        StorageDTO storageDTO = new StorageDTO();
+        if(storage != null) {
             storageDTO.setId(storage.getId());
             storageDTO.setName(storage.getName());
         }
+        return storageDTO;
     }
 
-    private static void setAuthorDTO(Document document) {
-        authorDTO.setId(document.getAuthor().getId());
-        authorDTO.setEmail(document.getAuthor().getEmail());
-        authorDTO.setName(document.getAuthor().getFirstName() + " " + document.getAuthor().getLastName());
+    private static UserDTO getAuthorDTO(User author) {
+        UserDTO dto = new UserDTO();
+        dto.setId(author.getId());
+        dto.setEmail(author.getEmail());
+        dto.setName(author.getFirstName() + " " + author.getLastName());
+        return dto;
     }
 
-    private static void setSupplier(Document document) {
-        if(document.getSupplier() != null) {
-            supplierDTO.setId(document.getSupplier().getId());
-            supplierDTO.setName(document.getSupplier().getName());
+    private static CompanyDTO getSupplier(Company company) {
+        CompanyDTO dto = new CompanyDTO();
+        if(company != null) {
+            dto.setId(company.getId());
+            dto.setName(company.getName());
         }
+        return dto;
     }
 
 }

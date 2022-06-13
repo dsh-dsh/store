@@ -47,6 +47,9 @@ public class DocDTO {
     @JsonProperty("is_hold")
     private boolean isHold;
 
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
+
     @JsonProperty("is_delivery")
     private boolean isDelivery;
 

@@ -26,6 +26,8 @@ public class AuthService {
     @Autowired
     private PersonMapper personMapper;
 
+    // add tests
+
     public PersonDTO login(AuthUserRequest authUserRequest) {
         User user = userService.getByEmail(authUserRequest.getLogin());
         if(!passwordEncoder.matches(authUserRequest.getPassword(), user.getPassword())) {

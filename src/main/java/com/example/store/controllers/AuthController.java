@@ -18,6 +18,9 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+
+    // add tests
+
     @PostMapping("/login")
     public ResponseEntity<Response<PersonDTO>> login(@RequestBody AuthUserRequest authUserRequest) {
         Response<PersonDTO> response =

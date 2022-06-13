@@ -30,7 +30,11 @@ public class DocToListDTO {
 
     private CompanyDTO supplier;
 
+    @JsonProperty("storage_from")
     private StorageDTO storageFrom;
+
+    @JsonProperty("storage_to")
+    private StorageDTO storageTo;
 
     private double amount;
 
@@ -39,5 +43,8 @@ public class DocToListDTO {
 
     @JsonProperty("is_hold")
     private boolean isHold;
+
+    @JsonProperty("is_deleted")
+    private boolean isDeleted;
 
 }
