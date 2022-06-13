@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.Storage;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,6 +20,16 @@ public class ItemRestService {
 
     @Autowired
     private LotRepository lotRepository;
+
+    public List<DocItemDTO> getItemRest(String time, int storageId) {
+        DocItemDTO dto = new DocItemDTO();
+        dto.setItemId(1);
+        dto.setDocumentId(1);
+        dto.setQuantity(10f);
+        dto.setPrice(2f);
+
+        return List.of(dto);
+    }
 
     public Map<Item, Float> getItemRestMap(Map<Item, Float> itemMap, Storage storage, LocalDateTime time) {
         return itemMap.keySet().stream()
