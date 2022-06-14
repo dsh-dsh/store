@@ -152,32 +152,11 @@ class ReHoldCheckingTest {
         changedDocItemMap.put(documentItem1, 2f);
         changedDocItemMap.put(documentItem2, 3f);
 
-        Map<Item, Float> map = reHoldChecking.getQuantityDiffMap(itemDoc, changedDocItemMap);
+        Map<Item, Float> map = reHoldChecking.getQuantityDiffMap(itemDoc.getStorageTo(), changedDocItemMap);
 
         assertEquals(2, map.size());
         assertEquals(2 + REST_ON_STORAGE, map.get(docItemService.getItemById(1).getItem()));
         assertEquals(3 + REST_ON_STORAGE, map.get(docItemService.getItemById(2).getItem()));
-    }
-
-    @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void setQuantityDiffMapTest() {
-        Map<Item, Float> quantityDiffMap = new HashMap<>();
-        Storage storage = storageService.getById(3);
-        Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
-        DocumentItem documentItem1 = docItemService.getItemById(1);
-        DocumentItem documentItem2 = docItemService.getItemById(2);
-        changedDocItemMap.put(documentItem1, 2f);
-        changedDocItemMap.put(documentItem2, 3f);
-
-        reHoldChecking.setQuantityDiffMap(quantityDiffMap, storage, changedDocItemMap);
-
-        assertEquals(2, quantityDiffMap.size());
-        assertEquals(2 + REST_ON_STORAGE, quantityDiffMap.get(docItemService.getItemById(1).getItem()));
-        assertEquals(3 + REST_ON_STORAGE, quantityDiffMap.get(docItemService.getItemById(2).getItem()));
-
     }
 
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

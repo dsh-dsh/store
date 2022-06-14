@@ -14,11 +14,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.utils.Constants;
 
-import java.time.format.DateTimeFormatter;
-
 public class DocToListDTOConverter {
-
-    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
     public static DocToListDTO convertToDTO(Document document){
         DocToListDTO dto = new DocToListDTO();
@@ -26,7 +22,7 @@ public class DocToListDTOConverter {
         dto.setId(document.getId());
         dto.setType(document.getDocType().getValue());
         dto.setNumber(document.getNumber());
-        dto.setTime(document.getDateTime().format(timeFormatter));
+        dto.setTime(document.getDateTime().format(Constants.TIME_FORMATTER));
         dto.setHold(document.isHold());
         dto.setPayed(document.isPayed());
         dto.setDeleted(document.isDeleted());

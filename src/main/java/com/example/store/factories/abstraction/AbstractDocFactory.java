@@ -100,7 +100,7 @@ public abstract class AbstractDocFactory implements DocFactory {
             document.setNumber(docDTO.getNumber());
         }
         document.setDocType(documentType);
-        document.setDateTime(getNewTime(docDTO.getTime()));
+        document.setDateTime(getNewTime(document, docDTO));
         document.setProject(projectService.getById(docDTO.getProject().getId()));
         document.setAuthor(userService.getById(docDTO.getAuthor().getId()));
         document.setPayed(docDTO.isPayed());
@@ -116,10 +116,13 @@ public abstract class AbstractDocFactory implements DocFactory {
         }
     }
 
-    public LocalDateTime getNewTime(String strTime) {
-        LocalDateTime newTime = LocalDateTime.parse(strTime, Constants.TIME_FORMATTER);
-        while (documentRepository.existsByDateTime(newTime)) {
-            newTime = newTime.plusNanos(1);
+    public LocalDateTime getNewTime(Document document, DocDTO dto) {
+        LocalDateTime newTime = LocalDateTime.parse(dto.getTime(), Constants.TIME_FORMATTER);
+        if(document.getId() != dto.getId()) {
+            while (documentRepository.existsByDateTime(newTime)) {
+                //TODO нужно ли это и не поменять ли на меньшее значение
+                newTime = newTime.plusSeconds(1);
+            }
         }
         return newTime;
     }

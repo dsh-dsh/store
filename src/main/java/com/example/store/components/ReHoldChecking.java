@@ -30,27 +30,20 @@ public class ReHoldChecking {
 
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
-        if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
-        if(!itemDoc.getDateTime().equals(LocalDateTime.parse(docDTO.getTime(), Constants.TIME_FORMATTER))) return false;
+        if(!itemDoc.getDateTime().format(Constants.TIME_FORMATTER).equals(docDTO.getTime())) return false;
         if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
+            if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
             Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();
             if(!setChangedDocItems(changedDocItemMap, itemDoc, docDTO)) return false;
-            Map<Item, Float> quantityDiffMap = getQuantityDiffMap(itemDoc, changedDocItemMap);
+            Map<Item, Float> quantityDiffMap = getQuantityDiffMap(itemDoc.getStorageTo(), changedDocItemMap);
             return !quantityDiffMap.isEmpty();
         } else {
             return false;
         }
     }
 
-    public Map<Item, Float> getQuantityDiffMap(ItemDoc itemDoc, Map<DocumentItem, Float> changedDocItemMap) {
+    public Map<Item, Float> getQuantityDiffMap(Storage storage, Map<DocumentItem, Float> changedDocItemMap) {
         Map<Item, Float> quantityDiffMap = new HashMap<>();
-        setQuantityDiffMap(quantityDiffMap, itemDoc.getStorageTo(), changedDocItemMap);
-        return quantityDiffMap;
-    }
-
-    public void setQuantityDiffMap(Map<Item, Float> quantityDiffMap, Storage storage,
-            Map<DocumentItem, Float> changedDocItemMap) {
-
         for(Map.Entry<DocumentItem, Float> entry : changedDocItemMap.entrySet()) {
             DocumentItem docItem = entry.getKey();
             float quantityDiff;
@@ -66,6 +59,7 @@ public class ReHoldChecking {
                 quantityDiffMap.put(docItem.getItem(), quantityDiff);
             }
         }
+        return quantityDiffMap;
     }
 
     public boolean setChangedDocItems(Map<DocumentItem, Float> map, ItemDoc itemDoc, DocDTO docDTO) {

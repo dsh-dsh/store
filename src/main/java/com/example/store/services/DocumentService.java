@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.factories.ItemDocFactory;
+import com.example.store.factories.OrderDocFactory;
 import com.example.store.mappers.DocMapper;
 import com.example.store.mappers.DocToListDTOConverter;
 import com.example.store.mappers.DocToListMapper;
@@ -34,6 +35,8 @@ public class DocumentService {
     @Autowired
     private ItemDocFactory itemDocFactory;
     @Autowired
+    private OrderDocFactory orderDocFactory;
+    @Autowired
     private ItemDocRepository itemDocRepository;
     @Autowired
     private OrderDocRepository orderDocRepository;
@@ -53,16 +56,23 @@ public class DocumentService {
             storageFrom = ((ItemDoc) document).getStorageFrom();
             storageTo = ((ItemDoc) document).getStorageTo();
         }
-        return documentRepository.existsNotHoldenDocs(
-                document.getDocType(), storageFrom, storageTo, document.getDateTime());
+        return documentRepository.existsByDateTimeLessThanAndIsDeletedAndIsHold(document.getDateTime(), false,false);
     }
 
     public void holdDocument(int docId) {
-        ItemDoc document = (ItemDoc) getDocumentById(docId);
+        Document document = getDocumentById(docId);
         if(existsNotHoldenDocsBefore(document)) {
             throw new BadRequestException(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE);
         }
-        itemDocFactory.holdDocument(document);
+        if(document instanceof ItemDoc) {
+            if(document.isHold()) {
+                itemDocFactory.unHoldDocument(document);
+            } else {
+                itemDocFactory.holdDocument(document);
+            }
+        } else {
+            orderDocFactory.holdDocument(document);
+        }
     }
 
     public void addDocument(DocDTO docDTO) {

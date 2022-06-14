@@ -95,7 +95,6 @@ public class ItemDocFactory extends AbstractDocFactory {
 
     @Override
     @Transaction
-    @Deprecated(forRemoval = true)
     public void unHoldDocument(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
