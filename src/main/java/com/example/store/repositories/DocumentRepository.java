@@ -23,7 +23,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "AND (:storageFrom is null OR doc.storageFrom = :storageFrom) " +
             "AND (:storageTo is null OR doc.storageTo = :storageTo) " +
             "AND doc.dateTime < :dateTime " +
-            "AND doc.isHold = true ")
+            "AND doc.isHold = false")
     boolean existsNotHoldenDocs(DocumentType docType, Storage storageFrom, Storage storageTo, LocalDateTime dateTime);
 
     @Query("SELECT doc " +
