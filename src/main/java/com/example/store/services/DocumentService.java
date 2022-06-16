@@ -19,6 +19,7 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,11 +51,8 @@ public class DocumentService {
     private CheckInfoService checkInfoService;
 
     public boolean existsNotHoldenDocsBefore(Document document) {
-        Storage storageFrom = null;
-        Storage storageTo = null;
-        if(document instanceof ItemDoc) {
-            storageFrom = ((ItemDoc) document).getStorageFrom();
-            storageTo = ((ItemDoc) document).getStorageTo();
+        if(document.isHold()) {
+            return false;
         }
         return documentRepository.existsByDateTimeLessThanAndIsDeletedAndIsHold(document.getDateTime(), false,false);
     }
@@ -71,16 +69,30 @@ public class DocumentService {
                 itemDocFactory.holdDocument(document);
             }
         } else {
-            orderDocFactory.holdDocument(document);
+            if(document.isHold()) {
+                orderDocFactory.unHoldDocument(document);
+            } else {
+                orderDocFactory.holdDocument(document);
+            }
         }
     }
 
     public void addDocument(DocDTO docDTO) {
-        itemDocFactory.addDocument(docDTO);
+        if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
+                || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
+            orderDocFactory.addDocument(docDTO);
+        } else {
+            itemDocFactory.addDocument(docDTO);
+        }
     }
 
     public void updateDocument(DocDTO docDTO) {
-        itemDocFactory.updateDocument(docDTO);
+        if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
+            || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
+            orderDocFactory.updateDocument(docDTO);
+        } else {
+            itemDocFactory.updateDocument(docDTO);
+        }
     }
 
     public List<Document> getDocumentsAfterAndInclude(Document document) {
@@ -167,7 +179,12 @@ public class DocumentService {
 
     public void softDeleteDocument(DocDTO docDTO) {
         int docId = docDTO.getId();
-        itemDocFactory.deleteDocument(docId);
+        if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
+                || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
+            orderDocFactory.deleteDocument(docId);
+        } else {
+            itemDocFactory.deleteDocument(docId);
+        }
     }
 
     public List<Document> getAllDocuments() {

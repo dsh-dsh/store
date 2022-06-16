@@ -20,7 +20,8 @@ public class DocToListDTO {
 
     private int number;
 
-    private String type;
+    @JsonProperty("doc_type")
+    private String docType;
 
     private String time;
 

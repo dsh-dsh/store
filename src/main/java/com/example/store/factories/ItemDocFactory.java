@@ -1,6 +1,7 @@
 package com.example.store.factories;
 
 import com.example.store.components.UnHoldDocs;
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.DocumentItem;
@@ -11,6 +12,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
 import com.example.store.components.ReHoldChecking;
+import com.example.store.utils.Constants;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,7 +62,8 @@ public class ItemDocFactory extends AbstractDocFactory {
     @Override
     @Transaction
     public void deleteDocument(int docId) {
-        ItemDoc itemDoc = itemDocRepository.getById(docId);
+        ItemDoc itemDoc = itemDocRepository.findById(docId)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         unHoldDocs.unHoldAllDocsAfter(itemDoc);
         itemDoc.setDeleted(true);
         itemDocRepository.save(itemDoc);

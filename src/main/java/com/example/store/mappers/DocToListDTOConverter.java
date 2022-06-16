@@ -20,7 +20,7 @@ public class DocToListDTOConverter {
         DocToListDTO dto = new DocToListDTO();
         dto.setAuthor(getAuthorDTO(document.getAuthor()));
         dto.setId(document.getId());
-        dto.setType(document.getDocType().getValue());
+        dto.setDocType(document.getDocType().getValue());
         dto.setNumber(document.getNumber());
         dto.setTime(document.getDateTime().format(Constants.TIME_FORMATTER));
         dto.setHold(document.isHold());
