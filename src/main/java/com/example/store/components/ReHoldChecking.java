@@ -30,7 +30,7 @@ public class ReHoldChecking {
 
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
-        if(!itemDoc.getDateTime().format(Constants.TIME_FORMATTER).equals(docDTO.getTime())) return false;
+//        if(!itemDoc.getDateTime().format(Constants.TIME_FORMATTER).equals(docDTO.getTime())) return false;
         if(itemDoc.getDocType() == DocumentType.POSTING_DOC || itemDoc.getDocType() == DocumentType.RECEIPT_DOC) {
             if(itemDoc.getStorageTo().getId() != docDTO.getStorageTo().getId()) return false;
             Map<DocumentItem, Float> changedDocItemMap = new HashMap<>();

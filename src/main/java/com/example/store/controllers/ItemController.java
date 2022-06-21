@@ -36,21 +36,21 @@ public class ItemController {
     //todo add test
     @GetMapping
     public ResponseEntity<Response<ItemDTO>> getItemById(
-            @RequestParam String date,
+            @RequestParam long date,
             @RequestParam int id) {
         ItemDTO itemDTO = itemService.getItemDTOById(id, date);
         return ResponseEntity.ok(new Response<>(itemDTO));
     }
 
     @PostMapping
-    public ResponseEntity<Response<Integer>> getItemById(@RequestBody ItemDTO itemDTO) {
-        Item item = itemService.setNewItem(itemDTO);
-        return ResponseEntity.ok(new Response<>(item.getId()));
+    public ResponseEntity<Response<String>> addItem(@RequestBody ItemDTO itemDTO) {
+        itemService.setNewItem(itemDTO);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PutMapping("/{date}")
-    public ResponseEntity<Response<String>> updateItemById(
-            @PathVariable String date,
+    public ResponseEntity<Response<String>> updateItem(
+            @PathVariable long date,
             @RequestBody ItemDTO itemDTO) {
         itemService.updateItem(itemDTO, date);
         return ResponseEntity.ok(new Response<>(Constants.OK));

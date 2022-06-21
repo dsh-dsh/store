@@ -1,5 +1,7 @@
 package com.example.store;
 
+import com.example.store.controllers.TestService;
+import com.example.store.model.dto.EnumDTO;
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.PriceDTO;
@@ -10,16 +12,17 @@ import com.example.store.model.enums.Workshop;
 import com.example.store.utils.CollectionUtils;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class UtilTest {
+class UtilTest extends TestService {
 
     public Map<Integer, Integer> getIntegerMap(List<Integer> list) {
         return list.stream().collect(Collectors.toMap(
@@ -30,6 +33,15 @@ class UtilTest {
 
     public Map<Integer, Long> getIntegerMapGroupingBy(List<Integer> list) {
         return list.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    @Test
+    void longToLocalDateTime() {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime oldTime = LocalDateTime.parse("2022-03-16 06:30:36.395", timeFormatter);
+        long time = 1647401436395L;
+        LocalDateTime newTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        assertEquals(oldTime, newTime);
     }
 
     @Test
@@ -113,16 +125,42 @@ class UtilTest {
         assertEquals(project4, result.get(0));
         assertEquals(project10, result.get(6));
     }
+    @Test
+    void testString() {
+        assertTrue(solution("aa", "aab"));
+        assertTrue(solution("collectionUtils.intersection", "collecttionrtUtilrss.intesrsecstion"));
+        assertFalse(solution("collectionUtils.intersection", "coecttionrtUtilrss.intesrsecstion"));
+        assertFalse(solution("aa", "ab"));
+    }
+
+    boolean solution(String a, String b) {
+        if(a.length() > b.length()) {
+            return false;
+        }
+        Map<String, Integer> map = Stream.of(b.split(""))
+                .collect(Collectors.toMap(Function.identity(), (i) -> 1, Integer::sum));
+
+        for(String s : a.split("")) {
+            if(!map.containsKey(s) || map.get(s) == 0) {
+                return false;
+            }
+            map.compute(s, (k, v) -> --v);
+        }
+        return true;
+    }
 
     private List<Item1CDTO> getItemDTOList() {
         List<Item1CDTO> list = new ArrayList<>();
         list.add(getItemDTO(3611, 1, "Cуп лапша (1)",
-                getPrices(LocalDate.now().toString(), 180.00f, 220.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        180.00f, 220.00f)));
         list.add(getItemDTO(13, 11, "Ингредиент 2", List.of()));
         list.add(getItemDTO(444, 1, "Блюдо 10",
-                getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        100.00f, 120.00f)));
         list.add(getItemDTO(14, 1, "Блюдо 1",
-                getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        100.00f, 120.00f)));
         list.add(getItemDTO(12, 11, "Ингредиент 1", List.of()));
         list.add(getItemDTO(11, 2, "Бар", List.of()));
         return list;
@@ -132,16 +170,16 @@ class UtilTest {
         Item1CDTO dto = new Item1CDTO();
         dto.setName(name);
         dto.setPrintName(name);
-        dto.setRegTime(LocalDateTime.now().toString());
-        dto.setUnit(Unit.PORTION.toString());
-        dto.setWorkshop(Workshop.KITCHEN.toString());
+        dto.setRegTime(Instant.now().toEpochMilli());
+        dto.setUnit(getUnitDTO(Unit.PORTION));
+        dto.setWorkshop(getWorkshopDTO(Workshop.KITCHEN));
         dto.setPrices(prices);
         dto.setNumber(number);
         dto.setParentNumber(parentNumber);
         return dto;
     }
 
-    private List<PriceDTO> getPrices(String date, float retailValue, float deliveryValue){
+    private List<PriceDTO> getPrices(long date, float retailValue, float deliveryValue){
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date)
                 .type(PriceType.RETAIL.getValue())

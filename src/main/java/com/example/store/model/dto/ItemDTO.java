@@ -24,7 +24,7 @@ public class ItemDTO {
     private String comment;
 
     @JsonProperty("reg_time")
-    private String regTime;
+    private long regTime;
 
     @JsonProperty("is_weight")
     private boolean isWeight;
@@ -50,9 +50,9 @@ public class ItemDTO {
     @JsonProperty("is_include_sauce")
     private boolean isIncludeSauce;
 
-    private String workshop;
+    private EnumDTO workshop;
 
-    private String unit;
+    private EnumDTO unit;
 
     @JsonProperty("parent_id")
     private int parentId;

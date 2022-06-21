@@ -14,7 +14,12 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.Optional;
 
 public abstract class AbstractDocFactory implements DocFactory {
 
@@ -117,11 +122,16 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     public LocalDateTime getNewTime(Document document, DocDTO dto) {
-        LocalDateTime newTime = LocalDateTime.parse(dto.getTime(), Constants.TIME_FORMATTER);
-        if(document.getId() != dto.getId()) {
-            while (documentRepository.existsByDateTime(newTime)) {
-                //TODO нужно ли это и не поменять ли на меньшее значение
-                newTime = newTime.plusSeconds(1);
+        System.out.println(dto.getDateTime());
+        LocalDateTime newTime = Instant.ofEpochMilli(dto.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime start = LocalDateTime.of(newTime.getYear(), newTime.getMonth(), newTime.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime end = start.plusDays(1);
+        if(document.getDateTime() == null || (document.getDateTime() != null && !document.getDateTime().equals(newTime))) {
+            Optional<Document> optionalDocument = documentRepository.getFirstByDateTimeBetweenOrderByDateTimeDesc(start, end);
+            if(optionalDocument.isPresent()) {
+                newTime = optionalDocument.get().getDateTime().plus(1, ChronoUnit.MILLIS);
+            } else {
+                newTime = start;
             }
         }
         return newTime;

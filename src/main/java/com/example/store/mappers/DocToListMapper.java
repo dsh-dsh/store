@@ -15,7 +15,7 @@ public class DocToListMapper extends MappingConverters {
         this.modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.createTypeMap(Document.class, DocToListDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(Document::getDateTime, DocToListDTO::setTime))
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(Document::getDateTime, DocToListDTO::setDateTime))
                 .addMappings(mapper -> mapper.using(docTypeConverter).map(Document::getDocType, DocToListDTO::setDocType));
     }
 

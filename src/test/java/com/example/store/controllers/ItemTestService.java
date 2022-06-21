@@ -7,7 +7,9 @@ import com.example.store.services.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -19,7 +21,8 @@ public class ItemTestService extends TestService {
     private PriceService priceService;
 
 
-    public Item getItemByName(String name, LocalDate date) {
+    public Item getItemByName(String name, long longDate) {
+        LocalDate date = Instant.ofEpochMilli(longDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = itemRepository.getByName(name);
         if(item != null) {
             item.setPrices(priceService.getPriceListOfItem(item, date));

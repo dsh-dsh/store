@@ -6,7 +6,7 @@ public enum Workshop implements EnumeratedInterface{
 
     KITCHEN(Constants.KITCHEN),
     BAR(Constants.BAR),
-    NONE(Constants.NONE);
+    NONE(Constants.ENUM_NONE);
 
     private final String value;
 

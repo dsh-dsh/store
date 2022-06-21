@@ -1,8 +1,6 @@
 package com.example.store.mappers;
 
-import com.example.store.model.dto.CheckInfoDTO;
-import com.example.store.model.dto.DocItemDTO;
-import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.*;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
@@ -17,8 +15,7 @@ import org.modelmapper.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 @Component
@@ -34,16 +31,34 @@ public class MappingConverters {
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
 
-    protected final Converter<Workshop, String> workshopConverter = shop -> shop.getSource().toString();
-    protected final Converter<String, Workshop> stringWorkshopConverter = str -> Workshop.valueOf(str.getSource());
-    protected final Converter<Unit, String> unitConverter = unit -> unit.getSource().toString();
-    protected final Converter<String, Unit> stringUnitConverter = str -> Unit.valueOf(str.getSource());
     protected final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
     protected final Converter<String, QuantityType> typeConverter = str -> QuantityType.valueOf(str.getSource());
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().toString();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
-    protected final Converter<Item, ItemDTO> itemConverter = item -> getItemDTO(item.getSource());
-    protected final Converter<ItemDTO, Item> itemDTOConverter = dto -> getItem(dto.getSource());
+    protected final Converter<Item, ItemDTOForIngredient> itemConverter = item -> getItemDTO(item.getSource());
+    protected final Converter<ItemDTOForIngredient, Item> itemDTOConverter = dto -> getItem(dto.getSource());
+
+    protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
+    protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
+
+    protected final Converter<Workshop, EnumDTO> workshopConverter = shop -> {
+        EnumDTO dto = new EnumDTO();
+        dto.setName(shop.getSource().getValue());
+        dto.setCode(shop.getSource().toString());
+        return dto;
+    };
+    protected final Converter<Unit, EnumDTO> unitConverter = unit -> {
+        EnumDTO dto = new EnumDTO();
+        dto.setName(unit.getSource().getValue());
+        dto.setCode(unit.getSource().toString());
+        return dto;
+    };
+
+    protected final Converter<LocalDateTime, Long> dateTimeToLongConverter =
+            time -> ZonedDateTime.of(time.getSource(), ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+    protected final Converter<Long, LocalDateTime> longToDateTimeConverter =
+            src -> Instant.ofEpochMilli(src.getSource()).atZone(ZoneId.systemDefault()).toLocalDateTime();
 
     protected final Converter<ItemDoc, List<DocItemDTO>> docItemsConverter =
             itemDoc -> docItemService.getItemDTOListByDoc(itemDoc.getSource()) ;
@@ -78,14 +93,14 @@ public class MappingConverters {
                 return localDateTime == null ? "" : localDateTime.format(Constants.TIME_FORMATTER);
             };
 
-    private ItemDTO getItemDTO(Item item) {
-        ItemDTO dto = new ItemDTO();
+    private ItemDTOForIngredient getItemDTO(Item item) {
+        ItemDTOForIngredient dto = new ItemDTOForIngredient();
         dto.setId(item.getId());
         dto.setName(item.getName());
         return dto;
     }
 
-    private Item getItem(ItemDTO dto) {
+    private Item getItem(ItemDTOForIngredient dto) {
         if(dto == null) return null;
         return itemService.getItemById(dto.getId());
     }

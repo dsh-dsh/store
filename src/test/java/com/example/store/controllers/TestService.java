@@ -4,13 +4,14 @@ import com.example.store.model.dto.*;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.Unit;
+import com.example.store.model.enums.Workshop;
 import com.example.store.utils.Constants;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Component
 public class TestService {
 
     static final int ADD_VALUE = 0;
@@ -47,7 +48,7 @@ public class TestService {
     DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
-        dto.setTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
+//        dto.setDateTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
@@ -123,5 +124,18 @@ public class TestService {
         forth.setQuantity(4 + value);
 
         return List.of(first, second, third, forth);
+    }
+
+    protected EnumDTO getUnitDTO(Unit unit) {
+        EnumDTO dto = new EnumDTO();
+        dto.setName(unit.getValue());
+        dto.setCode(unit.toString());
+        return dto;
+    }
+    protected EnumDTO getWorkshopDTO(Workshop workshop) {
+        EnumDTO dto = new EnumDTO();
+        dto.setName(workshop.getValue());
+        dto.setCode(workshop.toString());
+        return dto;
     }
 }

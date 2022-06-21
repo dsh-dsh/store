@@ -65,7 +65,7 @@ public class ItemDocFactory extends AbstractDocFactory {
         ItemDoc itemDoc = itemDocRepository.findById(docId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         unHoldDocs.unHoldAllDocsAfter(itemDoc);
-        itemDoc.setDeleted(true);
+        itemDoc.setDeleted(!itemDoc.isDeleted());
         itemDocRepository.save(itemDoc);
     }
 

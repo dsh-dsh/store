@@ -2,6 +2,7 @@ package com.example.store.repositories;
 
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.utils.annotations.Loggable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
@@ -41,4 +43,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     List<Document> findByIsHoldAndDateTimeBetween(boolean isHold, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 
     boolean existsByDateTime(LocalDateTime dateTime);
+
+    @Loggable
+    Optional<Document> getFirstByDateTimeBetweenOrderByDateTimeDesc(LocalDateTime start, LocalDateTime end);
 }

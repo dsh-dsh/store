@@ -60,6 +60,8 @@ public class Item implements EntityInterface{
     private boolean isDeleted;
     private int number;
 
+    private boolean isNode;
+
     public Item(int id) {
         this.id = id;
     }

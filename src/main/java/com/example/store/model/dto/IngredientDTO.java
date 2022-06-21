@@ -15,8 +15,8 @@ import java.util.List;
 public class IngredientDTO {
 
     private int id;
-    private ItemDTO parent;
-    private ItemDTO child;
+    private ItemDTOForIngredient parent;
+    private ItemDTOForIngredient child;
 
     @JsonProperty("quantity_list")
     private List<QuantityDTO> quantityList;

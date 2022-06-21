@@ -48,6 +48,8 @@ public class User implements EntityInterface{
     @JoinColumn(name = "parent_id")
     private User parent;
 
+    private boolean isNode;
+
     @Override
     public String getName() {
         return lastName + " " + firstName;

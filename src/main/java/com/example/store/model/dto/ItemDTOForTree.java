@@ -23,6 +23,9 @@ public class ItemDTOForTree{
     @JsonProperty("parent_id")
     private int parentId;
 
+    @JsonProperty("is_node")
+    private boolean isNode;
+
     private List<ItemDTOForTree> children = new ArrayList<>();
 
     public void setIcon() {

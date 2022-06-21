@@ -15,13 +15,13 @@ public class DocMapper extends MappingConverters {
         this.modelMapper = new ModelMapper();
 
         modelMapper.createTypeMap(OrderDoc.class, DocDTO.class)
-                .addMappings(mapper -> mapper.using(docTypeConverter).map(OrderDoc::getDocType, DocDTO::setDocType))
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(OrderDoc::getDateTime, DocDTO::setTime));
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(OrderDoc::getDateTime, DocDTO::setDateTime))
+                .addMappings(mapper -> mapper.using(docTypeConverter).map(OrderDoc::getDocType, DocDTO::setDocType));
 
         modelMapper.createTypeMap(ItemDoc.class, DocDTO.class)
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(ItemDoc::getDateTime, DocDTO::setDateTime))
                 .addMappings(mapper -> mapper.using(docItemsConverter).map(src -> src, DocDTO::setDocItems))
                 .addMappings(mapper -> mapper.using(docTypeConverter).map(ItemDoc::getDocType, DocDTO::setDocType))
-                .addMappings(mapper -> mapper.using(dateTimeConverter).map(ItemDoc::getDateTime, DocDTO::setTime))
                 .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(src -> src, DocDTO::setCheckInfo));
     }
 

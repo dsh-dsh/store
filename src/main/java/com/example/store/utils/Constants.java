@@ -4,8 +4,8 @@ import java.time.format.DateTimeFormatter;
 
 public class Constants {
 
-    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("MM.dd.yyyy HH:mm:ss");
-//    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss +03:00");
+//    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("MM.dd.yyyy HH:mm:ss");
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS +03:00");
 
     public static final String SYSTEM_USER_EMAIL = "system@user.com";
     public static final String ADMIN_ROLE = "администратор";
@@ -52,6 +52,8 @@ public class Constants {
     public static final String PIECE = "шт.";
     public static final String PORTION = "порция";
 
+    public static final String ENUM_NONE = "---";
+
     public static final String NONE = "";
     public static final String OK = "ok";
 
@@ -74,6 +76,7 @@ public class Constants {
 
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";
+    public static final String ENABLE_TYPE = "Используется";
 
     private Constants() {
     }

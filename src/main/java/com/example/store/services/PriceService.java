@@ -12,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -44,16 +46,17 @@ public class PriceService {
 
 
     private void updatePrice(PriceDTO dto, List<Price> prices, Item item) {
-        Price price = getPriceOfType(prices, PriceType.getByValue(dto.getType()));
+        Price price = getPriceOfType(prices, PriceType.valueOf(dto.getType()));
         if (price == null) {
             setNewPrice(item, dto);
             return;
         }
-        if (LocalDate.parse(dto.getDate()).isAfter(price.getDate())
+        LocalDate date = Instant.ofEpochMilli(dto.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();
+        if (date.isAfter(price.getDate())
                 && price.getValue() != dto.getValue()) {
                 setNewPrice(item, dto);
         }
-        if (LocalDate.parse(dto.getDate()).isEqual(price.getDate())){
+        if (date.isEqual(price.getDate())){
             price.setValue(dto.getValue());
             priceRepository.save(price);
         }
@@ -82,8 +85,8 @@ public class PriceService {
 
     private void setNewPrice(Item item, PriceDTO dto) {
         Price price = new Price();
-        price.setPriceType(PriceType.getByValue(dto.getType()));
-        LocalDate date = dto.getDate() == null ? LocalDate.now() : LocalDate.parse(dto.getDate());
+        price.setPriceType(PriceType.valueOf(dto.getType()));
+        LocalDate date = Instant.ofEpochMilli(dto.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();
         price.setDate(date);
         price.setItem(item);
         price.setValue(dto.getValue());

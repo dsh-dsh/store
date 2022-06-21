@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,8 +56,8 @@ public class ItemService {
 
     // TODO add tests
 
-    public void updateItem(ItemDTO itemDTO, String stringDate) {
-        LocalDate date = LocalDate.parse(stringDate);
+    public void updateItem(ItemDTO itemDTO, long longDate) {
+        LocalDate date = Instant.ofEpochMilli(longDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = findItemById(itemDTO.getId());
         updateItemFields(item, itemDTO);
         itemRepository.save(item);
@@ -80,8 +82,8 @@ public class ItemService {
         item.setIncludeGarnish(dto.isIncludeGarnish());
         item.setSauce(dto.isSauce());
         item.setIncludeSauce(dto.isIncludeSauce());
-        item.setWorkshop(Workshop.valueOf(dto.getWorkshop()));
-        item.setUnit(Unit.valueOf(dto.getUnit()));
+        item.setWorkshop(Workshop.valueOf(dto.getWorkshop().getCode()));
+        item.setUnit(Unit.valueOf(dto.getUnit().getCode()));
         item.setParent(findItemById(dto.getParentId()));
     }
 
@@ -97,8 +99,8 @@ public class ItemService {
         return itemRepository.getItemIdByNumber(number);
     }
 
-    public ItemDTO getItemDTOById(int id, String stringDate) {
-        LocalDate date = LocalDate.parse(stringDate);
+    public ItemDTO getItemDTOById(int id, long stringDate) {
+        LocalDate date = Instant.ofEpochMilli(stringDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         item.setParent(getParent(item));

@@ -14,6 +14,11 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.utils.Constants;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 public class DocToListDTOConverter {
 
     public static DocToListDTO convertToDTO(Document document){
@@ -22,7 +27,7 @@ public class DocToListDTOConverter {
         dto.setId(document.getId());
         dto.setDocType(document.getDocType().getValue());
         dto.setNumber(document.getNumber());
-        dto.setTime(document.getDateTime().format(Constants.TIME_FORMATTER));
+        dto.setDateTime(getMillis(document.getDateTime()));
         dto.setHold(document.isHold());
         dto.setPayed(document.isPayed());
         dto.setDeleted(document.isDeleted());
@@ -36,6 +41,10 @@ public class DocToListDTOConverter {
             dto.setStorageTo(getStorageDTO(((ItemDoc) document).getStorageTo()));
         }
         return dto;
+    }
+
+    private static long getMillis(LocalDateTime time) {
+        return ZonedDateTime.of(time, ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     private DocToListDTOConverter() {

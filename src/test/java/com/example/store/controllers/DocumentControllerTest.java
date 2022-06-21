@@ -263,7 +263,7 @@ class DocumentControllerTest {
         assertEquals(STORAGE_ID, docs.get(0).getStorageFrom().getId());
     }
 
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -394,7 +394,7 @@ class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime(DATE);
+//        docDTO.setTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -421,7 +421,7 @@ class DocumentControllerTest {
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-        docDTO.setTime(DATE);
+//        docDTO.setTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(

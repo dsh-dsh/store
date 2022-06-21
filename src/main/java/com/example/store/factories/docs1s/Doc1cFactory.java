@@ -41,7 +41,7 @@ public class Doc1cFactory implements DocFactory {
         DocumentType docType = DocumentType.valueOf(docDTO.getDocType());
         ItemDoc check = new ItemDoc();
         check.setNumber(docDTO.getNumber());
-        check.setDateTime(LocalDateTime.parse(docDTO.getTime(), timeFormatter));
+//        check.setDateTime(LocalDateTime.parse(docDTO.getTime(), timeFormatter));
         check.setProject(projectService.getByName(docDTO.getProject().getName()));
         check.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
         check.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));

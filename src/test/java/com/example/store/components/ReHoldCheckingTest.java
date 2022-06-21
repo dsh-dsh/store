@@ -200,7 +200,7 @@ class ReHoldCheckingTest {
 
     private DocDTO getDocDTO(String time, int storageId, String type) {
         DocDTO dto = new DocDTO();
-        dto.setTime(time);
+//        dto.setTime(time);
         dto.setStorageTo(getStorageDTO(storageId));
         dto.setDocType(type);
         return dto;

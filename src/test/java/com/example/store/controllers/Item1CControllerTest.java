@@ -21,8 +21,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-class Item1CControllerTest {
+class Item1CControllerTest extends TestService {
 
     private static final String URL_PREFIX = "/items";
 
@@ -78,11 +80,14 @@ class Item1CControllerTest {
         list.add(getItemDTO(12, 11, "Ингредиент 1", List.of()));
         list.add(getItemDTO(13, 16, "Ингредиент 2", List.of()));
         list.add(getItemDTO(14, 1, "Блюдо 1",
-                getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        100.00f, 120.00f)));
         list.add(getItemDTO(444, 1, "Блюдо 10",
-                getPrices(LocalDate.now().toString(), 100.00f, 120.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        100.00f, 120.00f)));
         list.add(getItemDTO(3611, 1, "Cуп лапша (1)",
-                getPrices(LocalDate.now().toString(), 180.00f, 220.00f)));
+                getPrices(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+                        180.00f, 220.00f)));
         list.add(getItemDTO(15, 11, "Ингредиент 1", List.of()));
         list.add(getItemDTO(16, 11, "Ингредиент 2", List.of()));
         return list;
@@ -92,24 +97,24 @@ class Item1CControllerTest {
         Item1CDTO dto = new Item1CDTO();
         dto.setName(name);
         dto.setPrintName(name);
-        dto.setRegTime(LocalDateTime.now().format(timeFormatter));
-        dto.setUnit(Unit.PORTION.toString());
-        dto.setWorkshop(Workshop.KITCHEN.toString());
+        dto.setRegTime(Instant.now().toEpochMilli());
+        dto.setUnit(getUnitDTO(Unit.KG));
+        dto.setWorkshop(getWorkshopDTO(Workshop.BAR));
         dto.setPrices(prices);
         dto.setNumber(number);
         dto.setParentNumber(parentNumber);
         return dto;
     }
 
-    private List<PriceDTO> getPrices(String date, float retailValue, float deliveryValue){
+    private List<PriceDTO> getPrices(long date, float retailValue, float deliveryValue){
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.RETAIL.getValue())
+                .type(PriceType.RETAIL.toString())
                 .value(retailValue)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.DELIVERY.getValue())
+                .type(PriceType.DELIVERY.toString())
                 .value(deliveryValue)
                 .build();
         return List.of(retailPrice, deliveryPrice);

@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForIngredient;
 import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -171,9 +172,9 @@ class IngredientServiceTest {
 
     private IngredientDTO getIngredientDTO(int parentId, int childId, float netQuantity) {
         String date = LocalDate.now().toString();
-        ItemDTO parent = new ItemDTO();
+        ItemDTOForIngredient parent = new ItemDTOForIngredient();
         parent.setParentId(parentId);
-        ItemDTO child = new ItemDTO();
+        ItemDTOForIngredient child = new ItemDTOForIngredient();
         child.setId(childId);
         IngredientDTO ingredientDTO = new IngredientDTO();
         ingredientDTO.setParent(parent);

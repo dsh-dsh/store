@@ -5,7 +5,8 @@ import com.example.store.utils.Constants;
 public enum QuantityType implements EnumeratedInterface {
 
     NET(Constants.NET_TYPE),
-    GROSS(Constants.GROSS_TYPE);
+    GROSS(Constants.GROSS_TYPE),
+    ENABLE(Constants.ENABLE_TYPE);
 
     private final String value;
 

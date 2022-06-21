@@ -1,9 +1,6 @@
 package com.example.store.controllers;
 
-import com.example.store.model.dto.IngredientDTO;
-import com.example.store.model.dto.ItemDTO;
-import com.example.store.model.dto.PriceDTO;
-import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.dto.*;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
@@ -28,8 +25,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -44,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
 @AutoConfigureMockMvc
-class ItemControllerTest {
+class ItemControllerTest extends TestService {
 
     private static final String URL_PREFIX = "/api/v1/items";
     private static final int ITEM_ID = 4;
@@ -55,9 +51,11 @@ class ItemControllerTest {
     private static final float RETAIL_PRICE_VALUE = 200.00f;
     private static final float DELIVERY_PRICE_VALUE = 250.00f;
     private static final String NEW_ITEM_NAME = "Новое блюдо";
-    private static final String DATE = "2022-02-01";
+    private static final long DATE = 1643662800000L; // 2022-02-01
     private static final String UPDATE_NAME = "Пиво";
-    private static final  String UPDATE_DATE = "2022-01-15";
+    private static final  long UPDATE_DATE = 1642194000000L; // 2022-01-15
+    private static final  long PRICE_DATE = 1640984400000L; // 2022-01-01
+
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
@@ -110,8 +108,8 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value(NEW_ITEM_NAME))
-                .andExpect(jsonPath("$.data.workshop").value(Workshop.KITCHEN.toString()))
-                .andExpect(jsonPath("$.data.unit").value(Unit.PORTION.toString()))
+                .andExpect(jsonPath("$.data.workshop.code").value(Workshop.KITCHEN.toString()))
+                .andExpect(jsonPath("$.data.unit.code").value(Unit.PORTION.toString()))
                 .andExpect(jsonPath("$.data.parent_id").value(PARENT_ID))
                 .andExpect(jsonPath("$.data.prices.[0].value").value(RETAIL_PRICE_VALUE))
                 .andExpect(jsonPath("$.data.sets.[0]").value(SET_ID));
@@ -134,7 +132,7 @@ class ItemControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void setItemWithoutIngredientsAndSetsTest() throws Exception {
 
-        ItemDTO itemDTO = getItemDTO();
+        ItemDTO itemDTO = getItemDTO(PRICE_DATE);
 
         this.mockMvc.perform(
                         post(URL_PREFIX)
@@ -143,7 +141,8 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME,
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
         assertNotNull(item);
         assertEquals(NEW_ITEM_NAME, item.getName());
         assertEquals(Unit.PORTION, item.getUnit());
@@ -163,7 +162,7 @@ class ItemControllerTest {
     @Test
     void setItemUnauthorizedTest() throws Exception {
 
-        ItemDTO itemDTO = getItemDTO();
+        ItemDTO itemDTO = getItemDTO(PRICE_DATE);
 
         this.mockMvc.perform(
                         post(URL_PREFIX)
@@ -179,7 +178,7 @@ class ItemControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void setItemWithIngredientsAndSetsTest() throws Exception {
 
-        ItemDTO itemDTO = getItemDTO();
+        ItemDTO itemDTO = getItemDTO(PRICE_DATE);
         itemDTO.setSets(List.of(9));
         itemDTO.setIngredients(getIngredientDTOList());
 
@@ -190,7 +189,8 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME,
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
         assertNotNull(item);
 
         List<Integer> sets = setService.getSets(item);
@@ -216,7 +216,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(DATE));
+        Item item = itemTestService.getItemByName(UPDATE_NAME, DATE);
         assertNotNull(item);
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Unit.KG, item.getUnit());
@@ -260,7 +260,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(UPDATE_DATE));
+        Item item = itemTestService.getItemByName(UPDATE_NAME, UPDATE_DATE);
         assertNotNull(item);
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Unit.KG, item.getUnit());
@@ -297,7 +297,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        Item item = itemTestService.getItemByName(UPDATE_NAME, LocalDate.parse(UPDATE_DATE));
+        Item item = itemTestService.getItemByName(UPDATE_NAME, UPDATE_DATE);
         assertNotNull(item);
 
         List<Integer> sets = setService.getSets(item);
@@ -317,8 +317,8 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(Constants.OK));
-
-        Item item = itemTestService.getItemByName(NEW_ITEM_NAME, LocalDate.now());
+        Item item = itemTestService.getItemByName(NEW_ITEM_NAME,
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
         assertTrue(item.isDeleted());
     }
 
@@ -341,7 +341,7 @@ class ItemControllerTest {
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.2f);
 
-        ItemDTO child = new ItemDTO();
+        ItemDTOForIngredient child = new ItemDTOForIngredient();
         child.setId(8);
         child.setName("Мука");
 
@@ -360,7 +360,7 @@ class ItemControllerTest {
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.3f);
 
-        child = new ItemDTO();
+        child = new ItemDTOForIngredient();
         child.setId(7);
         child.setName("Картофель фри");
 
@@ -372,23 +372,23 @@ class ItemControllerTest {
         return List.of(first, second);
     }
 
-    private ItemDTO getItemDTO() {
+    private ItemDTO getItemDTO(long date) {
         PriceDTO oldRetailPrice = PriceDTO.builder()
-                .date("2022-01-01")
-                .type(PriceType.RETAIL.getValue())
+                .date(date)
+                .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE - 20)
                 .build();
         PriceDTO oldDeliveryPrice = PriceDTO.builder()
-                .date("2022-01-01")
-                .type(PriceType.DELIVERY.getValue())
+                .date(date)
+                .type(PriceType.DELIVERY.toString())
                 .value(DELIVERY_PRICE_VALUE - 20)
                 .build();
         PriceDTO retailPrice = PriceDTO.builder()
-                .type(PriceType.RETAIL.getValue())
+                .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
-                .type(PriceType.DELIVERY.getValue())
+                .type(PriceType.DELIVERY.toString())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 
@@ -396,24 +396,24 @@ class ItemControllerTest {
                 .name(NEW_ITEM_NAME)
                 .printName(NEW_ITEM_NAME)
                 .parentId(PARENT_ID)
-                .regTime(LocalDateTime.now().format(timeFormatter))
-                .unit(Unit.PORTION.toString())
-                .workshop(Workshop.KITCHEN.toString())
+                .regTime(Instant.now().toEpochMilli())
+                .unit(getUnitDTO(Unit.PORTION))
+                .workshop(getWorkshopDTO(Workshop.KITCHEN))
                 .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
                 .build();
         return itemDTO;
     }
 
-    private ItemDTO getItemDTOToUpdate(String date) {
+    private ItemDTO getItemDTOToUpdate(long date) {
 
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.RETAIL.getValue())
+                .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.DELIVERY.getValue())
+                .type(PriceType.DELIVERY.toString())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 
@@ -422,8 +422,8 @@ class ItemControllerTest {
                 .name(UPDATE_NAME)
                 .printName(UPDATE_NAME)
                 .parentId(PARENT_ID)
-                .unit(Unit.KG.toString())
-                .workshop(Workshop.BAR.toString())
+                .unit(getUnitDTO(Unit.KG))
+                .workshop(getWorkshopDTO(Workshop.BAR))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
     }

@@ -4,4 +4,5 @@ public interface EntityInterface {
     int getId();
     String getName();
     int getParentId();
+    boolean isNode();
 }

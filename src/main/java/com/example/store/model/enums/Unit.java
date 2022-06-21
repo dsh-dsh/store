@@ -8,7 +8,7 @@ public enum Unit implements EnumeratedInterface {
     LITER(Constants.LITER),
     PIECE(Constants.PIECE),
     PORTION(Constants.PORTION),
-    NONE(Constants.NONE);
+    NONE(Constants.ENUM_NONE);
 
     private final String value;
 

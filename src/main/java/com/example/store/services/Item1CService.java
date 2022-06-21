@@ -90,8 +90,8 @@ public class Item1CService extends ItemService{
         item.setIncludeGarnish(dto.isIncludeGarnish());
         item.setSauce(dto.isSauce());
         item.setIncludeSauce(dto.isIncludeSauce());
-        item.setWorkshop(Workshop.valueOf(dto.getWorkshop()));
-        item.setUnit(Unit.valueOf(dto.getUnit()));
+//        item.setWorkshop(Workshop.valueOf(dto.getWorkshop()));
+//        item.setUnit(Unit.valueOf(dto.getUnit()));
         Item parent = findItemByNumber(((Item1CDTO)dto).getParentNumber())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         item.setParent(parent);

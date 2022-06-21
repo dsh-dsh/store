@@ -22,9 +22,10 @@ public class DocDTO {
 
     private int number;
 
-    private String time;
+//    private String time;
 
-    private Timestamp date;
+    @JsonProperty("date_time")
+    private long dateTime;
 
     @JsonProperty("doc_type")
     private String docType;

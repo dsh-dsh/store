@@ -1,6 +1,7 @@
 package com.example.store.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Setter
@@ -9,9 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PriceDTO {
+public class ItemDTOForIngredient {
     private int id;
-    private float value;
-    private long date;
-    private String type;
+    private String name;
+    @JsonProperty("parent_id")
+    private int parentId;
 }

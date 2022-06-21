@@ -65,6 +65,7 @@ public class TreeBuilder <E extends EntityInterface>{
         dto.setData(String.valueOf(item.getId()));
         dto.setLabel(item.getName());
         dto.setParentId(item.getParentId());
+        dto.setNode(item.isNode());
         return dto;
     }
 
