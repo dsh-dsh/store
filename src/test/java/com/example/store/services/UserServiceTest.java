@@ -48,8 +48,9 @@ class UserServiceTest {
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Smiths";
     private static final String PASSWORD = "password";
-    private static final String BIRTH_DATE = "2001-01-01";
+    private static final long BIRTH_DATE = 978307200000L; // 2001-01-01
     private static final String PHONE = "+7(900)0000000";
+    private static final String BIRTH_DATE_STR = "2001-01-01";
 
     @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -129,7 +130,7 @@ class UserServiceTest {
         assertEquals(FIRST_NAME, user.getFirstName());
         assertEquals(LAST_NAME, user.getLastName());
         assertEquals(NEW_USER_EMAIL, user.getEmail());
-        assertEquals(BIRTH_DATE, user.getBirthDate().toString());
+        assertEquals(BIRTH_DATE_STR, user.getBirthDate().toString());
         assertEquals(PHONE, user.getPhone());
         assertEquals(Role.CUSTOMER, user.getRole());
         assertNull(user.getPassword());

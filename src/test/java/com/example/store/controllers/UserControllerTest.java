@@ -40,9 +40,9 @@ public class UserControllerTest {
     private static final String LAST_NAME = "Smiths";
     private static final String NEW_USER_EMAIL = "new_user@mail.ru";
     private static final String PASSWORD = "password";
-    private static final String BIRTH_DATE = "2001-01-01";
-    private static final String REG_DATE = "2022-01-01T10:30:00";
+    private static final long BIRTH_DATE = 978307200000L; // 2001-01-01
     private static final String PHONE = "+7(900)0000000";
+    private static final String BIRTH_DATE_STR = "2001-01-01";
 
     @Autowired
     private TestService testService;
@@ -158,7 +158,7 @@ public class UserControllerTest {
 
         User user = userService.getByEmail(NEW_USER_EMAIL);
         assertEquals(LAST_NAME, user.getLastName());
-        assertEquals(BIRTH_DATE, user.getBirthDate().toString());
+        assertEquals(BIRTH_DATE_STR, user.getBirthDate().toString());
         assertEquals(Role.ADMIN, user.getRole());
     }
 

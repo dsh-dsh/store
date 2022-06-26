@@ -20,12 +20,13 @@ public class PersonMapper extends MappingConverters {
     public void init() {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         modelMapper.createTypeMap(User.class, PersonDTO.class)
-                .addMappings(mapper -> mapper.skip(User::getPassword, PersonDTO::setPassword));
+                .addMappings(mapper -> mapper.skip(User::getPassword, PersonDTO::setPassword))
+                .addMappings(mapper -> mapper.using(dateToLongConverter).map(User::getBirthDate, PersonDTO::setBirthDate));
         modelMapper.createTypeMap(User.class, UserDTO.class)
                 .addMappings(mapper -> mapper.using(nameConverter).map(src -> src, UserDTO::setName));
         modelMapper.createTypeMap(PersonDTO.class, User.class)
-                .addMappings(mapper -> mapper.using(stringToDateTimeConverter).map(PersonDTO::getRegDate, User::setRegTime))
-                .addMappings(mapper -> mapper.using(stringToDateConverter).map(PersonDTO::getBirthDate, User::setBirthDate))
+                .addMappings(mapper -> mapper.using(longToDateTimeConverter).map(PersonDTO::getRegDate, User::setRegTime))
+                .addMappings(mapper -> mapper.using(longToDateConverter).map(PersonDTO::getBirthDate, User::setBirthDate))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
     }
 

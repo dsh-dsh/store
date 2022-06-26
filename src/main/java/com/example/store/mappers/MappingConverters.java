@@ -37,7 +37,6 @@ public class MappingConverters {
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
     protected final Converter<Item, ItemDTOForIngredient> itemConverter = item -> getItemDTO(item.getSource());
     protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());
-
     protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
 
@@ -78,40 +77,11 @@ public class MappingConverters {
     protected final Converter<ItemDoc, Float> docItemAmountConverter =
             doc -> docItemService.getItemsAmount(doc.getSource());
 
-    protected final Converter<String, LocalDateTime> stringToDateTimeConverter = value -> {
-        String date = value.getSource();
-        if(date != null && !date.equals("")) {
-            return LocalDateTime.parse(value.getSource(), Constants.TIME_FORMATTER);
-        } else {
-            return null;
-        }
-    };
-
-    protected final Converter<String, LocalDate> stringToDateConverter = value -> {
-        String date = value.getSource();
-        if(date != null && !date.equals("")) {
-            return LocalDate.parse(value.getSource());
-        } else {
-            return null;
-        }
-    };
-
-    protected final Converter<LocalDateTime, String> dateTimeConverter =
-            date -> {
-                LocalDateTime localDateTime = date.getSource();
-                return localDateTime == null ? "" : localDateTime.format(Constants.TIME_FORMATTER);
-            };
-
     private ItemDTOForIngredient getItemDTO(Item item) {
         ItemDTOForIngredient dto = new ItemDTOForIngredient();
         dto.setId(item.getId());
         dto.setName(item.getName());
         return dto;
-    }
-
-    private Item getItem(ItemDTOForIngredient dto) {
-        if(dto == null) return null;
-        return itemService.getItemById(dto.getId());
     }
 
     private Item getItem(int itemId) {
