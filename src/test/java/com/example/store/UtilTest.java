@@ -192,4 +192,170 @@ class UtilTest extends TestService {
                 .build();
         return List.of(retailPrice, deliveryPrice);
     }
+
+    @Test
+    void kWeakestRowsTest() {
+        int[][] mat = new int[5][5];
+        mat[0] = new int[] {1,1,0,0,0};
+        mat[1] = new int[] {1,1,1,1,0};
+        mat[2] = new int[] {1,0,0,0,0};
+        mat[3] = new int[] {1,1,0,0,0};
+        mat[4] = new int[] {1,1,1,1,1};
+
+        int[] result = kWeakestRows(mat, 3);
+        assertArrayEquals(new int[] {2,0,3}, result);
+
+        mat = new int[4][4];
+        mat[0] = new int[] {1,0,0,0};
+        mat[1] = new int[] {1,1,1,1};
+        mat[2] = new int[] {1,0,0,0};
+        mat[3] = new int[] {1,0,0,0};
+
+        result = kWeakestRows(mat, 2);
+        assertArrayEquals(new int[] {0, 2}, result);
+    }
+
+    public int[] kWeakestRows(int[][] mat, int k) {
+        int[][] arr = new int[mat.length][2];
+        int[] output = new int[k];
+        int strength = 0;
+        for(int i = 0; i < mat.length; i++) {
+            strength = 0;
+            for(int j = 0; j < mat[i].length; j++) {
+                strength += mat[i][j];
+                if(mat[i][j] == 0) break;
+            }
+            arr[i][0] = strength;
+            arr[i][1] = i;
+        }
+        sort(arr);
+        for(int i = 0; i < k; i ++) {
+            output[i] = arr[i][1];
+        }
+        return output;
+    }
+
+    public void sort(int[][] arr) {
+        int[] temp;
+        for(int i = arr.length - 1; i > 0; i--) {
+            for(int j = 0; j < i; j++) {
+                if(arr[j][0] > arr[j+1][0]) {
+                    temp = arr[j];
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp;
+                }
+            }
+        }
+    }
+
+    @Test
+    void twoSumTest() {
+        int[] result;
+        int[] arr = new int[]{2,7,11,15};
+        result = twoSum(arr, 9);
+        assertArrayEquals(new int[] {0, 1}, result);
+
+        arr = new int[]{3,4,2};
+        result = twoSum(arr, 6);
+        assertArrayEquals(new int[] {1, 2}, result);
+
+        arr = new int[]{3,3};
+        result = twoSum(arr, 6);
+        assertArrayEquals(new int[] {0, 1}, result);
+
+        arr = new int[]{125, 647, 125, 75, 37, 7823, 86258, 8366, 125};
+        result = twoSum(arr, 250);
+        assertArrayEquals(new int[] {0, 2}, result);
+    }
+
+    public int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
+        int[] answer = new int[2];
+        for (int i = 0; i < nums.length; i++) {
+            if (!hashMap.containsKey(target - nums[i])) {
+                hashMap.put(nums[i], i);
+            }
+            else {
+                answer[0] = hashMap.get(target - nums[i]);
+                answer[1] = i;
+                break;
+            }
+        }
+        return answer;
+    }
+
+    @Test
+    void palindromeTest() {
+        Solution solution = new Solution();
+        Solution.ListNode n4 = solution.getNode(1, null);
+        Solution.ListNode n3 = solution.getNode(2, n4);
+        Solution.ListNode n2 = solution.getNode(2, n3);
+        Solution.ListNode head = solution.getNode(1, n2);
+
+        assertTrue(solution.isPalindrome(head));
+
+        Solution.ListNode nn2 = solution.getNode(2, null);
+        head = solution.getNode(1, nn2);
+
+        assertFalse(solution.isPalindrome(head));
+
+        Solution.ListNode nnn5 = solution.getNode(1, null);
+        Solution.ListNode nnn4 = solution.getNode(2, nnn5);
+        Solution.ListNode nnn3 = solution.getNode(3, nnn4);
+        Solution.ListNode nnn2 = solution.getNode(2, nnn3);
+        head = solution.getNode(1, nnn2);
+
+        assertTrue(solution.isPalindrome(head));
+    }
+
+    class Solution {
+
+        ListNode getNode(int val, ListNode node) {
+            return new ListNode(val, node);
+        }
+
+        public boolean isPalindrome(ListNode head) {
+            ListNode slow = head;
+            ListNode fast = head;
+            ListNode previous = null;
+            while(fast != null && fast.next != null) {
+                fast = fast.next.next;
+                ListNode tmp = slow.next;
+                slow.next = previous;
+                previous = slow;
+                slow = tmp;
+
+            }
+            if(fast != null) {
+                slow = slow.next;
+            }
+            while(true) {
+                if(slow.val != previous.val) {
+                    return false;
+                }
+                if (slow.next == null) break;
+                slow = slow.next;
+                previous = previous.next;
+            }
+            return true;
+        }
+
+        public class ListNode {
+            int val;
+            ListNode next;
+
+            ListNode() {
+            }
+
+            ListNode(int val) {
+                this.val = val;
+            }
+
+            ListNode(int val, ListNode next) {
+                this.val = val;
+                this.next = next;
+            }
+        }
+
+    }
 }

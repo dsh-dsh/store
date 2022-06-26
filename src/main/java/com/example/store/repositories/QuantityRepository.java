@@ -18,4 +18,6 @@ public interface QuantityRepository extends JpaRepository<Quantity, Integer> {
 
     Optional<Quantity> findTop1ByTypeAndDateLessThanEqualOrderByDateDesc(QuantityType type, LocalDate date);
 
+    Optional<Quantity> findFirstByIngredientAndDateLessThanEqualAndType(Ingredient ingredient, LocalDate date, QuantityType type, Sort sort);
+
 }

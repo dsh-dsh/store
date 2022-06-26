@@ -76,12 +76,12 @@ class Item1CServiceTest extends TestService {
 
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.RETAIL.getValue())
+                .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
                 .date(date)
-                .type(PriceType.DELIVERY.getValue())
+                .type(PriceType.DELIVERY.toString())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 

@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
+import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
@@ -64,11 +65,12 @@ public class IngredientService {
         }
     }
 
+    // todo refactor this
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
         if(ingredientDTOList == null) return;
         Map<Integer, Ingredient> ingredientMap = getIdIngredientMap(item);
         for(IngredientDTO ingredientDTO : ingredientDTOList) {
-            int childId = ingredientDTO.getChild().getId();
+            int childId = ingredientDTO.getChildId();
             if(ingredientMap.containsKey(childId)) {
                 Ingredient ingredient = ingredientMap.get(childId);
                 updateIngredient(ingredient, ingredientDTO);
@@ -77,13 +79,12 @@ public class IngredientService {
                 setIngredient(item, ingredientDTO);
             }
         }
-        ingredientMap.forEach((key, value) -> softDeleteIngredient(value, LocalDate.now()));
     }
 
     public void updateIngredient(Ingredient ingredient, IngredientDTO dto) {
         ingredient.setDeleted(dto.isDeleted());
         ingredientRepository.save(ingredient);
-        quantityService.updateQuantities(ingredient, dto.getQuantityList());
+        quantityService.updateQuantities(ingredient, dto);
     }
 
     public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
@@ -98,10 +99,28 @@ public class IngredientService {
         return ingredients.stream()
                 .map(ingredient -> {
                     IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
+
+                    // todo refactor this
                     dto.setQuantityList(quantityService.getQuantityDTOList(ingredient, date));
+                    dto.setName(dto.getChild().getName());
+                    dto.setChildId(dto.getChild().getId());
+                    dto.setParentId(dto.getParent().getId());
+                    for(QuantityDTO quantityDTO : dto.getQuantityList()) {
+                        if(quantityDTO.getType().equals("NET")) {
+                            dto.setNetto(quantityDTO);
+                        } else if(quantityDTO.getType().equals("GROSS")) {
+                            dto.setGross(quantityDTO);
+                        } else if(quantityDTO.getType().equals("ENABLE")){
+                            dto.setEnable(quantityDTO);
+                        }
+                    }
+                    // todo until here
+
                     return dto;
                 }).collect(Collectors.toList());
     }
+
+
 
     public List<IngredientDTO> getDeletedIngredientDTOList(Item item, LocalDate date) {
         List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, true);
@@ -126,7 +145,7 @@ public class IngredientService {
         Ingredient ingredient = ingredientMapper.mapToEntity(dto);
         ingredient.setParent(item);
         ingredientRepository.save(ingredient);
-        quantityService.setQuantities(ingredient, dto.getQuantityList());
+        quantityService.setQuantities(ingredient, dto);
     }
 
     public void softDeleteIngredients(Item item, LocalDate date) {

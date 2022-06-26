@@ -10,6 +10,8 @@ import com.example.store.utils.Constants;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class TestService {
@@ -48,7 +50,7 @@ public class TestService {
     DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
-//        dto.setDateTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
+        dto.setDateTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli());
         dto.setProject(setProject(1));
         dto.setAuthor(setAuthorDTO(AUTHOR_ID));
         dto.setPayed(false);
@@ -60,7 +62,9 @@ public class TestService {
     CheckInfoDTO setCHeckInfo(int value) {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setCheckNumber(CHECK_NUMBER + value);
-        dto.setDateTime(LocalDateTime.now().format(Constants.TIME_FORMATTER));
+        dto.setDateTime(ZonedDateTime
+                .of(LocalDateTime.now(), ZoneId.systemDefault())
+                .toInstant().toEpochMilli());
         dto.setAmountReceived(1000 * (value + 1));
         dto.setCashRegisterNumber(63214823871L);
         dto.setGuestNumber(1 + value);

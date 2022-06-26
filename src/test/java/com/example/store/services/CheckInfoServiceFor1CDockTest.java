@@ -23,7 +23,7 @@ class CheckInfoServiceFor1CDockTest {
         CheckInfoDTO dto = new CheckInfoDTO();
         CheckInfo checkInfo = new CheckInfo();
         dto.setCheckNumber(12345);
-        dto.setDateTime("22.05.20 14:00:00");
+        dto.setDateTime(1653044400000L);
         dto.setDelivery(true);
 
         service.setFields(dto, checkInfo);

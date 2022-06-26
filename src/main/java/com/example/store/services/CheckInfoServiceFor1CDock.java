@@ -4,13 +4,14 @@ import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.entities.CheckInfo;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Service
 public class CheckInfoServiceFor1CDock extends CheckInfoService{
 
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
 
     @Override
     public void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
@@ -20,7 +21,9 @@ public class CheckInfoServiceFor1CDock extends CheckInfoService{
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime(), timeFormatter));
+        checkInfo.setDateTime(Instant
+                .ofEpochMilli(checkInfoDTO.getDateTime())
+                .atZone(ZoneId.systemDefault()).toLocalDateTime());
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

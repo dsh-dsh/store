@@ -66,18 +66,18 @@ public abstract class AbstractDocFactory implements DocFactory {
     @Override
     @Transactional
     public void deleteDocument(int docId) {
-        ItemDoc document = getItemDoc(docId);
-        if(document.getDocType() == DocumentType.CHECK_DOC) {
-            checkInfoService.deleteByDoc(document);
-        }
-        docItemService.deleteByDoc(document);
-        itemDocRepository.deleteById(document.getId());
+//        ItemDoc document = getItemDoc(docId);
+//        if(document.getDocType() == DocumentType.CHECK_DOC) {
+//            checkInfoService.deleteByDoc(document);
+//        }
+//        docItemService.deleteByDoc(document);
+//        itemDocRepository.deleteById(document.getId());
     }
 
-    protected ItemDoc getItemDoc(int docId) {
-            return itemDocRepository.findById(docId)
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
-    }
+//    protected ItemDoc getItemDoc(int docId) {
+//            return itemDocRepository.findById(docId)
+//                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+//    }
 
     protected OrderDoc getOrAddOrderDoc() {
         int docId = docDTO.getId();
@@ -122,10 +122,10 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     public LocalDateTime getNewTime(Document document, DocDTO dto) {
-        System.out.println(dto.getDateTime());
         LocalDateTime newTime = Instant.ofEpochMilli(dto.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime start = LocalDateTime.of(newTime.getYear(), newTime.getMonth(), newTime.getDayOfMonth(), 0, 0, 0);
         LocalDateTime end = start.plusDays(1);
+        // todo consider on if it is the same document
         if(document.getDateTime() == null || (document.getDateTime() != null && !document.getDateTime().equals(newTime))) {
             Optional<Document> optionalDocument = documentRepository.getFirstByDateTimeBetweenOrderByDateTimeDesc(start, end);
             if(optionalDocument.isPresent()) {

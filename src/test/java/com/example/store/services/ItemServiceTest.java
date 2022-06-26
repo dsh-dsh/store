@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -121,57 +122,53 @@ class ItemServiceTest extends TestService {
 
     private List<IngredientDTO> getIngredientDTOList() {
         QuantityDTO netDTO = new QuantityDTO();
-        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setDate(convertDate(LocalDate.now()));
         netDTO.setType(QuantityType.NET.toString());
         netDTO.setQuantity(0.3f);
 
         QuantityDTO grossDTO = new QuantityDTO();
-        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setDate(convertDate(LocalDate.now()));
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.2f);
 
-        ItemDTOForIngredient child = new ItemDTOForIngredient();
-        child.setId(8);
-        child.setName("Мука");
+        QuantityDTO enableDTO = new QuantityDTO();
+        enableDTO.setDate(convertDate(LocalDate.now()));
+        enableDTO.setType(QuantityType.ENABLE.toString());
+        enableDTO.setQuantity(1f);
 
         IngredientDTO first = IngredientDTO.builder()
-                .child(child)
-                .quantityList(List.of(netDTO, grossDTO))
+                .childId(8)
+                .netto(netDTO)
+                .gross(grossDTO)
+                .enable(enableDTO)
                 .build();
 
         netDTO = new QuantityDTO();
-        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setDate(convertDate(LocalDate.now()));
         netDTO.setType(QuantityType.NET.toString());
         netDTO.setQuantity(0.4f);
 
         grossDTO = new QuantityDTO();
-        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setDate(convertDate(LocalDate.now()));
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.3f);
 
-        child = new ItemDTOForIngredient();
-        child.setId(7);
-        child.setName("Картофель фри");
+        enableDTO = new QuantityDTO();
+        enableDTO.setDate(convertDate(LocalDate.now()));
+        enableDTO.setType(QuantityType.ENABLE.toString());
+        enableDTO.setQuantity(1f);
 
         IngredientDTO second = IngredientDTO.builder()
-                .child(child)
-                .quantityList(List.of(netDTO, grossDTO))
+                .childId(7)
+                .netto(netDTO)
+                .gross(grossDTO)
+                .enable(enableDTO)
                 .build();
 
         return List.of(first, second);
     }
 
     private ItemDTO getItemDTO(long date) {
-        PriceDTO oldRetailPrice = PriceDTO.builder()
-                .date(date)
-                .type(PriceType.RETAIL.toString())
-                .value(RETAIL_PRICE_VALUE - 20)
-                .build();
-        PriceDTO oldDeliveryPrice = PriceDTO.builder()
-                .date(date)
-                .type(PriceType.DELIVERY.toString())
-                .value(DELIVERY_PRICE_VALUE - 20)
-                .build();
         PriceDTO retailPrice = PriceDTO.builder()
                 .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE)
@@ -188,7 +185,7 @@ class ItemServiceTest extends TestService {
                 .regTime(Instant.now().toEpochMilli())
                 .unit(getUnitDTO(Unit.PORTION))
                 .workshop(getWorkshopDTO(Workshop.KITCHEN))
-                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
+                .prices(List.of(retailPrice, deliveryPrice))
                 .build();
         return itemDTO;
     }
@@ -215,5 +212,9 @@ class ItemServiceTest extends TestService {
                 .workshop(getWorkshopDTO(Workshop.BAR))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
+    }
+
+    private long convertDate(LocalDate date) {
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }

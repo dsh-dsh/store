@@ -17,18 +17,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class QuantityServiceMockedTest {
 
-    @InjectMocks
+//    @InjectMocks
+    @Mock
     private QuantityService quantityService;
-    @Mock
-    private QuantityRepository quantityRepository;
-    @Mock
-    private QuantityMapper quantityMapper;
     @Mock
     private Ingredient ingredient;
     private LocalDate date;
@@ -40,32 +38,28 @@ public class QuantityServiceMockedTest {
 
     @Test
     void getQuantityRatioTest() {
-        when(quantityService.getQuantityList(ingredient, date))
-                .thenReturn(quantities);
+        doReturn(quantities).when(quantityService).getQuantityList(ingredient, date);
         float ratio = quantityService.getQuantityRatio(ingredient, date);
         assertEquals(1.95f, ratio);
     }
 
     @Test
     void getGrossQuantityTest() {
-        when(quantityService.getQuantityList(ingredient, date))
-                .thenReturn(quantities);
+        doReturn(quantities).when(quantityService).getQuantityList(ingredient, date);
         float quantity = quantityService.getGrossQuantity(ingredient, date).get().getQuantity();
         assertEquals(1f, quantity);
     }
 
     @Test
     void getQuantityDTOListTest() {
-        when(quantityService.getQuantityList(ingredient, date))
-                .thenReturn(quantities);
+        doReturn(quantities).when(quantityService).getQuantityList(ingredient, date);
         List<QuantityDTO> list = quantityService.getQuantityDTOList(ingredient, date);
         assertEquals(4, list.size());
     }
 
     @Test
     void getQuantityListTest() {
-        when(quantityService.getQuantityList(ingredient, date))
-                .thenReturn(quantities);
+        doReturn(quantities).when(quantityService).getQuantityList(ingredient, date);
         List<Quantity> list = quantityService.getQuantityList(ingredient, date);
         assertEquals(4, list.size());
     }

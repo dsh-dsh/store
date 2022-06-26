@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,23 +105,21 @@ class IngredientServiceTest {
         int parentId = 10;
         Item item = itemService.getItemById(parentId);
         List<IngredientDTO> dtoList = List.of(
-                getIngredientDTO(parentId,12, 1.5f),
-                getIngredientDTO(parentId,7, 1.2f));
+                getIngredientDTO(parentId,11, 1.5f, 0),
+                getIngredientDTO(parentId,12, 1.5f, 1),
+                getIngredientDTO(parentId,7, 1.2f, 1));
         ingredientService.updateIngredients(item, dtoList);
         List<IngredientDTO> list = ingredientService.getIngredientDTOList(item, LocalDate.now());
-        assertEquals(2, list.size());
-        assertEquals(12, list.get(0).getChild().getId());
-        assertEquals(1.5f, list.get(0).getQuantityList().get(0).getQuantity());
-        assertEquals(1f, list.get(0).getQuantityList().get(1).getQuantity());
-        assertEquals(7, list.get(1).getChild().getId());
-        assertEquals(1.2f, list.get(1).getQuantityList().get(0).getQuantity());
-        assertEquals(1f, list.get(1).getQuantityList().get(1).getQuantity());
-        List<IngredientDTO> deletedList = ingredientService.getDeletedIngredientDTOList(item, LocalDate.now());
-        assertEquals(1, deletedList.size());
-        assertEquals(11, deletedList.get(0).getChild().getId());
-        assertTrue(deletedList.get(0).isDeleted());
-        assertTrue(deletedList.get(0).getQuantityList().get(0).isDeleted());
-        assertTrue(deletedList.get(0).getQuantityList().get(1).isDeleted());
+        assertEquals(3, list.size());
+        assertEquals(11, list.get(0).getChildId());
+        assertEquals(1.5f, list.get(0).getNetto().getQuantity());
+        assertEquals(0f, list.get(0).getEnable().getQuantity());
+        assertEquals(12, list.get(1).getChildId());
+        assertEquals(1.5f, list.get(1).getNetto().getQuantity());
+        assertEquals(1f, list.get(1).getGross().getQuantity());
+        assertEquals(7, list.get(2).getChildId());
+        assertEquals(1.2f, list.get(2).getNetto().getQuantity());
+        assertEquals(1f, list.get(2).getGross().getQuantity());
     }
 
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -129,8 +128,8 @@ class IngredientServiceTest {
         int parentId = 6;
         Item item = itemService.getItemById(parentId);
         List<IngredientDTO> dtoList = List.of(
-                getIngredientDTO(parentId,7, 1.5f),
-                getIngredientDTO(parentId,8, 1.2f));
+                getIngredientDTO(parentId,7, 1.5f, 1),
+                getIngredientDTO(parentId,8, 1.2f, 1));
         ingredientService.setIngredients(item, dtoList);
         List<IngredientDTO> list = ingredientService.getIngredientDTOList(item, LocalDate.now());
         assertEquals(2, list.size());
@@ -170,24 +169,34 @@ class IngredientServiceTest {
         return item;
     }
 
-    private IngredientDTO getIngredientDTO(int parentId, int childId, float netQuantity) {
-        String date = LocalDate.now().toString();
-        ItemDTOForIngredient parent = new ItemDTOForIngredient();
-        parent.setParentId(parentId);
-        ItemDTOForIngredient child = new ItemDTOForIngredient();
-        child.setId(childId);
+    private IngredientDTO getIngredientDTO(int parentId, int childId, float netQuantity, float enableQuantity) {
+        long date = convertDate(LocalDate.now());
         IngredientDTO ingredientDTO = new IngredientDTO();
-        ingredientDTO.setParent(parent);
-        ingredientDTO.setChild(child);
-        QuantityDTO quantityDTO1 = new QuantityDTO();
-        quantityDTO1.setType(QuantityType.NET.toString());
-        quantityDTO1.setQuantity(netQuantity);
-        quantityDTO1.setDate(date);
-        QuantityDTO quantityDTO2 = new QuantityDTO();
-        quantityDTO2.setType(QuantityType.GROSS.toString());
-        quantityDTO2.setQuantity(1f);
-        quantityDTO2.setDate(date);
-        ingredientDTO.setQuantityList(List.of(quantityDTO1, quantityDTO2));
+        ingredientDTO.setChildId(childId);
+        ingredientDTO.setParentId(parentId);
+
+        QuantityDTO netQuantityDTO = new QuantityDTO();
+        netQuantityDTO.setType(QuantityType.NET.toString());
+        netQuantityDTO.setQuantity(netQuantity);
+        netQuantityDTO.setDate(date);
+
+        QuantityDTO grossQuantityDTO = new QuantityDTO();
+        grossQuantityDTO.setType(QuantityType.GROSS.toString());
+        grossQuantityDTO.setQuantity(1f);
+        grossQuantityDTO.setDate(date);
+
+        QuantityDTO enableQuantityDTO = new QuantityDTO();
+        enableQuantityDTO.setType(QuantityType.ENABLE.toString());
+        enableQuantityDTO.setQuantity(enableQuantity);
+        enableQuantityDTO.setDate(date);
+
+        ingredientDTO.setNetto(netQuantityDTO);
+        ingredientDTO.setGross(grossQuantityDTO);
+        ingredientDTO.setEnable(enableQuantityDTO);
         return ingredientDTO;
+    }
+
+    private long convertDate(LocalDate date) {
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 }

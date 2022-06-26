@@ -16,9 +16,10 @@ public class QuantityMapper extends MappingConverters{
 
     @PostConstruct
     private void init() {
-        modelMapper.createTypeMap(Quantity.class, QuantityDTO.class);
+        modelMapper.createTypeMap(Quantity.class, QuantityDTO.class)
+                .addMappings(mapper -> mapper.using(dateToLongConverter).map(Quantity::getDate, QuantityDTO::setDate));
         modelMapper.createTypeMap(QuantityDTO.class, Quantity.class)
-                .addMappings(mapper -> mapper.using(stringToDateConverter).map(QuantityDTO::getDate, Quantity::setDate))
+                .addMappings(mapper -> mapper.using(longToDateConverter).map(QuantityDTO::getDate, Quantity::setDate))
                 .addMappings(mapper -> mapper.using(typeConverter).map(QuantityDTO::getType, Quantity::setType));
     }
 

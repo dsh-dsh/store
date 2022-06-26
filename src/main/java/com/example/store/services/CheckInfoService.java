@@ -10,10 +10,15 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class CheckInfoService {
+
+    public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MM.dd.yyyy HH:mm:ss");
 
     @Autowired
     private CheckInfoRepository checkInfoRepository;
@@ -47,7 +52,8 @@ public class CheckInfoService {
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setDateTime(LocalDateTime.parse(checkInfoDTO.getDateTime(), Constants.TIME_FORMATTER));
+        checkInfo.setDateTime(Instant.ofEpochMilli(checkInfoDTO.getDateTime())
+                .atZone(ZoneId.systemDefault()).toLocalDateTime());
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

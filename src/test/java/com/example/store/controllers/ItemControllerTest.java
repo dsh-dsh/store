@@ -101,10 +101,11 @@ class ItemControllerTest extends TestService {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getItemTest() throws Exception {
+        String date = String.valueOf(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
         this.mockMvc.perform(
                         get(URL_PREFIX)
                                 .param("id", String.valueOf(NEW_ITEM_ID))
-                                .param("date", LocalDate.now().toString()))
+                                .param("date", date))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value(NEW_ITEM_NAME))
@@ -304,7 +305,7 @@ class ItemControllerTest extends TestService {
         assertEquals(List.of(5, 8), sets);
 
         List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
-        assertEquals(2, ingredients.size());
+        assertEquals(3, ingredients.size());
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -332,31 +333,40 @@ class ItemControllerTest extends TestService {
 
     private List<IngredientDTO> getIngredientDTOList() {
         QuantityDTO netDTO = new QuantityDTO();
-        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setDate(convertDate(LocalDate.now()));
         netDTO.setType(QuantityType.NET.toString());
         netDTO.setQuantity(0.3f);
 
         QuantityDTO grossDTO = new QuantityDTO();
-        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setDate(convertDate(LocalDate.now()));
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.2f);
+
+        QuantityDTO enableDTO = new QuantityDTO();
+        enableDTO.setDate(convertDate(LocalDate.now()));
+        enableDTO.setType(QuantityType.ENABLE.toString());
+        enableDTO.setQuantity(1f);
 
         ItemDTOForIngredient child = new ItemDTOForIngredient();
         child.setId(8);
         child.setName("Мука");
 
         IngredientDTO first = IngredientDTO.builder()
-                .child(child)
-                .quantityList(List.of(netDTO, grossDTO))
+//                .child(child)
+                .childId(8)
+//                .quantityList(List.of(netDTO, grossDTO))
+                .netto(netDTO)
+                .gross(grossDTO)
+                .enable(enableDTO)
                 .build();
 
         netDTO = new QuantityDTO();
-        netDTO.setDate(LocalDate.now().toString());
+        netDTO.setDate(convertDate(LocalDate.now()));
         netDTO.setType(QuantityType.NET.toString());
         netDTO.setQuantity(0.4f);
 
         grossDTO = new QuantityDTO();
-        grossDTO.setDate(LocalDate.now().toString());
+        grossDTO.setDate(convertDate(LocalDate.now()));
         grossDTO.setType(QuantityType.GROSS.toString());
         grossDTO.setQuantity(0.3f);
 
@@ -365,29 +375,35 @@ class ItemControllerTest extends TestService {
         child.setName("Картофель фри");
 
         IngredientDTO second = IngredientDTO.builder()
-                .child(child)
-                .quantityList(List.of(netDTO, grossDTO))
+//                .child(child)
+                .childId(7)
+//                .quantityList(List.of(netDTO, grossDTO))
+                .netto(netDTO)
+                .gross(grossDTO)
+                .enable(enableDTO)
                 .build();
 
         return List.of(first, second);
     }
 
     private ItemDTO getItemDTO(long date) {
-        PriceDTO oldRetailPrice = PriceDTO.builder()
-                .date(date)
-                .type(PriceType.RETAIL.toString())
-                .value(RETAIL_PRICE_VALUE - 20)
-                .build();
-        PriceDTO oldDeliveryPrice = PriceDTO.builder()
-                .date(date)
-                .type(PriceType.DELIVERY.toString())
-                .value(DELIVERY_PRICE_VALUE - 20)
-                .build();
+//        PriceDTO oldRetailPrice = PriceDTO.builder()
+//                .date(date)
+//                .type(PriceType.RETAIL.toString())
+//                .value(RETAIL_PRICE_VALUE - 20)
+//                .build();
+//        PriceDTO oldDeliveryPrice = PriceDTO.builder()
+//                .date(date)
+//                .type(PriceType.DELIVERY.toString())
+//                .value(DELIVERY_PRICE_VALUE - 20)
+//                .build();
         PriceDTO retailPrice = PriceDTO.builder()
+                .date(date + 8640000L) // + one day
                 .type(PriceType.RETAIL.toString())
                 .value(RETAIL_PRICE_VALUE)
                 .build();
         PriceDTO deliveryPrice = PriceDTO.builder()
+                .date(date + 8640000L)
                 .type(PriceType.DELIVERY.toString())
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
@@ -399,7 +415,8 @@ class ItemControllerTest extends TestService {
                 .regTime(Instant.now().toEpochMilli())
                 .unit(getUnitDTO(Unit.PORTION))
                 .workshop(getWorkshopDTO(Workshop.KITCHEN))
-                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
+//                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
+                .prices(List.of(retailPrice, deliveryPrice))
                 .build();
         return itemDTO;
     }
@@ -426,6 +443,10 @@ class ItemControllerTest extends TestService {
                 .workshop(getWorkshopDTO(Workshop.BAR))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
+    }
+
+    private long convertDate(LocalDate date) {
+        return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
 }

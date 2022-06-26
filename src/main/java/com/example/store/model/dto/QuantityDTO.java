@@ -13,7 +13,7 @@ import lombok.Setter;
 public class QuantityDTO {
 
     private int id;
-    private String date;
+    private long date;
     private float quantity;
     private String type;
 

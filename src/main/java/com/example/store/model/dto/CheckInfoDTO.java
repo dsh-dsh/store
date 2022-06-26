@@ -33,7 +33,7 @@ public class CheckInfoDTO {
     private String waiter;
 
     @JsonProperty("date_time")
-    private String dateTime;
+    private long dateTime;
 
     @JsonProperty("is_return")
     private boolean isReturn;

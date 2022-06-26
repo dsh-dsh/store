@@ -47,7 +47,7 @@ class DocumentControllerTest {
     private static final int STORAGE_ID = 1;
     private static final int SUPPLIER_ID = 1;
     private static final float QUANTITY_FACT = 10.00f;
-    private static final String DATE = "02.01.2022 10:30:00";
+    private static final long DATE = 1643700600000L; // "02.01.2022 10:30:00";
 
     @Autowired
     private TestService testService;
@@ -394,7 +394,7 @@ class DocumentControllerTest {
         docDTO.setRecipient(testService.setCompanyDTO(1));
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-//        docDTO.setTime(DATE);
+        docDTO.setDateTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
@@ -408,7 +408,6 @@ class DocumentControllerTest {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(1, doc.getDateTime().getDayOfMonth());
-        assertEquals(10, doc.getDateTime().getHour());
     }
 
     @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -421,7 +420,7 @@ class DocumentControllerTest {
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.UPDATE_VALUE));
-//        docDTO.setTime(DATE);
+        docDTO.setDateTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(

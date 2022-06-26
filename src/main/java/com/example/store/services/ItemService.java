@@ -103,7 +103,7 @@ public class ItemService {
         LocalDate date = Instant.ofEpochMilli(stringDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-        item.setParent(getParent(item));
+//        item.setParent(getParent(item));
         item.setPrices(priceService.getPriceListOfItem(item, date));
         ItemDTO itemDTO = itemMapper.mapToDTO(item);
         itemDTO.setSets(setService.getSets(item));

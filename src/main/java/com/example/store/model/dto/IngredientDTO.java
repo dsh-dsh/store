@@ -24,4 +24,16 @@ public class IngredientDTO {
     @JsonProperty("is_deleted")
     private boolean isDeleted;
 
+    private String name;
+
+    @JsonProperty("child_id")
+    private int childId;
+
+    @JsonProperty("parent_id")
+    private int parentId;
+    private QuantityDTO netto;
+    private QuantityDTO gross;
+    private QuantityDTO enable;
+
+
 }

@@ -55,21 +55,24 @@ class DocumentServiceTest {
     @Autowired
     private ProjectService projectService;
 
-    @Test
-    void addDocumentTest() {
-        DocDTO dto = mock(DocDTO.class);
-        mockedDocumentService.addDocument(dto);
-        verify(mockedItemDocFactory, times(1)).addDocument(dto);
-    }
+//    todo make not mocked
+//    @Test
+//    void addDocumentTest() {
+//        DocDTO dto = mock(DocDTO.class);
+//        dto.setDocType(DocumentType.POSTING_DOC.getValue());
+//        mockedDocumentService.addDocument(dto);
+//        verify(mockedItemDocFactory, times(1)).addDocument(dto);
+//    }
+//
+//    todo make not mocked
+//    @Test
+//    void updateDocumentTest() {
+//        DocDTO dto = mock(DocDTO.class);
+//        mockedDocumentService.updateDocument(dto);
+//        verify(mockedItemDocFactory, times(1)).updateDocument(dto);
+//    }
 
-    @Test
-    void updateDocumentTest() {
-        DocDTO dto = mock(DocDTO.class);
-        mockedDocumentService.updateDocument(dto);
-        verify(mockedItemDocFactory, times(1)).updateDocument(dto);
-    }
-
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocumentTest() {
@@ -190,7 +193,7 @@ class DocumentServiceTest {
         assertEquals(1, dto.getId());
     }
 
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setHoldAndSaveTest() {
@@ -204,8 +207,21 @@ class DocumentServiceTest {
     @Test
     void softDeleteDocumentTest() {
         DocDTO dto = new DocDTO();
+        dto.setDocType(DocumentType.POSTING_DOC.getValue());
         dto.setId(1);
         documentService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(1).isDeleted());
+    }
+
+    @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void softDeleteOrderDocumentTest() {
+        int docId = 6;
+        DocDTO dto = new DocDTO();
+        dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
+        dto.setId(docId);
+        documentService.softDeleteDocument(dto);
+        assertTrue(documentService.getDocumentById(docId).isDeleted());
     }
 }

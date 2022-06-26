@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.mappers.QuantityMapper;
+import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.QuantityDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Quantity;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,8 +28,13 @@ public class QuantityService {
     private QuantityMapper quantityMapper;
 
     public List<Quantity> getQuantityList(Ingredient ingredient, LocalDate date) {
-        return quantityRepository
-                .findByIngredientAndDateLessThanEqual(ingredient, date, Sort.by("date").descending());
+        List<Quantity> list = new ArrayList<>();
+        for(QuantityType type : QuantityType.values()) {
+            Optional<Quantity> optionalQuantity = quantityRepository
+                    .findFirstByIngredientAndDateLessThanEqualAndType(ingredient, date, type, Sort.by("date").descending());
+            optionalQuantity.ifPresent(list::add);
+        }
+        return list;
     }
 
     public List<QuantityDTO> getQuantityDTOList(Ingredient ingredient, LocalDate date) {
@@ -49,8 +58,10 @@ public class QuantityService {
                 .findFirst();
     }
 
-    public void setQuantities(Ingredient ingredient, List<QuantityDTO> quantityDTOList) {
-        quantityDTOList.forEach(dto -> setQuantity(ingredient, dto));
+    public void setQuantities(Ingredient ingredient, IngredientDTO dto) {
+        setQuantity(ingredient, dto.getNetto());
+        setQuantity(ingredient, dto.getGross());
+        setQuantity(ingredient, dto.getEnable());
     }
 
     private void setQuantity(Ingredient ingredient, QuantityDTO dto) {
@@ -66,18 +77,20 @@ public class QuantityService {
         quantityRepository.saveAll(quantities);
     }
 
-    public void updateQuantities(Ingredient ingredient, List<QuantityDTO> dtoList) {
-        dtoList.forEach(dto -> updateQuantity(ingredient, dto));
+    public void updateQuantities(Ingredient ingredient, IngredientDTO dto) {
+        updateQuantity(ingredient, dto.getNetto());
+        updateQuantity(ingredient, dto.getGross());
+        updateQuantity(ingredient, dto.getEnable());
     }
 
     private void updateQuantity(Ingredient ingredient, QuantityDTO dto) {
         QuantityType type = QuantityType.valueOf(dto.getType());
-        LocalDate date = LocalDate.parse(dto.getDate());
-        Optional<Quantity> optional
-                = quantityRepository.findTop1ByTypeAndDateLessThanEqualOrderByDateDesc(type, date);
+        LocalDate date = convertDate(dto.getDate());
+        Optional<Quantity> optional = quantityRepository.findById(dto.getId());
+//                = quantityRepository.findTop1ByTypeAndDateLessThanEqualOrderByDateDesc(type, date);
         if(optional.isPresent()) {
             Quantity quantity = optional.get();
-            if(quantity.getDate().isEqual(LocalDate.parse(dto.getDate()))) {
+            if(quantity.getDate().isEqual(date)) {
                 quantity.setQuantity(dto.getQuantity());
                 quantityRepository.save(quantity);
             } else {
@@ -88,6 +101,10 @@ public class QuantityService {
         } else {
             setQuantity(ingredient, dto);
         }
+    }
+
+    private LocalDate convertDate(long longTime) {
+        return Instant.ofEpochMilli(longTime).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 }

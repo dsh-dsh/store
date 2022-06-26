@@ -22,8 +22,6 @@ public class DocDTO {
 
     private int number;
 
-//    private String time;
-
     @JsonProperty("date_time")
     private long dateTime;
 

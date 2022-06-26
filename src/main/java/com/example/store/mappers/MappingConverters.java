@@ -36,7 +36,7 @@ public class MappingConverters {
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().toString();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
     protected final Converter<Item, ItemDTOForIngredient> itemConverter = item -> getItemDTO(item.getSource());
-    protected final Converter<ItemDTOForIngredient, Item> itemDTOConverter = dto -> getItem(dto.getSource());
+    protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());
 
     protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
@@ -57,8 +57,14 @@ public class MappingConverters {
     protected final Converter<LocalDateTime, Long> dateTimeToLongConverter =
             time -> ZonedDateTime.of(time.getSource(), ZoneId.systemDefault()).toInstant().toEpochMilli();
 
+    protected final Converter<LocalDate, Long> dateToLongConverter =
+            time -> time.getSource().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
     protected final Converter<Long, LocalDateTime> longToDateTimeConverter =
             src -> Instant.ofEpochMilli(src.getSource()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+    protected final Converter<Long, LocalDate> longToDateConverter =
+            src -> Instant.ofEpochMilli(src.getSource()).atZone(ZoneId.systemDefault()).toLocalDate();
 
     protected final Converter<ItemDoc, List<DocItemDTO>> docItemsConverter =
             itemDoc -> docItemService.getItemDTOListByDoc(itemDoc.getSource()) ;
@@ -103,5 +109,10 @@ public class MappingConverters {
     private Item getItem(ItemDTOForIngredient dto) {
         if(dto == null) return null;
         return itemService.getItemById(dto.getId());
+    }
+
+    private Item getItem(int itemId) {
+        if(itemId == 0) return null;
+        return itemService.getItemById(itemId);
     }
 }
