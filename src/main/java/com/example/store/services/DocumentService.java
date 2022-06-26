@@ -111,7 +111,7 @@ public class DocumentService {
     }
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, Pageable pageable) {
-        List<DocumentType> types = null;
+        List<DocumentType> types;
         switch (filter) {
             case "posting" :
                types = List.of(DocumentType.POSTING_DOC);
@@ -131,6 +131,8 @@ public class DocumentService {
             case "invent" :
                 types = List.of(DocumentType.INVENTORY_DOC);
                 break;
+            default:
+                types = null;
         }
         Page<Document> page = documentRepository.findByDocInFilter(filter, types, pageable);
         List<DocToListDTO> dtoList = page.stream()
