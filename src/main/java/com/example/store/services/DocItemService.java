@@ -100,7 +100,7 @@ public class DocItemService {
         return list;
     }
 
-    public float getItemsAmount(ItemDoc itemDoc) {
+    public Float getItemsAmount(ItemDoc itemDoc) {
         List<DocumentItem> items = getItemsByDoc(itemDoc);
         return (float) items.stream()
                 .mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount())

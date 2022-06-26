@@ -1,6 +1,7 @@
 package com.example.store.mappers;
 
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,15 @@ public class DocMapper extends MappingConverters {
 
     public DocMapper() {
         this.modelMapper = new ModelMapper();
+
+        modelMapper.createTypeMap(ItemDoc.class, DocToListDTO.class)
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(ItemDoc::getDateTime, DocToListDTO::setDateTime))
+                .addMappings(mapper -> mapper.using(docTypeConverter).map(ItemDoc::getDocType, DocToListDTO::setDocType))
+                .addMappings(mapper -> mapper.using(docItemAmountConverter).map(src -> src, DocToListDTO::setAmount));
+
+        modelMapper.createTypeMap(OrderDoc.class, DocToListDTO.class)
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(OrderDoc::getDateTime, DocToListDTO::setDateTime))
+                .addMappings(mapper -> mapper.using(docTypeConverter).map(OrderDoc::getDocType, DocToListDTO::setDocType));
 
         modelMapper.createTypeMap(OrderDoc.class, DocDTO.class)
                 .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(OrderDoc::getDateTime, DocDTO::setDateTime))
@@ -30,6 +40,13 @@ public class DocMapper extends MappingConverters {
     }
     public DocDTO mapToDocDTO(OrderDoc document) {
         return modelMapper.map(document, DocDTO.class);
+    }
+
+    public DocToListDTO mapToDocToListDTO(ItemDoc document) {
+        return modelMapper.map(document, DocToListDTO.class);
+    }
+    public DocToListDTO mapToDocToListDTO(OrderDoc document) {
+        return modelMapper.map(document, DocToListDTO.class);
     }
 
 }

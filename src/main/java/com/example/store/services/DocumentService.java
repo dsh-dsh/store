@@ -4,8 +4,6 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.factories.OrderDocFactory;
 import com.example.store.mappers.DocMapper;
-import com.example.store.mappers.DocToListDTOConverter;
-import com.example.store.mappers.DocToListMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.entities.Project;
@@ -19,7 +17,6 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +42,6 @@ public class DocumentService {
     private DocumentRepository documentRepository;
     @Autowired
     private DocMapper docMapper;
-    @Autowired
-    private DocToListMapper docToListMapper;
     @Autowired
     private CheckInfoService checkInfoService;
 
@@ -139,15 +134,13 @@ public class DocumentService {
         }
         Page<Document> page = documentRepository.findByDocInFilter(filter, types, pageable);
         List<DocToListDTO> dtoList = page.stream()
-                .map(DocToListDTOConverter::convertToDTO)
-                .collect(Collectors.toList());
-        return new ListResponse<>(dtoList, page);
-    }
-
-    public ListResponse<DocToListDTO> getDocumentsByType(DocumentType documentType, Pageable pageable) {
-        Page<Document> page = documentRepository.findByDocType(documentType, pageable);
-        List<DocToListDTO> dtoList = page.stream()
-                .map(DocToListDTOConverter::convertToDTO)
+                .map(doc -> {
+                    if(doc instanceof ItemDoc) {
+                        return docMapper.mapToDocToListDTO((ItemDoc) doc);
+                    } else {
+                        return docMapper.mapToDocToListDTO((OrderDoc) doc);
+                    }
+                })
                 .collect(Collectors.toList());
         return new ListResponse<>(dtoList, page);
     }

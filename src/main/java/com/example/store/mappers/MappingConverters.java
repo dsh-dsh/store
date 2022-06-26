@@ -75,6 +75,9 @@ public class MappingConverters {
     protected final Converter<ItemDoc, CheckInfoDTO> checkInfoConverter =
             doc -> checkInfoService.getCheckInfoDTO(doc.getSource());
 
+    protected final Converter<ItemDoc, Float> docItemAmountConverter =
+            doc -> docItemService.getItemsAmount(doc.getSource());
+
     protected final Converter<String, LocalDateTime> stringToDateTimeConverter = value -> {
         String date = value.getSource();
         if(date != null && !date.equals("")) {
