@@ -190,10 +190,10 @@ class Hold1CDocksServiceTest {
         when(mockedItemRestService.getLastPriceOfItem(any(Item.class))).thenReturn(100.00f);
         List<ItemQuantityPriceDTO> list = mockedHold1CDocksService.getPostingItemMap(writeOffItemMap, storage, time);
         assertEquals(2, list.size());
-        assertEquals(4,     list.get(0).getQuantity());
-        assertEquals(4,     list.get(0).getItem().getId());
-        assertEquals(2,     list.get(1).getQuantity());
-        assertEquals(5,     list.get(1).getItem().getId());
+        assertEquals(2,     list.get(0).getQuantity());
+        assertEquals(5,     list.get(0).getItem().getId());
+        assertEquals(4,     list.get(1).getQuantity());
+        assertEquals(4,     list.get(1).getItem().getId());
     }
 
     @Sql(value = "/sql/hold1CDocs/addThreeChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
