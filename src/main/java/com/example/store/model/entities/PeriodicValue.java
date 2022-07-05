@@ -1,10 +1,9 @@
 package com.example.store.model.entities;
 
-import com.example.store.model.enums.QuantityType;
+import com.example.store.model.enums.PeriodicValueType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.expression.spel.ast.QualifiedIdentifier;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "periodic_quantity")
-public class Quantity {
+public class PeriodicValue {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -31,7 +30,7 @@ public class Quantity {
     private float quantity;
 
     @Enumerated(EnumType.STRING)
-    private QuantityType type;
+    private PeriodicValueType type;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;

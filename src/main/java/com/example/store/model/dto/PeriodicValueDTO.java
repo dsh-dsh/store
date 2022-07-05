@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class QuantityDTO {
+public class PeriodicValueDTO {
 
     private int id;
     private long date;

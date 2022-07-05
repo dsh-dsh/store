@@ -2,10 +2,10 @@ package com.example.store.services;
 
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
-import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.enums.QuantityType;
+import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.repositories.IngredientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ class IngredientServiceMockedTest {
     @Mock
     private IngredientRepository ingredientRepository;
     @Mock
-    private QuantityService quantityService;
+    private PeriodicValueService periodicValueService;
     @Mock
     private IngredientMapper ingredientMapper;
     @Captor
@@ -62,7 +61,7 @@ class IngredientServiceMockedTest {
                 .thenReturn(ingredients);
         ingredientService.softDeleteIngredients(item, LocalDate.now());
         verify(ingredientRepository, times(3)).save(ingredientArgumentCaptor.capture());
-        verify(quantityService, times(3))
+        verify(periodicValueService, times(3))
                 .softDeleteQuantities(ingredientArgumentCaptor.capture(), eq(LocalDate.now()));
     }
 
@@ -111,12 +110,12 @@ class IngredientServiceMockedTest {
         assertTrue(haveIngredients);
     }
 
-    private QuantityDTO getQuantityDTO(QuantityType type, float quantity, long date) {
-        QuantityDTO quantityDTO = new QuantityDTO();
-        quantityDTO.setType(type.toString());
-        quantityDTO.setQuantity(quantity);
-        quantityDTO.setDate(date);
-        return quantityDTO;
+    private PeriodicValueDTO getQuantityDTO(PeriodicValueType type, float quantity, long date) {
+        PeriodicValueDTO periodicValueDTO = new PeriodicValueDTO();
+        periodicValueDTO.setType(type.toString());
+        periodicValueDTO.setQuantity(quantity);
+        periodicValueDTO.setDate(date);
+        return periodicValueDTO;
     }
 
     private long convertDate(LocalDate date) {

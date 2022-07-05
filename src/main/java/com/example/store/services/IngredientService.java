@@ -2,11 +2,11 @@ package com.example.store.services;
 
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
-import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Quantity;
+import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class IngredientService {
     @Autowired
     private IngredientRepository ingredientRepository;
     @Autowired
-    private QuantityService quantityService;
+    private PeriodicValueService periodicValueService;
 
     private Map<Item, Float> ingredientMapOfItem;
 
@@ -47,7 +47,7 @@ public class IngredientService {
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
         ingredients.forEach(ingredient ->
                 setIngredientMapOfItemRecursively(ingredient,
-                        quantityService.getQuantityRatio(ingredient, date), date));
+                        periodicValueService.getQuantityRatio(ingredient, date), date));
         return ingredientMapOfItem;
     }
 
@@ -55,11 +55,11 @@ public class IngredientService {
         List<Ingredient> ingredients = getIngredientsNotDeleted(currentIngredient.getChild());
         if(!ingredients.isEmpty()) {
             for(Ingredient ingredient : ingredients) {
-                float ratio = quantityService.getQuantityRatio(ingredient, date) * quantityRatio;
+                float ratio = periodicValueService.getQuantityRatio(ingredient, date) * quantityRatio;
                 setIngredientMapOfItemRecursively(ingredient, ratio, date);
             }
         } else {
-            Optional<Quantity> grossQuantity = quantityService.getGrossQuantity(currentIngredient, date);
+            Optional<PeriodicValue> grossQuantity = periodicValueService.getGrossQuantity(currentIngredient, date);
             if(grossQuantity.isEmpty()) return;
             ingredientMapOfItem.put(currentIngredient.getChild(), grossQuantity.get().getQuantity() * quantityRatio);
         }
@@ -84,7 +84,7 @@ public class IngredientService {
     public void updateIngredient(Ingredient ingredient, IngredientDTO dto) {
         ingredient.setDeleted(dto.isDeleted());
         ingredientRepository.save(ingredient);
-        quantityService.updateQuantities(ingredient, dto);
+        periodicValueService.updateQuantities(ingredient, dto);
     }
 
     public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
@@ -101,17 +101,17 @@ public class IngredientService {
                     IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
 
                     // todo refactor this
-                    dto.setQuantityList(quantityService.getQuantityDTOList(ingredient, date));
+                    dto.setQuantityList(periodicValueService.getQuantityDTOList(ingredient, date));
                     dto.setName(dto.getChild().getName());
                     dto.setChildId(dto.getChild().getId());
                     dto.setParentId(dto.getParent().getId());
-                    for(QuantityDTO quantityDTO : dto.getQuantityList()) {
-                        if(quantityDTO.getType().equals("NET")) {
-                            dto.setNetto(quantityDTO);
-                        } else if(quantityDTO.getType().equals("GROSS")) {
-                            dto.setGross(quantityDTO);
-                        } else if(quantityDTO.getType().equals("ENABLE")){
-                            dto.setEnable(quantityDTO);
+                    for(PeriodicValueDTO periodicValueDTO : dto.getQuantityList()) {
+                        if(periodicValueDTO.getType().equals("NET")) {
+                            dto.setNetto(periodicValueDTO);
+                        } else if(periodicValueDTO.getType().equals("GROSS")) {
+                            dto.setGross(periodicValueDTO);
+                        } else if(periodicValueDTO.getType().equals("ENABLE")){
+                            dto.setEnable(periodicValueDTO);
                         }
                     }
                     // todo until here
@@ -127,7 +127,7 @@ public class IngredientService {
         return ingredients.stream()
                 .map(ingredient -> {
                     IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
-                    dto.setQuantityList(quantityService.getQuantityDTOList(ingredient, date));
+                    dto.setQuantityList(periodicValueService.getQuantityDTOList(ingredient, date));
                     return dto;
                 }).collect(Collectors.toList());
     }
@@ -145,7 +145,7 @@ public class IngredientService {
         Ingredient ingredient = ingredientMapper.mapToEntity(dto);
         ingredient.setParent(item);
         ingredientRepository.save(ingredient);
-        quantityService.setQuantities(ingredient, dto);
+        periodicValueService.setQuantities(ingredient, dto);
     }
 
     public void softDeleteIngredients(Item item, LocalDate date) {
@@ -156,7 +156,7 @@ public class IngredientService {
     private void softDeleteIngredient(Ingredient ingredient, LocalDate date) {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
-        quantityService.softDeleteQuantities(ingredient, date);
+        periodicValueService.softDeleteQuantities(ingredient, date);
     }
 
     public void addInnerItems(List<DocumentItem> docItems, LocalDate date) {

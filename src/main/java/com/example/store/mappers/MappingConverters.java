@@ -10,7 +10,6 @@ import com.example.store.services.CheckInfoService;
 import com.example.store.services.DocItemService;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.ItemService;
-import com.example.store.utils.Constants;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ public class MappingConverters {
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
 
     protected final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
-    protected final Converter<String, QuantityType> typeConverter = str -> QuantityType.valueOf(str.getSource());
+    protected final Converter<String, PeriodicValueType> typeConverter = str -> PeriodicValueType.valueOf(str.getSource());
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().toString();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
     protected final Converter<Item, ItemDTOForIngredient> itemConverter = item -> getItemDTO(item.getSource());

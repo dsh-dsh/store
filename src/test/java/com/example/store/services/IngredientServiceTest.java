@@ -1,13 +1,11 @@
 package com.example.store.services;
 
 import com.example.store.model.dto.IngredientDTO;
-import com.example.store.model.dto.ItemDTO;
-import com.example.store.model.dto.ItemDTOForIngredient;
-import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.documents.ItemDoc;
-import com.example.store.model.enums.QuantityType;
+import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.repositories.IngredientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -175,24 +173,24 @@ class IngredientServiceTest {
         ingredientDTO.setChildId(childId);
         ingredientDTO.setParentId(parentId);
 
-        QuantityDTO netQuantityDTO = new QuantityDTO();
-        netQuantityDTO.setType(QuantityType.NET.toString());
-        netQuantityDTO.setQuantity(netQuantity);
-        netQuantityDTO.setDate(date);
+        PeriodicValueDTO netPeriodicValueDTO = new PeriodicValueDTO();
+        netPeriodicValueDTO.setType(PeriodicValueType.NET.toString());
+        netPeriodicValueDTO.setQuantity(netQuantity);
+        netPeriodicValueDTO.setDate(date);
 
-        QuantityDTO grossQuantityDTO = new QuantityDTO();
-        grossQuantityDTO.setType(QuantityType.GROSS.toString());
-        grossQuantityDTO.setQuantity(1f);
-        grossQuantityDTO.setDate(date);
+        PeriodicValueDTO grossPeriodicValueDTO = new PeriodicValueDTO();
+        grossPeriodicValueDTO.setType(PeriodicValueType.GROSS.toString());
+        grossPeriodicValueDTO.setQuantity(1f);
+        grossPeriodicValueDTO.setDate(date);
 
-        QuantityDTO enableQuantityDTO = new QuantityDTO();
-        enableQuantityDTO.setType(QuantityType.ENABLE.toString());
-        enableQuantityDTO.setQuantity(enableQuantity);
-        enableQuantityDTO.setDate(date);
+        PeriodicValueDTO enablePeriodicValueDTO = new PeriodicValueDTO();
+        enablePeriodicValueDTO.setType(PeriodicValueType.ENABLE.toString());
+        enablePeriodicValueDTO.setQuantity(enableQuantity);
+        enablePeriodicValueDTO.setDate(date);
 
-        ingredientDTO.setNetto(netQuantityDTO);
-        ingredientDTO.setGross(grossQuantityDTO);
-        ingredientDTO.setEnable(enableQuantityDTO);
+        ingredientDTO.setNetto(netPeriodicValueDTO);
+        ingredientDTO.setGross(grossPeriodicValueDTO);
+        ingredientDTO.setEnable(enablePeriodicValueDTO);
         return ingredientDTO;
     }
 

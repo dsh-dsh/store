@@ -30,7 +30,7 @@ public class Ingredient {
     private Item child;
 
     @OneToMany(mappedBy = "ingredient")
-    private List<Quantity> quantityList;
+    private List<PeriodicValue> periodicValueList;
 
     private boolean isDeleted;
 

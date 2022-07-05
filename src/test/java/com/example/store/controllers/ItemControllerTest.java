@@ -5,7 +5,7 @@ import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
 import com.example.store.model.enums.PriceType;
-import com.example.store.model.enums.QuantityType;
+import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.services.IngredientService;
@@ -332,19 +332,19 @@ class ItemControllerTest extends TestService {
     }
 
     private List<IngredientDTO> getIngredientDTOList() {
-        QuantityDTO netDTO = new QuantityDTO();
+        PeriodicValueDTO netDTO = new PeriodicValueDTO();
         netDTO.setDate(convertDate(LocalDate.now()));
-        netDTO.setType(QuantityType.NET.toString());
+        netDTO.setType(PeriodicValueType.NET.toString());
         netDTO.setQuantity(0.3f);
 
-        QuantityDTO grossDTO = new QuantityDTO();
+        PeriodicValueDTO grossDTO = new PeriodicValueDTO();
         grossDTO.setDate(convertDate(LocalDate.now()));
-        grossDTO.setType(QuantityType.GROSS.toString());
+        grossDTO.setType(PeriodicValueType.GROSS.toString());
         grossDTO.setQuantity(0.2f);
 
-        QuantityDTO enableDTO = new QuantityDTO();
+        PeriodicValueDTO enableDTO = new PeriodicValueDTO();
         enableDTO.setDate(convertDate(LocalDate.now()));
-        enableDTO.setType(QuantityType.ENABLE.toString());
+        enableDTO.setType(PeriodicValueType.ENABLE.toString());
         enableDTO.setQuantity(1f);
 
         ItemDTOForIngredient child = new ItemDTOForIngredient();
@@ -360,14 +360,14 @@ class ItemControllerTest extends TestService {
                 .enable(enableDTO)
                 .build();
 
-        netDTO = new QuantityDTO();
+        netDTO = new PeriodicValueDTO();
         netDTO.setDate(convertDate(LocalDate.now()));
-        netDTO.setType(QuantityType.NET.toString());
+        netDTO.setType(PeriodicValueType.NET.toString());
         netDTO.setQuantity(0.4f);
 
-        grossDTO = new QuantityDTO();
+        grossDTO = new PeriodicValueDTO();
         grossDTO.setDate(convertDate(LocalDate.now()));
-        grossDTO.setType(QuantityType.GROSS.toString());
+        grossDTO.setType(PeriodicValueType.GROSS.toString());
         grossDTO.setQuantity(0.3f);
 
         child = new ItemDTOForIngredient();

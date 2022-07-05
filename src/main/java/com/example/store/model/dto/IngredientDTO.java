@@ -19,7 +19,7 @@ public class IngredientDTO {
     private ItemDTOForIngredient child;
 
     @JsonProperty("quantity_list")
-    private List<QuantityDTO> quantityList;
+    private List<PeriodicValueDTO> quantityList;
 
     @JsonProperty("is_deleted")
     private boolean isDeleted;
@@ -31,9 +31,9 @@ public class IngredientDTO {
 
     @JsonProperty("parent_id")
     private int parentId;
-    private QuantityDTO netto;
-    private QuantityDTO gross;
-    private QuantityDTO enable;
+    private PeriodicValueDTO netto;
+    private PeriodicValueDTO gross;
+    private PeriodicValueDTO enable;
 
 
 }

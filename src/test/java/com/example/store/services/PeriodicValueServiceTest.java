@@ -1,13 +1,10 @@
 package com.example.store.services;
 
-import com.example.store.model.dto.IngredientDTO;
-import com.example.store.model.dto.QuantityDTO;
+import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.Ingredient;
-import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Quantity;
-import com.example.store.model.enums.QuantityType;
+import com.example.store.model.entities.PeriodicValue;
 import com.example.store.repositories.IngredientRepository;
-import com.example.store.repositories.QuantityRepository;
+import com.example.store.repositories.PeriodicValueRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.net.HttpRetryException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
@@ -27,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(properties =
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
-public class QuantityServiceTest {
+public class PeriodicValueServiceTest {
 
     @Autowired
-    private QuantityService quantityService;
+    private PeriodicValueService periodicValueService;
     @Autowired
-    private QuantityRepository quantityRepository;
+    private PeriodicValueRepository periodicValueRepository;
     @Autowired
     private IngredientRepository ingredientRepository;
 
@@ -79,15 +75,15 @@ public class QuantityServiceTest {
     void softDeleteQuantitiesTest() {
         LocalDate date = LocalDate.now();
         Ingredient ingredient = ingredientRepository.getById(7);
-        quantityService.softDeleteQuantities(ingredient, date);
-        List<Quantity> list = quantityService.getQuantityList(ingredient, date);
+        periodicValueService.softDeleteQuantities(ingredient, date);
+        List<PeriodicValue> list = periodicValueService.getQuantityList(ingredient, date);
         assertEquals(2, list.size());
         assertTrue(list.get(0).isDeleted());
         assertTrue(list.get(1).isDeleted());
     }
 
-    private QuantityDTO getQuantityDTO(String type, float quantity, long date) {
-        QuantityDTO dto = new QuantityDTO();
+    private PeriodicValueDTO getQuantityDTO(String type, float quantity, long date) {
+        PeriodicValueDTO dto = new PeriodicValueDTO();
         dto.setType(type);
         dto.setQuantity(quantity);
         dto.setDate(date);

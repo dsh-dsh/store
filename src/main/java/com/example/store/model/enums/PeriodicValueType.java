@@ -2,7 +2,7 @@ package com.example.store.model.enums;
 
 import com.example.store.utils.Constants;
 
-public enum QuantityType implements EnumeratedInterface {
+public enum PeriodicValueType implements EnumeratedInterface {
 
     NET(Constants.NET_TYPE),
     GROSS(Constants.GROSS_TYPE),
@@ -10,7 +10,7 @@ public enum QuantityType implements EnumeratedInterface {
 
     private final String value;
 
-    QuantityType(String value) {
+    PeriodicValueType(String value) {
         this.value = value;
     }
 
@@ -18,10 +18,10 @@ public enum QuantityType implements EnumeratedInterface {
         return value;
     }
 
-    public static QuantityType getByValue(String value) {
-        for(QuantityType quantityType : QuantityType.values()) {
-            if(quantityType.value.equalsIgnoreCase(value)) {
-                return quantityType;
+    public static PeriodicValueType getByValue(String value) {
+        for(PeriodicValueType periodicValueType : PeriodicValueType.values()) {
+            if(periodicValueType.value.equalsIgnoreCase(value)) {
+                return periodicValueType;
             }
         }
         return null;

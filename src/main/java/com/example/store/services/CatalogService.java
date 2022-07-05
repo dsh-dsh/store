@@ -27,7 +27,7 @@ public class CatalogService {
     }
 
     public List<EnumDTO> getQuantityTypeDTOList() {
-        return Arrays.stream(QuantityType.values())
+        return Arrays.stream(PeriodicValueType.values())
                 .map(this::mapToDTO).collect(Collectors.toList());
     }
 
