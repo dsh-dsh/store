@@ -1,5 +1,6 @@
 package com.example.store.controllers;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;

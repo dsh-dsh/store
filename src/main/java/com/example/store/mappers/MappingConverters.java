@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.*;
 import com.example.store.services.CheckInfoService;
 import com.example.store.services.DocItemService;
+import com.example.store.services.ItemRestService;
 import com.example.store.services.ItemService;
 import com.example.store.utils.Constants;
 import org.modelmapper.Condition;
@@ -27,6 +28,8 @@ public class MappingConverters {
     private CheckInfoService checkInfoService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private ItemRestService itemRestService;
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
@@ -76,6 +79,9 @@ public class MappingConverters {
 
     protected final Converter<ItemDoc, Float> docItemAmountConverter =
             doc -> docItemService.getItemsAmount(doc.getSource());
+
+    protected final Converter<Item, List<RestDTO>> restConverter =
+            item -> itemRestService.getItemRestList(item.getSource());
 
     private ItemDTOForIngredient getItemDTO(Item item) {
         ItemDTOForIngredient dto = new ItemDTOForIngredient();

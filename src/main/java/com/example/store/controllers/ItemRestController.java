@@ -19,10 +19,11 @@ public class ItemRestController {
 
     @GetMapping("/inventory")
     public ResponseEntity<ListResponse<DocItemDTO>> getItemRest(
-            @RequestParam(defaultValue = "") String time,
+            @RequestParam(defaultValue = "0") int docId,
+            @RequestParam(defaultValue = "0") long time,
             @RequestParam(defaultValue = "0") int storageId) {
         ListResponse<DocItemDTO> response =
-                new ListResponse<>(itemRestService.getItemRest(time, storageId));
+                new ListResponse<>(itemRestService.getItemRest(docId, time, storageId));
         return ResponseEntity.ok(response);
     }
 

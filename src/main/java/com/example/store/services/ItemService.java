@@ -67,9 +67,10 @@ public class ItemService {
     }
 
     public List<ItemDTOForList> getItemDTOList() {
-        List<Integer> parentIds = List.of(3);
-        List<Item> items = itemRepository.findByParentIds(parentIds);
-        return items.stream().map(itemMapper::mapToDTOForList).collect(Collectors.toList());
+        List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
+        return items.stream()
+                .map(itemMapper::mapToDTOForList)
+                .collect(Collectors.toList());
     }
 
     protected void updateItemFields(Item item, ItemDTO dto) {

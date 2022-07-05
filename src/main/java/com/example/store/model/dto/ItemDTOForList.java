@@ -19,4 +19,7 @@ public class ItemDTOForList {
 
     @JsonProperty("parent_id")
     private int parentId;
+
+    @JsonProperty("rest_list")
+    private List<RestDTO> restList;
 }

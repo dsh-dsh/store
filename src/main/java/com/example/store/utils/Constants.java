@@ -1,5 +1,7 @@
 package com.example.store.utils;
 
+import java.util.List;
+
 public class Constants {
 
     public static final String SYSTEM_USER_EMAIL = "system@user.com";
@@ -72,6 +74,7 @@ public class Constants {
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";
     public static final String ENABLE_TYPE = "Используется";
+    public static final List<Integer> INGREDIENTS_PARENT_IDS = List.of(3);  // items from ingredients (id = 3)
 
     private Constants() {
     }

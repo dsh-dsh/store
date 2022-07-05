@@ -41,6 +41,7 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.map(Item::getName, ItemDTOForTree::setLabel))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForTree::setParentId));
         this.modelMapper.createTypeMap(Item.class, ItemDTOForList.class)
+                .addMappings(mapper -> mapper.using(restConverter).map(src -> src, ItemDTOForList::setRestList))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForList::setParentId));
     }
 

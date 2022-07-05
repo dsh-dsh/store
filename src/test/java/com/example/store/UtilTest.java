@@ -1,7 +1,6 @@
 package com.example.store;
 
 import com.example.store.controllers.TestService;
-import com.example.store.model.dto.EnumDTO;
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.PriceDTO;
