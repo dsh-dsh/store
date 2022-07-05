@@ -290,7 +290,8 @@ class DocumentControllerTest {
                         post(URL_PREFIX + "/hold/" + 2)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE));
     }
 
     @Test
@@ -619,7 +620,7 @@ class DocumentControllerTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void FailedTransactionTest() throws Exception {
+    void FailedTransactionWhenSetNullToDataBaseNotNullFieldTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
         docDTO.setIndividual(testService.setIndividualDTO(1));

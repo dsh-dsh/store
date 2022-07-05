@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LeetCode {
 
@@ -302,5 +300,53 @@ public class LeetCode {
         query = new int[] {1,2,3,4,5};
         answer = new long[] {1001,1111,1221,1331,1441};
         assertArrayEquals(answer, kthPalindrome(query, 4));
+    }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        if(list1 == null) return list2;
+        if(list2 == null) return list1;
+        ListNode merged = new ListNode();
+        ListNode head = merged;
+        boolean first = true;
+        while(list1 != null || list2 != null) {
+            if(!first) {
+                merged.next = new ListNode();
+                merged = merged.next;
+            }
+            first = false;
+            int val1 = list1 != null ? list1.val : 101;
+            int val2 = list2 != null ? list2.val : 101;
+            if(val1 <= val2) {
+                merged.val = val1;
+                list1 = list1.next;
+            } else {
+                merged.val = val2;
+                list2 = list2.next;
+            }
+        }
+        return head;
+    }
+
+    @Test
+    void mergeTwoListsTest() {
+        ListNode list1 = ListNode.of(new int[]{1,2,4});
+        ListNode list2 = ListNode.of(new int[]{1,3,4});
+        ListNode merged = ListNode.of(new int[]{1,1,2,3,4,4});
+        assertEquals(merged, mergeTwoLists(list1, list2));
+
+        list1 = ListNode.of(new int[]{0});
+        list2 = null;
+        merged = ListNode.of(new int[]{0});
+        assertEquals(merged, mergeTwoLists(list1, list2));
+
+        list1 = null;
+        list2 = null;
+        merged = null;
+        assertEquals(merged, mergeTwoLists(list1, list2));
+
+        list1 = ListNode.of(new int[]{-100,-2,3});
+        list2 = ListNode.of(new int[]{45,99,100});
+        merged = ListNode.of(new int[]{-100,-2,3,45,99,100});
+        assertEquals(merged, mergeTwoLists(list1, list2));
     }
 }

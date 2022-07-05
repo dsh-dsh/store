@@ -1,7 +1,9 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.ProjectDTO;
 import com.example.store.model.entities.Project;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,13 @@ class ProjectServiceTest {
     void getByIdTest() {
         Project project = projectService.getById(PROJECT_ID);
         assertEquals(PROJECT_NAME, project.getName());
+    }
+
+    @Test
+    void getByWrongIdTest() {
+        BadRequestException thrown
+                = assertThrows(BadRequestException.class, () ->  projectService.getById(10));
+        assertEquals(Constants.NO_SUCH_PROJECT_MESSAGE, thrown.getMessage());
     }
 
     @Test

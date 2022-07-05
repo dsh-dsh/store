@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionsHandler extends ResponseEntityExceptionHandler {
+public class ExceptionsHandler { // extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(

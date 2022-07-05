@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = {"name", "regTime"})
+@EqualsAndHashCode(of = {"name", "regTime", "number"})
 public class Item implements EntityInterface{
 
     @Id
