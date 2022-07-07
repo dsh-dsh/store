@@ -22,8 +22,9 @@ public class DocumentController {
     @GetMapping("/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
             @RequestParam(defaultValue = "") String filter,
-            Pageable pageable) {
-        return ResponseEntity.ok(documentService.getDocumentsByFilter(filter, pageable));
+            @RequestParam(defaultValue = "0") long start,
+            @RequestParam(defaultValue = "0") long end) {
+        return ResponseEntity.ok(documentService.getDocumentsByFilter(filter, start, end));
     }
 
     @GetMapping

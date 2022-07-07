@@ -17,6 +17,7 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -110,7 +111,9 @@ public class DocumentService {
         return orderDocRepository.findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(types, project, isHold, from, to);
     }
 
-    public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, Pageable pageable) {
+    public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
+        LocalDateTime startDate = Util.getLocalDateTime(start);
+        LocalDateTime endDate = Util.getLocalDateTime(end);
         List<DocumentType> types;
         switch (filter) {
             case "posting" :
@@ -134,8 +137,8 @@ public class DocumentService {
             default:
                 types = null;
         }
-        Page<Document> page = documentRepository.findByDocInFilter(filter, types, pageable);
-        List<DocToListDTO> dtoList = page.stream()
+        List<Document> list = documentRepository.findByDocInFilter(filter, types, startDate, endDate);
+        List<DocToListDTO> dtoList = list.stream()
                 .map(doc -> {
                     if(doc instanceof ItemDoc) {
                         return docMapper.mapToDocToListDTO((ItemDoc) doc);
@@ -144,7 +147,7 @@ public class DocumentService {
                     }
                 })
                 .collect(Collectors.toList());
-        return new ListResponse<>(dtoList, page);
+        return new ListResponse<>(dtoList);
     }
 
     public List<ItemDoc> getItemDocsByType(DocumentType documentType) {

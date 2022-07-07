@@ -22,8 +22,9 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     @Query("SELECT doc " +
             "FROM Document doc " +
-            "WHERE :filter = '' OR doc.docType IN (:types)")
-    Page<Document> findByDocInFilter(String filter, Collection<DocumentType> types, Pageable pageable);
+            "WHERE (:filter = '' OR doc.docType IN (:types)) " +
+            "AND doc.dateTime BETWEEN :start AND :end")
+    List<Document> findByDocInFilter(String filter, Collection<DocumentType> types, LocalDateTime start, LocalDateTime end);
 
     @Query(value = "SELECT number " +
             "FROM document " +

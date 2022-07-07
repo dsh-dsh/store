@@ -37,13 +37,6 @@ public class Constants {
     public static final String RETAIL_PRICE_TYPE = "Розничная";
     public static final String DELIVERY_PRICE_TYPE = "На доставку";
 
-    public static final String BAD_REQUEST_MESSAGE = "invalid request";
-    public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
-    public static final String HOLD_FAILED_MESSAGE = "hold failed";
-    public static final String UN_HOLD_FORBIDDEN_MESSAGE = "hold cancellation forbidden";
-    public static final String NO_DOCUMENT_ITEMS_MESSAGE = "no items in document";
-    public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "not holden documents exists before document";
-
     public static final String KG = "кг.";
     public static final String LITER = "л.";
     public static final String PIECE = "шт.";
@@ -57,6 +50,13 @@ public class Constants {
     public static final String KITCHEN = "Кухня";
     public static final String BAR = "Бар";
 
+    public static final String BAD_REQUEST_MESSAGE = "invalid request";
+    public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
+    public static final String SHORTAGE_OF_ITEM_MESSAGE = "there is shortage of item ";
+    public static final String HOLD_FAILED_MESSAGE = "hold failed";
+    public static final String UN_HOLD_FORBIDDEN_MESSAGE = "hold cancellation forbidden";
+    public static final String NO_DOCUMENT_ITEMS_MESSAGE = "no items in document";
+    public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "not holden documents exists before document";
     public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
     public static final String NO_SUCH_USER_MESSAGE = "No such user";
     public static final String NO_SUCH_COMPANY_MESSAGE = "No such company";

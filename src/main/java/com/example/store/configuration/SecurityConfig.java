@@ -47,7 +47,8 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             "/static/**", "/webjars/**", "/favicon.ico",
             "/js/**", "/css/**", "/app.js",
             "/login", "/profile", "/push", "/friends", "/im", "/statistics", "/settings",
-            "/docs", "/items", "/home"
+            "/docs", "/items", "/home",
+            "/ws"
     };
 
     @Override

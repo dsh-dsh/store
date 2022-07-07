@@ -2,7 +2,6 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
-import com.example.store.exceptions.NoDocumentItemsException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -44,10 +43,11 @@ public class LotService {
         return lotRepository.findLotsByItemAndDoc(docItem.getItem().getId(), docItem.getItemDoc().getId());
     }
 
+    // todo удалить. Видимо апдейта движений не будет. Только добавление и удаление. Хотяяяя
     public void updateLotMovements(ItemDoc itemDoc) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc(itemDoc);
-        if(items.isEmpty()) throw new NoDocumentItemsException();
+        if(items.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
         updateLots(itemDoc);
     }
 
@@ -65,7 +65,7 @@ public class LotService {
     public void addLotMovements(Document document) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc((ItemDoc) document);
-        if(items.isEmpty()) throw new NoDocumentItemsException();
+        if(items.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
         DocumentType type = document.getDocType();
         if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC) {
             addLots(document);
@@ -75,7 +75,7 @@ public class LotService {
         }
     }
 
-    protected void addStorageDocMovement(DocumentItem docItem) {
+    protected void addStorageDocMovement(DocumentItem docItem){
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
         LocalDateTime time = document.getDateTime();
@@ -108,7 +108,8 @@ public class LotService {
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
-        if(docItemQuantity > lotsQuantitySum) throw new HoldDocumentException();
+        if(docItemQuantity > lotsQuantitySum)
+            throw new HoldDocumentException(Constants.SHORTAGE_OF_ITEM_MESSAGE);
     }
 
     public Map<Lot, Float> getLotMapToUse(Map<Lot, Float> lotMap, float quantity) {
