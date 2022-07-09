@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IdNameDTO {
 

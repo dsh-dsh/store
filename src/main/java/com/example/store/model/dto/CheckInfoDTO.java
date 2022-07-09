@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CheckInfoDTO {
 
     @JsonProperty("check_number")

@@ -10,8 +10,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocItemDTO {
 
     @JsonProperty("document_id")

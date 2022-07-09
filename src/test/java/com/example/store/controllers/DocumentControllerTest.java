@@ -646,9 +646,8 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getPostingDocListTest() throws Exception {
 
-        this.mockMvc.perform(get(URL_PREFIX + "/list?filter=posting")
-                        .param("page", "0")
-                        .param("limit", "10"))
+        this.mockMvc.perform(get(URL_PREFIX + "/list?filter=posting"
+                        + "&start=1646082000000&end=1648760400000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(3));
@@ -660,9 +659,9 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCreditOrderDocListTest() throws Exception {
 
-        this.mockMvc.perform(get(URL_PREFIX + "/list?filter=order")
-                        .param("page", "0")
-                        .param("limit", "10"))
+        this.mockMvc.perform(get(URL_PREFIX
+                        + "/list?filter=order"
+                        + "&start=1646082000000&end=1648760400000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(6));
@@ -674,9 +673,9 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCheckDocListTest() throws Exception {
 
-        this.mockMvc.perform(get(URL_PREFIX + "/list?filter=check")
-                        .param("page", "0")
-                        .param("limit", "10"))
+        this.mockMvc.perform(get(URL_PREFIX
+                        + "/list?filter=check"
+                        + "&start=1646082000000&end=1648760400000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(1));
@@ -688,9 +687,8 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getDocListTest() throws Exception {
 
-        this.mockMvc.perform(get(URL_PREFIX + "/list")
-                        .param("page", "0")
-                        .param("limit", "10"))
+        this.mockMvc.perform(get(URL_PREFIX + "/list"
+                        + "?start=1646082000000&end=1648760400000"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(1))
@@ -698,22 +696,6 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.[2].id").value(3))
                 .andExpect(jsonPath("$.data.[3].id").value(4))
                 .andExpect(jsonPath("$.data.[4].id").value(5));
-    }
-
-    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @WithUserDetails(TestService.EXISTING_EMAIL)
-    void getDocListPaginationTest() throws Exception {
-
-        this.mockMvc.perform(get(URL_PREFIX + "/list")
-                        .param("page", "1")
-                        .param("size", "2"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].id").value(3))
-                .andExpect(jsonPath("$.data.[1].id").value(4))
-                .andExpect(jsonPath("$.data.[2].id").doesNotExist());
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
