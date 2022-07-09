@@ -224,4 +224,22 @@ class DocumentServiceTest {
         documentService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(docId).isDeleted());
     }
+
+    @Sql(value = {"/sql/documents/addOrderDoc.sql",
+            "/sql/documents/addPostingDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNextDocumentNumberWhenDocOfSuchTypeExistsTest() {
+        int newOrderNumber = documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC);
+        int newPostingNumber = documentService.getNextDocumentNumber(DocumentType.POSTING_DOC);
+        assertEquals(7, newOrderNumber);
+        assertEquals(2, newPostingNumber);
+    }
+
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNextDocumentNumberWhenDocNotExistsTest() {
+        int newNumber = documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC);
+        assertEquals(1, newNumber);
+    }
 }

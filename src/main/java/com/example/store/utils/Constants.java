@@ -4,6 +4,8 @@ import java.util.List;
 
 public class Constants {
 
+    public static final int START_DOCUMENT_NUMBER = 1;
+
     public static final String SYSTEM_USER_EMAIL = "system@user.com";
     public static final String ADMIN_ROLE = "администратор";
     public static final String CASHIER_ROLE = "кассир";
@@ -74,6 +76,7 @@ public class Constants {
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";
     public static final String ENABLE_TYPE = "Используется";
+
     public static final List<Integer> INGREDIENTS_PARENT_IDS = List.of(3);  // items from ingredients (id = 3)
 
     private Constants() {

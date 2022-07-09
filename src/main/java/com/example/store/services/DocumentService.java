@@ -19,8 +19,6 @@ import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -189,18 +187,11 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
-    // TODO add test to getNextDocumentNumber
-
     protected int getNextDocumentNumber(DocumentType type) {
         try {
             return documentRepository.getLastNumber(type.toString()) + 1;
         } catch (Exception exception) {
-            return getStartDocNumber(type);
+            return Constants.START_DOCUMENT_NUMBER;
         }
-    }
-
-    private int getStartDocNumber(DocumentType documentType) {
-        // todo add start number logic
-        return 1;
     }
 }
