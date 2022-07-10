@@ -1,7 +1,6 @@
 package com.example.store.exceptions;
 
 import com.example.store.model.responses.ErrorResponse;
-import com.example.store.utils.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +13,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({BadRequestException.class})
     protected ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
+                        ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({TransactionException.class})

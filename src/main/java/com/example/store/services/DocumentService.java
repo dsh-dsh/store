@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.ExceptionType;
 import com.example.store.factories.ItemDocFactory;
 import com.example.store.factories.OrderDocFactory;
 import com.example.store.mappers.DocMapper;
@@ -54,7 +55,9 @@ public class DocumentService {
     public void holdDocument(int docId) {
         Document document = getDocumentById(docId);
         if(existsNotHoldenDocsBefore(document)) {
-            throw new BadRequestException(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE);
+            throw new BadRequestException(
+                    Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
+                    ExceptionType.HOLD_EXCEPTION);
         }
         if(document instanceof ItemDoc) {
             if(document.isHold()) {
