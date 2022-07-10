@@ -21,4 +21,6 @@ public class ItemDTOForList {
 
     @JsonProperty("rest_list")
     private List<RestDTO> restList;
+
+    private float price;
 }

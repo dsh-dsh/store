@@ -10,6 +10,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.services.ItemRestService;
+import com.example.store.services.LotMoveService;
 import com.example.store.services.LotService;
 import com.example.store.components.ReHoldChecking;
 import com.example.store.utils.Constants;
@@ -30,6 +31,8 @@ public class ItemDocFactory extends AbstractDocFactory {
     private ReHoldChecking reHoldChecking;
     @Autowired
     private UnHoldDocs unHoldDocs;
+    @Autowired
+    private LotMoveService lotMoveService;
 
     @Override
     @Transaction
@@ -77,6 +80,17 @@ public class ItemDocFactory extends AbstractDocFactory {
         itemDocRepository.save((ItemDoc) document);
     }
 
+    @Override
+    @Transaction
+    public void unHoldDocument(Document document) {
+        List<DocumentItem> items =
+                docItemService.getItemsByDoc((ItemDoc) document);
+        lotMoveService.removeByDocument((ItemDoc) document);
+        lotService.removeLots(items);
+        document.setHold(false);
+        itemDocRepository.save((ItemDoc) document);
+    }
+
     private void setAdditionalFieldsAndSave(ItemDoc itemDoc) {
         if(docDTO.getIndividual().getId() != 0) {
             itemDoc.setIndividual(userService.getById(docDTO.getIndividual().getId()));
@@ -94,15 +108,5 @@ public class ItemDocFactory extends AbstractDocFactory {
             itemDoc.setStorageFrom(storageService.getById(docDTO.getStorageFrom().getId()));
         }
         itemDocRepository.save(itemDoc);
-    }
-
-    @Override
-    @Transaction
-    public void unHoldDocument(Document document) {
-        List<DocumentItem> items =
-                docItemService.getItemsByDoc((ItemDoc) document);
-        lotService.removeLots(items);
-        document.setHold(false);
-        itemDocRepository.save((ItemDoc) document);
     }
 }

@@ -82,6 +82,9 @@ public class MappingConverters {
     protected final Converter<Item, List<RestDTO>> restConverter =
             item -> itemRestService.getItemRestList(item.getSource());
 
+    protected final Converter<Item, Float> priceConverter =
+            item -> itemRestService.getLastPriceOfItem(item.getSource());
+
     private ItemDTOForIngredient getItemDTO(Item item) {
         ItemDTOForIngredient dto = new ItemDTOForIngredient();
         dto.setId(item.getId());
