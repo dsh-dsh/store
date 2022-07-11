@@ -3,8 +3,6 @@ package com.example.store.repositories;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.utils.annotations.Loggable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +33,8 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     int getLastNumber(String docType);
 
     List<Document> findByIsHoldAndDateTimeAfter(boolean isHold, LocalDateTime dateTime, Sort sort);
+
+    List<Document> findByIsHoldAndIsDeletedAndDateTimeBefore(boolean isHold, boolean isDeleted, LocalDateTime dateTime, Sort sort);
 
     List<Document> findByIsHoldAndDateTimeBetween(boolean isHold, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 

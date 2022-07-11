@@ -74,6 +74,14 @@ public class DocumentService {
         }
     }
 
+    public void serialHoldDocument(int docId) {
+        Document document = getDocumentById(docId);
+        List<Document> documents = documentRepository
+                .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
+        documents.add(document);
+        documents.forEach(doc -> holdDocument(doc.getId()));
+    }
+
     public void addDocument(DocDTO docDTO) {
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -94,14 +102,14 @@ public class DocumentService {
 
     public List<Document> getDocumentsAfterAndInclude(Document document) {
         List<Document> documents = documentRepository
-                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(), Sort.by("dateTime").descending());
+                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING).descending());
         documents.add(document);
         return documents;
     }
 
     public List<Document> getDocumentsByPeriod(Document currentDoc, Document limitDoc, boolean isHold) {
         return documentRepository.findByIsHoldAndDateTimeBetween(
-                isHold, currentDoc.getDateTime(), limitDoc.getDateTime(), Sort.by("dateTime"));
+                isHold, currentDoc.getDateTime(), limitDoc.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
     }
 
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {

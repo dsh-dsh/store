@@ -5,8 +5,6 @@ import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.entities.Item;
-import com.example.store.model.enums.Unit;
-import com.example.store.model.enums.Workshop;
 import com.example.store.utils.Constants;
 import lombok.Setter;
 import org.springframework.stereotype.Service;

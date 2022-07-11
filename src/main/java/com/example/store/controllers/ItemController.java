@@ -1,10 +1,8 @@
 package com.example.store.controllers;
 
-import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
-import com.example.store.model.entities.Item;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.ItemService;

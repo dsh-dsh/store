@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 
 public abstract class AbstractDocFactory implements DocFactory {
@@ -141,13 +140,8 @@ public abstract class AbstractDocFactory implements DocFactory {
         try {
            return documentRepository.getLastNumber(documentType.toString()) + 1;
         } catch (Exception exception) {
-            return getStartDocNumber(documentType);
+            return Constants.START_DOCUMENT_NUMBER;
         }
-    }
-
-    private int getStartDocNumber(DocumentType documentType) {
-        // todo add start number logic
-        return 1;
     }
 
     protected void addCheckInfo(ItemDoc check) {

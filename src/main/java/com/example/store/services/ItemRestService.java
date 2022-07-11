@@ -1,5 +1,7 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.ExceptionType;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
@@ -35,6 +37,13 @@ public class ItemRestService {
     private DocItemMapper docItemMapper;
     @Autowired
     private StorageService storageService;
+
+    public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
+        double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
+        if(docItemQuantity > lotsQuantitySum)
+            throw new BadRequestException(Constants.SHORTAGE_OF_ITEM_MESSAGE,
+                    ExceptionType.HOLD_EXCEPTION);
+    }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
         LocalDateTime dateTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();

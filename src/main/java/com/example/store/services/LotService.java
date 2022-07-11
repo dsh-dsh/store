@@ -1,7 +1,6 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -29,6 +28,8 @@ public class LotService {
     private DocItemService docItemService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private ItemRestService itemRestService;
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -88,7 +89,7 @@ public class LotService {
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime time) {
         Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, time);
-        checkQuantityShortage(lotMap, docItem.getQuantity());
+        itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
         return getLotMapToUse(lotMap, docItem.getQuantity());
     }
 
@@ -104,12 +105,6 @@ public class LotService {
 
     private Lot getLotById(long id) {
         return lotRepository.getById(id);
-    }
-
-    public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
-        double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
-        if(docItemQuantity > lotsQuantitySum)
-            throw new HoldDocumentException(Constants.SHORTAGE_OF_ITEM_MESSAGE);
     }
 
     public Map<Lot, Float> getLotMapToUse(Map<Lot, Float> lotMap, float quantity) {

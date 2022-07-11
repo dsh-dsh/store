@@ -3,7 +3,6 @@ package com.example.store.security;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.User;
 import com.example.store.repositories.UserRepository;
-import com.example.store.services.UserService;
 import com.example.store.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

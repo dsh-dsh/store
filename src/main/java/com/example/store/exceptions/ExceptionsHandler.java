@@ -29,26 +29,4 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-//    protected ResponseEntity<ErrorResponse> handleAuthenticationCredentialsNotFoundException(
-//            AuthenticationCredentialsNotFoundException ex) {
-//        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
-//    }
-
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-//            MethodArgumentNotValidException ex,
-//            HttpHeaders headers,
-//            HttpStatus status,
-//            WebRequest request) {
-//
-//        List<String> errors = ex.getBindingResult()
-//                .getAllErrors().stream()
-//                .map(ObjectError::getDefaultMessage)
-//                .collect(Collectors.toList());
-//
-//        return new ResponseEntity<>(new ErrorResponse(errors.get(0)), HttpStatus.BAD_REQUEST);
-//    }
-
-
 }

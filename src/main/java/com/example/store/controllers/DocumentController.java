@@ -7,7 +7,6 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +41,12 @@ public class DocumentController {
     @PostMapping("/hold/{id}")
     public ResponseEntity<Response<String>> holdDocument(@PathVariable int id) {
         documentService.holdDocument(id);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/hold/serial/{id}")
+    public ResponseEntity<Response<String>> serialHoldDocument(@PathVariable int id) {
+        documentService.serialHoldDocument(id);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

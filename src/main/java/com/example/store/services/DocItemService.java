@@ -96,7 +96,6 @@ public class DocItemService {
     public List<DocItemDTO> getItemDTOListByDoc(ItemDoc doc) {
         List<DocumentItem> items = getItemsByDoc(doc);
         List<DocItemDTO> list = items.stream().map(docItemMapper::mapToDocItemDTO).collect(Collectors.toList());
-        System.out.println(list);
         return list;
     }
 
@@ -105,15 +104,6 @@ public class DocItemService {
         return (float) items.stream()
                 .mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount())
                 .sum();
-    }
-
-    private DocItemDTO mapToDocItemDTO(DocumentItem item) {
-        DocItemDTO dto = new DocItemDTO();
-        dto.setDocumentId(item.getItemDoc().getId());
-        dto.setItemId(item.getItem().getId());
-        dto.setItemName(item.getItem().getName());
-        dto.setPrice(item.getPrice());
-        return dto;
     }
 
     public void deleteByDoc(ItemDoc itemDoc) {

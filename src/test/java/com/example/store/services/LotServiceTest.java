@@ -145,7 +145,7 @@ class LotServiceTest {
     void checkQuantityShortageExceptionThrownTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
         assertThrows(HoldDocumentException.class, () -> {
-            lotService.checkQuantityShortage(mapOfLotAndFloat, 20.00f);
+            itemRestService.checkQuantityShortage(mapOfLotAndFloat, 20.00f);
         });
     }
 
@@ -224,7 +224,7 @@ class LotServiceTest {
     void checkQuantityShortageNoExceptionTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
         assertDoesNotThrow(() -> {
-            lotService.checkQuantityShortage(mapOfLotAndFloat, 15.00f);
+            itemRestService.checkQuantityShortage(mapOfLotAndFloat, 15.00f);
         });
     }
 
