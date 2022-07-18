@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -144,7 +145,7 @@ class LotServiceTest {
     @Test
     void checkQuantityShortageExceptionThrownTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
-        assertThrows(HoldDocumentException.class, () -> {
+        assertThrows(BadRequestException.class, () -> {
             itemRestService.checkQuantityShortage(mapOfLotAndFloat, 20.00f);
         });
     }

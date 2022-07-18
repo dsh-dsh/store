@@ -23,4 +23,7 @@ public class ItemDTOForList {
     private List<RestDTO> restList;
 
     private float price;
+
+    @JsonProperty("is_composite")
+    private boolean isComposite;
 }

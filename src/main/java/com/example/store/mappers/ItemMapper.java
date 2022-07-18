@@ -36,6 +36,7 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(unitDTOConverter).map(Item1CDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));
         this.modelMapper.createTypeMap(Item.class, ItemDTOForList.class)
+                .addMappings(mapper -> mapper.using(compositeConverter).map(src -> src, ItemDTOForList::setComposite))
                 .addMappings(mapper -> mapper.using(restConverter).map(src -> src, ItemDTOForList::setRestList))
                 .addMappings(mapper -> mapper.using(priceConverter).map(src -> src, ItemDTOForList::setPrice))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForList::setParentId));

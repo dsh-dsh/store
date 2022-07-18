@@ -6,10 +6,7 @@ import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.*;
-import com.example.store.services.CheckInfoService;
-import com.example.store.services.DocItemService;
-import com.example.store.services.ItemRestService;
-import com.example.store.services.ItemService;
+import com.example.store.services.*;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +26,8 @@ public class MappingConverters {
     private ItemService itemService;
     @Autowired
     private ItemRestService itemRestService;
+    @Autowired
+    private IngredientService ingredientService;
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
@@ -84,6 +83,9 @@ public class MappingConverters {
 
     protected final Converter<Item, Float> priceConverter =
             item -> itemRestService.getLastPriceOfItem(item.getSource());
+
+    protected final Converter<Item, Boolean> compositeConverter =
+            item -> ingredientService.haveIngredients(item.getSource());
 
     private ItemDTOForIngredient getItemDTO(Item item) {
         ItemDTOForIngredient dto = new ItemDTOForIngredient();

@@ -58,9 +58,9 @@ class IngredientServiceTest {
         Map<Item, Float> map = ingredientService.getIngredientMap(itemMap, date);
         assertFalse(map.isEmpty());
         assertThat(map, hasKey(item1));
-        assertEquals(3f, map.get(item1));
+        assertEquals(6f, map.get(item1));
         assertThat(map, hasKey(item2));
-        assertEquals(3.6f, map.get(item2));
+        assertEquals(7.2f, map.get(item2));
         assertThat(map, hasKey(item3));
         assertEquals(4.8f, map.get(item3));
         assertThat(map, hasKey(item4));
@@ -91,8 +91,8 @@ class IngredientServiceTest {
         Item item = itemService.getItemById(10);
         Map<Item, Float> map = ingredientService.getIngredientMapOfItem(item, LocalDate.now());
         assertFalse(map.isEmpty());
-        assertThat(map, hasValue(equalTo(1.5f)));
-        assertThat(map, hasValue(equalTo(1.8f)));
+        assertThat(map, hasValue(equalTo(3.0f)));
+        assertThat(map, hasValue(equalTo(3.6f)));
         assertThat(map, hasValue(equalTo(2.4f)));
     }
 

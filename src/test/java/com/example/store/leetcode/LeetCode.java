@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.*;
 
-public class LeetCode {
+class LeetCodeTest {
 
     // NonDecreasingArray
     public boolean checkPossibility(int[] nums) {
@@ -348,5 +348,70 @@ public class LeetCode {
         list2 = ListNode.of(new int[]{45,99,100});
         merged = ListNode.of(new int[]{-100,-2,3,45,99,100});
         assertEquals(merged, mergeTwoLists(list1, list2));
+    }
+
+    public int reversInt(int x) {
+        int result = 0;
+        int sign = x < 0 ? -1 : 1;
+        int digit;
+        while(x != 0) {
+            digit = x % 10;
+            if(result * sign > Integer.MAX_VALUE / 10) return 0;
+            result = (result * 10) + digit;
+            x /= 10;
+        }
+        return result;
+    }
+
+    @Test
+    void reversIntTest() {
+        assertEquals(321, reversInt(123));
+        assertEquals(-321, reversInt(-123));
+        assertEquals(2147483641, reversInt(1463847412));
+        assertEquals(0, reversInt(1563847412));
+        assertEquals(0, reversInt(1463847413));
+        assertEquals(-2147483641, reversInt(-1463847412));
+    }
+
+    @Test
+    void listTest() {
+        MyList<String> list = new MyList<>(new String[]{"a", "b", "c", "d", "e"});
+        list.add("q");
+        assertEquals(6, list.size());
+        System.out.println(list);
+        list.remove("c");
+        assertEquals(5, list.size());
+        System.out.println(list);
+    }
+
+    public String intToRoman(int num) {
+
+        if(num < 1 || num > 3999) return "";
+
+        int[] arab = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] roman = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+
+        StringBuilder builder = new StringBuilder();
+
+        int i = 0;
+
+        while(i < arab.length) {
+            while(num >= arab[i]) {
+                builder.append(roman[i]);
+                num -= arab[i];
+            }
+            if(num <= 0) break;
+            i++;
+        }
+
+        return builder.toString();
+    }
+
+    @Test
+    void intToRomanTest() {
+        assertEquals("III", intToRoman(3));
+        assertEquals("LVIII", intToRoman(58));
+        assertEquals("CCCLVIII", intToRoman(358));
+        assertEquals("MCMXCIV", intToRoman(1994));
     }
 }

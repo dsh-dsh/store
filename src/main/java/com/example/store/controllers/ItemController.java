@@ -1,10 +1,12 @@
 package com.example.store.controllers;
 
+import com.example.store.model.dto.CalculationDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
+import com.example.store.services.CalculationService;
 import com.example.store.services.ItemService;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class ItemController {
 
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private CalculationService calculationService;
 
     @GetMapping("/tree")
     public ResponseEntity<ListResponse<ItemDTOForTree>> getItemTree() {
@@ -59,6 +63,14 @@ public class ItemController {
     public ResponseEntity<Response<String>> softDeleteItemById(@PathVariable int id) {
         itemService.softDeleteItem(id);
         return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    @GetMapping("/calculation")
+    public ResponseEntity<Response<CalculationDTO>> getCalculation(
+            @RequestParam long date,
+            @RequestParam int id) {
+        CalculationDTO dto = calculationService.getCalculation(id, date);
+        return ResponseEntity.ok(new Response<>(dto));
     }
 
 }

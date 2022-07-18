@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.PeriodicValueDTO;
@@ -9,6 +10,7 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,11 @@ public class IngredientService {
     private PeriodicValueService periodicValueService;
 
     private Map<Item, Float> ingredientMapOfItem;
+
+    public Ingredient getIngredientById(int id) {
+        return ingredientRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+    }
 
     public boolean haveIngredients(Item item) {
         return ingredientRepository.existsByParentAndIsDeleted(item, false);

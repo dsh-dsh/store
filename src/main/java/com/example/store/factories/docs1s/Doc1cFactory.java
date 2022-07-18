@@ -1,71 +1,65 @@
 package com.example.store.factories.docs1s;
 
-import com.example.store.factories.abstraction.DocFactory;
+import com.example.store.factories.abstraction.AbstractDocFactory;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.repositories.ItemDocRepository;
 import com.example.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Component
-public class Doc1cFactory implements DocFactory {
+public class Doc1cFactory  extends AbstractDocFactory {
 
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private UserService userService;
+//    @Autowired
+//    private ProjectService projectService;
+//    @Autowired
+//    private UserService userService;
+//    @Autowired
+//    private StorageService storageService;
+//    @Autowired
+//    private CompanyService companyService;
+//    @Autowired
+//    private ItemDocRepository itemDocRepository;
     @Autowired
     private DocItemServiceFor1CDocs docItemServiceFor1CDocs;
-    @Autowired
-    private StorageService storageService;
-    @Autowired
-    private CompanyService companyService;
-    @Autowired
-    private ItemDocRepository itemDocRepository;
     @Autowired
     private CheckInfoServiceFor1CDock checkInfoServiceFor1CDock;
     @Autowired
     private LotService lotService;
 
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss");
-
     @Override
     public ItemDoc addDocument(DocDTO docDTO) {
         DocumentType docType = DocumentType.valueOf(docDTO.getDocType());
-        ItemDoc check = new ItemDoc();
-        check.setNumber(docDTO.getNumber());
-//        check.setDateTime(LocalDateTime.parse(docDTO.getTime(), timeFormatter));
-        check.setProject(projectService.getByName(docDTO.getProject().getName()));
-        check.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
-        check.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
-        check.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
-        check.setDocType(docType);
+        ItemDoc itemDoc = new ItemDoc();
+        itemDoc.setNumber(docDTO.getNumber());
+        itemDoc.setDateTime(getNewTime(itemDoc, docDTO));
+        itemDoc.setProject(projectService.getByName(docDTO.getProject().getName()));
+        itemDoc.setAuthor(userService.getByEmail(docDTO.getAuthor().getEmail()));
+        itemDoc.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
+        itemDoc.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
+        itemDoc.setDocType(docType);
         if(docType == DocumentType.CHECK_DOC) {
-                check.setIndividual(userService.getByEmail(docDTO.getIndividual().getEmail()));
+                itemDoc.setIndividual(userService.getByEmail(docDTO.getIndividual().getEmail()));
         }
-        itemDocRepository.save(check);
+        itemDocRepository.save(itemDoc);
         if(docType.equals(DocumentType.CHECK_DOC)) {
-            checkInfoServiceFor1CDock.addCheckInfo(docDTO.getCheckInfo(), check);
+            checkInfoServiceFor1CDock.addCheckInfo(docDTO.getCheckInfo(), itemDoc);
         }
-        addDocItems(docDTO, check);
+        addDocItems(docDTO, itemDoc);
 
-        return check;
+        return itemDoc;
     }
 
     @Override
     public DocInterface updateDocument(DocDTO docDTO) {
         return null;
-    }
+    } // doesn't need in this class
 
     @Override
-    public void deleteDocument(int docId) {}
+    public void deleteDocument(int docId) {} // doesn't need in this class
 
 
     private void addDocItems(DocDTO docDTO, ItemDoc check) {
@@ -81,5 +75,5 @@ public class Doc1cFactory implements DocFactory {
     }
 
     @Override
-    public void unHoldDocument(Document document){}
+    public void unHoldDocument(Document document){} // doesn't need in this class
 }
