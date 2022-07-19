@@ -2,7 +2,6 @@ package com.example.store.repositories;
 
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.utils.annotations.Loggable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -40,6 +39,5 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     boolean existsByDateTime(LocalDateTime dateTime);
 
-    @Loggable
     Optional<Document> getFirstByDateTimeBetweenOrderByDateTimeDesc(LocalDateTime start, LocalDateTime end);
 }

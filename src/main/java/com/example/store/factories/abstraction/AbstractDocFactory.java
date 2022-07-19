@@ -12,6 +12,7 @@ import com.example.store.repositories.OrderDocRepository;
 import com.example.store.services.*;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -20,6 +21,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+@Component
 public abstract class AbstractDocFactory implements DocFactory {
 
     protected DocDTO docDTO;

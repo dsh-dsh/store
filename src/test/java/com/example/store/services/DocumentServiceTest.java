@@ -1,27 +1,19 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.factories.ItemDocFactory;
-import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.repositories.DocumentRepository;
-import com.example.store.repositories.LotMoveRepository;
-import com.example.store.repositories.LotRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,23 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class DocumentServiceTest {
 
-    @InjectMocks
-    private DocumentService mockedDocumentService;
-    @Mock
-    private ItemDocFactory mockedItemDocFactory;
-
     @Autowired
     private DocumentService documentService;
     @Autowired
-    private DocumentRepository documentRepository;
-    @Autowired
     private StorageService storageService;
-    @Autowired
-    private LotService lotService;
-    @Autowired
-    private LotRepository lotRepository;
-    @Autowired
-    private LotMoveRepository lotMoveRepository;
     @Autowired
     private ProjectService projectService;
 
@@ -71,37 +50,6 @@ class DocumentServiceTest {
 //        verify(mockedItemDocFactory, times(1)).updateDocument(dto);
 //    }
 
-    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void holdDocumentTest() {
-        int docId = 1;
-        documentService.holdDocument(docId);
-        assertEquals(2, lotRepository.findAll().size());
-        assertEquals(2, lotMoveRepository.findAll().size());
-    }
-
-    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void existsNotHoldenDocsBeforeTest() {
-        ItemDoc document = new ItemDoc();
-        document.setDateTime(LocalDateTime.now());
-        document.setDocType(DocumentType.POSTING_DOC);
-        document.setStorageTo(storageService.getById(3));
-        assertTrue(documentService.existsNotHoldenDocsBefore(document));
-    }
-
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void notExistsNotHoldenDocsBeforeTest() {
-        ItemDoc document = new ItemDoc();
-        document.setDateTime(LocalDateTime.now());
-        document.setDocType(DocumentType.POSTING_DOC);
-        document.setStorageTo(storageService.getById(2));
-        assertFalse(documentService.existsNotHoldenDocsBefore(document));
-    }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -183,14 +131,14 @@ class DocumentServiceTest {
                 () -> documentService.getDocumentById(10));
     }
 
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void getDocDTOByIdTest() {
-        DocDTO dto = documentService.getDocDTOById(1);
-        assertEquals(1, dto.getId());
-    }
+//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    @Transactional
+//    void getDocDTOByIdTest() {
+//        DocDTO dto = documentService.getDocDTOById(1);
+//        assertEquals(1, dto.getId());
+//    }
 
     @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -201,28 +149,28 @@ class DocumentServiceTest {
         assertFalse(document.isHold());
     }
 
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void softDeleteDocumentTest() {
-        DocDTO dto = new DocDTO();
-        dto.setDocType(DocumentType.POSTING_DOC.getValue());
-        dto.setId(1);
-        documentService.softDeleteDocument(dto);
-        assertTrue(documentService.getDocumentById(1).isDeleted());
-    }
-
-    @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void softDeleteOrderDocumentTest() {
-        int docId = 6;
-        DocDTO dto = new DocDTO();
-        dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
-        dto.setId(docId);
-        documentService.softDeleteDocument(dto);
-        assertTrue(documentService.getDocumentById(docId).isDeleted());
-    }
+//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void softDeleteDocumentTest() {
+//        DocDTO dto = new DocDTO();
+//        dto.setDocType(DocumentType.POSTING_DOC.getValue());
+//        dto.setId(1);
+//        documentService.softDeleteDocument(dto);
+//        assertTrue(documentService.getDocumentById(1).isDeleted());
+//    }
+//
+//    @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void softDeleteOrderDocumentTest() {
+//        int docId = 6;
+//        DocDTO dto = new DocDTO();
+//        dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
+//        dto.setId(docId);
+//        documentService.softDeleteDocument(dto);
+//        assertTrue(documentService.getDocumentById(docId).isDeleted());
+//    }
 
     @Sql(value = {"/sql/documents/addOrderDoc.sql",
             "/sql/documents/addPostingDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

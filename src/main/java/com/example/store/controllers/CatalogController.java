@@ -2,11 +2,13 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.*;
 import com.example.store.model.responses.ListResponse;
+import com.example.store.model.responses.Response;
 import com.example.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -96,6 +98,12 @@ public class CatalogController {
     public ResponseEntity<ListResponse<EnumDTO>> getPriceTypes() {
         List<EnumDTO> priceTypeDTOList = catalogService.getPriceTypeDTOList();
         return ResponseEntity.ok(new ListResponse<>(priceTypeDTOList));
+    }
+
+    @GetMapping("/controller/advice/test/project")
+    public ResponseEntity<Response<ProjectDTO>> getDocumentForControllerAdviceTest(@RequestParam int id) {
+        ProjectDTO projectDTO = projectService.getProjectDTOById(id);
+        return ResponseEntity.ok(new Response<>(projectDTO));
     }
 
 }

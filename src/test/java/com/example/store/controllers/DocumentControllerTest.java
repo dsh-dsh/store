@@ -67,28 +67,6 @@ class DocumentControllerTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void addDocWithOutProjectTest() throws Exception {
-
-        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
-        docDTO.setSupplier(testService.setCompanyDTO(2));
-        docDTO.setRecipient(testService.setCompanyDTO(1));
-        docDTO.setStorageTo(testService.setStorageDTO(TestService.RECEIPT_FIELDS_ID));
-        docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
-        docDTO.setProject(new ProjectDTO());
-        DocRequestDTO requestDTO = testService.setDTO(docDTO);
-
-        this.mockMvc.perform(
-                        post(URL_PREFIX)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(requestDTO)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NO_SUCH_PROJECT_MESSAGE));
-    }
-
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @WithUserDetails(TestService.EXISTING_EMAIL)
     void addCheckDocTest() throws Exception {
 
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);

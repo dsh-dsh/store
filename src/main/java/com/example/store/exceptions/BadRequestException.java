@@ -10,10 +10,12 @@ public class BadRequestException extends RuntimeException {
 
     public BadRequestException() {
         super(Constants.BAD_REQUEST_MESSAGE);
+        this.exceptionType = ExceptionType.COMMON_EXCEPTION;
     }
 
     public BadRequestException(String message) {
         super(message);
+        this.exceptionType = ExceptionType.COMMON_EXCEPTION;
     }
 
     public BadRequestException(String message, ExceptionType exceptionType) {

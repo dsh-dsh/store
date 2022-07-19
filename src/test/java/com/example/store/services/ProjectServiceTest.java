@@ -42,7 +42,7 @@ class ProjectServiceTest {
     @Test
     void getByWrongIdTest() {
         BadRequestException thrown
-                = assertThrows(BadRequestException.class, () ->  projectService.getById(10));
+                = assertThrows(BadRequestException.class, () ->  projectService.getById(0));
         assertEquals(Constants.NO_SUCH_PROJECT_MESSAGE, thrown.getMessage());
     }
 
