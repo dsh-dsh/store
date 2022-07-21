@@ -95,8 +95,7 @@ public class DocItemService {
 
     public List<DocItemDTO> getItemDTOListByDoc(ItemDoc doc) {
         List<DocumentItem> items = getItemsByDoc(doc);
-        List<DocItemDTO> list = items.stream().map(docItemMapper::mapToDocItemDTO).collect(Collectors.toList());
-        return list;
+        return items.stream().map(docItemMapper::mapToDocItemDTO).collect(Collectors.toList());
     }
 
     public Float getItemsAmount(ItemDoc itemDoc) {
@@ -104,6 +103,12 @@ public class DocItemService {
         return (float) items.stream()
                 .mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount())
                 .sum();
+    }
+
+    public void deleteByDocs(List<Document> documents) {
+        documents.stream()
+                .filter(ItemDoc.class::isInstance)
+                .forEach(doc -> deleteByDoc((ItemDoc) doc));
     }
 
     public void deleteByDoc(ItemDoc itemDoc) {

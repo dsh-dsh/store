@@ -42,4 +42,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     Optional<Document> getFirstByDateTimeBetweenOrderByDateTimeDesc(LocalDateTime start, LocalDateTime end);
 
     boolean existsByNumberAndDateTimeAfter(int number, LocalDateTime dateTime);
+
+    int deleteByIsDeleted(boolean isDeleted);
 }

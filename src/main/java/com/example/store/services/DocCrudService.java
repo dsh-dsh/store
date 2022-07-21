@@ -11,10 +11,13 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.responses.ListResponse;
+import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -128,5 +131,15 @@ public class DocCrudService extends AbstractDocCrudService {
     public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
         itemDocListRequestDTO.getCheckDTOList()
                 .forEach(docsFrom1cService::addDocument);
+    }
+
+    @Transactional
+    public Response<String> hardDeleteDocuments() {
+        List<Document> documents = documentRepository
+                .findByIsHoldAndIsDeletedAndDateTimeBefore(false, true, LocalDateTime.now(), Sort.by("id"));
+        checkInfoService.deleteByDocs(documents);
+        docItemService.deleteByDocs(documents);
+        int count = documentRepository.deleteByIsDeleted(true);
+        return new Response<>(Constants.OK, String.format(Constants.NUMBER_OF_DELETED_DOCS_MESSAGE, count));
     }
 }

@@ -52,6 +52,12 @@ public class DocController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @DeleteMapping("/hard/delete")
+    public ResponseEntity<Response<String>> hardDeleteDocuments() {
+        Response<String> response = docCrudService.hardDeleteDocuments();
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/hold/{id}")
     public ResponseEntity<Response<String>> holdDocument(@PathVariable int id) {
         docCrudService.holdDocument(id);

@@ -75,6 +75,10 @@ public class Constants {
     public static final String NO_SUCH_LOT_MOVEMENT_MESSAGE = "no such lot movement";
     public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
 
+    public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
+
+
+
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";
     public static final String ENABLE_TYPE = "Используется";
