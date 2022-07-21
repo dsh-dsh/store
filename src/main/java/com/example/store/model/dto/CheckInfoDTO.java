@@ -34,6 +34,9 @@ public class CheckInfoDTO {
     @JsonProperty("date_time")
     private long dateTime;
 
+    // 1C
+    private String time;
+
     @JsonProperty("is_return")
     private boolean isReturn;
 

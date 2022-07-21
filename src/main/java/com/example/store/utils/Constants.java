@@ -1,10 +1,12 @@
 package com.example.store.utils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Constants {
 
     public static final int START_DOCUMENT_NUMBER = 1;
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
 
     public static final String SYSTEM_USER_EMAIL = "system@user.com";
     public static final String ADMIN_ROLE = "администратор";
@@ -21,7 +23,7 @@ public class Constants {
     public static final String WRITE_OFF_DOC_TYPE = "Списание";
     public static final String REQUEST_DOC_TYPE = "Заявка";
     public static final String WITHDRAW_ORDER_DOC_TYPE = "ПКО";
-    public static final String CREDIT_ORDER_DOC_TYPE = "РКО";
+    public static final String CREDIT_ORDER_DOC_TYPE = "Расходный кассовый ордер";
     public static final String INVENTORY_DOC_TYPE = "Инвентаризация";
 
     public static final String STORE_STORE_TYPE = "склад";

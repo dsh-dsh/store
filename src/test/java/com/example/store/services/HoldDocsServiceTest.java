@@ -34,16 +34,6 @@ class HoldDocsServiceTest {
     @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void holdDocumentTest() {
-        int docId = 1;
-        holdDocsService.holdDocument(docId);
-        assertEquals(2, lotRepository.findAll().size());
-        assertEquals(2, lotMoveRepository.findAll().size());
-    }
-
-    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
     void existsNotHoldenDocsBeforeTest() {
         ItemDoc document = new ItemDoc();
         document.setDateTime(LocalDateTime.now());

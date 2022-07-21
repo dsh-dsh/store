@@ -54,7 +54,7 @@ public class DocController {
 
     @PostMapping("/hold/{id}")
     public ResponseEntity<Response<String>> holdDocument(@PathVariable int id) {
-        holdDocsService.holdDocument(id);
+        docCrudService.holdDocument(id);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

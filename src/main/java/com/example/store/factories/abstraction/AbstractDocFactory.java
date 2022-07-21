@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
@@ -45,6 +44,8 @@ public abstract class AbstractDocFactory implements DocFactory {
     protected OrderDocRepository orderDocRepository;
     @Autowired
     protected CheckInfoService checkInfoService;
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
 
     protected ItemDoc getItemDoc(DocDTO docDTO) {
         this.docDTO = docDTO;
@@ -123,8 +124,8 @@ public abstract class AbstractDocFactory implements DocFactory {
     }
 
     public LocalDateTime getNewTime(Document document, DocDTO dto) {
-        LocalDateTime newTime = Instant.ofEpochMilli(dto.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime start = LocalDateTime.of(newTime.getYear(), newTime.getMonth(), newTime.getDayOfMonth(), 0, 0, 0);
+        LocalDateTime newTime = LocalDateTime.parse(dto.getDate(), formatter);
+        LocalDateTime start = newTime;
         LocalDateTime end = start.plusDays(1);
         // todo consider on if it is the same document
         if(document.getDateTime() == null || (document.getDateTime() != null && !document.getDateTime().equals(newTime))) {

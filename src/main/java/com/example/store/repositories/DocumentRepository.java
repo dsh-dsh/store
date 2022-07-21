@@ -40,4 +40,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     boolean existsByDateTime(LocalDateTime dateTime);
 
     Optional<Document> getFirstByDateTimeBetweenOrderByDateTimeDesc(LocalDateTime start, LocalDateTime end);
+
+    boolean existsByNumberAndDateTimeAfter(int number, LocalDateTime dateTime);
 }

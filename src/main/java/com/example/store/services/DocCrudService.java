@@ -1,9 +1,11 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.ExceptionType;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.dto.requests.ItemDocListRequestDTO;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
@@ -23,6 +25,12 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Autowired
     private DocMapper docMapper;
+    @Autowired
+    private DocumentService documentService;
+    @Autowired
+    private HoldDocsService holdDocsService;
+    @Autowired
+    private DocsFrom1cService docsFrom1cService;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -65,7 +73,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public DocDTO getDocDTOById(int docId) {
         DocDTO dto;
-        Document document = getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId);
         if(document instanceof ItemDoc) {
             dto = docMapper.mapToDocDTO((ItemDoc) document);
         } else {
@@ -102,13 +110,23 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    public Document getDocumentById(int docId) {
-        return documentRepository.findById(docId)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+    public void holdDocument(int docId) {
+        Document document = documentService.getDocumentById(docId);
+        if(holdDocsService.existsNotHoldenDocsBefore(document)) {
+            throw new BadRequestException(
+                    Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
+                    ExceptionType.HOLD_EXCEPTION);
+        }
+        holdDocsService.holdDocument(document);
     }
 
     public DocDTO getDocDTOForControllerAdviceTest(int docId) {
-        Document document = getDocumentById(docId);
+        Document document = documentService.getDocumentById(docId);
         return docMapper.mapToDocDTO((ItemDoc) document);
+    }
+
+    public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
+        itemDocListRequestDTO.getCheckDTOList()
+                .forEach(docsFrom1cService::addDocument);
     }
 }

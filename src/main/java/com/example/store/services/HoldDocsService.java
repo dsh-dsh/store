@@ -1,7 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.BadRequestException;
-import com.example.store.exceptions.ExceptionType;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -44,13 +42,7 @@ public class HoldDocsService {
     }
 
     @Transaction
-    public void holdDocument(int docId) {
-        Document document = documentService.getDocumentById(docId);
-        if(existsNotHoldenDocsBefore(document)) {
-            throw new BadRequestException(
-                    Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
-                    ExceptionType.HOLD_EXCEPTION);
-        }
+    public void holdDocument(Document document) {
         if(document.isHold()) {
             unHoldDoc(document);
         } else {
@@ -64,7 +56,7 @@ public class HoldDocsService {
         List<Document> documents = documentRepository
                 .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
         documents.add(document);
-        documents.forEach(doc -> holdDocument(doc.getId()));
+        documents.forEach(doc -> holdDocument(document));
     }
 
     public void holdDoc(Document document) {

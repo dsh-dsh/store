@@ -38,6 +38,11 @@ public class UserService {
         return personMapper.mapToPersonDTO(user);
     }
 
+    public User getByName(String name) {
+        return userRepository.findByLastNameStartingWithIgnoreCase(name)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + " - " + name));
+    }
+
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + " - " + email));

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -24,6 +23,9 @@ public class DocDTO {
 
     @JsonProperty("date_time")
     private long dateTime;
+
+    // 1C
+    private String date;
 
     @JsonProperty("doc_type")
     private String docType;
