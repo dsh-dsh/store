@@ -43,9 +43,9 @@ public class DocsFrom1cService {
 
     @Transaction
     public void addDocument(DocDTO docDTO) {
-        if(isDocNumberExists(docDTO.getNumber())) return;
-
         DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
+        if(isDocNumberExists(docDTO.getNumber(), docType)) return;
+
         Document document;
         if(docType == DocumentType.CHECK_DOC) {
             document = new ItemDoc();
@@ -78,8 +78,8 @@ public class DocsFrom1cService {
                 .forEach(docItemDTO -> docItemServiceFor1CDocs.addDocItem(docItemDTO, check));
     }
 
-    public boolean isDocNumberExists(int number) {
-        return documentRepository.existsByNumberAndDateTimeAfter(number, startOfYear);
+    public boolean isDocNumberExists(long number, DocumentType type) {
+        return documentRepository.existsByNumberAndDocTypeAndDateTimeAfter(number, type, startOfYear);
     }
 
     public LocalDateTime getNewTime(Document document, DocDTO dto) {

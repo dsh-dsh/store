@@ -19,7 +19,7 @@ public class DocDTO {
 
     private int id;
 
-    private int number;
+    private long number;
 
     @JsonProperty("date_time")
     private long dateTime;

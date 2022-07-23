@@ -20,7 +20,7 @@ public class DocToListDTO {
 
     private int id;
 
-    private int number;
+    private long number;
 
     @JsonProperty("doc_type")
     private String docType;

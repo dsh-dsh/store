@@ -25,7 +25,7 @@ public class Document {
     @SequenceGenerator(name = "docSequence", sequenceName = "DOC_SEQ")
     private int id;
 
-    private int number;
+    private long number;
 
     private LocalDateTime dateTime;
 

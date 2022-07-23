@@ -1,0 +1,1 @@
+ALTER TABLE document MODIFY COLUMN  number bigint not null;
