@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 public class IngredientService {
 
     @Autowired
-    private IngredientMapper ingredientMapper;
+    protected IngredientMapper ingredientMapper;
     @Autowired
-    private IngredientRepository ingredientRepository;
+    protected IngredientRepository ingredientRepository;
     @Autowired
     private PeriodicValueService periodicValueService;
 

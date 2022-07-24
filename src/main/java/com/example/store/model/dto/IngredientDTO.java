@@ -32,6 +32,7 @@ public class IngredientDTO {
 
     @JsonProperty("parent_id")
     private int parentId;
+
     private PeriodicValueDTO netto;
     private PeriodicValueDTO gross;
     private PeriodicValueDTO enable;

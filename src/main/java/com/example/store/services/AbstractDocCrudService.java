@@ -55,8 +55,6 @@ public class AbstractDocCrudService {
     protected DocumentType documentType;
     protected DocDTO docDTO;
 
-
-    @Transaction
     public DocInterface addItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
         setAdditionalFieldsAndSave(itemDoc);
@@ -67,9 +65,8 @@ public class AbstractDocCrudService {
         return itemDoc;
     }
 
-    @Transaction
     public DocInterface addOrderDoc(DocDTO docDTO) {
-        OrderDoc order = (OrderDoc) setDocument(getOrAddItemDoc(docDTO));
+        OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
         setAdditionalFieldsAndSave(order);
         return order;
     }
@@ -89,15 +86,13 @@ public class AbstractDocCrudService {
         return itemDoc;
     }
 
-    @Transaction
     public DocInterface updateOrderDocument(DocDTO docDTO) {
-        OrderDoc order = (OrderDoc) setDocument(getOrAddItemDoc(docDTO));
-        setAdditionalFieldsAndSave(order);
-
-        return order;
+        return addOrderDoc(docDTO);
+//        OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
+//        setAdditionalFieldsAndSave(order);
+//        return order;
     }
 
-    @Transaction
     public void deleteItemDoc(int docId) {
         ItemDoc itemDoc = itemDocRepository.findById(docId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
@@ -129,6 +124,17 @@ public class AbstractDocCrudService {
                     .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
         } else {
             return new ItemDoc();
+        }
+    }
+
+    protected OrderDoc getOrAddOrderDoc(DocDTO docDTO) {
+        setDocDTO(docDTO);
+        int docId = docDTO.getId();
+        if(docId != 0) {
+            return orderDocRepository.findById(docId)
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+        } else {
+            return new OrderDoc();
         }
     }
 

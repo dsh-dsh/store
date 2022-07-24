@@ -1,12 +1,12 @@
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
 (10, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
 "Некое блюдо", "Некое блюдо", "2012-02-02T12:00:00", 1, "PORTION", "KITCHEN", B'0', 10);
 
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
 (11, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
@@ -17,7 +17,7 @@ values
 "Полуфабрикат 3", "Полуфабрикат 3", "2012-02-02T12:00:00", 2, "KG", "NONE", B'0', 13);
 
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
 (14, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',

@@ -6,7 +6,7 @@ import lombok.Data;
 public class Response<T> {
 
     private T data;
-    private String message;
+    private String message = "";
 
     public Response(T data) {
         this.data = data;

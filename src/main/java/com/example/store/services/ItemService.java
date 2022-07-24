@@ -77,7 +77,7 @@ public class ItemService {
         item.setName(dto.getName());
         item.setPrintName(dto.getPrintName());
         item.setWeight(dto.isWeight());
-        item.setInEmployeeMenu(dto.isInEmployeeMenu());
+        item.setNotInEmployeeMenu(dto.isNotInEmployeeMenu());
         item.setAlcohol(dto.isAlcohol());
         item.setGarnish(dto.isGarnish());
         item.setIncludeGarnish(dto.isIncludeGarnish());

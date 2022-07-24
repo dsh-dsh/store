@@ -33,7 +33,7 @@ public class Item implements EntityInterface{
 
 
     private boolean isWeight;
-    private boolean isInEmployeeMenu;
+    private boolean isNotInEmployeeMenu;
 
     private boolean isNotInPriceList;
     private boolean isAlcohol;

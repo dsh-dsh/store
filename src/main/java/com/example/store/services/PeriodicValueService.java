@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class PeriodicValueService {
 
     @Autowired
-    private PeriodicValueRepository periodicValueRepository;
+    protected PeriodicValueRepository periodicValueRepository;
     @Autowired
     private PeriodicValueMapper periodicValueMapper;
 
@@ -64,7 +64,7 @@ public class PeriodicValueService {
         setQuantity(ingredient, dto.getEnable());
     }
 
-    private void setQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
+    protected void setQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
         PeriodicValue periodicValue = periodicValueMapper.mapToItem(dto);
         periodicValue.setIngredient(ingredient);
         periodicValueRepository.save(periodicValue);
@@ -83,11 +83,9 @@ public class PeriodicValueService {
         updateQuantity(ingredient, dto.getEnable());
     }
 
-    private void updateQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
-        PeriodicValueType type = PeriodicValueType.valueOf(dto.getType());
+    protected void updateQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
         LocalDate date = convertDate(dto.getDate());
         Optional<PeriodicValue> optional = periodicValueRepository.findById(dto.getId());
-//                = quantityRepository.findTop1ByTypeAndDateLessThanEqualOrderByDateDesc(type, date);
         if(optional.isPresent()) {
             PeriodicValue periodicValue = optional.get();
             if(periodicValue.getDate().isEqual(date)) {
@@ -103,7 +101,7 @@ public class PeriodicValueService {
         }
     }
 
-    private LocalDate convertDate(long longTime) {
+    protected LocalDate convertDate(long longTime) {
         return Instant.ofEpochMilli(longTime).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 

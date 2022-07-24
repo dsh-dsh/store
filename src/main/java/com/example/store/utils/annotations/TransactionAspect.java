@@ -38,12 +38,12 @@ public class TransactionAspect {
                     return joinPoint.proceed();
                 } catch (Throwable e) {
                     e.printStackTrace();
-                    throw new TransactionException();
+                    throw new TransactionException(e.getMessage());
                 }
             });
             return null;
         } catch (Throwable throwable) {
-            throw new TransactionException();
+            throw new TransactionException(throwable.getMessage());
         }
     }
 

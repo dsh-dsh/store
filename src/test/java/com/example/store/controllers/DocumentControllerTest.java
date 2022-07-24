@@ -153,8 +153,7 @@ class DocumentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.TRANSACTION_FAILED_MESSAGE));
+                .andExpect(status().isBadRequest());
 
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.RECEIPT_DOC);
         assertEquals(TestService.NO_DOCUMENTS, docs.size());
@@ -614,8 +613,7 @@ class DocumentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.TRANSACTION_FAILED_MESSAGE));
+                .andExpect(status().isBadRequest());
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

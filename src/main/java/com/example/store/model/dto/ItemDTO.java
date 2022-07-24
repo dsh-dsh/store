@@ -30,8 +30,8 @@ public class ItemDTO {
     @JsonProperty("is_weight")
     private boolean isWeight;
 
-    @JsonProperty("is_in_employee_menu")
-    private boolean isInEmployeeMenu;
+    @JsonProperty("is_not_in_employee_menu")
+    private boolean isNotInEmployeeMenu;
 
     @JsonProperty("is_alcohol")
     private boolean isAlcohol;
@@ -59,6 +59,9 @@ public class ItemDTO {
     private int parentId;
 
     private int number;
+
+    @JsonProperty("is_node")
+    private boolean isNode;
 
     private List<PriceDTO> prices;
 

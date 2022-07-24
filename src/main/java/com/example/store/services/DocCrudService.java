@@ -14,6 +14,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
+import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,7 @@ public class DocCrudService extends AbstractDocCrudService {
         return dto;
     }
 
+    @Transaction
     public void addDocument(DocDTO docDTO) {
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -94,6 +96,7 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    @Transaction
     public void updateDocument(DocDTO docDTO) {
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -103,6 +106,7 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    @Transaction
     public void softDeleteDocument(DocDTO docDTO) {
         int docId = docDTO.getId();
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())

@@ -5,8 +5,11 @@ import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.entities.Item;
+import com.example.store.model.enums.Unit;
+import com.example.store.model.enums.Workshop;
 import com.example.store.utils.Constants;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +19,9 @@ import java.util.*;
 @Service
 public class Item1CService extends ItemService{
 
+    @Autowired
+    private Ingredient1CService ingredient1CService;
+
     private LocalDate date;
 
     public void setItemsFrom1C(ItemList1CRequestDTO itemList1CRequestDTO) {
@@ -23,8 +29,7 @@ public class Item1CService extends ItemService{
         List<Item1CDTO> dtoList = itemList1CRequestDTO.getItem1CDTOList();
         dtoList.sort(Comparator.comparing(Item1CDTO::getNumber));
 
-        List<Item1CDTO> list = new ArrayList<>(dtoList);
-        setItemsRecursive(list);
+        setItemsRecursive(new ArrayList<>(dtoList));
 
         dtoList.forEach(this::setIngredientsAndSets);
     }
@@ -32,13 +37,16 @@ public class Item1CService extends ItemService{
     private void setItemsRecursive(List<Item1CDTO> dtoList) {
         if(!dtoList.isEmpty()) {
             Iterator<Item1CDTO> iterator = dtoList.iterator();
+            boolean interrupt = true;
             while (iterator.hasNext()) {
                 Item1CDTO dto = iterator.next();
                 if (itemRepository.existsByNumber(dto.getParentNumber())) {
                     setItem(dto);
                     iterator.remove();
+                    interrupt = false;
                 }
             }
+            if(interrupt) return; // where is not any parent node, so infinity loop
             setItemsRecursive(dtoList);
         }
     }
@@ -74,7 +82,7 @@ public class Item1CService extends ItemService{
 
     public void updateIngredientAndSet(Item item, Item1CDTO itemDTO) {
         setService.updateSets(item, itemDTO.getSets());
-        ingredientService.updateIngredients(item, itemDTO.getIngredients());
+        ingredient1CService.updateIngredients(item, itemDTO.getIngredients());
     }
 
     @Override
@@ -82,14 +90,14 @@ public class Item1CService extends ItemService{
         item.setName(dto.getName());
         item.setPrintName(dto.getPrintName());
         item.setWeight(dto.isWeight());
-        item.setInEmployeeMenu(dto.isInEmployeeMenu());
+        item.setNotInEmployeeMenu(dto.isNotInEmployeeMenu());
         item.setAlcohol(dto.isAlcohol());
         item.setGarnish(dto.isGarnish());
         item.setIncludeGarnish(dto.isIncludeGarnish());
         item.setSauce(dto.isSauce());
         item.setIncludeSauce(dto.isIncludeSauce());
-//        item.setWorkshop(Workshop.valueOf(dto.getWorkshop()));
-//        item.setUnit(Unit.valueOf(dto.getUnit()));
+        item.setWorkshop(Workshop.valueOf(dto.getWorkshop().getCode()));
+        item.setUnit(Unit.valueOf(dto.getUnit().getCode()));
         Item parent = findItemByNumber(((Item1CDTO)dto).getParentNumber())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         item.setParent(parent);

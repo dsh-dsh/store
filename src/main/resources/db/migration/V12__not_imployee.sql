@@ -1,0 +1,1 @@
+ALTER TABLE item RENAME COLUMN is_in_employee_menu TO is_not_in_employee_menu;

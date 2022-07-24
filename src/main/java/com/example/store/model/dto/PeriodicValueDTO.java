@@ -16,6 +16,10 @@ public class PeriodicValueDTO {
 
     private int id;
     private long date;
+
+    @JsonProperty("string_date")
+    private String stringDate;
+
     private float quantity;
     private String type;
 

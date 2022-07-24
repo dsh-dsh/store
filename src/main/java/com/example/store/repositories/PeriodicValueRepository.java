@@ -16,7 +16,7 @@ public interface PeriodicValueRepository extends JpaRepository<PeriodicValue, In
 
     List<PeriodicValue> findByIngredientAndDateLessThanEqual(Ingredient ingredient, LocalDate date, Sort sort);
 
-    Optional<PeriodicValue> findTop1ByTypeAndDateLessThanEqualOrderByDateDesc(PeriodicValueType type, LocalDate date);
+    Optional<PeriodicValue> findFirstByIngredientAndDateAndType(Ingredient ingredient, LocalDate date, PeriodicValueType type);
 
     Optional<PeriodicValue> findFirstByIngredientAndDateLessThanEqualAndType(Ingredient ingredient, LocalDate date, PeriodicValueType type, Sort sort);
 

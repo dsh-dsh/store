@@ -1,14 +1,22 @@
 package com.example.store.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item1CDTO extends ItemDTO{
+public class Item1CDTO extends ItemDTO {
+    @JsonProperty("parent_number")
     private int parentNumber;
-    private int number;
+
+    @Override
+    public String toString() {
+        return "Item1CDTO{" +
+                "parentNumber=" + parentNumber + "," +
+                super.toString() +
+                '}';
+    }
 }
