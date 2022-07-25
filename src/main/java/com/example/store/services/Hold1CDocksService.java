@@ -1,7 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.factories.ItemDocFactory;
-import com.example.store.factories.OrderDocFactory;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -35,9 +33,7 @@ public class Hold1CDocksService {
     @Autowired
     private ProjectService projectService;
     @Autowired
-    private ItemDocFactory itemDocFactory;
-    @Autowired
-    private OrderDocFactory orderDocFactory;
+    private HoldDocsService holdDocsService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -113,9 +109,9 @@ public class Hold1CDocksService {
     @Transactional
     public void holdDocsAndChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         if (postingDoc != null) {
-            itemDocFactory.holdDocument(postingDoc);
+            holdDocsService.holdDoc(postingDoc);
         }
-        itemDocFactory.holdDocument(writeOffDoc);
+        holdDocsService.holdDoc(writeOffDoc);
         checks.forEach(check -> documentService.setHoldAndSave(true, check));
     }
 
@@ -123,13 +119,8 @@ public class Hold1CDocksService {
     public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);
         for(OrderDoc order : orders) {
-            orderDocFactory.holdDocument(order);
+            holdDocsService.holdDoc(order);
         }
-    }
-
-    public void deleteCreatedDocumentsOnFail() {
-        if(postingDoc != null) itemDocFactory.deleteDocument(postingDoc.getId());
-        if(writeOffDoc != null) itemDocFactory.deleteDocument(writeOffDoc.getId());
     }
 
     public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
