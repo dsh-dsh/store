@@ -1,7 +1,6 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -127,16 +126,16 @@ class LotServiceTest {
     }
 
     @Test
-    void getLotMapOfOneToUseTest() {
-        Map<Lot, Float> map = lotService.getLotMapToUse(getMapOfLotAndFloat(), 5.00f);
+    void getLotMapOfOneToHoldTest() {
+        Map<Lot, Float> map = lotService.getLotMapToHold(getMapOfLotAndFloat(), 5.00f);
         assertEquals(1, map.size());
         assertThat(map, hasValue(equalTo(5.00f)));
     }
 
     @Test
-    void getLotMapOfTwoToUseTest() {
+    void getLotMapOfTwoToHoldTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
-        Map<Lot, Float> map = lotService.getLotMapToUse(mapOfLotAndFloat, 12.00f);
+        Map<Lot, Float> map = lotService.getLotMapToHold(mapOfLotAndFloat, 12.00f);
         assertEquals(2, map.size());
         assertThat(map, hasValue(equalTo(5.00f)));
         assertThat(map, hasValue(equalTo(7.00f)));

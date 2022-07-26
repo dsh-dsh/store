@@ -8,6 +8,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+@Setter
 @Service
 public class LotService {
 
@@ -30,6 +32,8 @@ public class LotService {
     private IngredientService ingredientService;
     @Autowired
     private ItemRestService itemRestService;
+
+    private boolean addRestForHold = true;
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -72,6 +76,7 @@ public class LotService {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
             ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
+
             items.forEach(this::addStorageDocMovement);
         }
     }
@@ -80,8 +85,10 @@ public class LotService {
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
         LocalDateTime time = document.getDateTime();
+
         Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
         lotMoveService.addMinusLotMovements(document, lotMap);
+
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
             lotMoveService.addPlusLotMovements(document, lotMap);
         }
@@ -89,8 +96,10 @@ public class LotService {
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime time) {
         Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, time);
-        itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
-        return getLotMapToUse(lotMap, docItem.getQuantity());
+        if(addRestForHold) {
+            itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
+        }
+        return getLotMapToHold(lotMap, docItem.getQuantity());
     }
 
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
@@ -107,10 +116,10 @@ public class LotService {
         return lotRepository.getById(id);
     }
 
-    public Map<Lot, Float> getLotMapToUse(Map<Lot, Float> lotMap, float quantity) {
+    public Map<Lot, Float> getLotMapToHold(Map<Lot, Float> lotMap, float quantity) {
         Map<Lot, Float> newLotMap = new TreeMap<>();
         for(Map.Entry<Lot, Float> entry : lotMap.entrySet()) {
-            if(quantity > 0){
+            if(quantity > 0) {
                 float lotQuantity = quantity > entry.getValue()? entry.getValue() : quantity;
                 newLotMap.put(entry.getKey(), lotQuantity);
                 quantity = quantity - entry.getValue();

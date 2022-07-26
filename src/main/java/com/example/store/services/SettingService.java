@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,11 +22,19 @@ public class SettingService {
     @Autowired
     private UserService userService;
 
+    // todo add tests
+
+    public DefaultPropertySetting getSettingByType(User user, SettingType type) {
+        Optional<DefaultPropertySetting> setting = settingRepository.findByUserAndSettingType(user, type);
+        return setting.orElse(null);
+    }
+
     public ListResponse<SettingDTO> getSettingsByUser(int userId) {
         User user = userService.getById(userId);
         List<DefaultPropertySetting> list = settingRepository.findByUser(user);
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
         List<SettingDTO> dtoList = list.stream()
+                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD)
                 .map(setting -> getSettingDTO(setting, userDTO))
                 .collect(Collectors.toList());
         return new ListResponse<>(dtoList);

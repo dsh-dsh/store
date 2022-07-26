@@ -50,7 +50,7 @@ public class HoldDocsService {
         }
     }
 
-    // add tests
+    // todo add tests
     public void serialHoldDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
         List<Document> documents = documentRepository
@@ -67,6 +67,11 @@ public class HoldDocsService {
         } else {
             orderDocRepository.save((OrderDoc) document);
         }
+    }
+    public void holdDoc(Document document, boolean addRestForHold) {
+        lotService.setAddRestForHold(addRestForHold);
+        holdDoc(document);
+        lotService.setAddRestForHold(!addRestForHold);
     }
 
     public void unHoldDoc(Document document) {
