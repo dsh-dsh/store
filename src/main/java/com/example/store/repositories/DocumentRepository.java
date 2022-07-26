@@ -15,7 +15,9 @@ import java.util.Optional;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
-    boolean existsByDateTimeLessThanAndIsDeletedAndIsHold(LocalDateTime dateTime, boolean isDeleted, boolean isHold);
+    boolean existsByDateTimeBeforeAndIsDeletedAndIsHold(LocalDateTime dateTime, boolean isDeleted, boolean isHold);
+
+    boolean existsByDateTimeAfterAndIsHold(LocalDateTime dateTime, boolean isHold);
 
     @Query("SELECT doc " +
             "FROM Document doc " +

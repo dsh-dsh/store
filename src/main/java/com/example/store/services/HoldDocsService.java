@@ -7,10 +7,8 @@ import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
-import com.example.store.utils.Constants;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,9 +34,10 @@ public class HoldDocsService {
 
     public boolean existsNotHoldenDocsBefore(Document document) {
         if(document.isHold()) {
-            return false;
+            return documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true);
+        } else {
+            return documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(document.getDateTime(), false, false);
         }
-        return documentRepository.existsByDateTimeLessThanAndIsDeletedAndIsHold(document.getDateTime(), false,false);
     }
 
     @Transaction
@@ -50,15 +49,6 @@ public class HoldDocsService {
         }
     }
 
-    // todo add tests
-    public void serialHoldDocument(int docId) {
-        Document document = documentService.getDocumentById(docId);
-        List<Document> documents = documentRepository
-                .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
-        documents.add(document);
-        documents.forEach(doc -> holdDocument(document));
-    }
-
     public void holdDoc(Document document) {
         document.setHold(true);
         if(document instanceof ItemDoc) {
@@ -68,6 +58,7 @@ public class HoldDocsService {
             orderDocRepository.save((OrderDoc) document);
         }
     }
+
     public void holdDoc(Document document, boolean addRestForHold) {
         lotService.setAddRestForHold(addRestForHold);
         holdDoc(document);

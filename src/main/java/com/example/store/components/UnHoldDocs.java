@@ -25,7 +25,6 @@ public class UnHoldDocs {
     private DocItemService docItemService;
 
     public void unHoldAllDocsAfter(Document document) {
-        if(document.isDeleted()) return;
         List<Document> documents = documentService.getDocumentsAfterAndInclude(document);
         documents.forEach(this::unHoldDocument);
     }

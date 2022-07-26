@@ -127,6 +127,23 @@ public class DocCrudService extends AbstractDocCrudService {
         holdDocsService.holdDocument(document);
     }
 
+    public void serialHoldDocument(int docId) {
+        Document document = documentService.getDocumentById(docId);
+        if(document.isHold()) {
+            List<Document> documents = documentRepository
+                    .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
+                            Sort.by(Constants.DATE_TIME_STRING).descending());
+            documents.forEach(doc -> holdDocsService.holdDocument(doc));
+            holdDocsService.holdDocument(document);
+        } else {
+            List<Document> documents = documentRepository
+                    .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
+                            document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
+            documents.add(document);
+            documents.forEach(doc -> holdDocsService.holdDocument(doc));
+        }
+    }
+
     public DocDTO getDocDTOForControllerAdviceTest(int docId) {
         Document document = documentService.getDocumentById(docId);
         return docMapper.mapToDocDTO((ItemDoc) document);
