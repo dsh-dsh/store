@@ -95,7 +95,8 @@ public class UserService {
     }
 
     public List<ItemDTOForTree> getUserDTOTree() {
-        List<User> users = userRepository.findAll(Sort.by("id"));
+        List<User> users = userRepository
+                .findByEmailNotLike(Constants.SYSTEM_USER_EMAIL, Sort.by("id"));
         return treeBuilder.getItemTree(users);
     }
 }

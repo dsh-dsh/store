@@ -21,9 +21,20 @@ public class SettingController {
         return ResponseEntity.ok(settingService.getSettingsByUser(userId));
     }
 
+    @GetMapping("/add/shortage")
+    public ResponseEntity<Response<SettingDTO>> getSettings() {
+        return ResponseEntity.ok(settingService.getAddShortageForHoldSetting());
+    }
+
     @PostMapping("/property")
-    public ResponseEntity<Response<String>> holdDocument(@RequestBody SettingDTO settingDTO) {
+    public ResponseEntity<Response<String>> setSettings(@RequestBody SettingDTO settingDTO) {
         settingService.setProperty(settingDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/add/shortage")
+    public ResponseEntity<Response<String>> setAddShortageSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setAddShortageSetting(settingDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
