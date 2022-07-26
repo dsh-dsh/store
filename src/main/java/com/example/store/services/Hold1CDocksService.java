@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -61,7 +58,12 @@ public class Hold1CDocksService {
     private boolean addRestForHold;
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
-        Project project = projectService.getProjectByStorageName(storage.getName());
+
+        Optional<Project> optionalProject = projectService.getProjectByStorageName(storage.getName());
+        Project project;
+        if(optionalProject.isEmpty()) return;
+        else project = optionalProject.get();
+
         Map<Boolean, Float> sumMap = getSumMap();
         if(sumMap.get(BY_CARD_KEY) > 0) {
             createOrderDoc(sumMap.get(BY_CARD_KEY), PaymentType.SALE_CARD_PAYMENT, project, time);
@@ -89,6 +91,8 @@ public class Hold1CDocksService {
 
     public Map<Boolean, Float> getSumMap() {
         Map<Boolean, Float> sumMap = new HashMap<>();
+        sumMap.put(true, 0f);
+        sumMap.put(false, 0f);
         List<DocumentItem> items;
         CheckInfo checkInfo;
         for(ItemDoc check : checks) {
@@ -106,6 +110,7 @@ public class Hold1CDocksService {
         addRestForHold = settingService.getSettingByType(systemAuthor, SettingType.ADD_REST_FOR_HOLD).getProperty() == 1;
 
         checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
+        if(checks.isEmpty()) return;
         Project project = checks.get(0).getProject();
 
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
@@ -123,8 +128,10 @@ public class Hold1CDocksService {
         if (postingDoc != null) {
             holdDocsService.holdDoc(postingDoc);
         }
-        holdDocsService.holdDoc(writeOffDoc, addRestForHold);
-        checks.forEach(check -> documentService.setHoldAndSave(true, check));
+        if(writeOffDoc != null) {
+            holdDocsService.holdDoc(writeOffDoc, addRestForHold);
+            checks.forEach(check -> documentService.setHoldAndSave(true, check));
+        }
     }
 
     @Transactional

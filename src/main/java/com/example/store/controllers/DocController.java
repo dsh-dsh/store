@@ -7,6 +7,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.DocCrudService;
 import com.example.store.services.HoldDocsService;
+import com.example.store.services.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ public class DocController {
     private DocCrudService docCrudService;
     @Autowired
     private HoldDocsService holdDocsService;
+    @Autowired
+    private SchedulerService schedulerService;
 
     @GetMapping("/list")
     public ResponseEntity<ListResponse<DocToListDTO>> getDocuments(
@@ -67,6 +70,12 @@ public class DocController {
     @PostMapping("/hold/serial/{id}")
     public ResponseEntity<Response<String>> serialHoldDocument(@PathVariable int id) {
         docCrudService.serialHoldDocument(id);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/hold1c")
+    public ResponseEntity<Response<String>> hold1CDocuments() {
+        schedulerService.holdChecksForADay();
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

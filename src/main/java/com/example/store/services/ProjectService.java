@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,8 +46,8 @@ public class ProjectService {
         return dto;
     }
 
-    public Project getProjectByStorageName(String name) {
-        return getByName(name);
+    public Optional<Project> getProjectByStorageName(String name) {
+        return projectRepository.findByNameIgnoreCase(name);
     }
 
     public ProjectDTO getProjectDTOById(int projectId) {
