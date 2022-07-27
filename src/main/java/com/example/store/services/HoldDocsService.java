@@ -1,5 +1,7 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -7,6 +9,7 @@ import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
+import com.example.store.utils.Constants;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,12 +35,21 @@ public class HoldDocsService {
     private LotMoveService lotMoveService;
 
 
-    public boolean existsNotHoldenDocsBefore(Document document) {
+    public boolean checkPossibilityToHold(Document document) {
         if(document.isHold()) {
-            return documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true);
+            if(documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true)) {
+                throw new BadRequestException(
+                        Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
+                        ExceptionType.UN_HOLD_EXCEPTION);
+            }
         } else {
-            return documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(document.getDateTime(), false, false);
+            if(documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(document.getDateTime(), false, false)) {
+                throw new BadRequestException(
+                        Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
+                        ExceptionType.HOLD_EXCEPTION);
+            }
         }
+        return true;
     }
 
     @Transaction

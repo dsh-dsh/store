@@ -6,11 +6,14 @@ import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Lot;
+import com.example.store.model.entities.LotMovement;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.services.CheckInfoService;
-import com.example.store.services.DocItemService;
-import com.example.store.services.DocumentService;
+import com.example.store.repositories.LotMoveRepository;
+import com.example.store.repositories.LotRepository;
+import com.example.store.services.*;
 import com.example.store.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -61,6 +64,10 @@ class DocumentControllerTest {
     private DocItemService docItemService;
     @Autowired
     private CheckInfoService checkInfoService;
+    @Autowired
+    private LotRepository lotRepository;
+    @Autowired
+    private LotMoveRepository lotMoveRepository;
 
     // todo add fields validation tests
 
@@ -257,7 +264,6 @@ class DocumentControllerTest {
         assertTrue(docs.get(0).isHold());
     }
 
-
     @Sql(value = "/sql/documents/addTwoPostingDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -271,10 +277,82 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE));
     }
 
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void notUnHoldDocThenExistsHoldenDocAfterTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/" + 1)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE));
+    }
+
     @Test
     void holdDocUnauthorizedTest() throws Exception {
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/addDocsForSerialHold.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void holdSerialDocTest() throws Exception {
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/serial/" + 6)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(6, docs.size());
+        assertTrue(docs.get(0).isHold());
+        assertTrue(docs.get(5).isHold());
+        List<Lot> lots = lotRepository.findAll();
+        assertEquals(2, lots.size());
+        List<LotMovement> lotMovements = lotMoveRepository.findAll();
+        assertEquals(5, lotMovements.size());
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void unHoldSerialDocTest() throws Exception {
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/serial/" + 1)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("ok"));
+
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(6, docs.size());
+        assertFalse(docs.get(0).isHold());
+        assertFalse(docs.get(5).isHold());
+        List<Lot> lots = lotRepository.findAll();
+        assertEquals(0, lots.size());
+        List<LotMovement> lotMovements = lotMoveRepository.findAll();
+        assertEquals(0, lotMovements.size());
+    }
+
+    @Sql(value = "/sql/documents/addDocsForSerialHold.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void holdSerialDocUnauthorizedTest() throws Exception {
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/serial/" + 6)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
@@ -672,6 +750,17 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.[2].id").value(3))
                 .andExpect(jsonPath("$.data.[3].id").value(4))
                 .andExpect(jsonPath("$.data.[4].id").value(5));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocListUnauthorizedTest() throws Exception {
+
+        this.mockMvc.perform(get(URL_PREFIX + "/list"
+                        + "?start=1646082000000&end=1648760400000"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

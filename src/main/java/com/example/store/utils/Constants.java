@@ -61,6 +61,7 @@ public class Constants {
     public static final String UN_HOLD_FORBIDDEN_MESSAGE = "hold cancellation forbidden";
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "no items in document";
     public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "not holden documents exists before document";
+    public static final String HOLDEN_DOCS_EXISTS_AFTER_MESSAGE = "holden documents exists after document";
     public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
     public static final String NO_SUCH_USER_MESSAGE = "No such user";
     public static final String NO_SUCH_COMPANY_MESSAGE = "No such company";

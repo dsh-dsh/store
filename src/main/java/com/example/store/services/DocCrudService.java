@@ -1,7 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.BadRequestException;
-import com.example.store.exceptions.ExceptionType;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
@@ -119,12 +117,9 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void holdDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
-        if(holdDocsService.existsNotHoldenDocsBefore(document)) {
-            throw new BadRequestException(
-                    Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
-                    ExceptionType.HOLD_EXCEPTION);
+        if(holdDocsService.checkPossibilityToHold(document)) {
+            holdDocsService.holdDocument(document);
         }
-        holdDocsService.holdDocument(document);
     }
 
     public void serialHoldDocument(int docId) {
