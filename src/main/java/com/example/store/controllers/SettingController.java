@@ -22,7 +22,7 @@ public class SettingController {
     }
 
     @GetMapping("/add/shortage")
-    public ResponseEntity<Response<SettingDTO>> getSettings() {
+    public ResponseEntity<Response<SettingDTO>> getHoldingSettings() {
         return ResponseEntity.ok(settingService.getAddShortageForHoldSetting());
     }
 

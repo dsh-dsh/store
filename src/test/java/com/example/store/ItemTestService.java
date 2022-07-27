@@ -1,5 +1,6 @@
-package com.example.store.controllers;
+package com.example.store;
 
+import com.example.store.controllers.TestService;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
 import com.example.store.repositories.ItemRepository;

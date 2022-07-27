@@ -1,7 +1,6 @@
 package com.example.store.controllers;
 
 import com.example.store.model.dto.DocItemDTO;
-import com.example.store.model.dto.ProjectDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.entities.CheckInfo;
@@ -810,7 +809,7 @@ class DocumentControllerTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/hold1CDocs/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
