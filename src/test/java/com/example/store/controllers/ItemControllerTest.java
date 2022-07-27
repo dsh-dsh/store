@@ -96,6 +96,41 @@ class ItemControllerTest extends TestService {
 
     }
 
+    @Test
+    void getItemListUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list")
+                                .param("id", String.valueOf(NEW_ITEM_ID))
+                                .param("date", LocalDate.now().toString()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemListTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[0].id").value(7))
+                .andExpect(jsonPath("$.data.[0].rest_list").isArray())
+                .andExpect(jsonPath("$.data.[0].rest_list.[3]").exists())
+                .andExpect(jsonPath("$.data.[0].rest_list.[4]").doesNotExist())
+                .andExpect(jsonPath("$.data.[0].rest_list.[2].storage.id").value(3))
+                .andExpect(jsonPath("$.data.[0].rest_list.[2].quantity").value(2f))
+                .andExpect(jsonPath("$.data.[1].id").value(8))
+                .andExpect(jsonPath("$.data.[1].rest_list.[0].storage.id").value(1))
+                .andExpect(jsonPath("$.data.[1].rest_list.[0].quantity").value(3f))
+                .andExpect(jsonPath("$.data.[1].rest_list.[2].storage.id").value(3))
+                .andExpect(jsonPath("$.data.[1].rest_list.[2].quantity").value(2f));
+
+    }
+
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -123,6 +158,31 @@ class ItemControllerTest extends TestService {
                         get(URL_PREFIX)
                                 .param("id", String.valueOf(NEW_ITEM_ID))
                                 .param("date", LocalDate.now().toString()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+    @Sql(value = "/sql/hold1CDocs/addIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemCalculationTest() throws Exception{
+        String date = String.valueOf(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/calculation")
+                                .param("date", date)
+                                .param("id", String.valueOf(10)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.ingredients").isArray())
+                .andExpect(jsonPath("$.data.item_name").isString());
+
+    }
+
+    @Test
+    void getItemCalculationUnauthorizedTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/calculation"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
@@ -408,7 +468,7 @@ class ItemControllerTest extends TestService {
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 
-        ItemDTO itemDTO = ItemDTO.builder()
+        return ItemDTO.builder()
                 .name(NEW_ITEM_NAME)
                 .printName(NEW_ITEM_NAME)
                 .parentId(PARENT_ID)
@@ -418,7 +478,6 @@ class ItemControllerTest extends TestService {
 //                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
-        return itemDTO;
     }
 
     private ItemDTO getItemDTOToUpdate(long date) {

@@ -36,7 +36,6 @@ public class ItemController {
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 
-    //todo add test
     @GetMapping
     public ResponseEntity<Response<ItemDTO>> getItemById(
             @RequestParam long date,
