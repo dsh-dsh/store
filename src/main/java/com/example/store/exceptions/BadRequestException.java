@@ -1,12 +1,13 @@
 package com.example.store.exceptions;
 
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.utils.Constants;
 import lombok.Getter;
 
 @Getter
 public class BadRequestException extends RuntimeException {
 
-    private ExceptionType exceptionType;
+    private final ExceptionType exceptionType;
 
     public BadRequestException() {
         super(Constants.BAD_REQUEST_MESSAGE);

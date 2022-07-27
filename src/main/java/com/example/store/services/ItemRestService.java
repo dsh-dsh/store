@@ -1,7 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.exceptions.ExceptionType;
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
