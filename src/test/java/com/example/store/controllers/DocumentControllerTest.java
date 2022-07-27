@@ -11,6 +11,7 @@ import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.services.*;
@@ -28,6 +29,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +70,8 @@ class DocumentControllerTest {
     private LotRepository lotRepository;
     @Autowired
     private LotMoveRepository lotMoveRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
 
     // todo add fields validation tests
 
@@ -799,6 +803,54 @@ class DocumentControllerTest {
     void getPostingDocTestUnauthorized() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
                         .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
+            "/sql/hold1CDocs/addThreeChecks.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/hold1CDocs/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/hold1CDocs/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void hold1CDocsTest() throws Exception {
+        List<Document> docs = documentService.getAllDocuments();
+        docs.forEach(document -> {
+            document.setDateTime(LocalDateTime.now().minusDays(1));
+            documentRepository.save(document);
+        });
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold1c")
+                                .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<Document> documents = documentService.getAllDocuments();
+        assertEquals(7, documents.size());
+        List<Lot> lots = lotRepository.findAll();
+        assertFalse(lots.isEmpty());
+        List<LotMovement> lotMovements = lotMoveRepository.findAll();
+        assertFalse(lotMovements.isEmpty());
+    }
+
+    @Sql(value = "/sql/hold1CDocs/addSystemUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/deleteSystemUser.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void hold1CDocsThenNoDocsTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold1c")
+                                .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void hold1CDocsUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold1c")
+                                .param("id", String.valueOf(TestService.DOC_ID)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

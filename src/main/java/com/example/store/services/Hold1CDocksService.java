@@ -55,7 +55,7 @@ public class Hold1CDocksService {
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
     private User systemAuthor;
-    private boolean addRestForHold;
+    private boolean addRestForHold = true;
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
 
@@ -107,7 +107,10 @@ public class Hold1CDocksService {
     @Transactional
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         systemAuthor = userService.getSystemAuthor();
-        addRestForHold = settingService.getSettingByType(systemAuthor, SettingType.ADD_REST_FOR_HOLD).getProperty() == 1;
+        DefaultPropertySetting setting = settingService.getSettingByType(systemAuthor, SettingType.ADD_REST_FOR_HOLD);
+        if(setting != null) {
+            addRestForHold = setting.getProperty() == 1;
+        }
 
         checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         if(checks.isEmpty()) return;
