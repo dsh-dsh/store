@@ -18,9 +18,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-
-    // add tests
-
     @PostMapping("/login")
     public ResponseEntity<Response<PersonDTO>> login(@RequestBody AuthUserRequest authUserRequest) {
         Response<PersonDTO> response =
@@ -28,13 +25,5 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
-//    @PostMapping("/logout")
-//    public ResponseEntity<GeneralResponse<MessageOkDTO>> logout () {
-//        GeneralResponse<MessageOkDTO> response =
-//                new GeneralResponse<>(authService.logout());
-//
-//        return ResponseEntity.ok(response);
-//    }
 
 }

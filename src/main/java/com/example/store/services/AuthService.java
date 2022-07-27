@@ -26,10 +26,15 @@ public class AuthService {
     @Autowired
     private PersonMapper personMapper;
 
-    // add tests
-
     public PersonDTO login(AuthUserRequest authUserRequest) {
-        User user = userService.getByEmail(authUserRequest.getLogin());
+
+        User user;
+        try{
+            user = userService.getByEmail(authUserRequest.getLogin());
+        } catch (Exception ex) {
+            throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
+        }
+
         if(!passwordEncoder.matches(authUserRequest.getPassword(), user.getPassword())) {
             throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
         }
@@ -38,19 +43,6 @@ public class AuthService {
 
         return personDTO;
     }
-
-//    public MessageOkDTO logout() {
-//        return new MessageOkDTO();
-//    }
-//
-//    public Person getPersonFromSecurityContext() {
-//        try{
-//            CustomUserDetails securityUser = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//            return personRepository.findByeMail((securityUser.getUsername())).orElseThrow();
-//        } catch (Exception ex) {
-//            throw new AuthenticationCredentialsNotFoundException(Constants.NO_SUCH_USER_MESSAGE);
-//        }
-//    }
 
 
 }
