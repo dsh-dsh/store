@@ -1,0 +1,1 @@
+delete from price where id > 5;

@@ -7,9 +7,6 @@ import com.example.store.model.entities.Price;
 import com.example.store.model.enums.PriceType;
 import com.example.store.repositories.PriceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,6 +15,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,13 +23,6 @@ public class PriceService {
 
     @Autowired
     private PriceRepository priceRepository;
-
-    // TODO add tests
-
-    public void updateItemPrices(Item item, List<PriceDTO> priceDTOList, LocalDate date) {
-        List<Price> priceListOnDate = getPriceListOfItem(item, date);
-        priceDTOList.forEach(priceDTO -> updatePrice(priceDTO, priceListOnDate, item));
-    }
 
     public List<Price> getPriceListOfItem(Item item, LocalDate date) {
         return Arrays.stream(PriceType.values())
@@ -45,7 +36,12 @@ public class PriceService {
     }
 
 
-    private void updatePrice(PriceDTO dto, List<Price> prices, Item item) {
+    public void updateItemPrices(Item item, List<PriceDTO> priceDTOList, LocalDate date) {
+        List<Price> priceListOnDate = getPriceListOfItem(item, date);
+        priceDTOList.forEach(priceDTO -> updatePrice(priceDTO, priceListOnDate, item));
+    }
+
+    protected void updatePrice(PriceDTO dto, List<Price> prices, Item item) {
         Price price = getPriceOfType(prices, PriceType.valueOf(dto.getType()));
         if (price == null) {
             setNewPrice(item, dto);
@@ -62,7 +58,7 @@ public class PriceService {
         }
     }
 
-    private Price getPriceOfType(List<Price> prices, PriceType type) {
+    protected Price getPriceOfType(List<Price> prices, PriceType type) {
         for (Price price : prices) {
             if (price.getPriceType() == type) {
                 return price;
@@ -71,11 +67,9 @@ public class PriceService {
         return null;
     }
 
-    private Price getPriceByItemAndType(Item item, PriceType type, LocalDate date) {
-        Pageable pageable =
-                PageRequest.of(0,1, Sort.by("date").descending());
-        List<Price> prices = priceRepository.findByItemAndPriceTypeAndDateLessThanEqual(item, type, date, pageable);
-        return prices.size() == 1 ? prices.get(0) : null;
+    protected Price getPriceByItemAndType(Item item, PriceType type, LocalDate date) {
+        Optional<Price> price = priceRepository.findFirstByItemAndPriceTypeAndDateLessThanEqualOrderByDateDesc(item, type, date);
+        return price.orElse(null);
     }
 
     public void addPrices(Item item, ItemDTO itemDTO) {
@@ -83,7 +77,7 @@ public class PriceService {
                 .forEach(priceDTO -> setNewPrice(item, priceDTO));
     }
 
-    private void setNewPrice(Item item, PriceDTO dto) {
+    protected void setNewPrice(Item item, PriceDTO dto) {
         Price price = new Price();
         price.setPriceType(PriceType.valueOf(dto.getType()));
         LocalDate date = Instant.ofEpochMilli(dto.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();

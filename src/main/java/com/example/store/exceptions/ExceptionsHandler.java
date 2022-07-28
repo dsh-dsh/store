@@ -22,18 +22,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
             BadRequestException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
                         ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
-//        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(TransactionException.class)
     protected ResponseEntity<ErrorResponse> handleTransactionException(
             TransactionException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(HoldDocumentException.class)
-    protected ResponseEntity<ErrorResponse> handleHoldDocumentException(
-            HoldDocumentException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

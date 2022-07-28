@@ -1,0 +1,1 @@
+update price set price.price_value = 180 where id = 2;
