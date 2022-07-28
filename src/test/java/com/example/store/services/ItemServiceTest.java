@@ -1,11 +1,16 @@
 package com.example.store.services;
 
 import com.example.store.controllers.TestService;
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
+import com.example.store.model.entities.Ingredient;
+import com.example.store.model.entities.Item;
+import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +18,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,6 +53,8 @@ class ItemServiceTest extends TestService {
 
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private IngredientService ingredientService;
 
     @Test
     void getItemDTOTreeTest() {
@@ -68,54 +78,107 @@ class ItemServiceTest extends TestService {
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void updateItem() {
-//        int number = 123456789;
-//        ItemDTO itemDTO = getItemDTO();
-//        itemDTO.setNumber(number);
-//        itemDTO.setSets(List.of(9));
-//        itemDTO.setIngredients(getIngredientDTOList());
-//        itemService.updateItem(itemDTO, );
-//        assertTrue(itemService.findItemByNumber(number).isPresent());
+    @Transactional
+    void updateItemTest() {
+        ItemDTO itemDTO = getItemDTOToUpdate(UPDATE_DATE);
+        itemDTO.setId(10);
+        itemDTO.setSets(List.of(9));
+        itemDTO.setIngredients(getIngredientDTOList());
+        itemService.updateItem(itemDTO, UPDATE_DATE);
+        Item item = itemService.getItemById(10);
+        assertEquals(Workshop.BAR, item.getWorkshop());
+        assertEquals(Unit.KG, item.getUnit());
+        assertEquals(5, item.getPrices().size());
+        List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
+        assertEquals(3, ingredients.size());
+        // todo в тесте не добавляется quantities в третьем ингредиенте
+    }
+
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void updateItemFieldsTest() {
+        ItemDTO itemDTO = getItemDTOToUpdate(UPDATE_DATE);
+        Item item = itemService.getItemById(10);
+        itemService.updateItemFields(item, itemDTO);
+        assertEquals(UPDATE_NAME, item.getName());
+        assertEquals(Workshop.BAR, item.getWorkshop());
+        assertEquals(Unit.KG, item.getUnit());
     }
 
     @Test
-    void updateItemFields() {
+    void getItemDTOListTest() {
+        List<ItemDTOForList> list = itemService.getItemDTOList();
+        assertNotNull(list);
+        assertEquals(7, list.get(0).getId());
+        assertEquals(4, list.get(0).getRestList().size());
+    }
+
+    @Transactional
+    @Test
+    void getItemByIdTest() {
+        Item item = itemService.getItemById(2);
+        assertEquals("Ингридиенты", item.getName());
     }
 
     @Test
-    void getItemById() {
+    void findItemByNumberTest() {
+        Optional<Item> item = itemService.findItemByNumber(3611);
+        assertTrue(item.isPresent());
+        assertEquals("Cуп лапша (1)", item.get().getName());
+    }
+
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getItemDTOByIdTest() {
+        long date = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        ItemDTO dto = itemService.getItemDTOById(10, date);
+        assertNotNull(dto);
+        assertEquals(10, dto.getId());
+        assertEquals(444, dto.getNumber());
+        assertEquals(2, dto.getIngredients().size());
+    }
+
+    @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void softDeleteItemTest() {
+        itemService.softDeleteItem(10);
+        Item item = itemService.getItemById(10);
+        assertTrue(item.isDeleted());
+        List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
+        assertEquals(0, ingredients.size());
     }
 
     @Test
-    void findItemByNumber() {
+    void findItemByIdTest() {
+        Item item = itemService.findItemById(9);
+        assertNotNull(item);
     }
 
     @Test
-    void getItemIdByNumber() {
+    void findItemByIdIfNotExistsTest() {
+        BadRequestException exception = assertThrows(BadRequestException.class,
+                () -> itemService.findItemById(90));
+        assertEquals(Constants.NO_SUCH_ITEM_MESSAGE, exception.getMessage());
     }
 
     @Test
-    void getItemDTOById() {
+    void getParentTest() {
+        Item child = itemService.getItemById(9);
+        Item parent = itemService.getParent(child);
+        assertEquals(1, parent.getId());
     }
 
     @Test
-    void softDeleteItem() {
-    }
-
-    @Test
-    void findItemById() {
-    }
-
-    @Test
-    void getParent() {
-    }
-
-    @Test
-    void setItemDTOList() {
-    }
-
-    @Test
-    void getItemDTOForList() {
+    void ThrowsExceptionGetParentTest() {
+        Item child = itemService.getItemById(1);
+        BadRequestException exception = assertThrows(BadRequestException.class,
+                () -> itemService.getParent(child));
+        assertEquals(Constants.NO_SUCH_ITEM_MESSAGE, exception.getMessage());
     }
 
 
@@ -177,7 +240,7 @@ class ItemServiceTest extends TestService {
                 .value(DELIVERY_PRICE_VALUE)
                 .build();
 
-        ItemDTO itemDTO = ItemDTO.builder()
+        return ItemDTO.builder()
                 .name(NEW_ITEM_NAME)
                 .printName(NEW_ITEM_NAME)
                 .parentId(PARENT_ID)
@@ -186,7 +249,6 @@ class ItemServiceTest extends TestService {
                 .workshop(getWorkshopDTO(Workshop.KITCHEN))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
-        return itemDTO;
     }
 
     private ItemDTO getItemDTOToUpdate(long date) {

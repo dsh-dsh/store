@@ -54,8 +54,6 @@ public class ItemService {
         return item;
     }
 
-    // TODO add tests
-
     public void updateItem(ItemDTO itemDTO, long longDate) {
         LocalDate date = Instant.ofEpochMilli(longDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = findItemById(itemDTO.getId());
@@ -96,15 +94,11 @@ public class ItemService {
         return itemRepository.findByNumber(number);
     }
 
-    public int getItemIdByNumber(int number) {
-        return itemRepository.getItemIdByNumber(number);
-    }
-
     public ItemDTO getItemDTOById(int id, long stringDate) {
         LocalDate date = Instant.ofEpochMilli(stringDate).atZone(ZoneId.systemDefault()).toLocalDate();
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-//        item.setParent(getParent(item));
+        item.setParent(getParent(item));
         item.setPrices(priceService.getPriceListOfItem(item, date));
         ItemDTO itemDTO = itemMapper.mapToDTO(item);
         itemDTO.setSets(setService.getSets(item));
