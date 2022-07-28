@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DocItemServiceFor1CDocs extends DocItemService {
 
-    // TODO add tests
-
     @Override
     public void addDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
