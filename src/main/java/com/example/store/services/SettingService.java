@@ -23,8 +23,6 @@ public class SettingService {
     @Autowired
     private UserService userService;
 
-    // todo add tests
-
     public DefaultPropertySetting getSettingByType(User user, SettingType type) {
         Optional<DefaultPropertySetting> setting = settingRepository.findByUserAndSettingType(user, type);
         return setting.orElse(null);
