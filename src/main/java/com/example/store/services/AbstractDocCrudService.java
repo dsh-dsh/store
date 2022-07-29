@@ -104,7 +104,7 @@ public class AbstractDocCrudService {
     public void deleteOrderDoc(int docId) {
         OrderDoc order = orderDocRepository.findById(docId)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
-        // TODO при отмене удаления если ордер проведен, то проверить есть ли не проведенные до него документы
+        unHoldDocs.unHoldAllDocsAfter(order);
         order.setDeleted(!order.isDeleted());
         orderDocRepository.save(order);
     }

@@ -34,6 +34,8 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private DocsFrom1cService docsFrom1cService;
 
+    // todo add tests
+
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
         LocalDateTime endDate = Util.getLocalDateTime(end);
