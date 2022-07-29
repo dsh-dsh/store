@@ -36,7 +36,8 @@ public class MappingConverters {
     protected final Converter<String, PeriodicValueType> typeConverter = str -> PeriodicValueType.valueOf(str.getSource());
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().toString();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
-    protected final Converter<Item, ItemDTOForIngredient> itemConverter = item -> getItemDTO(item.getSource());
+    protected final Converter<Item, Integer> itemIdConverter = item -> item.getSource().getId();
+    protected final Converter<Item, String> itemNameConverter = item -> item.getSource().getName();
     protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());
     protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
@@ -86,13 +87,6 @@ public class MappingConverters {
 
     protected final Converter<Item, Boolean> compositeConverter =
             item -> ingredientService.haveIngredients(item.getSource());
-
-    private ItemDTOForIngredient getItemDTO(Item item) {
-        ItemDTOForIngredient dto = new ItemDTOForIngredient();
-        dto.setId(item.getId());
-        dto.setName(item.getName());
-        return dto;
-    }
 
     private Item getItem(int itemId) {
         if(itemId == 0) return null;

@@ -37,7 +37,7 @@ public class PeriodicValueService {
         return list;
     }
 
-    public List<PeriodicValueDTO> getQuantityDTOList(Ingredient ingredient, LocalDate date) {
+    public List<PeriodicValueDTO> getPeriodicValueDTOList(Ingredient ingredient, LocalDate date) {
         List<PeriodicValue> quantities = getQuantityList(ingredient, date);
         return quantities.stream().map(periodicValueMapper::mapToDTO).collect(Collectors.toList());
     }

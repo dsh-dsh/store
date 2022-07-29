@@ -18,8 +18,9 @@ public class IngredientMapper extends MappingConverters {
     private void init() {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.createTypeMap(Ingredient.class, IngredientDTO.class)
-                .addMappings(mapper -> mapper.using(itemConverter).map(Ingredient::getParent, IngredientDTO::setParent))
-                .addMappings(mapper -> mapper.using(itemConverter).map(Ingredient::getChild, IngredientDTO::setChild))
+                .addMappings(mapper -> mapper.using(itemNameConverter).map(Ingredient::getChild, IngredientDTO::setName))
+                .addMappings(mapper -> mapper.using(itemIdConverter).map(Ingredient::getParent, IngredientDTO::setParentId))
+                .addMappings(mapper -> mapper.using(itemIdConverter).map(Ingredient::getChild, IngredientDTO::setChildId))
                 .addMappings(mapper -> mapper.skip(Ingredient::getPeriodicValueList, IngredientDTO::setQuantityList));
         modelMapper.createTypeMap(IngredientDTO.class, Ingredient.class)
                 .addMappings(mapper -> mapper.using(idToItemConverter).map(IngredientDTO::getChildId, Ingredient::setChild))

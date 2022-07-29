@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(properties =
         "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
 @SpringBootTest
-public class PeriodicValueServiceTest {
+class PeriodicValueServiceTest {
 
     @Autowired
     private PeriodicValueService periodicValueService;
@@ -77,9 +77,10 @@ public class PeriodicValueServiceTest {
         Ingredient ingredient = ingredientRepository.getById(7);
         periodicValueService.softDeleteQuantities(ingredient, date);
         List<PeriodicValue> list = periodicValueService.getQuantityList(ingredient, date);
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
         assertTrue(list.get(0).isDeleted());
         assertTrue(list.get(1).isDeleted());
+        assertTrue(list.get(2).isDeleted());
     }
 
     private PeriodicValueDTO getQuantityDTO(String type, float quantity, long date) {

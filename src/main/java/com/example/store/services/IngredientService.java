@@ -31,6 +31,8 @@ public class IngredientService {
 
     private Map<Item, Float> ingredientMapOfItem;
 
+    // todo add tests
+
     public Ingredient getIngredientById(int id) {
         return ingredientRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
@@ -72,7 +74,6 @@ public class IngredientService {
         }
     }
 
-    // todo refactor this
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
         if(ingredientDTOList == null) return;
         Map<Integer, Ingredient> ingredientMap = getIdIngredientMap(item);
@@ -106,37 +107,25 @@ public class IngredientService {
         return ingredients.stream()
                 .map(ingredient -> {
                     IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
-
-                    // todo refactor this
-                    dto.setQuantityList(periodicValueService.getQuantityDTOList(ingredient, date));
-                    dto.setName(dto.getChild().getName());
-                    dto.setChildId(dto.getChild().getId());
-                    dto.setParentId(dto.getParent().getId());
-                    for(PeriodicValueDTO periodicValueDTO : dto.getQuantityList()) {
-                        if(periodicValueDTO.getType().equals("NET")) {
-                            dto.setNetto(periodicValueDTO);
-                        } else if(periodicValueDTO.getType().equals("GROSS")) {
-                            dto.setGross(periodicValueDTO);
-                        } else if(periodicValueDTO.getType().equals("ENABLE")){
-                            dto.setEnable(periodicValueDTO);
-                        }
-                    }
-                    // todo until here
-
+                    setPeriodicValueFields(dto, periodicValueService.getPeriodicValueDTOList(ingredient, date));
                     return dto;
                 }).collect(Collectors.toList());
     }
 
-
-
-    public List<IngredientDTO> getDeletedIngredientDTOList(Item item, LocalDate date) {
-        List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, true);
-        return ingredients.stream()
-                .map(ingredient -> {
-                    IngredientDTO dto = ingredientMapper.mapToDTO(ingredient);
-                    dto.setQuantityList(periodicValueService.getQuantityDTOList(ingredient, date));
-                    return dto;
-                }).collect(Collectors.toList());
+    private void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
+        for(PeriodicValueDTO valueDTO : valueDTOList) {
+            switch (valueDTO.getType()) {
+                case "NET":
+                    dto.setNetto(valueDTO);
+                    break;
+                case "GROSS":
+                    dto.setGross(valueDTO);
+                    break;
+                case "ENABLE":
+                    dto.setEnable(valueDTO);
+                    break;
+            }
+        }
     }
 
     public List<Ingredient> getIngredientsNotDeleted(Item item) {
