@@ -853,4 +853,27 @@ class DocumentControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Sql(value = {"/sql/documents/add5DocList.sql",
+            "/sql/documents/addOrderDoc.sql",
+            "/sql/documents/softDelete.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void hardDeleteDocumentsTest() throws Exception {
+        this.mockMvc.perform(
+                        delete(URL_PREFIX + "/hard/delete"))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(3, docs.size());
+    }
+
+    @Test
+    void hardDeleteDocumentsUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        delete(URL_PREFIX + "/hard/delete"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }

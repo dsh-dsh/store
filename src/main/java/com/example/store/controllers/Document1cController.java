@@ -15,6 +15,8 @@ public class Document1cController {
     @Autowired
     private DocCrudService docCrudService;
 
+    // todo add tests
+
     @PostMapping("/docs")
     public ResponseEntity<Response<String>> addDocsFrom1CTest(
             @RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
