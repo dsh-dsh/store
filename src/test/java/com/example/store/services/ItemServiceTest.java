@@ -5,12 +5,12 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.utils.Constants;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +70,7 @@ class ItemServiceTest extends TestService {
         ItemDTO itemDTO = getItemDTO(PRICE_DATE);
         itemDTO.setNumber(number);
         itemDTO.setSets(List.of(9));
-        itemDTO.setIngredients(getIngredientDTOList());
+        itemDTO.setIngredients(getIngredientDTOList(LocalDate.now()));
         itemService.setNewItem(itemDTO);
         assertTrue(itemService.findItemByNumber(number).isPresent());
     }
@@ -83,7 +83,7 @@ class ItemServiceTest extends TestService {
         ItemDTO itemDTO = getItemDTOToUpdate(UPDATE_DATE);
         itemDTO.setId(10);
         itemDTO.setSets(List.of(9));
-        itemDTO.setIngredients(getIngredientDTOList());
+        itemDTO.setIngredients(getIngredientDTOListForUpDate(LocalDate.parse("2022-01-15")));
         itemService.updateItem(itemDTO, UPDATE_DATE);
         Item item = itemService.getItemById(10);
         assertEquals(Workshop.BAR, item.getWorkshop());
@@ -91,7 +91,7 @@ class ItemServiceTest extends TestService {
         assertEquals(5, item.getPrices().size());
         List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
         assertEquals(3, ingredients.size());
-        // todo в тесте не добавляется quantities в третьем ингредиенте
+        // todo в тесте не добавляется quantities в новом ингредиенте quantities из нового ингредиента добавляются в старый, хотя через браузер все работает
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -182,52 +182,51 @@ class ItemServiceTest extends TestService {
     }
 
 
-    private List<IngredientDTO> getIngredientDTOList() {
-        PeriodicValueDTO netDTO = new PeriodicValueDTO();
-        netDTO.setDate(convertDate(LocalDate.now()));
-        netDTO.setType(PeriodicValueType.NET.toString());
-        netDTO.setQuantity(0.3f);
-
-        PeriodicValueDTO grossDTO = new PeriodicValueDTO();
-        grossDTO.setDate(convertDate(LocalDate.now()));
-        grossDTO.setType(PeriodicValueType.GROSS.toString());
-        grossDTO.setQuantity(0.2f);
-
-        PeriodicValueDTO enableDTO = new PeriodicValueDTO();
-        enableDTO.setDate(convertDate(LocalDate.now()));
-        enableDTO.setType(PeriodicValueType.ENABLE.toString());
-        enableDTO.setQuantity(1f);
-
-        IngredientDTO first = IngredientDTO.builder()
-                .childId(8)
-                .netto(netDTO)
-                .gross(grossDTO)
-                .enable(enableDTO)
+    private List<IngredientDTO> getIngredientDTOListForUpDate(LocalDate date) {
+        IngredientDTO ingredientDTO = IngredientDTO.builder()
+                .id(1)
+                .childId(6)
+                .netto(getPeriodicValueDTO(0, date, PeriodicValueType.NET, 0.3f))
+                .gross(getPeriodicValueDTO(0, date, PeriodicValueType.GROSS, 0.2f))
+                .enable(getPeriodicValueDTO(0, date, PeriodicValueType.ENABLE, 0))
                 .build();
 
-        netDTO = new PeriodicValueDTO();
-        netDTO.setDate(convertDate(LocalDate.now()));
-        netDTO.setType(PeriodicValueType.NET.toString());
-        netDTO.setQuantity(0.4f);
+        List<IngredientDTO> list = getIngredientDTOList(date);
+        list.get(1).setId(2);
+        list.add(ingredientDTO);
+        return list;
+    }
 
-        grossDTO = new PeriodicValueDTO();
-        grossDTO.setDate(convertDate(LocalDate.now()));
-        grossDTO.setType(PeriodicValueType.GROSS.toString());
-        grossDTO.setQuantity(0.3f);
-
-        enableDTO = new PeriodicValueDTO();
-        enableDTO.setDate(convertDate(LocalDate.now()));
-        enableDTO.setType(PeriodicValueType.ENABLE.toString());
-        enableDTO.setQuantity(1f);
+    private List<IngredientDTO> getIngredientDTOList(LocalDate date) {
+        IngredientDTO first = IngredientDTO.builder()
+                .childId(7)
+                .netto(getPeriodicValueDTO(0, date, PeriodicValueType.NET, 0.4f))
+                .gross(getPeriodicValueDTO(0, date, PeriodicValueType.GROSS, 0.3f))
+                .enable(getPeriodicValueDTO(0, date, PeriodicValueType.ENABLE, 1f))
+                .build();
 
         IngredientDTO second = IngredientDTO.builder()
-                .childId(7)
-                .netto(netDTO)
-                .gross(grossDTO)
-                .enable(enableDTO)
+                .childId(8)
+                .netto(getPeriodicValueDTO(0, date, PeriodicValueType.NET, 0.3f))
+                .gross(getPeriodicValueDTO(0, date, PeriodicValueType.GROSS, 0.2f))
+                .enable(getPeriodicValueDTO(0, date, PeriodicValueType.ENABLE, 1f))
                 .build();
 
-        return List.of(first, second);
+        List<IngredientDTO> list = new ArrayList<>();
+        list.add(first);
+        list.add(second);
+
+        return list;
+    }
+
+    @NotNull
+    private PeriodicValueDTO getPeriodicValueDTO(int id, LocalDate date, PeriodicValueType type, float quantity) {
+        PeriodicValueDTO dto = new PeriodicValueDTO();
+        dto.setId(id);
+        dto.setDate(convertDate(date));
+        dto.setType(type.toString());
+        dto.setQuantity(quantity);
+        return dto;
     }
 
     private ItemDTO getItemDTO(long date) {
