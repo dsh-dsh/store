@@ -84,22 +84,22 @@ class IngredientServiceMockedTest {
         assertThat(map, hasKey(3));
         assertEquals(3, map.get(3).getChild().getId());
     }
-//    todo fixit
-//    @Test
-//    void updateIngredientTest() {
-//        Ingredient ingredient = mock(Ingredient.class);
-//        IngredientDTO dto = new IngredientDTO();
-//        dto.setDeleted(false);
-//        List<QuantityDTO> quantities = List.of(
-//                getQuantityDTO(QuantityType.GROSS, 1f, LONG_DATE),
-//                getQuantityDTO(QuantityType.NET, 1.5f, LONG_DATE));
-//        dto.setQuantityList(quantities);
-//        ingredientService.updateIngredient(ingredient, dto);
-//        verify(ingredientRepository, times(1))
-//                .save(ingredientArgumentCaptor.capture());
-//        verify(quantityService, times(1))
-//                .updateQuantities(ingredient, dto.getQuantityList());
-//    }
+
+    @Test
+    void updateIngredientTest() {
+        Ingredient ingredient = mock(Ingredient.class);
+        IngredientDTO dto = new IngredientDTO();
+        dto.setDeleted(false);
+        List<PeriodicValueDTO> quantities = List.of(
+                getQuantityDTO(PeriodicValueType.GROSS, 1f, LONG_DATE),
+                getQuantityDTO(PeriodicValueType.NET, 1.5f, LONG_DATE));
+        dto.setQuantityList(quantities);
+        ingredientService.updateIngredient(ingredient, dto);
+        verify(ingredientRepository, times(1))
+                .save(ingredientArgumentCaptor.capture());
+        verify(periodicValueService, times(1))
+                .updateQuantities(ingredient, dto);
+    }
 
     @Test
     void haveIngredientsTest() {

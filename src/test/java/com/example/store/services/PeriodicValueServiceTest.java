@@ -1,8 +1,10 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.PeriodicValue;
+import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.repositories.IngredientRepository;
 import com.example.store.repositories.PeriodicValueRepository;
 import org.junit.jupiter.api.Test;
@@ -32,42 +34,70 @@ class PeriodicValueServiceTest {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-//    todo fixit
-//    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void setQuantitiesTest() {
-//        LocalDate date = LocalDate.now();
-//        Ingredient ingredient = ingredientRepository.getById(7);
-//        List<QuantityDTO> dtoList = List.of(
-//                getQuantityDTO("NET", 4f, convertDate(date)),
-//                getQuantityDTO("GROSS", 2f, convertDate(date)));
-//        quantityService.setQuantities(ingredient, dtoList);
-//        List<Quantity> list = quantityService.getQuantityList(ingredient, date);
-//        assertEquals(4, list.size());
-//        assertEquals(QuantityType.NET, list.get(0).getType());
-//        assertEquals(4f, list.get(0).getQuantity());
-//        assertEquals(QuantityType.GROSS, list.get(1).getType());
-//        assertEquals(2f, list.get(1).getQuantity());
-//    }
-//    todo fixit
-//    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void updateQuantitiesTest() {
-//        LocalDate date = LocalDate.now();
-//        Ingredient ingredient = ingredientRepository.getById(7);
-//        List<QuantityDTO> dtoList = List.of(
-//                getQuantityDTO("NET", 4f, convertDate(date)),
-//                getQuantityDTO("GROSS", 1f, convertDate(date)));
-//        quantityService.updateQuantities(ingredient, dtoList);
-//        List<Quantity> list = quantityService.getQuantityList(ingredient, date);
-//        assertEquals(3, list.size());
-//        assertEquals(QuantityType.NET, list.get(0).getType());
-//        assertEquals(4f, list.get(0).getQuantity());
-//        assertEquals(QuantityType.GROSS, list.get(2).getType());
-//        assertEquals(1f, list.get(2).getQuantity());
-//    }
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setQuantitiesTest() {
+        LocalDate date = LocalDate.now();
+        Ingredient ingredient = ingredientRepository.getById(7);
+        IngredientDTO ingredientDTO = new IngredientDTO();
+        ingredientDTO.setNetto(getPeriodicValueDTO(0,"NET", 4f, convertDate(date)));
+        ingredientDTO.setGross(getPeriodicValueDTO(0, "GROSS", 2f, convertDate(date)));
+        ingredientDTO.setEnable(getPeriodicValueDTO(0, "ENABLE", 1f, convertDate(date)));
+        periodicValueService.setQuantities(ingredient, ingredientDTO);
+        List<PeriodicValue> list = periodicValueService.getQuantityList(ingredient, date);
+        assertEquals(3, list.size());
+        assertEquals(PeriodicValueType.NET, list.get(0).getType());
+        assertEquals(4f, list.get(0).getQuantity());
+        assertEquals(PeriodicValueType.GROSS, list.get(1).getType());
+        assertEquals(2f, list.get(1).getQuantity());
+        assertEquals(PeriodicValueType.ENABLE, list.get(2).getType());
+        assertEquals(1f, list.get(2).getQuantity());
+    }
+
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateQuantitiesSetNewIfNewDateTest() {
+        LocalDate date = LocalDate.now();
+        Ingredient ingredient = ingredientRepository.getById(7);
+        IngredientDTO ingredientDTO = new IngredientDTO();
+        ingredientDTO.setNetto(getPeriodicValueDTO(19, "NET", 4f, convertDate(date)));
+        ingredientDTO.setGross(getPeriodicValueDTO(20, "GROSS", 2f, convertDate(date)));
+        ingredientDTO.setEnable(getPeriodicValueDTO(21, "ENABLE", 0, convertDate(date)));
+        periodicValueService.updateQuantities(ingredient, ingredientDTO);
+        List<PeriodicValue> list = periodicValueService.getQuantityList(ingredient, date);
+        assertEquals(3, list.size());
+        assertEquals(PeriodicValueType.NET, list.get(0).getType());
+        assertEquals(4f, list.get(0).getQuantity());
+        assertEquals(PeriodicValueType.GROSS, list.get(1).getType());
+        assertEquals(2f, list.get(1).getQuantity());
+        assertEquals(PeriodicValueType.ENABLE, list.get(2).getType());
+        assertEquals(0f, list.get(2).getQuantity());
+        assertEquals(6, periodicValueRepository.findByIngredient(ingredient).size());
+    }
+
+    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void updateQuantitiesUpdateIfExistingDateTest() {
+        LocalDate date = LocalDate.parse("2022-02-02");
+        Ingredient ingredient = ingredientRepository.getById(7);
+        IngredientDTO ingredientDTO = new IngredientDTO();
+        ingredientDTO.setNetto(getPeriodicValueDTO(19, "NET", 4f, convertDate(date)));
+        ingredientDTO.setGross(getPeriodicValueDTO(20, "GROSS", 2f, convertDate(date)));
+        ingredientDTO.setEnable(getPeriodicValueDTO(21, "ENABLE", 0, convertDate(date)));
+        periodicValueService.updateQuantities(ingredient, ingredientDTO);
+        List<PeriodicValue> list = periodicValueService.getQuantityList(ingredient, date);
+        assertEquals(3, list.size());
+        assertEquals(PeriodicValueType.NET, list.get(0).getType());
+        assertEquals(4f, list.get(0).getQuantity());
+        assertEquals(PeriodicValueType.GROSS, list.get(1).getType());
+        assertEquals(2f, list.get(1).getQuantity());
+        assertEquals(PeriodicValueType.ENABLE, list.get(2).getType());
+        assertEquals(0, list.get(2).getQuantity());
+        assertEquals(3, periodicValueRepository.findByIngredient(ingredient).size());
+    }
 
     @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -83,8 +113,9 @@ class PeriodicValueServiceTest {
         assertTrue(list.get(2).isDeleted());
     }
 
-    private PeriodicValueDTO getQuantityDTO(String type, float quantity, long date) {
+    private PeriodicValueDTO getPeriodicValueDTO(int id, String type, float quantity, long date) {
         PeriodicValueDTO dto = new PeriodicValueDTO();
+        dto.setId(id);
         dto.setType(type);
         dto.setQuantity(quantity);
         dto.setDate(date);

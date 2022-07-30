@@ -66,6 +66,7 @@ public class PeriodicValueService {
 
     protected void setQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
         PeriodicValue periodicValue = periodicValueMapper.mapToItem(dto);
+        periodicValue.setId(0);
         periodicValue.setIngredient(ingredient);
         periodicValueRepository.save(periodicValue);
     }
