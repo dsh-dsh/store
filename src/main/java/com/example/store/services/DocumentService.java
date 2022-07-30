@@ -2,7 +2,6 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocMapper;
-import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
@@ -78,10 +77,5 @@ public class DocumentService {
         } catch (Exception exception) {
             return Constants.START_DOCUMENT_NUMBER;
         }
-    }
-
-    public DocDTO getDocDTOForControllerAdviceTest(int docId) {
-        Document document = getDocumentById(docId);
-        return docMapper.mapToDocDTO((ItemDoc) document);
     }
 }

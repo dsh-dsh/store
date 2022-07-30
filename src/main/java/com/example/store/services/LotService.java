@@ -48,7 +48,6 @@ public class LotService {
         return lotRepository.findLotsByItemAndDoc(docItem.getItem().getId(), docItem.getItemDoc().getId());
     }
 
-    // todo удалить. Видимо апдейта движений не будет. Только добавление и удаление. Хотяяяя
     public void updateLotMovements(ItemDoc itemDoc) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc(itemDoc);

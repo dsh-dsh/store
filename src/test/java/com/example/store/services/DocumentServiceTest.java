@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,23 +34,6 @@ class DocumentServiceTest {
     private StorageService storageService;
     @Autowired
     private ProjectService projectService;
-
-//    todo make not mocked
-//    @Test
-//    void addDocumentTest() {
-//        DocDTO dto = mock(DocDTO.class);
-//        dto.setDocType(DocumentType.POSTING_DOC.getValue());
-//        mockedDocumentService.addDocument(dto);
-//        verify(mockedItemDocFactory, times(1)).addDocument(dto);
-//    }
-//
-//    todo make not mocked
-//    @Test
-//    void updateDocumentTest() {
-//        DocDTO dto = mock(DocDTO.class);
-//        mockedDocumentService.updateDocument(dto);
-//        verify(mockedItemDocFactory, times(1)).updateDocument(dto);
-//    }
 
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -131,15 +116,6 @@ class DocumentServiceTest {
                 () -> documentService.getDocumentById(10));
     }
 
-//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    @Transactional
-//    void getDocDTOByIdTest() {
-//        DocDTO dto = documentService.getDocDTOById(1);
-//        assertEquals(1, dto.getId());
-//    }
-
     @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -148,29 +124,6 @@ class DocumentServiceTest {
         documentService.setHoldAndSave(false, document);
         assertFalse(document.isHold());
     }
-
-//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void softDeleteDocumentTest() {
-//        DocDTO dto = new DocDTO();
-//        dto.setDocType(DocumentType.POSTING_DOC.getValue());
-//        dto.setId(1);
-//        documentService.softDeleteDocument(dto);
-//        assertTrue(documentService.getDocumentById(1).isDeleted());
-//    }
-//
-//    @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void softDeleteOrderDocumentTest() {
-//        int docId = 6;
-//        DocDTO dto = new DocDTO();
-//        dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
-//        dto.setId(docId);
-//        documentService.softDeleteDocument(dto);
-//        assertTrue(documentService.getDocumentById(docId).isDeleted());
-//    }
 
     @Sql(value = {"/sql/documents/addOrderDoc.sql",
             "/sql/documents/addPostingDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
