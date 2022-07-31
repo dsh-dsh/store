@@ -89,10 +89,11 @@ class ItemControllerTest extends TestService {
                         get(URL_PREFIX + "/tree"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.[0].children.[3]").exists())
-                .andExpect(jsonPath("$.data.[0].children.[4]").doesNotExist())
-                .andExpect(jsonPath("$.data.[1].children.[0].children.[1]").exists())
-                .andExpect(jsonPath("$.data.[1].children.[0].children.[2]").doesNotExist())
+                .andExpect(jsonPath("$.data.[0].children.[0]").exists())
+                .andExpect(jsonPath("$.data.[0].children.[0].children.[1]").exists())
+                .andExpect(jsonPath("$.data.[0].children.[0].children.[2]").doesNotExist())
+                .andExpect(jsonPath("$.data.[0].children.[1]").doesNotExist())
+                .andExpect(jsonPath("$.data.[1].children").isArray())
                 .andExpect(jsonPath("$.data.[2]").doesNotExist());
 
     }

@@ -18,12 +18,14 @@ public class ItemSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    private int number; // number from 1C
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "set_id")
     private Item set;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
 }

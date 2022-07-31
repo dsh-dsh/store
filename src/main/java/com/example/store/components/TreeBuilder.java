@@ -29,15 +29,12 @@ public class TreeBuilder <E extends EntityInterface>{
         return itemList;
     }
 
-    private void setKeys(List<ItemDTOForTree> list, String key) {
-        int i = 0;
-        for(ItemDTOForTree item : list) {
-            if(!item.getChildren().isEmpty()) {
-                setKeys(item.getChildren(), key + i + "-");
-            }
-            item.setKey(key + i);
-            item.setIcon();
-            i++;
+    private void fillItemArray(List<E> list) {
+        int arraySize = list.get(list.size()-1).getId();
+        itemArray = new ItemDTOForTree[arraySize+1];
+        for (E item : list) {
+            ItemDTOForTree dto = mapToDTO(item);
+            itemArray[item.getId()] = dto;
         }
     }
 
@@ -51,12 +48,15 @@ public class TreeBuilder <E extends EntityInterface>{
         }
     }
 
-    private void fillItemArray(List<E> list) {
-        int arraySize = list.get(list.size()-1).getId();
-        itemArray = new ItemDTOForTree[arraySize+1];
-        for (E item : list) {
-            ItemDTOForTree dto = mapToDTO(item);
-            itemArray[item.getId()] = dto;
+    private void setKeys(List<ItemDTOForTree> list, String key) {
+        int i = 0;
+        for(ItemDTOForTree item : list) {
+            if(!item.getChildren().isEmpty()) {
+                setKeys(item.getChildren(), key + i + "-");
+            }
+            item.setKey(key + i);
+            item.setIcon();
+            i++;
         }
     }
 

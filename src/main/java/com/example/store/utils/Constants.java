@@ -84,7 +84,7 @@ public class Constants {
     public static final String GROSS_TYPE = "Брутто";
     public static final String ENABLE_TYPE = "Используется";
 
-    public static final List<Integer> INGREDIENTS_PARENT_IDS = List.of(3);  // items from ingredients (id = 3)
+    public static final List<Integer> INGREDIENTS_PARENT_IDS = List.of(2);  // items from ingredients (id = 3)
 
     public static final String DATE_TIME_STRING = "dateTime";
 

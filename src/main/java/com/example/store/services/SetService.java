@@ -30,7 +30,7 @@ public class SetService {
         idList.forEach(id -> addSet(item, id));
     }
 
-    private void addSet(Item item, int id) {
+    protected void addSet(Item item, int id) {
         ItemSet itemSet = new ItemSet();
         itemSet.setItem(item);
         itemSet.setSet(itemRepository.getById(id));
@@ -48,7 +48,7 @@ public class SetService {
         idList.forEach(id -> addSet(item, id));
     }
 
-    private void deleteSet(ItemSet itemSet) {
+    protected void deleteSet(ItemSet itemSet) {
         setRepository.delete(itemSet);
     }
 

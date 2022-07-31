@@ -21,8 +21,6 @@ public class SchedulerService {
     @Autowired
     private ProjectService projectService;
 
-    // TODO add tests
-
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksForADay() {
         LocalDateTime to = LocalDate.now(ZoneId.systemDefault()).atStartOfDay();

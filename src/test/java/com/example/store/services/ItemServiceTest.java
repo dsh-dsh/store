@@ -119,7 +119,7 @@ class ItemServiceTest extends TestService {
     @Test
     void getItemByIdTest() {
         Item item = itemService.getItemById(2);
-        assertEquals("Ингридиенты", item.getName());
+        assertEquals("Кухня", item.getName());
     }
 
     @Test
@@ -170,7 +170,7 @@ class ItemServiceTest extends TestService {
     void getParentTest() {
         Item child = itemService.getItemById(9);
         Item parent = itemService.getParent(child);
-        assertEquals(1, parent.getId());
+        assertEquals(5, parent.getId());
     }
 
     @Test

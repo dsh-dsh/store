@@ -1,1 +1,0 @@
-alter table periodic_quantity add is_deleted bit not null default B'0';

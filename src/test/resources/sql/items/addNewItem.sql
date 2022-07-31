@@ -28,6 +28,6 @@ values
 (6, 1, '2022-03-01', 1, 'ENABLE');
 
 insert into sets
-(item_id, set_id)
+(item_id, set_id, number)
 values
-(10, 9);
+(10, 9, 2);
