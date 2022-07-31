@@ -1,0 +1,1 @@
+update ingredient set is_deleted = B'1' where id = 2;

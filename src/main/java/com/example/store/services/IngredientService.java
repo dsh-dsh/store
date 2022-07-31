@@ -31,8 +31,6 @@ public class IngredientService {
 
     private Map<Item, Float> ingredientMapOfItem;
 
-    // todo add tests
-
     public Ingredient getIngredientById(int id) {
         return ingredientRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
@@ -42,13 +40,20 @@ public class IngredientService {
         return ingredientRepository.existsByParentAndIsDeleted(item, false);
     }
 
-    public Map<Item, Float> getIngredientMap(Map<Item, Float> itemMap, LocalDate date) {
+    public Map<Item, Float> getIngredientQuantityMap(Map<Item, Float> itemMap, LocalDate date) {
         return itemMap.entrySet().stream()
                 .flatMap(itemEntry -> getIngredientMapOfItem(itemEntry.getKey(), date)
                             .entrySet().stream()
                             .map(item -> new AbstractMap.SimpleImmutableEntry<>(
                                     item.getKey(), item.getValue() * itemEntry.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Float::sum));
+    }
+
+    public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
+        return  getIngredientsNotDeleted(item).stream()
+                .collect(Collectors.toMap(
+                        ingredient -> ingredient.getChild().getId(),
+                        Function.identity()));
     }
 
     public Map<Item, Float> getIngredientMapOfItem(Item item, LocalDate date) {
@@ -95,13 +100,6 @@ public class IngredientService {
         periodicValueService.updateQuantities(ingredient, dto);
     }
 
-    public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
-        return  getIngredientsNotDeleted(item).stream()
-                .collect(Collectors.toMap(
-                        ingredient -> ingredient.getChild().getId(),
-                        Function.identity()));
-    }
-
     public List<IngredientDTO> getIngredientDTOList(Item item, LocalDate date) {
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
         return ingredients.stream()
@@ -112,7 +110,7 @@ public class IngredientService {
                 }).collect(Collectors.toList());
     }
 
-    private void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
+    protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
         for(PeriodicValueDTO valueDTO : valueDTOList) {
             switch (valueDTO.getType()) {
                 case "NET":
@@ -124,6 +122,7 @@ public class IngredientService {
                 case "ENABLE":
                     dto.setEnable(valueDTO);
                     break;
+                default:
             }
         }
     }
@@ -149,7 +148,7 @@ public class IngredientService {
         ingredients.forEach(ingredient -> softDeleteIngredient(ingredient, date));
     }
 
-    private void softDeleteIngredient(Ingredient ingredient, LocalDate date) {
+    protected void softDeleteIngredient(Ingredient ingredient, LocalDate date) {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
         periodicValueService.softDeleteQuantities(ingredient, date);
@@ -165,7 +164,7 @@ public class IngredientService {
                         DocumentItem::getItem,
                         DocumentItem::getQuantity,
                         Float::sum));
-        Map<Item, Float> itemMap = getIngredientMap(docItemMap, date);
+        Map<Item, Float> itemMap = getIngredientQuantityMap(docItemMap, date);
         List<DocumentItem> listOfIngredients = itemMap.entrySet().stream()
                 .map(set -> new DocumentItem(document, set.getKey(), set.getValue()))
                 .collect(Collectors.toList());

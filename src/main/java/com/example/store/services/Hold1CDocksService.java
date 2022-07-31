@@ -117,7 +117,7 @@ public class Hold1CDocksService {
         Project project = checks.get(0).getProject();
 
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
-        Map<Item, Float> writeOffItemMap = ingredientService.getIngredientMap(itemMap, to.toLocalDate());
+        Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
 
         if(addRestForHold) {
