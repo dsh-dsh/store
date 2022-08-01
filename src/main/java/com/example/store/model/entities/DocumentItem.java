@@ -17,8 +17,7 @@ public class DocumentItem {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "docItemSeq")
-    @SequenceGenerator(name = "docItemSeq", sequenceName = "DOC_ITEM_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)

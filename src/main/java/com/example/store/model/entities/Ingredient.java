@@ -17,8 +17,7 @@ public class Ingredient {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ingredientSequence")
-    @SequenceGenerator(name = "ingredientSequence", sequenceName = "INGREDIENT_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne(fetch = FetchType.EAGER)

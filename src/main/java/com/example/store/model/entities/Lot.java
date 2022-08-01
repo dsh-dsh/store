@@ -20,10 +20,7 @@ public class Lot implements Comparable<Lot> {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE
-            , generator = "lotMoveSequence")
-    @SequenceGenerator(name = "lotMoveSequence"
-            , sequenceName = "LOT_MOVEMENT_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)

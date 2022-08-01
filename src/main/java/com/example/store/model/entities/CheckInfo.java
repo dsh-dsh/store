@@ -19,8 +19,7 @@ public class CheckInfo {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "checkInfoSequence")
-    @SequenceGenerator(name = "checkInfoSequence", sequenceName = "CHECK_INFO_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private int checkNumber;

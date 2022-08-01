@@ -18,10 +18,7 @@ public class LotMovement {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "lotSequence")
-    @SequenceGenerator(name = "lotSequence",
-            sequenceName = "LOT_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
