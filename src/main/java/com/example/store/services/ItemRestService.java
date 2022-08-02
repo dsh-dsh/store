@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.Period;
 import com.example.store.model.enums.ExceptionType;
@@ -43,6 +44,8 @@ public class ItemRestService {
     private StorageService storageService;
     @Autowired
     private PeriodRepository periodRepository;
+    @Autowired
+    private EnvironmentVars env;
 
     private LocalDateTime periodStart;
 
@@ -54,7 +57,7 @@ public class ItemRestService {
     }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
-        periodStart = getPeriodStart();
+//        periodStart = getPeriodStart();
         LocalDateTime dateTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
         Storage storage = storageService.getById(storageId);
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
@@ -112,7 +115,7 @@ public class ItemRestService {
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
         return (float) lotRepository
-                .getLotsOfItem(item.getId(), storage.getId(), periodStart, docTime)
+                .getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), docTime)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
     }

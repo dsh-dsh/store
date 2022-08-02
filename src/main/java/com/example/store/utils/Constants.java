@@ -80,6 +80,7 @@ public class Constants {
     public static final String NO_SUCH_PERIOD_MESSAGE = "no such period";
     public static final String NO_SUCH_LOT_MOVEMENT_MESSAGE = "no such lot movement";
     public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
+    public static final String OUT_OF_PERIOD_MESSAGE = "Нельзя изменять документы до начала периода %s";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
 

@@ -1,5 +1,6 @@
 package com.example.store.controllers;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
@@ -30,6 +31,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +74,8 @@ class DocumentControllerTest {
     private LotMoveRepository lotMoveRepository;
     @Autowired
     private DocumentRepository documentRepository;
+    @Autowired
+    private EnvironmentVars env;
 
     // todo add fields validation tests
 
@@ -116,6 +121,27 @@ class DocumentControllerTest {
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/documents/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void addReceiptDocThrowExceptionPeriodTest() throws Exception {
+
+        env.setPeriodStart();
+        DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
+        docDTO.setDateTime(ZonedDateTime.of(LocalDateTime.parse("2022-01-01T00:00:00.000")
+                , ZoneId.systemDefault()).toInstant().toEpochMilli());
+        DocRequestDTO requestDTO = testService.setDTO(docDTO);
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -256,6 +282,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void holdDocTest() throws Exception {
 
+        env.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -272,6 +299,8 @@ class DocumentControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notHoldDocThenExistsNotHoldenDocBeforeTest() throws Exception {
+
+        env.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 2)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -285,6 +314,8 @@ class DocumentControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notUnHoldDocThenExistsHoldenDocAfterTest() throws Exception {
+
+        env.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -456,6 +487,7 @@ class DocumentControllerTest {
         docDTO.setDateTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
+        env.setPeriodStart();
         this.mockMvc.perform(
                         put(URL_PREFIX)
                                 .contentType(MediaType.APPLICATION_JSON)

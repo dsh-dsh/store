@@ -196,6 +196,7 @@ public class AbstractDocCrudService {
 
     protected LocalDateTime getNewTime(Document document, DocDTO dto) {
         LocalDateTime newTime = Instant.ofEpochMilli(dto.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+
         LocalDateTime start = LocalDateTime.of(newTime.getYear(), newTime.getMonth(), newTime.getDayOfMonth(), 0, 0, 0);
         LocalDateTime end = start.plusDays(1);
         // todo consider on if it is the same document

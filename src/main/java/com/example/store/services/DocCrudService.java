@@ -1,5 +1,7 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
@@ -8,6 +10,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
@@ -18,7 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,8 @@ public class DocCrudService extends AbstractDocCrudService {
     private HoldDocsService holdDocsService;
     @Autowired
     private DocsFrom1cService docsFrom1cService;
+    @Autowired
+    private EnvironmentVars env;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -86,6 +93,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void addDocument(DocDTO docDTO) {
+        checkTimePeriod(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             addOrderDoc(docDTO);
@@ -96,6 +104,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void updateDocument(DocDTO docDTO) {
+        checkTimePeriod(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             updateOrderDocument(docDTO);
@@ -106,6 +115,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void softDeleteDocument(DocDTO docDTO) {
+        checkTimePeriod(docDTO);
         int docId = docDTO.getId();
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -117,6 +127,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void holdDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
+        checkTimePeriod(document);
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.holdDocument(document);
         }
@@ -157,5 +168,22 @@ public class DocCrudService extends AbstractDocCrudService {
         docItemService.deleteByDocs(documents);
         int count = documentRepository.deleteByIsDeleted(true);
         return new Response<>(Constants.OK, String.format(Constants.NUMBER_OF_DELETED_DOCS_MESSAGE, count));
+    }
+
+    protected void checkTimePeriod(DocDTO docDTO) {
+        LocalDateTime docTime = Instant.ofEpochMilli(docDTO.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        if(docTime.isBefore(env.getPeriodStart())) {
+            throw new BadRequestException(String.format(
+                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()),
+                    ExceptionType.COMMON_EXCEPTION);
+        }
+    }
+
+    protected void checkTimePeriod(Document document) {
+        if(document.getDateTime().isBefore(env.getPeriodStart())) {
+            throw new BadRequestException(String.format(
+                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()),
+                    ExceptionType.COMMON_EXCEPTION);
+        }
     }
 }
