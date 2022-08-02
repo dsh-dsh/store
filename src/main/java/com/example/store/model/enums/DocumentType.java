@@ -12,7 +12,8 @@ public enum DocumentType implements EnumeratedInterface{
     CREDIT_ORDER_DOC(Constants.CREDIT_ORDER_DOC_TYPE),
     WITHDRAW_ORDER_DOC(Constants.WITHDRAW_ORDER_DOC_TYPE),
     REQUEST_DOC(Constants.REQUEST_DOC_TYPE),
-    INVENTORY_DOC(Constants.INVENTORY_DOC_TYPE);
+    INVENTORY_DOC(Constants.INVENTORY_DOC_TYPE),
+    PERIOD_REST_MOVE_DOC(Constants.PERIOD_REST_MOVE_DOC_TYPE);
 
     private final String value;
 

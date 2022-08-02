@@ -10,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,41 @@ class ItemRestServiceTest {
 
     @Autowired
     private ItemRestService itemRestService;
+    @Autowired
+    private ItemService itemService;
+    @Autowired
+    private StorageService storageService;
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getItemsRestOnStorageForPeriodTest() {
+        Storage storage = storageService.getById(3);
+        Item item = itemService.getItemById(7);
+        Map<Item, ItemRestService.RestPriceValue> map
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        assertEquals(2, map.size());
+        assertEquals(6, map.get(item).getRest());
+        assertEquals(200, map.get(item).getPrice());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getRestAndPriceTest() {
+        Item item = itemService.getItemById(7);
+        Storage storage = storageService.getById(3);
+        ItemRestService.RestPriceValue value = itemRestService.getRestAndPrice(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        assertEquals(6, value.getRest());
+        assertEquals(200, value.getPrice());
+    }
 
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

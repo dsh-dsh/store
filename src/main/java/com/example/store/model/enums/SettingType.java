@@ -4,5 +4,6 @@ public enum SettingType {
     PROJECT,
     STORAGE_TO,
     STORAGE_FROM,
-    ADD_REST_FOR_HOLD;
+    ADD_REST_FOR_HOLD,
+    AVERAGE_COST
 }

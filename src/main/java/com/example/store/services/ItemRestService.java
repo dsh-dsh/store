@@ -69,9 +69,24 @@ public class ItemRestService {
         return itemMap.keySet().stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
-                        item -> (float) lotRepository
-                                .getLotsOfItem(item.getId(), storage.getId(), time).stream()
-                                .mapToDouble(LotFloat::getValue).sum()));
+                        item -> getRestOfItemOnStorage(item, storage, time)));
+    }
+
+    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime time) {
+        List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
+        return items.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        item -> getRestAndPrice(item, storage, time)))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue().getRest() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    protected RestPriceValue getRestAndPrice(Item item, Storage storage, LocalDateTime time) {
+        float rest = getRestOfItemOnStorage(item, storage, time);
+        float price = getLastPriceOfItem(item);
+        return new RestPriceValue(rest, price);
     }
 
     public float getLastPriceOfItem(Item item) {
@@ -98,6 +113,21 @@ public class ItemRestService {
                         new StorageDTO(storage),
                         getRestOfItemOnStorage(item, storage, now)))
                 .collect(Collectors.toList());
+    }
+
+    class RestPriceValue {
+        private float rest;
+        private float price;
+        public RestPriceValue(float rest, float price) {
+            this.rest = rest;
+            this.price = price;
+        }
+        public float getRest() {
+            return rest;
+        }
+        public float getPrice() {
+            return price;
+        }
     }
 }
 

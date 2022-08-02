@@ -6,6 +6,7 @@ import java.util.List;
 public class Constants {
 
     public static final int START_DOCUMENT_NUMBER = 1;
+    public static final int EMPTY_PROJECT_ID = 1;
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
 
     public static final String SYSTEM_USER_EMAIL = "system@user.com";
@@ -25,6 +26,7 @@ public class Constants {
     public static final String WITHDRAW_ORDER_DOC_TYPE = "ПКО";
     public static final String CREDIT_ORDER_DOC_TYPE = "Расходный кассовый ордер";
     public static final String INVENTORY_DOC_TYPE = "Инвентаризация";
+    public static final String PERIOD_REST_MOVE_DOC_TYPE = "Перенос остатков";
 
     public static final String STORE_STORE_TYPE = "склад";
     public static final String CAFE_STORE_TYPE = "склад кафе";

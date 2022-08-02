@@ -71,7 +71,7 @@ public class LotService {
                 docItemService.getItemsByDoc((ItemDoc) document);
         if(items.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
         DocumentType type = document.getDocType();
-        if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC) {
+        if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC || type == DocumentType.PERIOD_REST_MOVE_DOC) {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
             ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
