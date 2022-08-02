@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.entities.Period;
 import com.example.store.model.enums.ExceptionType;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
@@ -12,15 +13,18 @@ import com.example.store.model.entities.Storage;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.LotRepository;
+import com.example.store.repositories.PeriodRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,10 @@ public class ItemRestService {
     private DocItemMapper docItemMapper;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private PeriodRepository periodRepository;
+
+    private LocalDateTime periodStart;
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
@@ -46,12 +54,19 @@ public class ItemRestService {
     }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
+        periodStart = getPeriodStart();
         LocalDateTime dateTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
         Storage storage = storageService.getById(storageId);
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
                 .map(item -> getDocItemDTO(docId, item, storage, dateTime))
                 .collect(Collectors.toList());
+    }
+
+    public LocalDateTime getPeriodStart() {
+        Optional<Period> period = periodRepository.findByIsCurrent(true);
+        return period.map(value -> value.getStartDate().atStartOfDay())
+                .orElseGet(() -> LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
     }
 
     public DocItemDTO getDocItemDTO(int docId, Item item, Storage storage, LocalDateTime time) {
@@ -72,7 +87,8 @@ public class ItemRestService {
                         item -> getRestOfItemOnStorage(item, storage, time)));
     }
 
-    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime time) {
+    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime startTime, LocalDateTime time) {
+        periodStart = startTime;
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
                 .collect(Collectors.toMap(
@@ -94,9 +110,9 @@ public class ItemRestService {
         return value == null ? 0 : value;
     }
 
-    public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime time) {
+    public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
         return (float) lotRepository
-                .getLotsOfItem(item.getId(), storage.getId(), time)
+                .getLotsOfItem(item.getId(), storage.getId(), periodStart, docTime)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
     }
@@ -113,6 +129,10 @@ public class ItemRestService {
                         new StorageDTO(storage),
                         getRestOfItemOnStorage(item, storage, now)))
                 .collect(Collectors.toList());
+    }
+
+    public void setPeriodStart(LocalDateTime periodStart) {
+        this.periodStart = periodStart;
     }
 
     class RestPriceValue {

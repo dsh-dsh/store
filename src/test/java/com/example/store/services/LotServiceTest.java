@@ -6,6 +6,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +84,9 @@ class LotServiceTest {
     @Test
     @Transactional
     void getLotMapThanTime20220320Test() {
-        LocalDateTime time = LocalDateTime.parse("2022-03-20T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), time);
+        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
+        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), startTime, endTime);
         assertEquals(1, map.size());
         assertThat(map, hasValue(equalTo(2.00f)));
     }
@@ -93,8 +96,9 @@ class LotServiceTest {
     @Test
     @Transactional
     void getLotMapThanTime20220311Test() {
-        LocalDateTime time = LocalDateTime.parse("2022-03-11T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), time);
+        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
+        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), startTime, endTime);
         assertEquals(2, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
         assertThat(map, hasValue(equalTo(6.00f)));
@@ -105,9 +109,10 @@ class LotServiceTest {
     @Test
     @Transactional
     void getOneLotOfItemThanTime20220320Time() {
-        LocalDateTime time = LocalDateTime.parse("2022-03-20T11:00:00.000000");
+        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
         Map<Lot, Float> map
-                = lotService.getLotsOfItem(getItem(8), getStorage(3), time);
+                = lotService.getLotsOfItem(getItem(8), getStorage(3), startTime, endTime);
         assertEquals(1, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
     }
@@ -117,9 +122,10 @@ class LotServiceTest {
     @Test
     @Transactional
     void getTwoLotsOfItemThanTime20220310Test() {
-        LocalDateTime time = LocalDateTime.parse("2022-03-11T11:00:00.000000");
+        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
         Map<Lot, Float> map
-                = lotService.getLotsOfItem(getItem(8), getStorage(3), time);
+                = lotService.getLotsOfItem(getItem(8), getStorage(3), startTime, endTime);
         assertEquals(2, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
         assertThat(map, hasValue(equalTo(10.00f)));
@@ -154,6 +160,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfWriteOffDocTest() {
+        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -166,6 +173,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfReceiptDocTest() {
+        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -178,6 +186,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfPostingDocTest() {
+        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -190,6 +199,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfMovementDocTest() {
+        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc movementDocument = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(movementDocument);
         List<Item> items = movementDocument.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -205,6 +215,7 @@ class LotServiceTest {
     @Transactional
     void addStorageDocMovement_whenWriteOffDoc_Test() {
         DocumentItem item = docItemService.getItemById(3);
+        lotService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         lotService.addStorageDocMovement(item);
         assertEquals(1, lotService.getLotsByDocumentItemForStorageDocs(item).get(0).getId());
     }
@@ -214,6 +225,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addStorageDocMovement_whenMovementDoc_Test() {
+        lotService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         DocumentItem item = docItemService.getItemById(3);
         lotService.addStorageDocMovement(item);
         List<Lot> lots = lotService.getLotsByDocumentItemForStorageDocs(item);

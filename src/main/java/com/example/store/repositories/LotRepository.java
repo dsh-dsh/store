@@ -37,10 +37,10 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "left join lot_movement as movement on lot.id = movement.lot_id " +
             "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
             "where doc_item.item_id = :itemId and movement.storage_id = :storageId " +
-            "and movement.movement_time < :time " +
+            "and (movement.movement_time >= :startTime and movement.movement_time <= :endTime) " +
             "group by lot.id " +
             "having sum(movement.quantity) > 0", nativeQuery = true)
-    List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime time); // todo rename getRestOfItemLots, add period using
+    List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime startTime, LocalDateTime endTime);
 
     @Query(value = "select doc_item.price " +
             "from document_item as doc_item " +

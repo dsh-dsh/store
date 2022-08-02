@@ -146,6 +146,7 @@ public class Hold1CDocksService {
     }
 
     public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
+        ///
         Map<Item, Float> itemRestMap = itemRestService
                 .getItemRestMap(writeOffItemMap, storage, time);
         return writeOffItemMap.entrySet().stream()

@@ -11,7 +11,6 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.services.DocItemService;
 import com.example.store.services.ItemRestService;
 import com.example.store.services.LotService;
-import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +43,7 @@ public class ReHoldChecking {
 
     public Map<Item, Float> getQuantityDiffMap(Storage storage, Map<DocumentItem, Float> changedDocItemMap) {
         Map<Item, Float> quantityDiffMap = new HashMap<>();
+        itemRestService.setPeriodStart(itemRestService.getPeriodStart());
         for(Map.Entry<DocumentItem, Float> entry : changedDocItemMap.entrySet()) {
             DocumentItem docItem = entry.getKey();
             float quantityDiff;

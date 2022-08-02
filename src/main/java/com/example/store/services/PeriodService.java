@@ -40,6 +40,8 @@ public class PeriodService {
     @Autowired
     private DocItemService docItemService;
 
+    private Period previousPeriod;
+
     @Transactional
     public void closePeriod() {
         Period period = setNextPeriod();
@@ -50,7 +52,8 @@ public class PeriodService {
     public void closePeriodForStorage(Period period, Storage storage) {
         ItemDoc doc = createRestMoveDoc(period, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage,
+                    previousPeriod.getStartDate().atStartOfDay(), doc.getDateTime());
         if(itemRestMap.size() > 0) {
             documentRepository.save(doc);
             List<DocumentItem> items = getDocItems(doc, itemRestMap);
@@ -93,6 +96,7 @@ public class PeriodService {
         if(current != null) {
             current.setCurrent(false);
             periodRepository.save(current);
+            previousPeriod = current;
         }
         next.setCurrent(true);
         periodRepository.save(next);

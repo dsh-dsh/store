@@ -34,6 +34,7 @@ public class LotService {
     private ItemRestService itemRestService;
 
     private boolean addRestForHold = true;
+    private LocalDateTime periodStart;
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -75,6 +76,7 @@ public class LotService {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
             ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
+            periodStart = itemRestService.getPeriodStart();
 
             items.forEach(this::addStorageDocMovement);
         }
@@ -83,9 +85,9 @@ public class LotService {
     protected void addStorageDocMovement(DocumentItem docItem){
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
-        LocalDateTime time = document.getDateTime();
+        LocalDateTime docTime = document.getDateTime();
 
-        Map<Lot, Float> lotMap = getLotMap(docItem, storage, time);
+        Map<Lot, Float> lotMap = getLotMap(docItem, storage, periodStart, docTime);
         lotMoveService.addMinusLotMovements(document, lotMap);
 
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
@@ -93,16 +95,16 @@ public class LotService {
         }
     }
 
-    public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime time) {
-        Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, time);
+    public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime startTime, LocalDateTime endTime) {
+        Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, startTime, endTime);
         if(addRestForHold) {
             itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());
     }
 
-    public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime time) {
-        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), time);
+    public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime startTime, LocalDateTime endTime) {
+        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), startTime, endTime);
         return lotsOfItem.stream()
                 .collect(Collectors.toMap(
                         lotFloat -> getLotById(lotFloat.getId()),

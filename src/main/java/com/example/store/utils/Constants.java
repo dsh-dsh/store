@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Constants {
 
+    public static final String DEFAULT_PERIOD_START = "2000-01-01";
+
     public static final int START_DOCUMENT_NUMBER = 1;
     public static final int EMPTY_PROJECT_ID = 1;
     public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
