@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,20 +41,18 @@ public class PeriodService {
     @Autowired
     private DocItemService docItemService;
 
-    private Period previousPeriod;
-
     @Transactional
     public void closePeriod() {
-        Period period = setNextPeriod();
+        LocalDateTime newPeriodStart = getNewPeriodStart();
         List<Storage> storages = storageService.getStorageList();
-        storages.forEach(storage -> closePeriodForStorage(period, storage));
+        storages.forEach(storage -> closePeriodForStorage(newPeriodStart, storage));
+        setNextPeriod();
     }
 
-    public void closePeriodForStorage(Period period, Storage storage) {
-        ItemDoc doc = createRestMoveDoc(period, storage);
+    public void closePeriodForStorage(LocalDateTime newPeriodStart, Storage storage) {
+        ItemDoc doc = createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage,
-                    previousPeriod.getStartDate().atStartOfDay(), doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
         if(itemRestMap.size() > 0) {
             documentRepository.save(doc);
             List<DocumentItem> items = getDocItems(doc, itemRestMap);
@@ -70,11 +69,11 @@ public class PeriodService {
                 .collect(Collectors.toList());
     }
 
-    protected ItemDoc createRestMoveDoc(Period period, Storage storage) {
+    protected ItemDoc createRestMoveDoc(LocalDateTime newPeriodStart, Storage storage) {
         ItemDoc doc = new ItemDoc();
         doc.setDocType(DocumentType.PERIOD_REST_MOVE_DOC);
         doc.setNumber(documentService.getNextDocumentNumber(DocumentType.PERIOD_REST_MOVE_DOC));
-        doc.setDateTime(period.getStartDate().atStartOfDay());
+        doc.setDateTime(newPeriodStart);
         doc.setStorageTo(storage);
         Project project = projectService.getProjectByStorageName(storage.getName())
                 .orElseGet(() -> projectService.getById(Constants.EMPTY_PROJECT_ID));
@@ -89,14 +88,17 @@ public class PeriodService {
         return periodRepository.findByIsCurrent(true).orElse(null);
     }
 
-    @Transactional
+    LocalDateTime getNewPeriodStart() {
+        Period current = getCurrentPeriod();
+        return current.getEndDate().plusDays(1).atStartOfDay();
+    }
+
     public Period setNextPeriod() {
         Period current = getCurrentPeriod();
         Period next = getNextPeriod(current);
         if(current != null) {
             current.setCurrent(false);
             periodRepository.save(current);
-            previousPeriod = current;
         }
         next.setCurrent(true);
         periodRepository.save(next);

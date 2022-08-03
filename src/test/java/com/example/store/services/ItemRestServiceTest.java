@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.Storage;
@@ -32,6 +33,8 @@ class ItemRestServiceTest {
     private ItemService itemService;
     @Autowired
     private StorageService storageService;
+    @Autowired
+    private EnvironmentVars env;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
@@ -41,11 +44,11 @@ class ItemRestServiceTest {
     @Test
     @Transactional
     void getItemsRestOnStorageForPeriodTest() {
+        env.setPeriodStart();
         Storage storage = storageService.getById(3);
         Item item = itemService.getItemById(7);
         Map<Item, ItemRestService.RestPriceValue> map
-                = itemRestService.getItemsRestOnStorageForPeriod(storage,
-                    LocalDate.parse("2022-04-01").atStartOfDay(), LocalDate.parse("2022-05-15").atStartOfDay());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(2, map.size());
         assertEquals(6, map.get(item).getRest());
         assertEquals(200, map.get(item).getPrice());
@@ -104,13 +107,13 @@ class ItemRestServiceTest {
         assertEquals(200, itemRestService.getLastPriceOfItem(new Item(7)));
     }
 
-    @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",
             "/sql/lotMovements/addWriteOff.sql", "/sql/lotMovements/addMovement.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getRestOfItemOnStorageTest() {
-        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
+        env.setPeriodStart();
         assertEquals(5, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(3), LocalDateTime.now()));
         assertEquals(3, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(3), LocalDateTime.now()));
         assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(2), LocalDateTime.now()));

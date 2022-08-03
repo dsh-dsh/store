@@ -47,8 +47,6 @@ public class ItemRestService {
     @Autowired
     private EnvironmentVars env;
 
-    private LocalDateTime periodStart;
-
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
         if(docItemQuantity > lotsQuantitySum)
@@ -57,7 +55,6 @@ public class ItemRestService {
     }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
-//        periodStart = getPeriodStart();
         LocalDateTime dateTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
         Storage storage = storageService.getById(storageId);
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
@@ -90,8 +87,7 @@ public class ItemRestService {
                         item -> getRestOfItemOnStorage(item, storage, time)));
     }
 
-    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime startTime, LocalDateTime time) {
-        periodStart = startTime;
+    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime time) {
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
                 .collect(Collectors.toMap(
@@ -132,10 +128,6 @@ public class ItemRestService {
                         new StorageDTO(storage),
                         getRestOfItemOnStorage(item, storage, now)))
                 .collect(Collectors.toList());
-    }
-
-    public void setPeriodStart(LocalDateTime periodStart) {
-        this.periodStart = periodStart;
     }
 
     class RestPriceValue {

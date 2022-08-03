@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -46,6 +47,8 @@ class LotServiceTest {
     private DocumentService documentService;
     @Autowired
     private DocItemService docItemService;
+    @Autowired
+    private EnvironmentVars env;
 
     @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -79,53 +82,53 @@ class LotServiceTest {
         assertEquals(2, lots.get(1).getId());
     }
 
-    @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getLotMapThanTime20220320Test() {
-        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        env.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), startTime, endTime);
+        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), endTime);
         assertEquals(1, map.size());
         assertThat(map, hasValue(equalTo(2.00f)));
     }
 
-    @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getLotMapThanTime20220311Test() {
-        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        env.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), startTime, endTime);
+        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), endTime);
         assertEquals(2, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
         assertThat(map, hasValue(equalTo(6.00f)));
     }
 
-    @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getOneLotOfItemThanTime20220320Time() {
-        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        env.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
         Map<Lot, Float> map
-                = lotService.getLotsOfItem(getItem(8), getStorage(3), startTime, endTime);
+                = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(1, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
     }
 
-    @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getTwoLotsOfItemThanTime20220310Test() {
-        LocalDateTime startTime = LocalDateTime.parse("2022-03-01T00:00:00.000000");
+        env.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
         Map<Lot, Float> map
-                = lotService.getLotsOfItem(getItem(8), getStorage(3), startTime, endTime);
+                = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(2, map.size());
         assertThat(map, hasValue(equalTo(4.00f)));
         assertThat(map, hasValue(equalTo(10.00f)));
@@ -150,9 +153,8 @@ class LotServiceTest {
     @Test
     void checkQuantityShortageExceptionThrownTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
-        assertThrows(BadRequestException.class, () -> {
-            itemRestService.checkQuantityShortage(mapOfLotAndFloat, 20.00f);
-        });
+        assertThrows(BadRequestException.class,
+                () -> itemRestService.checkQuantityShortage(mapOfLotAndFloat, 20.00f));
     }
 
     @Sql(value = "/sql/lots/addTwoDocsAndLots.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -160,7 +162,6 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfWriteOffDocTest() {
-        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -173,7 +174,6 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfReceiptDocTest() {
-        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -186,7 +186,6 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfPostingDocTest() {
-        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -199,7 +198,6 @@ class LotServiceTest {
     @Test
     @Transactional
     void addLotMovementsOfMovementDocTest() {
-        itemRestService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         ItemDoc movementDocument = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(movementDocument);
         List<Item> items = movementDocument.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
@@ -209,23 +207,23 @@ class LotServiceTest {
         assertEquals(7, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageTo(), LocalDateTime.now()));
     }
 
-    @Sql(value = "/sql/lots/addTwoDocsAndLots.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addTwoDocsAndLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void addStorageDocMovement_whenWriteOffDoc_Test() {
+        env.setPeriodStart();
         DocumentItem item = docItemService.getItemById(3);
-        lotService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
         lotService.addStorageDocMovement(item);
         assertEquals(1, lotService.getLotsByDocumentItemForStorageDocs(item).get(0).getId());
     }
 
-    @Sql(value = "/sql/lots/addPostingDocWithLotsAndMovementDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addPostingDocWithLotsAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void addStorageDocMovement_whenMovementDoc_Test() {
-        lotService.setPeriodStart(LocalDateTime.parse("2022-03-01T00:00:00.000"));
+        env.setPeriodStart();
         DocumentItem item = docItemService.getItemById(3);
         lotService.addStorageDocMovement(item);
         List<Lot> lots = lotService.getLotsByDocumentItemForStorageDocs(item);
@@ -235,9 +233,8 @@ class LotServiceTest {
     @Test
     void checkQuantityShortageNoExceptionTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
-        assertDoesNotThrow(() -> {
-            itemRestService.checkQuantityShortage(mapOfLotAndFloat, 15.00f);
-        });
+        assertDoesNotThrow(
+                () -> itemRestService.checkQuantityShortage(mapOfLotAndFloat, 15.00f));
     }
 
     @Sql(value = "/sql/lots/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

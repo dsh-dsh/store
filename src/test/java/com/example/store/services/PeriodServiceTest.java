@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Period;
@@ -16,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +39,8 @@ class PeriodServiceTest {
     private ItemRestService itemRestService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private EnvironmentVars env;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
@@ -57,12 +61,12 @@ class PeriodServiceTest {
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodForStorage3Test() {
-        Period period = periodService.setNextPeriod();
+        env.setPeriodStart();
+        LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
-        periodService.closePeriodForStorage(period, storage);
+        periodService.closePeriodForStorage(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage,
-                    LocalDate.parse("2022-04-01").atStartOfDay(), LocalDate.parse("2022-05-02").atStartOfDay());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, LocalDate.parse("2022-05-02").atStartOfDay());
         assertEquals(2, itemRestMap.size());
         // todo assert quantity (after period close)
     }
@@ -74,12 +78,12 @@ class PeriodServiceTest {
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage1Test() {
-        Period period = periodService.setNextPeriod();
+        env.setPeriodStart();
+        LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(1);
-        ItemDoc doc = periodService.createRestMoveDoc(period, storage);
+        ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage,
-                    LocalDate.parse("2022-04-01").atStartOfDay(), doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
         List<DocumentItem> items = periodService.getDocItems(doc, itemRestMap);
         assertEquals(2, items.size());
         assertEquals(4, items.get(0).getQuantity());
@@ -93,12 +97,12 @@ class PeriodServiceTest {
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage3Test() {
-        Period period = periodService.setNextPeriod();
+        env.setPeriodStart();
+        LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
-        ItemDoc doc = periodService.createRestMoveDoc(period, storage);
+        ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage,
-                    LocalDate.parse("2022-04-01").atStartOfDay(), doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
         DocumentItem[] items = periodService.getDocItems(doc, itemRestMap).toArray(new DocumentItem[0]);
         assertEquals(2, items.length);
         assertEquals(6, items[0].getQuantity());
@@ -111,9 +115,9 @@ class PeriodServiceTest {
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createRestMoveDocTest() {
-        Period period = periodService.setNextPeriod();
+        LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
-        ItemDoc doc = periodService.createRestMoveDoc(period, storage);
+        ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
         assertEquals(LocalDate.parse("2022-05-01").atStartOfDay(), doc.getDateTime());
         assertEquals(1, doc.getNumber());
         assertEquals(DocumentType.PERIOD_REST_MOVE_DOC, doc.getDocType());

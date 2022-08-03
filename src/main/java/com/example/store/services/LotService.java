@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.EnvironmentVars;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -32,9 +33,10 @@ public class LotService {
     private IngredientService ingredientService;
     @Autowired
     private ItemRestService itemRestService;
+    @Autowired
+    private EnvironmentVars env;
 
-    private boolean addRestForHold = true;
-    private LocalDateTime periodStart;
+    private boolean addRestForHold = true;  // todo
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -76,7 +78,6 @@ public class LotService {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
             ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
-            periodStart = itemRestService.getPeriodStart();
 
             items.forEach(this::addStorageDocMovement);
         }
@@ -87,7 +88,7 @@ public class LotService {
         Storage storage = document.getStorageFrom();
         LocalDateTime docTime = document.getDateTime();
 
-        Map<Lot, Float> lotMap = getLotMap(docItem, storage, periodStart, docTime);
+        Map<Lot, Float> lotMap = getLotMap(docItem, storage, docTime);
         lotMoveService.addMinusLotMovements(document, lotMap);
 
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
@@ -95,16 +96,16 @@ public class LotService {
         }
     }
 
-    public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime startTime, LocalDateTime endTime) {
-        Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, startTime, endTime);
+    public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
+        Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
         if(addRestForHold) {
             itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());
     }
 
-    public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime startTime, LocalDateTime endTime) {
-        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), startTime, endTime);
+    public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime endTime) {
+        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), endTime);
         return lotsOfItem.stream()
                 .collect(Collectors.toMap(
                         lotFloat -> getLotById(lotFloat.getId()),

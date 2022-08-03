@@ -43,7 +43,6 @@ public class ReHoldChecking {
 
     public Map<Item, Float> getQuantityDiffMap(Storage storage, Map<DocumentItem, Float> changedDocItemMap) {
         Map<Item, Float> quantityDiffMap = new HashMap<>();
-        itemRestService.setPeriodStart(itemRestService.getPeriodStart());
         for(Map.Entry<DocumentItem, Float> entry : changedDocItemMap.entrySet()) {
             DocumentItem docItem = entry.getKey();
             float quantityDiff;
