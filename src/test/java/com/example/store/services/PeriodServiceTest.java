@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.EnvironmentVars;
+import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Period;
@@ -153,5 +154,11 @@ class PeriodServiceTest {
     void setNextPeriodIfNoCurrentTest() {
         Period period = periodService.setNextPeriod();
         assertEquals(LocalDate.now(), period.getStartDate());
+    }
+
+    @Test
+    void getPeriodDTOIfNoCurrentPeriodTest() {
+        PeriodDTO dto = periodService.getPeriodDTO();
+        assertEquals(946674000000L, dto.getStartDate());
     }
 }

@@ -173,4 +173,27 @@ class SettingControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getCurrentPeriodTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/period"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.start_date").value(1648760400000L))
+                .andExpect(jsonPath("$.data.end_date").value(1651266000000L));
+    }
+
+    @Test
+    void getCurrentPeriodUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/period"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }

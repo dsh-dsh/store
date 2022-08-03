@@ -1,9 +1,6 @@
 package com.example.store.utils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 public class Util {
 
@@ -13,5 +10,16 @@ public class Util {
 
     public static LocalDate getLocalDate(long time) {
         return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static long getLongLocalDateTime(LocalDateTime time) {
+        return ZonedDateTime.of(time, ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    public static long getLongLocalDate(LocalDate time) {
+        return time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    private Util() {
     }
 }

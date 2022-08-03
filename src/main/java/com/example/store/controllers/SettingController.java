@@ -1,8 +1,10 @@
 package com.example.store.controllers;
 
+import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
+import com.example.store.services.PeriodService;
 import com.example.store.services.SettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ public class SettingController {
 
     @Autowired
     private SettingService settingService;
+    @Autowired
+    private PeriodService periodService;
 
     @GetMapping
     public ResponseEntity<ListResponse<SettingDTO>> getSettings(
@@ -24,6 +28,11 @@ public class SettingController {
     @GetMapping("/add/shortage")
     public ResponseEntity<Response<SettingDTO>> getHoldingSettings() {
         return ResponseEntity.ok(settingService.getAddShortageForHoldSetting());
+    }
+
+    @GetMapping("/period")
+    public ResponseEntity<Response<PeriodDTO>> getCurrentPeriod() {
+        return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
     }
 
     @PostMapping("/property")

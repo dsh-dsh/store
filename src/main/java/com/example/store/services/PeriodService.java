@@ -1,11 +1,13 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.PeriodRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +85,6 @@ public class PeriodService {
         return doc;
     }
 
-
     public Period getCurrentPeriod() {
         return periodRepository.findByIsCurrent(true).orElse(null);
     }
@@ -114,4 +115,13 @@ public class PeriodService {
         return next;
     }
 
+    public PeriodDTO getPeriodDTO() {
+        Period period = getCurrentPeriod();
+        PeriodDTO dto = new PeriodDTO();
+        LocalDate start = period != null? period.getStartDate() : LocalDate.parse(Constants.DEFAULT_PERIOD_START);
+        LocalDate end = period != null? period.getEndDate() : LocalDate.now().plusMonths(1).withDayOfMonth(1);
+        dto.setStartDate(Util.getLongLocalDate(start));
+        dto.setEndDate(Util.getLongLocalDate(end));
+        return dto;
+    }
 }
