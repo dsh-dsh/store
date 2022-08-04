@@ -9,6 +9,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -162,7 +163,11 @@ public class AbstractDocCrudService {
             }
             itemDocRepository.save(itemDoc);
         } else {
-            orderDocRepository.save((OrderDoc) document);
+            OrderDoc order = (OrderDoc) document;
+            order.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
+            order.setAmount(docDTO.getAmount());
+            order.setTax(docDTO.getTax());
+            orderDocRepository.save(order);
         }
     }
 
