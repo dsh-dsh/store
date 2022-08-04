@@ -43,7 +43,16 @@ public class PeriodService {
     @Autowired
     private DocItemService docItemService;
 
+    public PeriodDTO closePeriodManually() {
+        closePeriod();
+        return getPeriodDTO();
+    }
+
     @Transactional
+    public void closePeriodTransactional() {
+        closePeriod();
+    }
+
     public void closePeriod() {
         LocalDateTime newPeriodStart = getNewPeriodStart();
         List<Storage> storages = storageService.getStorageList();
@@ -86,7 +95,13 @@ public class PeriodService {
     }
 
     public Period getCurrentPeriod() {
-        return periodRepository.findByIsCurrent(true).orElse(null);
+        return periodRepository.findByIsCurrent(true)
+                .orElseGet(() -> {
+                    Period period = new Period();
+                    period.setStartDate(LocalDate.parse(Constants.DEFAULT_PERIOD_START));
+                    period.setEndDate(LocalDate.parse(Constants.DEFAULT_PERIOD_START).minusDays(1));
+                    return period;
+                });
     }
 
     LocalDateTime getNewPeriodStart() {
@@ -124,4 +139,5 @@ public class PeriodService {
         dto.setEndDate(Util.getLongLocalDate(end));
         return dto;
     }
+
 }

@@ -47,4 +47,10 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @PostMapping("/period")
+    public ResponseEntity<Response<PeriodDTO>> closePeriod() {
+        PeriodDTO periodDTO = periodService.closePeriodManually();
+        return ResponseEntity.ok(new Response<>(periodDTO));
+    }
+
 }

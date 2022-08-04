@@ -138,7 +138,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getCurrentPeriodIfNotExistsTest() {
-        assertNull(periodService.getCurrentPeriod());
+        assertEquals(LocalDate.parse(Constants.DEFAULT_PERIOD_START).minusDays(1), periodService.getCurrentPeriod().getEndDate());
     }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -153,12 +153,24 @@ class PeriodServiceTest {
     @Test
     void setNextPeriodIfNoCurrentTest() {
         Period period = periodService.setNextPeriod();
-        assertEquals(LocalDate.now(), period.getStartDate());
+        assertEquals(LocalDate.parse("2000-01-01"), period.getStartDate());
     }
 
     @Test
     void getPeriodDTOIfNoCurrentPeriodTest() {
         PeriodDTO dto = periodService.getPeriodDTO();
-        assertEquals(946674000000L, dto.getStartDate());
+        assertEquals(946587600000L, dto.getEndDate());
     }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void closePeriodManuallyTest() {
+        PeriodDTO dto = periodService.closePeriodManually();
+        assertEquals(1651352400000L, dto.getStartDate());
+    }
+
+
 }
