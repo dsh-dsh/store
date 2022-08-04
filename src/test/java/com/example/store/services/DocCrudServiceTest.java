@@ -125,4 +125,18 @@ class DocCrudServiceTest {
         assertThrows(BadRequestException.class,
                 () -> docCrudService.checkTimePeriod(document));
     }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNewDocNumberWhenCheckDocTest() {
+        assertEquals(2, docCrudService.getNewDocNumber(DocumentType.CHECK_DOC.getValue()));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNewDocNumberWhenRequestDocTest() {
+        assertEquals(12, docCrudService.getNewDocNumber(DocumentType.REQUEST_DOC.getValue()));
+    }
 }

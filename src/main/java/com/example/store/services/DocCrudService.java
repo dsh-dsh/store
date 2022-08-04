@@ -186,4 +186,9 @@ public class DocCrudService extends AbstractDocCrudService {
                     ExceptionType.COMMON_EXCEPTION);
         }
     }
+
+    public int getNewDocNumber(String type) {
+        DocumentType documentType = DocumentType.getByValue(type);
+        return getNextDocumentNumber(documentType);
+    }
 }

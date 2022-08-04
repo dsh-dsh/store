@@ -908,4 +908,26 @@ class DocumentControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNewDocNumberWhenRequestDocUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/new/number?type=" + DocumentType.REQUEST_DOC.getValue()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getNewDocNumberWhenRequestDocTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/new/number?type=" + DocumentType.REQUEST_DOC.getValue()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(12));
+    }
 }

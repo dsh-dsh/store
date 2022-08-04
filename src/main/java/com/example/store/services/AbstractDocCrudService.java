@@ -182,7 +182,7 @@ public class AbstractDocCrudService {
 
     protected void setCommonFields(Document document, DocDTO docDTO) {
         if(docDTO.getNumber() == 0) {
-            document.setNumber(getNextDocumentNumber());
+            document.setNumber(getNextDocumentNumber(documentType));
         } else {
             document.setNumber(docDTO.getNumber());
         }
@@ -216,9 +216,9 @@ public class AbstractDocCrudService {
         return newTime;
     }
 
-    protected int getNextDocumentNumber() {
+    protected int getNextDocumentNumber(DocumentType type) {
         try {
-            return documentRepository.getLastNumber(documentType.toString()) + 1;
+            return documentRepository.getLastNumber(type.toString()) + 1;
         } catch (Exception exception) {
             return Constants.START_DOCUMENT_NUMBER;
         }

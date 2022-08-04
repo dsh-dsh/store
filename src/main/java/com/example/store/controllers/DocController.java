@@ -37,6 +37,12 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(docDTO));
     }
 
+    @GetMapping("/new/number")
+    public ResponseEntity<Response<Integer>> getNewDocNumber(@RequestParam String type) {
+        int newDocNumber = docCrudService.getNewDocNumber(type);
+        return ResponseEntity.ok(new Response<>(newDocNumber));
+    }
+
     @PostMapping
     public ResponseEntity<Response<String>> addDocument(@RequestBody DocRequestDTO docRequestDTO) {
         docCrudService.addDocument(docRequestDTO.getDocDTO());
