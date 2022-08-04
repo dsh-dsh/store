@@ -40,12 +40,12 @@ public class UserService {
 
     public User getByName(String name) {
         return userRepository.findByLastNameStartingWithIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + " - " + name));
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, name)));
     }
 
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE + " - " + email));
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, email)));
     }
 
     public User getById(int id) {

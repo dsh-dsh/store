@@ -20,7 +20,7 @@ public class ProjectService {
 
     public Project getByName(String name) {
         return projectRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_PROJECT_MESSAGE, name)));
     }
 
     public Project getById(int id) {

@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmailIgnoreCase(username)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, username)));
         return user == null ? null : setUserDetails(user);
     }
 }

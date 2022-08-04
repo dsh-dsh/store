@@ -49,9 +49,16 @@ public class ItemRestService {
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
-        if(docItemQuantity > lotsQuantitySum)
-            throw new BadRequestException(Constants.SHORTAGE_OF_ITEM_MESSAGE,
+        if(docItemQuantity > lotsQuantitySum) {
+            String itemName = "";
+            Optional<Lot> lot = lotMap.keySet().stream().findFirst();
+            if(lot.isPresent()) {
+                itemName = lot.get().getDocumentItem().getItem().getName();
+            }
+            throw new BadRequestException(
+                    String.format(Constants.SHORTAGE_OF_ITEM_MESSAGE, itemName, docItemQuantity, lotsQuantitySum),
                     ExceptionType.HOLD_EXCEPTION);
+        }
     }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {

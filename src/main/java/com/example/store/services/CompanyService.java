@@ -28,7 +28,7 @@ public class CompanyService {
 
     public Company getByName(String name) {
         return companyRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, name)));
     }
 
     public List<CompanyDTO> getCompanyDTOList() {
