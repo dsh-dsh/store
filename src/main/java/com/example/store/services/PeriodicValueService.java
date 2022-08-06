@@ -7,13 +7,12 @@ import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.repositories.PeriodicValueRepository;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +84,7 @@ public class PeriodicValueService {
     }
 
     protected void updateQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
-        LocalDate date = convertDate(dto.getDate());
+        LocalDate date = Util.getLocalDate(dto.getDate());
         Optional<PeriodicValue> optional = periodicValueRepository.findById(dto.getId());
         if(optional.isPresent()) {
             PeriodicValue periodicValue = optional.get();
@@ -100,10 +99,6 @@ public class PeriodicValueService {
         } else {
             setQuantity(ingredient, dto);
         }
-    }
-
-    protected LocalDate convertDate(long longTime) {
-        return Instant.ofEpochMilli(longTime).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
 }

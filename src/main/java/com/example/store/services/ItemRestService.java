@@ -16,13 +16,12 @@ import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.repositories.PeriodRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +61,7 @@ public class ItemRestService {
     }
 
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
-        LocalDateTime dateTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime dateTime = Util.getLocalDateTime(time);
         Storage storage = storageService.getById(storageId);
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()

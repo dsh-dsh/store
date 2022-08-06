@@ -21,9 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -173,7 +171,7 @@ public class DocCrudService extends AbstractDocCrudService {
     }
 
     protected void checkTimePeriod(DocDTO docDTO) {
-        LocalDateTime docTime = Instant.ofEpochMilli(docDTO.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime docTime = Util.getLocalDateTime(docDTO.getDateTime());
         if(docTime.isBefore(env.getPeriodStart())) {
             throw new BadRequestException(String.format(
                     Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()),

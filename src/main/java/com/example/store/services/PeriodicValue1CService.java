@@ -5,6 +5,7 @@ import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.enums.PeriodicValueType;
+import com.example.store.utils.Util;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class PeriodicValue1CService extends PeriodicValueService {
     @Override
     protected void updateQuantity(Ingredient ingredient, PeriodicValueDTO dto) {
         PeriodicValueType type = PeriodicValueType.valueOf(dto.getType());
-        LocalDate date = convertDate(dto.getDate());
+        LocalDate date = Util.getLocalDate(dto.getDate());
         Optional<PeriodicValue> optional = periodicValueRepository
                 .findFirstByIngredientAndDateAndType(ingredient, date, type);
         if(optional.isPresent()) {

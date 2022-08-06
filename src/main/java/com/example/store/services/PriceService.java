@@ -6,12 +6,11 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Price;
 import com.example.store.model.enums.PriceType;
 import com.example.store.repositories.PriceRepository;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class PriceService {
             setNewPrice(item, dto);
             return;
         }
-        LocalDate date = Instant.ofEpochMilli(dto.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate date = Util.getLocalDate(dto.getDate());
         if (date.isAfter(price.getDate())
                 && price.getValue() != dto.getValue()) {
                 setNewPrice(item, dto);
@@ -80,7 +79,7 @@ public class PriceService {
     protected void setNewPrice(Item item, PriceDTO dto) {
         Price price = new Price();
         price.setPriceType(PriceType.valueOf(dto.getType()));
-        LocalDate date = Instant.ofEpochMilli(dto.getDate()).atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate date = Util.getLocalDate(dto.getDate());
         price.setDate(date);
         price.setItem(item);
         price.setValue(dto.getValue());

@@ -9,6 +9,7 @@ import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.utils.CollectionUtils;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 
 import java.time.*;
@@ -39,7 +40,7 @@ class UtilTest extends TestService {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         LocalDateTime oldTime = LocalDateTime.parse("2022-03-16 06:30:36.395", timeFormatter);
         long time = 1647401436395L;
-        LocalDateTime newTime = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime newTime = Util.getLocalDateTime(time);
         assertEquals(oldTime, newTime);
     }
 

@@ -9,11 +9,10 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.CheckInfoRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -52,7 +51,7 @@ public class CheckInfoService {
         checkInfo.setGuestNumber(checkInfoDTO.getGuestNumber());
         checkInfo.setTableNumber(checkInfoDTO.getTableNumber());
         checkInfo.setWaiter(checkInfoDTO.getWaiter());
-        checkInfo.setDateTime(Instant.ofEpochMilli(checkInfoDTO.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime());
+        checkInfo.setDateTime(Util.getLocalDateTime(checkInfoDTO.getDateTime()));
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());

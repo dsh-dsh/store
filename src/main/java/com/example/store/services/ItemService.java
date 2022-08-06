@@ -11,14 +11,13 @@ import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,7 +54,7 @@ public class ItemService {
     }
 
     public void updateItem(ItemDTO itemDTO, long longDate) {
-        LocalDate date = Instant.ofEpochMilli(longDate).atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate date = Util.getLocalDate(longDate);
         Item item = findItemById(itemDTO.getId());
         updateItemFields(item, itemDTO);
         itemRepository.save(item);
@@ -95,8 +94,8 @@ public class ItemService {
         return itemRepository.findByNumber(number);
     }
 
-    public ItemDTO getItemDTOById(int id, long stringDate) {
-        LocalDate date = Instant.ofEpochMilli(stringDate).atZone(ZoneId.systemDefault()).toLocalDate();
+    public ItemDTO getItemDTOById(int id, long longDate) {
+        LocalDate date = Util.getLocalDate(longDate);
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         item.setParent(getParent(item));

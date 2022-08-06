@@ -7,6 +7,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.*;
 import com.example.store.services.*;
+import com.example.store.utils.Util;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,10 @@ public class MappingConverters {
             time -> time.getSource().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
     protected final Converter<Long, LocalDateTime> longToDateTimeConverter =
-            src -> Instant.ofEpochMilli(src.getSource()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            src -> Util.getLocalDateTime(src.getSource());
 
     protected final Converter<Long, LocalDate> longToDateConverter =
-            src -> Instant.ofEpochMilli(src.getSource()).atZone(ZoneId.systemDefault()).toLocalDate();
+            src -> Util.getLocalDate(src.getSource());
 
     protected final Converter<ItemDoc, List<DocItemDTO>> docItemsConverter =
             itemDoc -> docItemService.getItemDTOListByDoc(itemDoc.getSource()) ;
