@@ -12,6 +12,10 @@ public class Util {
         return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    public static LocalDate getLocalDate(String time) {
+        return LocalDate.parse(time);
+    }
+
     public static long getLongLocalDateTime(LocalDateTime time) {
         return ZonedDateTime.of(time, ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
