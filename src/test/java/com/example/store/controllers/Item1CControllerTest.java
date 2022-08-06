@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
+        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 @AutoConfigureMockMvc
 class Item1CControllerTest extends TestService {

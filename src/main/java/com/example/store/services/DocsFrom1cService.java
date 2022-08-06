@@ -11,6 +11,7 @@ import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,7 +89,8 @@ public class DocsFrom1cService {
         LocalDateTime end = start.plusDays(1);
         // todo consider on if it is the same document
         if(document.getDateTime() == null || (document.getDateTime() != null && !document.getDateTime().equals(newTime))) {
-            Optional<Document> optionalDocument = documentRepository.getFirstByDateTimeBetweenOrderByDateTimeDesc(start, end);
+            Optional<Document> optionalDocument
+                    = documentRepository.getFirstByDateTimeBetween(start, end, Sort.by(Constants.DATE_TIME_STRING).descending());
             if(optionalDocument.isPresent()) {
                 newTime = optionalDocument.get().getDateTime().plus(1, ChronoUnit.MILLIS);
             }

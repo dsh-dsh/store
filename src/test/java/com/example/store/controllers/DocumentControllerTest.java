@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
+        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 @AutoConfigureMockMvc
 class DocumentControllerTest {
@@ -95,7 +95,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -137,7 +137,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -157,7 +157,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -185,7 +185,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -208,7 +208,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -233,7 +233,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -261,7 +261,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -408,7 +408,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX)
+                        put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -454,7 +454,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX)
+                        put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -489,7 +489,7 @@ class DocumentControllerTest {
 
         env.setPeriodStart();
         this.mockMvc.perform(
-                        put(URL_PREFIX)
+                        put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -515,7 +515,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX)
+                        put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -545,7 +545,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        put(URL_PREFIX)
+                        put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
@@ -722,7 +722,7 @@ class DocumentControllerTest {
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())

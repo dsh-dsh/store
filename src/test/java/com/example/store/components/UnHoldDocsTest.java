@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
+        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 class UnHoldDocsTest {
 

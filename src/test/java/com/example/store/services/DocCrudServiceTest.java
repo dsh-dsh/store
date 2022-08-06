@@ -9,22 +9,25 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
+        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 class DocCrudServiceTest {
 
@@ -139,4 +142,41 @@ class DocCrudServiceTest {
     void getNewDocNumberWhenRequestDocTest() {
         assertEquals(12, docCrudService.getNewDocNumber(DocumentType.REQUEST_DOC.getValue()));
     }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNextDocTimeWhenDocsExistTest() {
+        LocalDate docDate = LocalDate.parse("2022-03-16");
+        Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
+        boolean next = true;
+        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docCrudService.getDocTime(docDate, sort, next));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getPreviousDocTimeWhenDocsExistTest() {
+        LocalDate docDate = LocalDate.parse("2022-03-16");
+        Sort sort = Sort.by(Constants.DATE_TIME_STRING);
+        boolean next = false;
+        assertEquals(LocalDateTime.parse("2022-03-16T06:30:36.394"), docCrudService.getDocTime(docDate, sort, next));
+    }
+
+    @Test
+    void getNextDocTimeWhenDocsNotExistTest() {
+        LocalDate docDate = LocalDate.parse("2022-03-16");
+        Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
+        boolean next = true;
+        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getDocTime(docDate, sort, next));
+    }
+
+    @Test
+    void getPreviousDocTimeWhenDocsNotExistTest() {
+        LocalDate docDate = LocalDate.parse("2022-03-16");
+        Sort sort = Sort.by(Constants.DATE_TIME_STRING);
+        boolean next = false;
+        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getDocTime(docDate, sort, next));
+    }
+
 }

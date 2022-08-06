@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest?serverTimezone=UTC")
+        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 class CalculationServiceTest {
 
