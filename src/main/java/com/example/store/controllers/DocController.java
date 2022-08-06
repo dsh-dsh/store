@@ -43,15 +43,19 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(newDocNumber));
     }
 
-    @PostMapping
-    public ResponseEntity<Response<String>> addDocument(@RequestBody DocRequestDTO docRequestDTO) {
-        docCrudService.addDocument(docRequestDTO.getDocDTO());
+    @PostMapping("/{saveTime}")
+    public ResponseEntity<Response<String>> addDocument(
+            @PathVariable String saveTime,
+            @RequestBody DocRequestDTO docRequestDTO) {
+        docCrudService.addDocument(docRequestDTO.getDocDTO(), saveTime);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @PutMapping
-    public ResponseEntity<Response<String>> updateDocument(@RequestBody DocRequestDTO docRequestDTO) {
-        docCrudService.updateDocument(docRequestDTO.getDocDTO());
+    @PutMapping("/{saveTime}")
+    public ResponseEntity<Response<String>> updateDocument(
+            @PathVariable String saveTime,
+            @RequestBody DocRequestDTO docRequestDTO) {
+        docCrudService.updateDocument(docRequestDTO.getDocDTO(), saveTime);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

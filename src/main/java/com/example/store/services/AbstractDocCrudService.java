@@ -15,16 +15,16 @@ import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.repositories.ProjectRepository;
 import com.example.store.utils.Constants;
-import com.example.store.utils.annotations.Transaction;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-public class AbstractDocCrudService {
+public abstract class AbstractDocCrudService {
 
     @Autowired
     protected ProjectService projectService;
@@ -55,6 +55,7 @@ public class AbstractDocCrudService {
 
     protected DocumentType documentType;
     protected DocDTO docDTO;
+    protected String saveTime;
 
     public DocInterface addItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
@@ -72,7 +73,6 @@ public class AbstractDocCrudService {
         return order;
     }
 
-    @Transaction
     public DocInterface updateItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
         boolean reHoldPossible = reHoldChecking.checkPossibility(itemDoc, docDTO);
@@ -89,6 +89,7 @@ public class AbstractDocCrudService {
 
     public DocInterface updateOrderDocument(DocDTO docDTO) {
         return addOrderDoc(docDTO);
+        // todo
 //        OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
 //        setAdditionalFieldsAndSave(order);
 //        return order;
@@ -200,20 +201,25 @@ public class AbstractDocCrudService {
     }
 
     protected LocalDateTime getNewTime(Document document, DocDTO dto) {
-        LocalDateTime newTime = Instant.ofEpochMilli(dto.getDateTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-        LocalDateTime start = LocalDateTime.of(newTime.getYear(), newTime.getMonth(), newTime.getDayOfMonth(), 0, 0, 0);
-        LocalDateTime end = start.plusDays(1);
-        // todo consider on if it is the same document
-        if(document.getDateTime() == null || (document.getDateTime() != null && !document.getDateTime().equals(newTime))) {
-            Optional<Document> optionalDocument = documentRepository.getFirstByDateTimeBetweenOrderByDateTimeDesc(start, end);
-            if(optionalDocument.isPresent()) {
-                newTime = optionalDocument.get().getDateTime().plus(1, ChronoUnit.MILLIS);
-            } else {
-                newTime = start;
-            }
+        LocalDate docDate = Util.getLocalDate(dto.getDateTime());
+        if(document.getDateTime() != null && saveTime.equals("currentTime")) {
+            return document.getDateTime();
+        } else if(saveTime.equals("dayStart")) {
+            return getDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);
+        } else {
+            return getDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING).descending(), true);
         }
-        return newTime;
+    }
+
+    protected LocalDateTime getDocTime(LocalDate docDate, Sort sort, boolean next) {
+        LocalDateTime start = docDate.atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        Optional<Document> optionalDocument =
+                documentRepository.getFirstByDateTimeBetween(start, end, sort);
+        if(optionalDocument.isPresent()) {
+            return optionalDocument.get().getDateTime().plus(next ? 1 : -1, ChronoUnit.MILLIS);
+        }
+        return start.plusHours(1);
     }
 
     protected int getNextDocumentNumber(DocumentType type) {

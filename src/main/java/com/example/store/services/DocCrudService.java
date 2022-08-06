@@ -92,8 +92,9 @@ public class DocCrudService extends AbstractDocCrudService {
     }
 
     @Transaction
-    public void addDocument(DocDTO docDTO) {
+    public void addDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(docDTO);
+        this.saveTime = saveTime;
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             addOrderDoc(docDTO);
@@ -103,8 +104,9 @@ public class DocCrudService extends AbstractDocCrudService {
     }
 
     @Transaction
-    public void updateDocument(DocDTO docDTO) {
+    public void updateDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(docDTO);
+        this.saveTime = saveTime;
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             updateOrderDocument(docDTO);
