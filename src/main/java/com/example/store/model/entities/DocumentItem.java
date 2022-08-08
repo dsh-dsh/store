@@ -40,13 +40,13 @@ public class DocumentItem {
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = quantity;
+        this.quantity = (float)Math.floor(quantity*1000)/1000;
     }
 
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity, float price) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = quantity;
+        this.quantity = (float)Math.floor(quantity*1000)/1000;
         this.price = price;
     }
 }

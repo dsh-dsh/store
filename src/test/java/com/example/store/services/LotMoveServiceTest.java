@@ -145,4 +145,17 @@ class LotMoveServiceTest {
         assertEquals(14, lotMoveService.getAll().size());
     }
 
+//    @Sql(value = "/sql/lotMovements/addLotsForCollisionTest.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = {"/sql/lotMovements/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void floatCollisionTest() {
+        float lotQuantity = 10.0f;
+        while(lotQuantity > 0) {
+            float moveQuantity = (float) Math.floor(Math.random()*1000)/1000;
+            lotQuantity = lotQuantity - Math.min(moveQuantity, lotQuantity);
+            System.out.println(moveQuantity);
+        }
+        assertEquals(0, lotQuantity);
+    }
+
 }

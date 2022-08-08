@@ -284,13 +284,13 @@ class IngredientServiceTest {
         assertEquals(5, dosItems.size());
         assertEquals(7, dosItems.get(0).getItem().getId());
         assertEquals(1f, dosItems.get(0).getQuantity());
-        assertEquals(17, dosItems.get(1).getItem().getId());
+        assertEquals(16, dosItems.get(1).getItem().getId());
         assertEquals(2.4f, dosItems.get(1).getQuantity());
-        assertEquals(14, dosItems.get(2).getItem().getId());
-        assertEquals(3f, dosItems.get(2).getQuantity());
-        assertEquals(15, dosItems.get(3).getItem().getId());
-        assertEquals(3.6f, dosItems.get(3).getQuantity());
-        assertEquals(16, dosItems.get(4).getItem().getId());
+        assertEquals(15, dosItems.get(2).getItem().getId());
+        assertEquals(3.6f, dosItems.get(2).getQuantity());
+        assertEquals(14, dosItems.get(3).getItem().getId());
+        assertEquals(3f, dosItems.get(3).getQuantity());
+        assertEquals(17, dosItems.get(4).getItem().getId());
         assertEquals(2.4f, dosItems.get(4).getQuantity());
     }
 

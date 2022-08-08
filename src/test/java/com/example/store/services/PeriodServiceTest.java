@@ -87,8 +87,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
         List<DocumentItem> items = periodService.getDocItems(doc, itemRestMap);
         assertEquals(2, items.size());
-        assertEquals(4, items.get(0).getQuantity());
-        assertEquals(3, items.get(1).getQuantity());
+        assertEquals(3, items.get(0).getQuantity());
+        assertEquals(4, items.get(1).getQuantity());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
@@ -106,8 +106,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
         DocumentItem[] items = periodService.getDocItems(doc, itemRestMap).toArray(new DocumentItem[0]);
         assertEquals(2, items.length);
-        assertEquals(6, items[0].getQuantity());
-        assertEquals(7, items[1].getQuantity());
+        assertEquals(7, items[0].getQuantity());
+        assertEquals(6, items[1].getQuantity());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",

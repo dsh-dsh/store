@@ -23,8 +23,8 @@ public class DocItemServiceFor1CDocs extends DocItemService {
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.findItemByNumber(docItemDTO.getItemId())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE)));
-        item.setQuantity(docItemDTO.getQuantity());
-        item.setQuantityFact(docItemDTO.getQuantityFact());
+        item.setQuantity((float)Math.floor(docItemDTO.getQuantity()*1000)/1000);
+        item.setQuantityFact((float)Math.floor(docItemDTO.getQuantityFact()*1000)/1000);
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
 

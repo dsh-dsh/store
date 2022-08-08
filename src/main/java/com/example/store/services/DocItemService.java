@@ -35,8 +35,8 @@ public class DocItemService {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.getItemById(docItemDTO.getItemId()));
-        item.setQuantity(docItemDTO.getQuantity());
-        item.setQuantityFact(docItemDTO.getQuantityFact());
+        item.setQuantity((float)Math.floor(docItemDTO.getQuantity()*1000)/1000);
+        item.setQuantityFact((float)Math.floor(docItemDTO.getQuantityFact()*1000)/1000);
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
 
@@ -64,8 +64,8 @@ public class DocItemService {
     }
 
     public void updateDocItem(DocumentItem item, DocItemDTO dto) {
-        item.setQuantity(dto.getQuantity());
-        item.setQuantityFact(dto.getQuantityFact());
+        item.setQuantity((float)Math.floor(dto.getQuantity()*1000)/1000);
+        item.setQuantityFact((float)Math.floor(dto.getQuantityFact()*1000)/1000);
         item.setPrice(dto.getPrice());
         item.setDiscount(dto.getDiscount());
         docItemRepository.save(item);
