@@ -47,9 +47,10 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "inner join lot on lot.document_item_id = doc_item.id " +
             "inner join item on item.id = doc_item.item_id " +
             "where item.id = :itemId " +
+            "and lot.lot_time <= :time " +
             "order by lot.lot_time desc " +
             "limit 1", nativeQuery = true)
-    Float findLastPrice(int itemId);
+    Float findLastPrice(int itemId, LocalDateTime time);
 
     @Query(value = "select sum(movement.quantity) from lot " +
             "inner join lot_movement as movement on lot.id = movement.lot_id " +

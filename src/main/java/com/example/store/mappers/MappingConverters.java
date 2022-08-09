@@ -80,15 +80,6 @@ public class MappingConverters {
     protected final Converter<ItemDoc, Float> docItemAmountConverter =
             doc -> docItemService.getItemsAmount(doc.getSource());
 
-    protected final Converter<Item, List<RestDTO>> restConverter =
-            item -> itemRestService.getItemRestList(item.getSource());
-
-    protected final Converter<Item, Float> priceConverter =
-            item -> itemRestService.getLastPriceOfItem(item.getSource());
-
-    protected final Converter<Item, Boolean> compositeConverter =
-            item -> ingredientService.haveIngredients(item.getSource());
-
     private Item getItem(int itemId) {
         if(itemId == 0) return null;
         return itemService.getItemById(itemId);

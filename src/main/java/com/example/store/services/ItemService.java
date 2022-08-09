@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +28,8 @@ public class ItemService {
 
     @Autowired
     protected ItemRepository itemRepository;
+    @Autowired
+    protected ItemRestService itemRestService;
     @Autowired
     protected ItemMapper itemMapper;
     @Autowired
@@ -64,11 +67,22 @@ public class ItemService {
         // todo в тесте не добавляется quantities в третьем ингредиенте
     }
 
-    public List<ItemDTOForList> getItemDTOList() {
+    public List<ItemDTOForList> getItemDTOList(long time) {
+        LocalDateTime dateTime = Util.getLocalDateTime(time);
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
-                .map(itemMapper::mapToDTOForList)
+                .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());
+    }
+
+    protected ItemDTOForList mapToDTOForList(Item item, LocalDateTime dateTime) {
+        ItemDTOForList dto = new ItemDTOForList();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setRestList(itemRestService.getItemRestList(item, dateTime));
+        dto.setPrice(itemRestService.getLastPriceOfItem(item, dateTime));
+        dto.setParentId(item.getParentId());
+        return dto;
     }
 
     protected void updateItemFields(Item item, ItemDTO dto) {

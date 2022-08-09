@@ -53,12 +53,12 @@ public class CalculationService {
         if(map.size() > 0) {
             for (Map.Entry<Item, Float> entry : map.entrySet()) {
                 quantity += entry.getValue();
-                float price = itemRestService.getLastPriceOfItem(entry.getKey());
+                float price = itemRestService.getLastPriceOfItem(entry.getKey(), date.atStartOfDay());
                 amount += price * entry.getValue();
             }
         } else {
             quantity = 1;
-            amount = itemRestService.getLastPriceOfItem(ingredient.getChild());
+            amount = itemRestService.getLastPriceOfItem(ingredient.getChild(), date.atStartOfDay());
         }
 
         float net = 0;

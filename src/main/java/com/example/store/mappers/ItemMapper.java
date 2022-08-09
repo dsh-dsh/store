@@ -2,7 +2,6 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
-import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.entities.Item;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -35,11 +34,6 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(workshopDTOConverter).map(Item1CDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(unitDTOConverter).map(Item1CDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));
-        this.modelMapper.createTypeMap(Item.class, ItemDTOForList.class)
-                .addMappings(mapper -> mapper.using(compositeConverter).map(src -> src, ItemDTOForList::setComposite))
-                .addMappings(mapper -> mapper.using(restConverter).map(src -> src, ItemDTOForList::setRestList))
-                .addMappings(mapper -> mapper.using(priceConverter).map(src -> src, ItemDTOForList::setPrice))
-                .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTOForList::setParentId));
     }
 
     public ItemDTO mapToDTO(Item item) {
@@ -47,8 +41,5 @@ public class ItemMapper extends MappingConverters {
     }
     public Item mapToItem(ItemDTO dto) {
         return modelMapper.map(dto, Item.class);
-    }
-    public ItemDTOForList mapToDTOForList(Item item) {
-        return modelMapper.map(item, ItemDTOForList.class);
     }
 }

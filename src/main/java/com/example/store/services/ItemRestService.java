@@ -81,7 +81,7 @@ public class ItemRestService {
         dto.setItemName(item.getName());
         dto.setDocumentId(docId);
         dto.setQuantity(getRestOfItemOnStorage(item, storage, time));
-        dto.setPrice(getLastPriceOfItem(item));
+        dto.setPrice(getLastPriceOfItem(item, time));
         dto.setAmount(dto.getQuantity()*dto.getPrice());
         return dto;
     }
@@ -106,12 +106,12 @@ public class ItemRestService {
 
     protected RestPriceValue getRestAndPrice(Item item, Storage storage, LocalDateTime time) {
         float rest = getRestOfItemOnStorage(item, storage, time);
-        float price = getLastPriceOfItem(item);
+        float price = getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
     }
 
-    public float getLastPriceOfItem(Item item) {
-        Float value = lotRepository.findLastPrice(item.getId());
+    public float getLastPriceOfItem(Item item, LocalDateTime time) {
+        Float value = lotRepository.findLastPrice(item.getId(), time);
         return value == null ? 0 : value;
     }
 
@@ -133,6 +133,15 @@ public class ItemRestService {
                 .map(storage -> new RestDTO(
                         new StorageDTO(storage),
                         getRestOfItemOnStorage(item, storage, now)))
+                .collect(Collectors.toList());
+    }
+
+    public List<RestDTO> getItemRestList(Item item, LocalDateTime dateTime) {
+        List<Storage> storages = storageService.getStorageList();
+        return storages.stream()
+                .map(storage -> new RestDTO(
+                        new StorageDTO(storage),
+                        getRestOfItemOnStorage(item, storage, dateTime)))
                 .collect(Collectors.toList());
     }
 

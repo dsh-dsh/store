@@ -56,6 +56,7 @@ class ItemControllerTest extends TestService {
     private static final String UPDATE_NAME = "Пиво";
     private static final  long UPDATE_DATE = 1642194000000L; // 2022-01-15
     private static final  long PRICE_DATE = 1640984400000L; // 2022-01-01
+    private static final  long ITEM_REST_DATE = 1648771200000L; // 2022-01-01
 
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
@@ -101,7 +102,7 @@ class ItemControllerTest extends TestService {
     @Test
     void getItemListUnauthorizedTest() throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/list")
+                        get(URL_PREFIX + "/list?time=" + ITEM_REST_DATE)
                                 .param("id", String.valueOf(NEW_ITEM_ID))
                                 .param("date", LocalDate.now().toString()))
                 .andDo(print())
@@ -116,7 +117,7 @@ class ItemControllerTest extends TestService {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getItemListTest() throws Exception{
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/list"))
+                        get(URL_PREFIX + "/list?time=" + ITEM_REST_DATE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(7))

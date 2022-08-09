@@ -193,7 +193,7 @@ class Hold1CDocksServiceTest {
         itemRestMap.put(itemService.getItemById(9), 3.00f);
         when(mockedItemRestService.getItemRestMap(writeOffItemMap, storage, time))
                 .thenReturn(itemRestMap);
-        when(mockedItemRestService.getLastPriceOfItem(any(Item.class))).thenReturn(100.00f);
+        when(mockedItemRestService.getLastPriceOfItem(any(Item.class), eq(time))).thenReturn(100.00f);
         List<ItemQuantityPriceDTO> list = mockedHold1CDocksService.getPostingItemMap(writeOffItemMap, storage, time);
         assertEquals(2, list.size());
         assertEquals(2,     list.get(0).getQuantity());

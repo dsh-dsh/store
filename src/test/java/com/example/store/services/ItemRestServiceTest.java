@@ -104,7 +104,7 @@ class ItemRestServiceTest {
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getLastPriceOfItemTest() {
-        assertEquals(200, itemRestService.getLastPriceOfItem(new Item(7)));
+        assertEquals(200, itemRestService.getLastPriceOfItem(new Item(7), LocalDateTime.now()));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",

@@ -154,7 +154,7 @@ public class Hold1CDocksService {
                 .map(entry -> new ItemQuantityPriceDTO(
                         entry.getKey(),
                         entry.getValue() - itemRestMap.getOrDefault(entry.getKey(), 0f),
-                        itemRestService.getLastPriceOfItem(entry.getKey())))
+                        itemRestService.getLastPriceOfItem(entry.getKey(), time)))
                 .collect(Collectors.toList());
     }
 

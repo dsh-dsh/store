@@ -31,8 +31,8 @@ public class ItemController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList() {
-        List<ItemDTOForList> list = itemService.getItemDTOList();
+    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList(@RequestParam(defaultValue = "0") long time) {
+        List<ItemDTOForList> list = itemService.getItemDTOList(time);
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 

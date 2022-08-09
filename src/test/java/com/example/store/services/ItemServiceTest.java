@@ -109,7 +109,7 @@ class ItemServiceTest extends TestService {
 
     @Test
     void getItemDTOListTest() {
-        List<ItemDTOForList> list = itemService.getItemDTOList();
+        List<ItemDTOForList> list = itemService.getItemDTOList(UPDATE_DATE);
         assertNotNull(list);
         assertEquals(7, list.get(0).getId());
         assertEquals(4, list.get(0).getRestList().size());
