@@ -67,6 +67,17 @@ public class SettingService {
         settingRepository.save(setting);
     }
 
+
+    public void setAveragePriceForPeriodCloseSetting(SettingDTO settingDTO) {
+        User user = userService.getSystemAuthor();
+        SettingType settingType = SettingType.AVERAGE_COST;
+        int property = settingDTO.getProperty();
+        DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
+                .orElseGet(() -> getSetting(user, settingType, property));
+        setting.setProperty(property);
+        settingRepository.save(setting);
+    }
+
     private DefaultPropertySetting getSetting(User user, SettingType type, int property) {
         DefaultPropertySetting setting = new DefaultPropertySetting();
         setting.setUser(user);
@@ -78,6 +89,15 @@ public class SettingService {
     public Response<SettingDTO> getAddShortageForHoldSetting() {
         User user = userService.getSystemAuthor();
         SettingType settingType = SettingType.ADD_REST_FOR_HOLD;
+        DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
+                .orElseGet(() -> getSetting(user, settingType, 1));
+        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
+        return new Response<>(getSettingDTO(setting, userDTO));
+    }
+
+    public Response<SettingDTO> getPeriodCloseSettings() {
+        User user = userService.getSystemAuthor();
+        SettingType settingType = SettingType.AVERAGE_COST;
         DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
                 .orElseGet(() -> getSetting(user, settingType, 1));
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");

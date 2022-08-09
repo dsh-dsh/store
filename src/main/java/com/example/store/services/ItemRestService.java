@@ -2,15 +2,13 @@ package com.example.store.services;
 
 import com.example.store.components.EnvironmentVars;
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.model.entities.Period;
+import com.example.store.model.entities.*;
 import com.example.store.model.enums.ExceptionType;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
 import com.example.store.model.dto.StorageDTO;
-import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Lot;
-import com.example.store.model.entities.Storage;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.LotRepository;
@@ -20,6 +18,7 @@ import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,8 +44,20 @@ public class ItemRestService {
     private PeriodRepository periodRepository;
     @Autowired
     private EnvironmentVars env;
+    @Autowired
+    private SettingService settingService;
+    @Autowired
+    private UserService userService;
 
-    protected final boolean usingAveragePriceOfLots = true;
+    protected boolean usingAveragePriceOfLots = true;
+
+//    @PostConstruct todo
+    protected void setSettings() {
+        User systemUser = userService.getSystemAuthor();
+        DefaultPropertySetting setting = settingService.getSettingByType(systemUser, SettingType.AVERAGE_COST);
+        if(setting == null) return;
+        this.usingAveragePriceOfLots = setting.getProperty() != 0;
+    }
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
