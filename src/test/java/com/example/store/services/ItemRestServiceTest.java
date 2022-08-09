@@ -48,7 +48,7 @@ class ItemRestServiceTest {
         Storage storage = storageService.getById(3);
         Item item = itemService.getItemById(7);
         Map<Item, ItemRestService.RestPriceValue> map
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
+                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(2, map.size());
         assertEquals(6, map.get(item).getRest());
         assertEquals(200, map.get(item).getPrice());
@@ -75,7 +75,7 @@ class ItemRestServiceTest {
     void getRestAndPriceTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(3);
-        ItemRestService.RestPriceValue value = itemRestService.getRestAndPrice(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(6, value.getRest());
         assertEquals(200, value.getPrice());
     }

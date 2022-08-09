@@ -67,7 +67,7 @@ class PeriodServiceTest {
         Storage storage = storageService.getById(3);
         periodService.closePeriodForStorage(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, LocalDate.parse("2022-05-02").atStartOfDay());
+                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-02").atStartOfDay());
         assertEquals(2, itemRestMap.size());
         // todo assert quantity (after period close)
     }
@@ -84,7 +84,7 @@ class PeriodServiceTest {
         Storage storage = storageService.getById(1);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         List<DocumentItem> items = periodService.getDocItems(doc, itemRestMap);
         assertEquals(2, items.size());
         assertEquals(3, items.get(0).getQuantity());
@@ -103,7 +103,7 @@ class PeriodServiceTest {
         Storage storage = storageService.getById(3);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         DocumentItem[] items = periodService.getDocItems(doc, itemRestMap).toArray(new DocumentItem[0]);
         assertEquals(2, items.length);
         assertEquals(7, items[0].getQuantity());

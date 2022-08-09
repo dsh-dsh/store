@@ -63,7 +63,7 @@ public class PeriodService {
     public void closePeriodForStorage(LocalDateTime newPeriodStart, Storage storage) {
         ItemDoc doc = createRestMoveDoc(newPeriodStart, storage);
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
-                = itemRestService.getItemsRestOnStorageForPeriod(storage, doc.getDateTime());
+                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         if(itemRestMap.size() > 0) {
             documentRepository.save(doc);
             List<DocumentItem> items = getDocItems(doc, itemRestMap);

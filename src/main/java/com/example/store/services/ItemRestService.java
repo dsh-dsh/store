@@ -46,6 +46,8 @@ public class ItemRestService {
     @Autowired
     private EnvironmentVars env;
 
+    protected final boolean usingAveragePriceOfLots = true;
+
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
         if(docItemQuantity > lotsQuantitySum) {
@@ -93,21 +95,28 @@ public class ItemRestService {
                         item -> getRestOfItemOnStorage(item, storage, time)));
     }
 
-    public Map<Item, RestPriceValue> getItemsRestOnStorageForPeriod(Storage storage, LocalDateTime time) {
+    public Map<Item, RestPriceValue> getItemsRestOnStorageForClosingPeriod(Storage storage, LocalDateTime time) {
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
-                        item -> getRestAndPrice(item, storage, time)))
+                        item -> getRestAndPriceForClosingPeriod(item, storage, time)))
                 .entrySet().stream()
                 .filter(entry -> entry.getValue().getRest() > 0)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    protected RestPriceValue getRestAndPrice(Item item, Storage storage, LocalDateTime time) {
+    protected RestPriceValue getRestAndPriceForClosingPeriod(Item item, Storage storage, LocalDateTime time) {
         float rest = getRestOfItemOnStorage(item, storage, time);
-        float price = getLastPriceOfItem(item, time);
+        float price = usingAveragePriceOfLots? getAveragePriceOfItem(item, storage, time, rest) : getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
+    }
+    public float getAveragePriceOfItem(Item item, Storage storage, LocalDateTime time, float quantity) {
+        if(quantity == 0) return 0;
+        float amount = (float) lotRepository
+                .getLotAmountOfItem(item.getId(), storage.getId(), env.getPeriodStart(), time)
+                .stream().mapToDouble(LotFloat::getValue).sum();
+        return amount/quantity;
     }
 
     public float getLastPriceOfItem(Item item, LocalDateTime time) {

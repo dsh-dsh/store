@@ -34,7 +34,6 @@ public class HoldDocsService {
     @Autowired
     private LotMoveService lotMoveService;
 
-
     public boolean checkPossibilityToHold(Document document) {
         if(document.isHold()) {
             if(documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true)) {
