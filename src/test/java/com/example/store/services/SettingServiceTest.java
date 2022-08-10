@@ -96,10 +96,52 @@ class SettingServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setAveragePriceForPeriodCloseSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(1);
+        settingService.setAveragePriceForPeriodCloseSetting(dto);
+        User user = userService.getById(5);
+        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE);
+        assertEquals(1, setting.getProperty());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/settings/addSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setAveragePriceForDocsSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(1);
+        settingService.setAveragePriceForDocsSetting(dto);
+        User user = userService.getById(5);
+        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE);
+        assertEquals(1, setting.getProperty());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAddShortageForHoldSettingTest() {
         assertEquals(1, settingService.getAddShortageForHoldSetting().getData().getProperty());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getAveragePriceForPeriodCloseSettingsTest() {
+        assertEquals(1, settingService.getAveragePriceForPeriodCloseSettings().getData().getProperty());
+    }
+
+    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getAveragePriceForDocsSettingsTest() {
+        assertEquals(1, settingService.getAveragePriceForDocsSettings().getData().getProperty());
     }
 }

@@ -9,6 +9,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,13 +99,13 @@ public class LotService {
         }
     }
 
-    private void setAveragePrice(DocumentItem docItem, Map<Lot, Float> lotMap) {
+    protected void setAveragePrice(DocumentItem docItem, Map<Lot, Float> lotMap) {
         if(!usingAveragePriceOfLots) return;
         float averagePrice = ((float) lotMap.entrySet()
                 .stream()
                 .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue())
                 .sum()) / docItem.getQuantity();
-        docItem.setPrice(averagePrice);
+        docItem.setPrice(Util.floorValue(averagePrice, 100));
     }
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {

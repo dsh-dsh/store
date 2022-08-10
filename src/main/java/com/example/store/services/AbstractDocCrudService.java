@@ -89,10 +89,6 @@ public abstract class AbstractDocCrudService {
 
     public DocInterface updateOrderDocument(DocDTO docDTO) {
         return addOrderDoc(docDTO);
-        // todo
-//        OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
-//        setAdditionalFieldsAndSave(order);
-//        return order;
     }
 
     public void deleteItemDoc(int docId) {

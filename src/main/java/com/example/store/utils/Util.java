@@ -24,6 +24,10 @@ public class Util {
         return time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
+    public static float floorValue(float value, int k) {
+        return (float) Math.floor(value * k) / k;
+    }
+
     private Util() {
     }
 }

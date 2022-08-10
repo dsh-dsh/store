@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +36,8 @@ public class DocItemService {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.getItemById(docItemDTO.getItemId()));
-        item.setQuantity((float)Math.floor(docItemDTO.getQuantity()*1000)/1000);
-        item.setQuantityFact((float)Math.floor(docItemDTO.getQuantityFact()*1000)/1000);
+        item.setQuantity(Util.floorValue(docItemDTO.getQuantity(), 1000));
+        item.setQuantityFact(Util.floorValue(docItemDTO.getQuantityFact(), 1000));
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
 
@@ -64,8 +65,8 @@ public class DocItemService {
     }
 
     public void updateDocItem(DocumentItem item, DocItemDTO dto) {
-        item.setQuantity((float)Math.floor(dto.getQuantity()*1000)/1000);
-        item.setQuantityFact((float)Math.floor(dto.getQuantityFact()*1000)/1000);
+        item.setQuantity(Util.floorValue(dto.getQuantity(),1000));
+        item.setQuantityFact(Util.floorValue(dto.getQuantityFact(), 1000));
         item.setPrice(dto.getPrice());
         item.setDiscount(dto.getDiscount());
         docItemRepository.save(item);

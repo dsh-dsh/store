@@ -51,7 +51,7 @@ public class ItemRestService {
 
     protected boolean usingAveragePriceOfLots = true;
 
-//    @PostConstruct todo
+//    @PostConstruct todo перенести в конфиг SystemSettings
     protected void setSettings() {
         User systemUser = userService.getSystemAuthor();
         DefaultPropertySetting setting = settingService.getSettingByType(systemUser, SettingType.PERIOD_AVERAGE_PRICE);
@@ -122,6 +122,7 @@ public class ItemRestService {
         float price = usingAveragePriceOfLots? getAveragePriceOfItem(item, storage, time, rest) : getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
     }
+
     public float getAveragePriceOfItem(Item item, Storage storage, LocalDateTime time, float quantity) {
         if(quantity == 0) return 0;
         float amount = (float) lotRepository

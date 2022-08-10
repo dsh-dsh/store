@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -280,6 +281,17 @@ class LotServiceTest {
         DocumentItem documentItem = docItemService.getItemById(1);
         lotService.removeLot(documentItem);
         assertEquals(1, lotRepository.findAll().size());
+    }
+
+    @Test
+    void setAveragePriceTest() {
+        DocumentItem docItem = new DocumentItem();
+        docItem.setPrice(200.00f);
+        docItem.setQuantity(15.00f);
+        Map<Lot, Float> lotMap = getMapOfLotAndFloat();
+        lotService.setAveragePrice(docItem, lotMap);
+        float expectedPrice = ((float)(50*5 + 60*10)) / 15;
+        assertEquals(Util.floorValue(expectedPrice, 100), docItem.getPrice());
     }
 
     private Map<Lot, Float> getMapOfLotAndFloat() {

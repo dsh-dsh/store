@@ -68,16 +68,46 @@ class ItemRestServiceTest {
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addTwoPostingDocs.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/period/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getRestAndPriceTest() {
+    void getRestAndPriceWhenLastPriceTest() {
+        Item item = itemService.getItemById(7);
+        Storage storage = storageService.getById(1);
+        itemRestService.usingAveragePriceOfLots = false;
+        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        itemRestService.usingAveragePriceOfLots = true;
+        assertEquals(2, value.getRest());
+        assertEquals(200, value.getPrice());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addTwoPostingDocs.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getRestAndPriceWhenAveragePriceTest() {
+        Item item = itemService.getItemById(7);
+        Storage storage = storageService.getById(1);
+        itemRestService.usingAveragePriceOfLots = true;
+        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        assertEquals(2, value.getRest());
+        assertEquals(150, value.getPrice());
+    }
+
+    @Sql(value = {"/sql/period/addPeriodMarch.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/lotMovements/addTwoPosting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getAveragePriceOfItemTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(3);
-        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
-        assertEquals(6, value.getRest());
-        assertEquals(200, value.getPrice());
+        float actualPrice = itemRestService.getAveragePriceOfItem(item, storage, LocalDateTime.now(), 20);
+        assertEquals(150.00f, actualPrice);
     }
 
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

@@ -6,6 +6,7 @@ import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,8 +24,8 @@ public class DocItemServiceFor1CDocs extends DocItemService {
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.findItemByNumber(docItemDTO.getItemId())
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE)));
-        item.setQuantity((float)Math.floor(docItemDTO.getQuantity()*1000)/1000);
-        item.setQuantityFact((float)Math.floor(docItemDTO.getQuantityFact()*1000)/1000);
+        item.setQuantity(Util.floorValue(docItemDTO.getQuantity(), 1000));
+        item.setQuantityFact(Util.floorValue(docItemDTO.getQuantityFact(), 1000));
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
 

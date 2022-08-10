@@ -67,7 +67,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -86,7 +86,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -106,7 +106,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -128,7 +128,7 @@ class Hold1CDocksServiceTest {
             "/sql/hold1CDocs/addRestDocs.sql",
             "/sql/hold1CDocs/addRestLots.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -148,7 +148,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addHoldingSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/hold1CDocs/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

@@ -67,7 +67,6 @@ public class SettingService {
         settingRepository.save(setting);
     }
 
-    // todo add tests
     public void setAveragePriceForPeriodCloseSetting(SettingDTO settingDTO) {
         User user = userService.getSystemAuthor();
         SettingType settingType = SettingType.PERIOD_AVERAGE_PRICE;
@@ -78,7 +77,6 @@ public class SettingService {
         settingRepository.save(setting);
     }
 
-    // todo add tests
     public void setAveragePriceForDocsSetting(SettingDTO settingDTO) {
         User user = userService.getSystemAuthor();
         SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
@@ -106,7 +104,6 @@ public class SettingService {
         return new Response<>(getSettingDTO(setting, userDTO));
     }
 
-    // todo add tests
     public Response<SettingDTO> getAveragePriceForPeriodCloseSettings() {
         User user = userService.getSystemAuthor();
         SettingType settingType = SettingType.PERIOD_AVERAGE_PRICE;
@@ -116,7 +113,6 @@ public class SettingService {
         return new Response<>(getSettingDTO(setting, userDTO));
     }
 
-    // todo add tests
     public Response<SettingDTO> getAveragePriceForDocsSettings() {
         SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
         User user = userService.getSystemAuthor();
