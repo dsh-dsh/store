@@ -37,6 +37,7 @@ public class LotService {
     private EnvironmentVars env;
 
     private boolean addRestForHold = true;  // todo
+    protected boolean usingAveragePriceOfLots = true;
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -70,16 +71,15 @@ public class LotService {
     }
 
     public void addLotMovements(Document document) {
-        List<DocumentItem> items =
+        List<DocumentItem> docItems =
                 docItemService.getItemsByDoc((ItemDoc) document);
-        if(items.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
+        if(docItems.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
         DocumentType type = document.getDocType();
         if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC || type == DocumentType.PERIOD_REST_MOVE_DOC) {
             addLots(document);
         } else if (type == DocumentType.WRITE_OFF_DOC || type == DocumentType.MOVEMENT_DOC) {
-            ingredientService.addInnerItems(items, document.getDateTime().toLocalDate());
-
-            items.forEach(this::addStorageDocMovement);
+            ingredientService.addInnerItems(docItems, document.getDateTime().toLocalDate());
+            docItems.forEach(this::addStorageDocMovement);
         }
     }
 
@@ -91,9 +91,20 @@ public class LotService {
         Map<Lot, Float> lotMap = getLotMap(docItem, storage, docTime);
         lotMoveService.addMinusLotMovements(document, lotMap);
 
+        setAveragePrice(docItem, lotMap);
+
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
             lotMoveService.addPlusLotMovements(document, lotMap);
         }
+    }
+
+    private void setAveragePrice(DocumentItem docItem, Map<Lot, Float> lotMap) {
+        if(!usingAveragePriceOfLots) return;
+        float averagePrice = ((float) lotMap.entrySet()
+                .stream()
+                .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue())
+                .sum()) / docItem.getQuantity();
+        docItem.setPrice(averagePrice);
     }
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
