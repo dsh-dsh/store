@@ -67,10 +67,21 @@ public class SettingService {
         settingRepository.save(setting);
     }
 
-
+    // todo add tests
     public void setAveragePriceForPeriodCloseSetting(SettingDTO settingDTO) {
         User user = userService.getSystemAuthor();
-        SettingType settingType = SettingType.AVERAGE_COST;
+        SettingType settingType = SettingType.PERIOD_AVERAGE_PRICE;
+        int property = settingDTO.getProperty();
+        DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
+                .orElseGet(() -> getSetting(user, settingType, property));
+        setting.setProperty(property);
+        settingRepository.save(setting);
+    }
+
+    // todo add tests
+    public void setAveragePriceForDocsSetting(SettingDTO settingDTO) {
+        User user = userService.getSystemAuthor();
+        SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
         int property = settingDTO.getProperty();
         DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
                 .orElseGet(() -> getSetting(user, settingType, property));
@@ -95,9 +106,20 @@ public class SettingService {
         return new Response<>(getSettingDTO(setting, userDTO));
     }
 
-    public Response<SettingDTO> getPeriodCloseSettings() {
+    // todo add tests
+    public Response<SettingDTO> getAveragePriceForPeriodCloseSettings() {
         User user = userService.getSystemAuthor();
-        SettingType settingType = SettingType.AVERAGE_COST;
+        SettingType settingType = SettingType.PERIOD_AVERAGE_PRICE;
+        DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
+                .orElseGet(() -> getSetting(user, settingType, 1));
+        UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
+        return new Response<>(getSettingDTO(setting, userDTO));
+    }
+
+    // todo add tests
+    public Response<SettingDTO> getAveragePriceForDocsSettings() {
+        SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
+        User user = userService.getSystemAuthor();
         DefaultPropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
                 .orElseGet(() -> getSetting(user, settingType, 1));
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");

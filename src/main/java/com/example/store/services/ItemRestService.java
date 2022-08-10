@@ -54,7 +54,7 @@ public class ItemRestService {
 //    @PostConstruct todo
     protected void setSettings() {
         User systemUser = userService.getSystemAuthor();
-        DefaultPropertySetting setting = settingService.getSettingByType(systemUser, SettingType.AVERAGE_COST);
+        DefaultPropertySetting setting = settingService.getSettingByType(systemUser, SettingType.PERIOD_AVERAGE_PRICE);
         if(setting == null) return;
         this.usingAveragePriceOfLots = setting.getProperty() != 0;
     }

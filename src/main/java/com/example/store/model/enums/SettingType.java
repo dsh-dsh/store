@@ -5,5 +5,6 @@ public enum SettingType {
     STORAGE_TO,
     STORAGE_FROM,
     ADD_REST_FOR_HOLD,
-    AVERAGE_COST
+    PERIOD_AVERAGE_PRICE,
+    DOCS_AVERAGE_PRICE
 }

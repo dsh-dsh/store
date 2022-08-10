@@ -30,9 +30,14 @@ public class SettingController {
         return ResponseEntity.ok(settingService.getAddShortageForHoldSetting());
     }
 
-    @GetMapping("/average/price")
-    public ResponseEntity<Response<SettingDTO>> getPeriodCloseSettings() {
-        return ResponseEntity.ok(settingService.getPeriodCloseSettings());
+    @GetMapping("/average/price/period")
+    public ResponseEntity<Response<SettingDTO>> getAveragePriceForPeriodCloseSettings() {
+        return ResponseEntity.ok(settingService.getAveragePriceForPeriodCloseSettings());
+    }
+
+    @GetMapping("/average/price/docs")
+    public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSettings() {
+        return ResponseEntity.ok(settingService.getAveragePriceForDocsSettings());
     }
 
     @GetMapping("/period")
@@ -52,9 +57,15 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    @PostMapping("/average/price")
+    @PostMapping("/average/price/period")
     public ResponseEntity<Response<String>> setAveragePriceForPeriodCloseSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setAveragePriceForPeriodCloseSetting(settingDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/average/price/docs")
+    public ResponseEntity<Response<String>> setAveragePriceForDocsSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setAveragePriceForDocsSetting(settingDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
