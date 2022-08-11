@@ -79,6 +79,7 @@ public class Constants {
     public static final String NO_SUCH_PROJECT_MESSAGE = "Проект %s отсутствует в системе";
     public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
     public static final String OUT_OF_PERIOD_MESSAGE = "Нельзя изменять документы до начала периода %s";
+    public static final String NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE = "Существуют не проведенные документы в периоде";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
 

@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.EnvironmentVars;
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -49,10 +50,43 @@ class PeriodServiceTest {
     @Sql(value = {"/sql/period/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    void checkPossibilityToClosePeriodTest() {
+        assertDoesNotThrow(() -> periodService.checkPossibilityToClosePeriod());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkPossibilityToClosePeriodThrowsTest() {
+        assertThrows(BadRequestException.class,
+                () -> periodService.checkPossibilityToClosePeriod());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     void closePeriodTest() {
         periodService.closePeriod();
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.PERIOD_REST_MOVE_DOC);
         assertEquals(2, docs.size());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void closePeriodThrowsTest() {
+        assertThrows(BadRequestException.class, () -> periodService.closePeriod());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",

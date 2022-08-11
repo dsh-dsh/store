@@ -1,7 +1,9 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.*;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.DocumentRepository;
@@ -10,6 +12,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +46,7 @@ public class PeriodService {
     @Autowired
     private DocItemService docItemService;
 
+    @Transactional
     public PeriodDTO closePeriodManually() {
         closePeriod();
         return getPeriodDTO();
@@ -54,10 +58,23 @@ public class PeriodService {
     }
 
     public void closePeriod() {
+        checkPossibilityToClosePeriod();
         LocalDateTime newPeriodStart = getNewPeriodStart();
         List<Storage> storages = storageService.getStorageList();
         storages.forEach(storage -> closePeriodForStorage(newPeriodStart, storage));
         setNextPeriod();
+    }
+
+    protected void checkPossibilityToClosePeriod() {
+        Period currentPeriod = getCurrentPeriod();
+        List<Document> notHoldenDocs = documentRepository.findByIsHoldAndDateTimeBetween(
+                false,
+                currentPeriod.getStartDate().atStartOfDay(),
+                currentPeriod.getEndDate().atStartOfDay(),
+                Sort.by(Constants.DATE_TIME_STRING));
+        if(!notHoldenDocs.isEmpty()) {
+            throw new BadRequestException(Constants.NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE);
+        }
     }
 
     public void closePeriodForStorage(LocalDateTime newPeriodStart, Storage storage) {
