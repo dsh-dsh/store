@@ -37,7 +37,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     List<Document> findByIsHoldAndIsDeletedAndDateTimeBefore(boolean isHold, boolean isDeleted, LocalDateTime dateTime, Sort sort);
 
-    List<Document> findByIsHoldAndDateTimeBetween(boolean isHold, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
+    List<Document> findByIsHoldAndIsDeletedAndDateTimeBetween(boolean isHold, boolean isDeleted, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 
     boolean existsByDateTime(LocalDateTime dateTime);
 

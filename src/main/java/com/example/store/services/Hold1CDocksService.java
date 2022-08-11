@@ -2,16 +2,20 @@ package com.example.store.services;
 
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.*;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.model.enums.SettingType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
+import com.example.store.utils.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,8 @@ public class Hold1CDocksService {
     public static final boolean BY_CASH_KEY = false;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private DocumentRepository documentRepository;
     @Autowired
     private DocItemService docItemService;
     @Autowired
@@ -50,6 +56,8 @@ public class Hold1CDocksService {
     private OrderDocRepository orderDocRepository;
     @Autowired
     private SettingService settingService;
+    @Autowired
+    private PeriodService periodService;
 
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
@@ -104,14 +112,30 @@ public class Hold1CDocksService {
         return sumMap;
     }
 
+    protected void holdDocsBefore() {
+        Period currentPeriod = periodService.getCurrentPeriod();
+        List<Document> documents = documentRepository.findByIsHoldAndIsDeletedAndDateTimeBetween(
+                        false, false,
+                        currentPeriod.getStartDate().atStartOfDay(),
+                        currentPeriod.getEndDate().atStartOfDay(),
+                        Sort.by(Constants.DATE_TIME_STRING));
+        documents.stream()
+                .filter(doc -> (doc.getDocType() != DocumentType.CHECK_DOC
+                        && doc.getDocType() != DocumentType.CREDIT_ORDER_DOC
+                        && doc.getDocType() != DocumentType.WITHDRAW_ORDER_DOC))
+                .forEach(doc -> holdDocsService.holdDocument(doc));
+    }
+
     @Transactional
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+        holdDocsBefore();
+
+        // todo to one bean
         systemAuthor = userService.getSystemAuthor();
         DefaultPropertySetting setting = settingService.getSettingByType(systemAuthor, SettingType.ADD_REST_FOR_HOLD);
         if(setting != null) {
             addRestForHold = setting.getProperty() == 1;
         }
-
         checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         if(checks.isEmpty()) return;
         Project project = checks.get(0).getProject();

@@ -40,11 +40,6 @@ public class DocumentService {
         return documents;
     }
 
-    public List<Document> getDocumentsByPeriod(Document currentDoc, Document limitDoc, boolean isHold) {
-        return documentRepository.findByIsHoldAndDateTimeBetween(
-                isHold, currentDoc.getDateTime(), limitDoc.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
-    }
-
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(type, storage, isHold, from, to);
     }

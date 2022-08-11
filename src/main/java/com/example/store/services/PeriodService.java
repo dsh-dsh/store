@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class PeriodService {
+public class  PeriodService {
 
     @Autowired
     private PeriodRepository periodRepository;
@@ -67,8 +67,8 @@ public class PeriodService {
 
     protected void checkPossibilityToClosePeriod() {
         Period currentPeriod = getCurrentPeriod();
-        List<Document> notHoldenDocs = documentRepository.findByIsHoldAndDateTimeBetween(
-                false,
+        List<Document> notHoldenDocs = documentRepository.findByIsHoldAndIsDeletedAndDateTimeBetween(
+                false, false,
                 currentPeriod.getStartDate().atStartOfDay(),
                 currentPeriod.getEndDate().atStartOfDay(),
                 Sort.by(Constants.DATE_TIME_STRING));

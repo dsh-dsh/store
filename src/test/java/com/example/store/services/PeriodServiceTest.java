@@ -46,7 +46,8 @@ class PeriodServiceTest {
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addDeletedOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/period/after.sql",
             "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

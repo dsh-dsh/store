@@ -45,16 +45,6 @@ class DocumentServiceTest {
         assertEquals(5, documents.size());
     }
 
-    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void getDocumentsByPeriodTest() {
-        Document documentFrom = documentService.getDocumentById(2);
-        Document documentTo = documentService.getDocumentById(4);
-        List<Document> documents = documentService.getDocumentsByPeriod(documentFrom, documentTo, true);
-        assertEquals(3, documents.size());
-    }
-
     @Sql(value = "/sql/lots/addDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

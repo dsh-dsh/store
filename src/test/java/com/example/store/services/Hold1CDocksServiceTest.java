@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -55,6 +56,8 @@ class Hold1CDocksServiceTest {
     private OrderDocRepository orderDocRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private LotService lotService;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -63,6 +66,35 @@ class Hold1CDocksServiceTest {
 
     private final Comparator<DocumentItem> documentItemComparator
             = Comparator.comparing(item -> item.getItem().getName());
+
+    @Test
+    void holdDocsBeforeIfDocsNotExistsTest() {
+        assertDoesNotThrow(() -> hold1CDocksService.holdDocsBefore());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void holdDocsBeforeIfDocsExistsTest() {
+        assertDoesNotThrow(() -> hold1CDocksService.holdDocsBefore());
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/hold1CDocs/addSystemUser.sql",
+            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/hold1CDocs/addNotHoldenWriteOffDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql",
+            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void holdDocsBeforeIfDocsExistsThrowTest() {
+        // todo make it work (addRestForHold)
+        assertThrows(BadRequestException.class,
+                () -> hold1CDocksService.holdDocsBefore());
+    }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
