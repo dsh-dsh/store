@@ -103,10 +103,8 @@ class DocCrudServiceTest {
         assertEquals(2, lotMoveRepository.findAll().size());
     }
 
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkTimePeriodThrowExceptionTest() {
         DocDTO dto = new DocDTO();
@@ -117,10 +115,8 @@ class DocCrudServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkTimePeriodByDocumentThrowExceptionTest() {
         Document document = documentService.getDocumentById(6);

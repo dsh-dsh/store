@@ -53,8 +53,6 @@ class UserControllerTest {
     @Autowired
     private UserService userService;
 
-    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getItemTreeTest() throws Exception {
@@ -66,8 +64,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.data[0].parent_id").value(0));
     }
 
-    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getItemTreeUnauthorizedTest() throws Exception {
         this.mockMvc.perform(

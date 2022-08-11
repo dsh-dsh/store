@@ -37,10 +37,8 @@ class ItemRestServiceTest {
     private EnvironmentVars env;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getItemsRestOnStorageForPeriodTest() {
@@ -67,10 +65,8 @@ class ItemRestServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addTwoPostingDocs.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getRestAndPriceWhenLastPriceTest() {
         Item item = itemService.getItemById(7);
@@ -83,10 +79,8 @@ class ItemRestServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addTwoPostingDocs.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getRestAndPriceWhenAveragePriceTest() {
         Item item = itemService.getItemById(7);
@@ -98,10 +92,8 @@ class ItemRestServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/lotMovements/addTwoPosting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceOfItemTest() {
         Item item = itemService.getItemById(7);

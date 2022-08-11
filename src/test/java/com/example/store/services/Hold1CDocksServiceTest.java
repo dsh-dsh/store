@@ -73,22 +73,18 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocsBeforeIfDocsExistsTest() {
         assertDoesNotThrow(() -> hold1CDocksService.holdDocsBefore());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
             "/sql/hold1CDocs/addNotHoldenWriteOffDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocsBeforeIfDocsExistsThrowTest() {
         // todo make it work (addRestForHold)
@@ -97,11 +93,8 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createSaleOrdersTest() {
         Storage storage = storageService.getById(3);
@@ -116,11 +109,8 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getSumMapTest() {
         Storage storage = storageService.getById(3);
@@ -136,11 +126,8 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createDocsToHoldByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
@@ -158,11 +145,8 @@ class Hold1CDocksServiceTest {
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
             "/sql/hold1CDocs/addThreeChecks.sql",
             "/sql/hold1CDocs/addRestDocs.sql",
-            "/sql/hold1CDocs/addRestLots.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addRestLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createDocsToHoldNoPostingDocByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
@@ -178,11 +162,8 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocsAndChecksByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
@@ -195,10 +176,8 @@ class Hold1CDocksServiceTest {
         assertEquals(5, documents.stream().filter(Document::isHold).count());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSixOrders.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addSixOrders.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdOrdersByProjectsAndPeriodTest() {
         Project project = projectService.getById(3);
@@ -250,10 +229,8 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addTwoDocs.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void createPostingDocTest() {
@@ -299,10 +276,8 @@ class Hold1CDocksServiceTest {
         assertNull(postingDoc);
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void createWriteOffDocForChecksTest() {
@@ -326,10 +301,8 @@ class Hold1CDocksServiceTest {
         assertEquals(quantityOf8, items.get(1).getQuantity());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
     void getDocumentItemTest() {
@@ -367,10 +340,8 @@ class Hold1CDocksServiceTest {
         assertEquals(6, orders.size());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getWriteOffDocTest() {
         Storage storage = storageService.getById(2);
@@ -382,10 +353,8 @@ class Hold1CDocksServiceTest {
         assertEquals(project, writeOffDoc.getProject());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getPostingDocTest() {
         Storage storage = storageService.getById(3);
@@ -396,10 +365,8 @@ class Hold1CDocksServiceTest {
         assertEquals(storage, postingDoc.getStorageTo());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getItemDocOfTypePostingTest() {
         Project project = projectService.getById(1);
@@ -408,10 +375,8 @@ class Hold1CDocksServiceTest {
         assertEquals(333, itemDoc.getNumber());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addTwoDocs.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getItemDocOfTypeWriteOffTest() {
         Project project = projectService.getById(1);

@@ -839,11 +839,8 @@ class DocumentControllerTest {
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/hold1CDocs/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void hold1CDocsTest() throws Exception {
@@ -865,8 +862,6 @@ class DocumentControllerTest {
         assertFalse(lotMovements.isEmpty());
     }
 
-    @Sql(value = "/sql/hold1CDocs/addSystemUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/hold1CDocs/deleteSystemUser.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void hold1CDocsThenNoDocsTest() throws Exception {

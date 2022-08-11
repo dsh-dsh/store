@@ -52,8 +52,6 @@ class UserServiceTest {
     private static final String PHONE = "+7(900)0000000";
     private static final String BIRTH_DATE_STR = "2001-01-01";
 
-    @Sql(value = "/sql/users/addParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/users/deleteParent.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getUserTree() {
         List<ItemDTOForTree> list = userService.getUserDTOTree();
@@ -88,8 +86,6 @@ class UserServiceTest {
         assertEquals(ACCOUNTANT_ROLE_STRING, user.getRole().toString());
     }
 
-    @Sql(value = "/sql/users/addSystemUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/users/deleteSystemUser.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getSystemAuthorTest() {
         User user = userService.getSystemAuthor();
@@ -99,7 +95,7 @@ class UserServiceTest {
     @Test
     void getPersonDTOListTest() {
         List<PersonDTO> persons = userService.getPersonDTOList();
-        assertEquals(4, persons.size());
+        assertEquals(6, persons.size());
     }
 
     @Sql(value = "/sql/users/addNewUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

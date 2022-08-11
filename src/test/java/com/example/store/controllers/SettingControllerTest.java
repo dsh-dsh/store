@@ -53,8 +53,7 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -76,8 +75,7 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.[2].property").value(3));
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -86,13 +84,12 @@ class SettingControllerTest {
                         get(URL_PREFIX + "/add/shortage"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(5))
+                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("ADD_REST_FOR_HOLD"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -101,13 +98,12 @@ class SettingControllerTest {
                         get(URL_PREFIX + "/average/price/period"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(5))
+                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("PERIOD_AVERAGE_PRICE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForPeriodCloseSettingsUnauthorizedTest()  throws Exception {
@@ -117,8 +113,7 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -127,13 +122,12 @@ class SettingControllerTest {
                         get(URL_PREFIX + "/average/price/docs"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(5))
+                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("DOCS_AVERAGE_PRICE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForDocsSettingsUnauthorizedTest()  throws Exception {
@@ -143,8 +137,7 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getHoldingSettingsUnauthorizedTest()  throws Exception {
@@ -154,8 +147,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -176,8 +167,6 @@ class SettingControllerTest {
         assertEquals(3, settingService.getSettingByType(user, SettingType.PROJECT).getProperty());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setSettingsUnauthorizedTest()  throws Exception {
@@ -187,8 +176,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -208,8 +195,6 @@ class SettingControllerTest {
         assertEquals(0, settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD).getProperty());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAddShortageSettingUnauthorizedTest()  throws Exception {
@@ -226,8 +211,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -247,8 +230,6 @@ class SettingControllerTest {
         assertEquals(0, settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE).getProperty());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForPeriodCloseSettingUnauthorizedTest()  throws Exception {
@@ -265,8 +246,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -286,8 +265,6 @@ class SettingControllerTest {
         assertEquals(0, settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE).getProperty());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addSystemUser.sql",
-            "/sql/settings/addSystemSetting.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForDocsSettingUnauthorizedTest()  throws Exception {
@@ -304,10 +281,8 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCurrentPeriodTest() throws Exception {
@@ -327,10 +302,8 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void closePeriodTest() throws Exception {

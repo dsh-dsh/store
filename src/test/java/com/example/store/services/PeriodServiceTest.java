@@ -45,22 +45,18 @@ class PeriodServiceTest {
     private EnvironmentVars env;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
             "/sql/period/addDeletedOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkPossibilityToClosePeriodTest() {
         assertDoesNotThrow(() -> periodService.checkPossibilityToClosePeriod());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkPossibilityToClosePeriodThrowsTest() {
         assertThrows(BadRequestException.class,
@@ -68,10 +64,8 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodTest() {
         periodService.closePeriod();
@@ -80,21 +74,17 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodThrowsTest() {
         assertThrows(BadRequestException.class, () -> periodService.closePeriod());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodForStorage3Test() {
         env.setPeriodStart();
@@ -108,10 +98,8 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage1Test() {
         env.setPeriodStart();
@@ -127,10 +115,8 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage3Test() {
         env.setPeriodStart();
@@ -145,10 +131,8 @@ class PeriodServiceTest {
         assertEquals(6, items[1].getQuantity());
     }
 
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void createRestMoveDocTest() {
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
@@ -197,10 +181,8 @@ class PeriodServiceTest {
         assertEquals(946587600000L, dto.getEndDate());
     }
 
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/hold1CDocs/addSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = {"/sql/period/after.sql",
-            "/sql/hold1CDocs/deleteSystemUser.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodManuallyTest() {
         PeriodDTO dto = periodService.closePeriodManually();

@@ -58,6 +58,8 @@ public class Hold1CDocksService {
     private SettingService settingService;
     @Autowired
     private PeriodService periodService;
+    @Autowired
+    private List<DefaultPropertySetting> systemSettings;
 
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
