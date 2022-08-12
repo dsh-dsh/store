@@ -45,18 +45,17 @@ public class ItemRestService {
     @Autowired
     private EnvironmentVars env;
     @Autowired
-    private SettingService settingService;
-    @Autowired
-    private UserService userService;
+    private List<PropertySetting> systemSettings;
 
     protected boolean usingAveragePriceOfLots = true;
 
-//    @PostConstruct todo перенести в конфиг SystemSettings
-    protected void setSettings() {
-        User systemUser = userService.getSystemAuthor();
-        DefaultPropertySetting setting = settingService.getSettingByType(systemUser, SettingType.PERIOD_AVERAGE_PRICE);
-        if(setting == null) return;
-        this.usingAveragePriceOfLots = setting.getProperty() != 0;
+    // todo add test
+    @PostConstruct
+    protected void setUsingAveragePriceOfLots() {
+        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.PERIOD_AVERAGE_PRICE);
+        if(setting != null) {
+            usingAveragePriceOfLots = setting.getProperty() == 1;
+        }
     }
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {

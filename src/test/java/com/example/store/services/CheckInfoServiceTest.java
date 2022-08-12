@@ -39,7 +39,7 @@ class CheckInfoServiceTest {
         assertEquals(1, checkInfo.getCheck().getId());
     }
 
-    @Sql(value = "/sql/documents/addCheckDocOnly.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/addCheckDocAndDocItemsOnly.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void addCheckInfoTest() {

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +44,8 @@ public class Hold1CDocksService {
     @Autowired
     private UserService userService;
     @Autowired
+    private CompanyService companyService;
+    @Autowired
     private ItemDocRepository itemDocRepository;
     @Autowired
     private ItemRestService itemRestService;
@@ -51,24 +54,31 @@ public class Hold1CDocksService {
     @Autowired
     private CheckInfoService checkInfoService;
     @Autowired
-    private CompanyService companyService;
-    @Autowired
     private OrderDocRepository orderDocRepository;
     @Autowired
     private SettingService settingService;
     @Autowired
     private PeriodService periodService;
     @Autowired
-    private List<DefaultPropertySetting> systemSettings;
+    private List<PropertySetting> systemSettings;
+    @Autowired
+    private User systemUser;
 
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
-    private User systemAuthor;
+
     private boolean addRestForHold = true;
 
-    public void createSaleOrders(Storage storage, LocalDateTime time) {
+    @PostConstruct
+    protected void setSettings() {
+        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD);
+        if(setting != null) {
+            addRestForHold = setting.getProperty() == 1;
+        }
+    }
 
+    public void createSaleOrders(Storage storage, LocalDateTime time) {
         Optional<Project> optionalProject = projectService.getProjectByStorageName(storage.getName());
         Project project;
         if(optionalProject.isEmpty()) return;
@@ -90,7 +100,7 @@ public class Hold1CDocksService {
         order.setDateTime(time);
         order.setDocType(docType);
         order.setProject(project);
-        order.setAuthor(systemAuthor);
+        order.setAuthor(systemUser);
         order.setRecipient(companyService.getOurCompany());
         order.setPayed(true);
         order.setBaseDocument(writeOffDoc);
@@ -130,16 +140,12 @@ public class Hold1CDocksService {
 
     @Transactional
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+
         holdDocsBefore();
 
-        // todo to one bean
-        systemAuthor = userService.getSystemAuthor();
-        DefaultPropertySetting setting = settingService.getSettingByType(systemAuthor, SettingType.ADD_REST_FOR_HOLD);
-        if(setting != null) {
-            addRestForHold = setting.getProperty() == 1;
-        }
         checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
         if(checks.isEmpty()) return;
+
         Project project = checks.get(0).getProject();
 
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
@@ -158,7 +164,7 @@ public class Hold1CDocksService {
             holdDocsService.holdDoc(postingDoc);
         }
         if(writeOffDoc != null) {
-            holdDocsService.holdDoc(writeOffDoc, addRestForHold);
+            holdDocsService.holdDoc(writeOffDoc);
             checks.forEach(check -> documentService.setHoldAndSave(true, check));
         }
     }
@@ -259,7 +265,7 @@ public class Hold1CDocksService {
         itemDoc.setDateTime(time);
         itemDoc.setDocType(docType);
         itemDoc.setProject(project);
-        itemDoc.setAuthor(systemAuthor);
+        itemDoc.setAuthor(systemUser);
         return itemDoc;
     }
 }

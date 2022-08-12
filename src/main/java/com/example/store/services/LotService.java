@@ -6,6 +6,7 @@ import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
@@ -14,6 +15,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +38,23 @@ public class LotService {
     private ItemRestService itemRestService;
     @Autowired
     private EnvironmentVars env;
+    @Autowired
+    private List<PropertySetting> systemSettings;
 
-    private boolean addRestForHold = true;  // todo
+    protected boolean addRestForHold = true;
     protected boolean usingAveragePriceOfLots = true;
+
+    @PostConstruct
+    protected void setSettings() {
+        PropertySetting restSetting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD);
+        if(restSetting != null) {
+            addRestForHold = restSetting.getProperty() == 1;
+        }
+        PropertySetting averagePriceSetting = PropertySetting.getByType(systemSettings, SettingType.DOCS_AVERAGE_PRICE);
+        if(averagePriceSetting != null) {
+            usingAveragePriceOfLots = averagePriceSetting.getProperty() == 1;
+        }
+    }
 
     public Lot getById(long id) {
         return lotRepository.getById(id);

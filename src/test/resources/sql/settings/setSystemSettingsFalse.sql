@@ -1,0 +1,1 @@
+update default_property_settings set property = 0 where id < 4;

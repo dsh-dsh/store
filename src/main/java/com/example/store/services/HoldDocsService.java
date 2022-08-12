@@ -70,12 +70,6 @@ public class HoldDocsService {
         }
     }
 
-    public void holdDoc(Document document, boolean addRestForHold) {
-        lotService.setAddRestForHold(addRestForHold);
-        holdDoc(document);
-        lotService.setAddRestForHold(!addRestForHold);
-    }
-
     public void unHoldDoc(Document document) {
         document.setHold(false);
         if(document instanceof ItemDoc) {

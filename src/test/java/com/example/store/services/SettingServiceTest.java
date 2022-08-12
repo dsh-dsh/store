@@ -2,7 +2,7 @@ package com.example.store.services;
 
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.UserDTO;
-import com.example.store.model.entities.DefaultPropertySetting;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ class SettingServiceTest {
     @Test
     void getSettingByTypeTest() {
         User user = userService.getById(1);
-        DefaultPropertySetting settings;
+        PropertySetting settings;
         settings = settingService.getSettingByType(user, SettingType.PROJECT);
         assertEquals(1, settings.getProperty());
         settings = settingService.getSettingByType(user, SettingType.STORAGE_TO);
@@ -59,7 +59,7 @@ class SettingServiceTest {
     void getSettingDTOTest() {
         User user = userService.getById(1);
         UserDTO userDTO = new UserDTO();
-        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.STORAGE_FROM);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.STORAGE_FROM);
         SettingDTO dto = settingService.getSettingDTO(setting, userDTO);
         assertEquals(userDTO, dto.getUser());
         assertEquals(3, dto.getProperty());
@@ -74,7 +74,7 @@ class SettingServiceTest {
         SettingDTO dto = new SettingDTO(userDTO, SettingType.STORAGE_TO.toString(), 5);
         settingService.setProperty(dto);
         User user = userService.getById(1);
-        DefaultPropertySetting settings = settingService.getSettingByType(user, SettingType.STORAGE_TO);
+        PropertySetting settings = settingService.getSettingByType(user, SettingType.STORAGE_TO);
         assertEquals(5, settings.getProperty());
     }
 
@@ -85,7 +85,7 @@ class SettingServiceTest {
         dto.setProperty(1);
         settingService.setAddShortageSetting(dto);
         User user = userService.getById(6);
-        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD);
         assertEquals(1, setting.getProperty());
     }
 
@@ -96,7 +96,7 @@ class SettingServiceTest {
         dto.setProperty(1);
         settingService.setAveragePriceForPeriodCloseSetting(dto);
         User user = userService.getById(6);
-        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE);
         assertEquals(1, setting.getProperty());
     }
 
@@ -107,7 +107,7 @@ class SettingServiceTest {
         dto.setProperty(1);
         settingService.setAveragePriceForDocsSetting(dto);
         User user = userService.getById(6);
-        DefaultPropertySetting setting = settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE);
         assertEquals(1, setting.getProperty());
     }
 

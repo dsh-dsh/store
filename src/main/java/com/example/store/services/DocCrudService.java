@@ -155,6 +155,7 @@ public class DocCrudService extends AbstractDocCrudService {
         return docMapper.mapToDocDTO((ItemDoc) document);
     }
 
+    @Transactional
     public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
         itemDocListRequestDTO.getCheckDTOList()
                 .forEach(docsFrom1cService::addDocument);

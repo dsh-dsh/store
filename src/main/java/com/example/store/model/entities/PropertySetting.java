@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class DefaultPropertySetting {
+@Table(name = "default_property_setting")
+public class PropertySetting {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -27,5 +29,9 @@ public class DefaultPropertySetting {
 
     @Column(name = "property")
     private int property;
+
+    public static PropertySetting getByType(List<PropertySetting> list, SettingType type) {
+        return list.stream().filter(setting -> setting.getSettingType() == type).findFirst().orElse(null);
+    }
 
 }

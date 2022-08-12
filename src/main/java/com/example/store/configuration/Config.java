@@ -1,6 +1,6 @@
 package com.example.store.configuration;
 
-import com.example.store.model.entities.DefaultPropertySetting;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.repositories.SettingRepository;
 import com.example.store.services.UserService;
@@ -19,9 +19,14 @@ public class Config {
     }
 
     @Bean
-    public List<DefaultPropertySetting> getSystemSettings(SettingRepository settingRepository, UserService userService) {
+    public List<PropertySetting> getSystemSettings(SettingRepository settingRepository, UserService userService) {
         User systemUser = userService.getSystemAuthor();
         return settingRepository.findByUser(systemUser);
+    }
+
+    @Bean
+    public User getSystemUser(UserService userService) {
+        return userService.getSystemAuthor();
     }
 
 }

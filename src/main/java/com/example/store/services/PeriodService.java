@@ -45,6 +45,9 @@ public class  PeriodService {
     private HoldDocsService holdDocService;
     @Autowired
     private DocItemService docItemService;
+    @Autowired
+    private User systemUser;
+
 
     @Transactional
     public PeriodDTO closePeriodManually() {
@@ -106,7 +109,7 @@ public class  PeriodService {
         Project project = projectService.getProjectByStorageName(storage.getName())
                 .orElseGet(() -> projectService.getById(Constants.EMPTY_PROJECT_ID));
         doc.setProject(project);
-        doc.setAuthor(userService.getSystemAuthor());
+        doc.setAuthor(systemUser);
         doc.setRecipient(companyService.getOurCompany());
         return doc;
     }

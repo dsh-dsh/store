@@ -47,7 +47,7 @@ public class TestService {
         dto.setTax(tax);
     }
 
-    DocDTO setDTOFields(DocumentType docType) {
+    public DocDTO setDTOFields(DocumentType docType) {
         DocDTO dto = new DocDTO();
         dto.setDocType(docType.getValue());
         dto.setDateTime(ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).toInstant().toEpochMilli());
@@ -59,7 +59,7 @@ public class TestService {
         return dto;
     }
 
-    CheckInfoDTO setCHeckInfo(int value) {
+    public CheckInfoDTO setCHeckInfo(int value) {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setCheckNumber(CHECK_NUMBER + value);
         dto.setDateTime(ZonedDateTime
@@ -79,37 +79,78 @@ public class TestService {
         return dto;
     }
 
-    ProjectDTO setProject(int id) {
+    public CheckInfoDTO setCHeckInfo(int value, String time) {
+        CheckInfoDTO dto = setCHeckInfo(value);
+        dto.setTime(time);
+        return dto;
+    }
+
+    public ProjectDTO setProject(int id) {
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(id);
         return projectDTO;
     }
 
-    UserDTO setAuthorDTO(int id) {
+    public ProjectDTO setProject(int id, String name) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setId(id);
+        projectDTO.setName(name);
+        return projectDTO;
+    }
+
+    public UserDTO setAuthorDTO(int id) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(id);
         return userDTO;
     }
 
-    UserDTO setIndividualDTO(int id) {
+    public UserDTO setAuthorDTO(int id, String name) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(id);
+        userDTO.setName(name);
+        return userDTO;
+    }
+
+    public UserDTO setIndividualDTO(int id) {
         UserDTO individualDTO = new UserDTO();
         individualDTO.setId(id);
         return individualDTO;
     }
 
-    CompanyDTO setCompanyDTO(int id) {
+    public UserDTO setIndividualDTO(int id, String name) {
+        UserDTO individualDTO = new UserDTO();
+        individualDTO.setId(id);
+        individualDTO.setName(name);
+        return individualDTO;
+    }
+
+    public CompanyDTO setCompanyDTO(int id) {
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(id);
         return companyDTO;
     }
 
-    StorageDTO setStorageDTO(int id) {
+    public CompanyDTO setCompanyDTO(int id, String name) {
+        CompanyDTO companyDTO = new CompanyDTO();
+        companyDTO.setId(id);
+        companyDTO.setName(name);
+        return companyDTO;
+    }
+
+    public StorageDTO setStorageDTO(int id) {
         StorageDTO storageDTO = new StorageDTO();
         storageDTO.setId(id);
         return storageDTO;
     }
 
-    List<DocItemDTO> setDocItemDTOList(int value) {
+    public StorageDTO setStorageDTO(int id, String name) {
+        StorageDTO storageDTO = new StorageDTO();
+        storageDTO.setId(id);
+        storageDTO.setName(name);
+        return storageDTO;
+    }
+
+    public List<DocItemDTO> setDocItemDTOList(int value) {
         DocItemDTO first = new DocItemDTO();
         first.setItemId(ADDED_ITEM_IDS.get(0) + value);
         first.setPrice(10.00f * value);

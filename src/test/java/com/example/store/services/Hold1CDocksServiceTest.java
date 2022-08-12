@@ -68,6 +68,12 @@ class Hold1CDocksServiceTest {
             = Comparator.comparing(item -> item.getItem().getName());
 
     @Test
+    void setSettingsTest() {
+        hold1CDocksService.setSettings();
+        assertTrue(hold1CDocksService.isAddRestForHold());
+    }
+
+    @Test
     void holdDocsBeforeIfDocsNotExistsTest() {
         assertDoesNotThrow(() -> hold1CDocksService.holdDocsBefore());
     }
@@ -291,7 +297,7 @@ class Hold1CDocksServiceTest {
         Map<Item, Float> itemMap = new HashMap<>();
         itemMap.put(item7, quantityOf7);
         itemMap.put(item8, quantityOf8);
-        hold1CDocksService.setSystemAuthor(userService.getSystemAuthor());
+        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
         ItemDoc itemDoc = hold1CDocksService.createWriteOffDocForChecks(storage, project, itemMap, time);
         assertEquals(storage, itemDoc.getStorageFrom());
         assertEquals(project, itemDoc.getProject());

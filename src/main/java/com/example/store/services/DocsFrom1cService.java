@@ -10,7 +10,7 @@ import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
-import com.example.store.utils.annotations.Transaction;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+@Setter
 @Service
 public class DocsFrom1cService {
 
@@ -42,10 +43,8 @@ public class DocsFrom1cService {
     @Autowired
     protected OrderDocRepository orderDocRepository;
 
-    private static final LocalDateTime startOfYear = LocalDateTime.of(2022, 1, 1, 0, 0, 0);
     private LocalDateTime docDateTime;
 
-    @Transaction // set transaction to all docs, not only one
     public void addDocument(DocDTO docDTO) {
         DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
         if(isDocNumberExists(docDTO.getNumber(), docType)) return;
@@ -56,6 +55,7 @@ public class DocsFrom1cService {
         } else {
             document = new OrderDoc();
         }
+
         document.setNumber(docDTO.getNumber());
         document.setDateTime(getNewTime(Util.getLocalDate(docDTO.getDate())));
         document.setProject(projectService.getByName(docDTO.getProject().getName()));
@@ -63,6 +63,7 @@ public class DocsFrom1cService {
         document.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
         document.setIndividual(userService.getByName(docDTO.getIndividual().getName()));
         document.setDocType(docType);
+
         if(docType == DocumentType.CHECK_DOC) {
             ItemDoc itemDoc = (ItemDoc) document;
             itemDoc.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
@@ -77,16 +78,16 @@ public class DocsFrom1cService {
         }
     }
 
-    private void addDocItems(DocDTO docDTO, ItemDoc check) {
+    protected void addDocItems(DocDTO docDTO, ItemDoc check) {
         docDTO.getDocItems()
                 .forEach(docItemDTO -> docItemServiceFor1CDocs.addDocItem(docItemDTO, check));
     }
 
     public boolean isDocNumberExists(long number, DocumentType type) {
+        LocalDateTime startOfYear = LocalDate.now().withMonth(1).withDayOfMonth(1).atStartOfDay();
         return documentRepository.existsByNumberAndDocTypeAndDateTimeAfter(number, type, startOfYear);
     }
 
-    // todo tests
     protected LocalDateTime getNewTime(LocalDate docDate) {
         if(this.docDateTime == null) {
             this.docDateTime = getLastDocTime(docDate).plus(1, ChronoUnit.MILLIS);
@@ -96,8 +97,7 @@ public class DocsFrom1cService {
         return this.docDateTime;
     }
 
-    // todo tests
-    private LocalDateTime getLastDocTime(LocalDate docDate) {
+    protected LocalDateTime getLastDocTime(LocalDate docDate) {
         LocalDateTime start = docDate.atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         Optional<Document> optionalDocument =
