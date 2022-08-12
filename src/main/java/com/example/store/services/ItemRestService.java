@@ -15,6 +15,8 @@ import com.example.store.repositories.LotRepository;
 import com.example.store.repositories.PeriodRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Setter
+@Getter
 @Service
 public class ItemRestService {
 
@@ -47,11 +51,10 @@ public class ItemRestService {
     @Autowired
     private List<PropertySetting> systemSettings;
 
-    protected boolean usingAveragePriceOfLots = true;
+    private boolean usingAveragePriceOfLots = true;
 
-    // todo add test
     @PostConstruct
-    protected void setUsingAveragePriceOfLots() {
+    protected void setSettings() {
         PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.PERIOD_AVERAGE_PRICE);
         if(setting != null) {
             usingAveragePriceOfLots = setting.getProperty() == 1;

@@ -36,6 +36,12 @@ class ItemRestServiceTest {
     @Autowired
     private EnvironmentVars env;
 
+    @Test
+    void setSettingsTest() {
+        itemRestService.setSettings();
+        assertTrue(itemRestService.isUsingAveragePriceOfLots());
+    }
+
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -71,9 +77,9 @@ class ItemRestServiceTest {
     void getRestAndPriceWhenLastPriceTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
-        itemRestService.usingAveragePriceOfLots = false;
+        itemRestService.setUsingAveragePriceOfLots(false);
         ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
-        itemRestService.usingAveragePriceOfLots = true;
+        itemRestService.setUsingAveragePriceOfLots(true);
         assertEquals(2, value.getRest());
         assertEquals(200, value.getPrice());
     }
@@ -85,7 +91,7 @@ class ItemRestServiceTest {
     void getRestAndPriceWhenAveragePriceTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
-        itemRestService.usingAveragePriceOfLots = true;
+        itemRestService.setUsingAveragePriceOfLots(true);
         ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(2, value.getRest());
         assertEquals(150, value.getPrice());
