@@ -85,7 +85,7 @@ class SettingServiceTest {
         dto.setProperty(1);
         settingService.setAddShortageSetting(dto);
         User user = userService.getById(6);
-        PropertySetting setting = settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
         assertEquals(1, setting.getProperty());
     }
 

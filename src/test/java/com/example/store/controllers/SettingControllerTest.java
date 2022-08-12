@@ -85,7 +85,7 @@ class SettingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.user.id").value(6))
-                .andExpect(jsonPath("$.data.type").value("ADD_REST_FOR_HOLD"))
+                .andExpect(jsonPath("$.data.type").value("ADD_REST_FOR_HOLD_1C_DOCS"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
@@ -183,7 +183,7 @@ class SettingControllerTest {
         UserDTO userDTO = new UserDTO();
         SettingDTO settingDTO = new SettingDTO();
         settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD.toString());
+        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString());
         settingDTO.setProperty(0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/add/shortage")
@@ -192,7 +192,7 @@ class SettingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         User user = userService.getSystemAuthor();
-        assertEquals(0, settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD).getProperty());
+        assertEquals(0, settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD_1C_DOCS).getProperty());
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -201,7 +201,7 @@ class SettingControllerTest {
         UserDTO userDTO = new UserDTO();
         SettingDTO settingDTO = new SettingDTO();
         settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD.toString());
+        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString());
         settingDTO.setProperty(0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/add/shortage")

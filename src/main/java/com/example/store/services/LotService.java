@@ -11,6 +11,7 @@ import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+@Getter
 @Setter
 @Service
 public class LotService {
@@ -41,14 +43,15 @@ public class LotService {
     @Autowired
     private List<PropertySetting> systemSettings;
 
-    protected boolean addRestForHold = true;
-    protected boolean usingAveragePriceOfLots = true;
+    private boolean addRestForHold1CDocs = true;
+    private boolean usingAveragePriceOfLots = true;
+    private boolean is1CDoc = false;
 
     @PostConstruct
     protected void setSettings() {
-        PropertySetting restSetting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD);
+        PropertySetting restSetting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
         if(restSetting != null) {
-            addRestForHold = restSetting.getProperty() == 1;
+            addRestForHold1CDocs = restSetting.getProperty() == 1;
         }
         PropertySetting averagePriceSetting = PropertySetting.getByType(systemSettings, SettingType.DOCS_AVERAGE_PRICE);
         if(averagePriceSetting != null) {
@@ -85,6 +88,12 @@ public class LotService {
         Lot lot = lotRepository.findByDocumentItem(item)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
         lotMoveService.updatePlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
+    }
+
+    public void addLotMovementsFor1CDocs(Document document) {
+        this.is1CDoc = true;
+        addLotMovements(document);
+        this.is1CDoc = false;
     }
 
     public void addLotMovements(Document document) {
@@ -126,7 +135,7 @@ public class LotService {
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
         Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
-        if(addRestForHold) {
+        if(!is1CDoc || addRestForHold1CDocs) {
             itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());

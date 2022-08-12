@@ -35,7 +35,7 @@ public class SettingService {
         List<PropertySetting> list = settingRepository.findByUser(user);
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
         List<SettingDTO> dtoList = list.stream()
-                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD)
+                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
                 .map(setting -> getSettingDTO(setting, userDTO))
                 .collect(Collectors.toList());
         return new ListResponse<>(dtoList);
@@ -60,7 +60,7 @@ public class SettingService {
     }
 
     public void setAddShortageSetting(SettingDTO settingDTO) {
-        SettingType settingType = SettingType.ADD_REST_FOR_HOLD;
+        SettingType settingType = SettingType.ADD_REST_FOR_HOLD_1C_DOCS;
         int property = settingDTO.getProperty();
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, property));
@@ -95,7 +95,7 @@ public class SettingService {
     }
 
     public Response<SettingDTO> getAddShortageForHoldSetting() {
-        SettingType settingType = SettingType.ADD_REST_FOR_HOLD;
+        SettingType settingType = SettingType.ADD_REST_FOR_HOLD_1C_DOCS;
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, 1));
         UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");

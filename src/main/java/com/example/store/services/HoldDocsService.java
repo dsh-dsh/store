@@ -70,6 +70,12 @@ public class HoldDocsService {
         }
     }
 
+    public void hold1CDoc(ItemDoc itemDoc) {
+        itemDoc.setHold(true);
+        lotService.addLotMovementsFor1CDocs(itemDoc);
+        itemDocRepository.save(itemDoc);
+    }
+
     public void unHoldDoc(Document document) {
         document.setHold(false);
         if(document instanceof ItemDoc) {

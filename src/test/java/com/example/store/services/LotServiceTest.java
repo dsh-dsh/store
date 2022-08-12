@@ -54,8 +54,8 @@ class LotServiceTest {
     @Test
     void setSettingsTest() {
         lotService.setSettings();
-        assertTrue(lotService.addRestForHold);
-        assertTrue(lotService.usingAveragePriceOfLots);
+        assertTrue(lotService.isAddRestForHold1CDocs());
+        assertTrue(lotService.isUsingAveragePriceOfLots());
     }
 
     @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

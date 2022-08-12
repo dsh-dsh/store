@@ -40,6 +40,8 @@ public class Hold1CDocksService {
     @Autowired
     private ProjectService projectService;
     @Autowired
+    private StorageService storageService;
+    @Autowired
     private HoldDocsService holdDocsService;
     @Autowired
     private UserService userService;
@@ -68,14 +70,26 @@ public class Hold1CDocksService {
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
 
-    private boolean addRestForHold = true;
+    private boolean addRestForHold1CDocs = true;
 
     @PostConstruct
     protected void setSettings() {
-        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD);
+        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
         if(setting != null) {
-            addRestForHold = setting.getProperty() == 1;
+            addRestForHold1CDocs = setting.getProperty() == 1;
         }
+    }
+
+    @Transactional
+    public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
+        List<Storage> storages = storageService.getStorageList();
+        storages.forEach(storage -> {
+            createDocsToHoldByStoragesAndPeriod(storage, from, to);
+            createSaleOrders(storage, from);
+            holdDocsAndChecksByStoragesAndPeriod();
+        });
+        List<Project> projects = projectService.getProjectList();
+        projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
     }
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
@@ -138,7 +152,6 @@ public class Hold1CDocksService {
                 .forEach(doc -> holdDocsService.holdDocument(doc));
     }
 
-    @Transactional
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
 
         holdDocsBefore();
@@ -152,24 +165,22 @@ public class Hold1CDocksService {
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
 
-        if(addRestForHold) {
+        if(addRestForHold1CDocs) {
             List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
             postingDoc = createPostingDoc(storage, project, postingItemList, from);
         }
     }
 
-    @Transactional
-    public void holdDocsAndChecksByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+    public void holdDocsAndChecksByStoragesAndPeriod() {
         if (postingDoc != null) {
             holdDocsService.holdDoc(postingDoc);
         }
         if(writeOffDoc != null) {
-            holdDocsService.holdDoc(writeOffDoc);
+            holdDocsService.hold1CDoc(writeOffDoc);
             checks.forEach(check -> documentService.setHoldAndSave(true, check));
         }
     }
 
-    @Transactional
     public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);
         for(OrderDoc order : orders) {
