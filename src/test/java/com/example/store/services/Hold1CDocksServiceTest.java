@@ -108,12 +108,16 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.createSaleOrders(storage, from);
         List<OrderDoc> orders = orderDocRepository.findAll();
         assertEquals(2, orders.size());
         assertEquals(PaymentType.SALE_CARD_PAYMENT, orders.get(0).getPaymentType());
         assertEquals(PaymentType.SALE_CASH_PAYMENT, orders.get(1).getPaymentType());
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -125,6 +129,7 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         Map<Boolean, Float> map = hold1CDocksService.getSumMap();
         assertEquals(2, map.size());
@@ -132,6 +137,9 @@ class Hold1CDocksServiceTest {
                 (float) docItemRepository.findAll().stream()
                         .mapToDouble(item -> (item.getPrice()*item.getQuantity()) - item.getDiscount()).sum(),
                 map.values().stream().reduce(0f, Float::sum));
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -143,6 +151,7 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         assertEquals(DocumentType.POSTING_DOC, hold1CDocksService.getPostingDoc().getDocType());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -150,6 +159,9 @@ class Hold1CDocksServiceTest {
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
         assertEquals(4, postingItems.size());
         assertEquals(4, writeOffItems.size());
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -165,7 +177,7 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setAddRestForHold1CDocs(false);
         boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
         lotService.setAddRestForHold1CDocs(false);
-        hold1CDocksService.setPostingDoc(null); // todo костыль! удаление postingDoc, каким то образом оставшегося после предыдущего теста
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         assertNull(hold1CDocksService.getPostingDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -175,6 +187,9 @@ class Hold1CDocksServiceTest {
         assertEquals(4, writeOffItems.size());
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -188,6 +203,7 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         assertNull(hold1CDocksService.getPostingDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -195,6 +211,9 @@ class Hold1CDocksServiceTest {
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
         assertEquals(0, postingItems.size());
         assertEquals(4, writeOffItems.size());
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -210,6 +229,7 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setAddRestForHold1CDocs(true);
         boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
         lotService.setAddRestForHold1CDocs(true);
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
@@ -217,6 +237,9 @@ class Hold1CDocksServiceTest {
         assertEquals(5, documents.stream().filter(Document::isHold).count());
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -234,6 +257,7 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setAddRestForHold1CDocs(true);
         boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
         lotService.setAddRestForHold1CDocs(true);
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
@@ -246,6 +270,9 @@ class Hold1CDocksServiceTest {
         assertEquals(4f, docItems.get(2).getQuantity());
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -263,6 +290,7 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setAddRestForHold1CDocs(false);
         boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
         lotService.setAddRestForHold1CDocs(false);
+        hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
@@ -271,6 +299,9 @@ class Hold1CDocksServiceTest {
         assertEquals(5, documents.stream().filter(Document::isHold).count());
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = "/sql/hold1CDocs/addSixOrders.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -358,8 +389,7 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
-        List<ItemQuantityPriceDTO> dtoList = null;
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, dtoList, time);
+        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, null, time);
         assertNull(postingDoc);
     }
 
@@ -396,6 +426,9 @@ class Hold1CDocksServiceTest {
         items.sort(documentItemComparator);
         assertEquals(item7, items.get(0).getItem());
         assertEquals(quantityOf8, items.get(1).getQuantity());
+        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
     }
 
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

@@ -88,13 +88,17 @@ public class Hold1CDocksService {
     @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
-        storages.forEach(storage -> {
+        for (Storage storage : storages) {
+            checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
+            if (checks.isEmpty()) {
+                continue;
+            }
             createDocsToHoldByStoragesAndPeriod(storage, from, to);
             createSaleOrders(storage, from);
             holdDocsAndChecksByStoragesAndPeriod();
             postingDoc = null;
             writeOffDoc = null;
-        });
+        }
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
     }
@@ -160,18 +164,11 @@ public class Hold1CDocksService {
     }
 
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
-
         holdDocsBefore();
-
-        checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
-        if(checks.isEmpty()) return;
-
         Project project = checks.get(0).getProject();
-
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
-
         if(addRestForHold1CDocs) {
             List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
             postingDoc = createPostingDoc(storage, project, postingItemList, from);
