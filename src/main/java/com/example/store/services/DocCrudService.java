@@ -10,7 +10,6 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.enums.ExceptionType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
@@ -21,9 +20,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DocCrudService extends AbstractDocCrudService {
@@ -133,21 +135,91 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    public void serialHoldDocument(int docId) {
+    @Transactional
+    public void serialHoldDocuments(int docId) {
         Document document = documentService.getDocumentById(docId);
+        checkTimePeriod(document);
         if(document.isHold()) {
-            List<Document> documents = documentRepository
-                    .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
-                            Sort.by(Constants.DATE_TIME_STRING).descending());
-            documents.forEach(doc -> holdDocsService.holdDocument(doc));
-            holdDocsService.holdDocument(document);
+            serialUnHold(document);
         } else {
-            List<Document> documents = documentRepository
-                    .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
-                            document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
-            documents.add(document);
-            documents.forEach(doc -> holdDocsService.holdDocument(doc));
+            serialHold(document);
         }
+    }
+
+    // todo add tests
+    protected void serialHold(Document document) {
+        List<Document> documents = documentRepository
+                .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
+                        document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
+        checkingFogUnHoldenChecks(documents);
+        documents.add(document);
+        documents.forEach(doc -> holdDocsService.holdDocument(doc));
+    }
+
+    // todo add tests
+    protected void serialUnHold(Document document) {
+        List<Document> documents = documentRepository
+                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
+                        Sort.by(Constants.DATE_TIME_STRING).descending());
+        documents = getAllChecksToUnHold(documents);
+        List<LocalDate> dates = getDatesOfChecks(documents);
+        softDeleteBaseDocs(documents, dates);
+        documents.forEach(doc -> holdDocsService.holdDocument(doc));
+        holdDocsService.holdDocument(document);
+    }
+
+    protected void checkingFogUnHoldenChecks(List<Document> documents) {
+        Optional<Document> optional = documents.stream()
+                .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).findFirst();
+        if(optional.isPresent()) {
+            throw new BadRequestException(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE);
+        }
+    }
+
+    protected void softDeleteBaseDocs(List<Document> documents, List<LocalDate> dates) {
+        if(!dates.isEmpty()) {
+            List<Document> writeOffDocs = documents.stream()
+                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
+                    .map(Document::getBaseDocument).distinct().collect(Collectors.toList());
+            List<Document> postingDocs = writeOffDocs.stream().map(Document::getBaseDocument).collect(Collectors.toList());
+            postingDocs.forEach(this::softDeleteDoc);
+            writeOffDocs.forEach(this::softDeleteDoc);
+        }
+    }
+
+    protected List<LocalDate> getDatesOfChecks(List<Document> documents) {
+        List<LocalDate> dates = new ArrayList<>();
+        if(!documents.isEmpty()) {
+            dates = documents.stream()
+                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
+                    .map(check -> check.getDateTime().toLocalDate())
+                    .distinct().collect(Collectors.toList());
+        }
+        return dates;
+    }
+
+    protected List<Document> getAllChecksToUnHold(List<Document> documents) {
+        List<Document> checks = documents.stream()
+                .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).collect(Collectors.toList());
+        if(!checks.isEmpty()) {
+            LocalDateTime to = checks.get(checks.size()-1).getDateTime().minus(1, ChronoUnit.MILLIS);
+            LocalDateTime from = to.toLocalDate().atStartOfDay();
+            List<Document> checksBefore
+                    = documentRepository.findByDocTypeAndIsHoldAndIsDeletedAndDateTimeBetween(
+                    DocumentType.CHECK_DOC, true, false,
+                    from, to, Sort.by(Constants.DATE_TIME_STRING).descending());
+            if(!checksBefore.isEmpty()) {
+                documents = Stream.of(checksBefore, documents)
+                        .flatMap(Collection::stream).collect(Collectors.toList());
+            }
+        }
+        return documents;
+    }
+
+    protected void softDeleteDoc(Document document) {
+        holdDocsService.holdDocument(document);
+        document.setDeleted(true);
+        documentRepository.save(document);
     }
 
     public DocDTO getDocDTOForControllerAdviceTest(int docId) {
@@ -175,16 +247,14 @@ public class DocCrudService extends AbstractDocCrudService {
         LocalDateTime docTime = Util.getLocalDateTime(docDTO.getDateTime());
         if(docTime.isBefore(env.getPeriodStart())) {
             throw new BadRequestException(String.format(
-                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()),
-                    ExceptionType.COMMON_EXCEPTION);
+                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()));
         }
     }
 
     protected void checkTimePeriod(Document document) {
         if(document.getDateTime().isBefore(env.getPeriodStart())) {
             throw new BadRequestException(String.format(
-                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()),
-                    ExceptionType.COMMON_EXCEPTION);
+                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()));
         }
     }
 

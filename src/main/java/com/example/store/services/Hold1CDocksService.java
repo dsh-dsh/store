@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +68,9 @@ public class Hold1CDocksService {
     @Autowired
     private User systemUser;
 
+    @Autowired
+    private LotMoveService lotMoveService;
+
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
@@ -87,6 +92,8 @@ public class Hold1CDocksService {
             createDocsToHoldByStoragesAndPeriod(storage, from, to);
             createSaleOrders(storage, from);
             holdDocsAndChecksByStoragesAndPeriod();
+            postingDoc = null;
+            writeOffDoc = null;
         });
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
@@ -189,15 +196,18 @@ public class Hold1CDocksService {
     }
 
     public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
-        ///
         Map<Item, Float> itemRestMap = itemRestService
                 .getItemRestMap(writeOffItemMap, storage, time);
         return writeOffItemMap.entrySet().stream()
                 .filter(entry -> itemRestMap.getOrDefault(entry.getKey(), 0f) < entry.getValue())
-                .map(entry -> new ItemQuantityPriceDTO(
-                        entry.getKey(),
-                        entry.getValue() - itemRestMap.getOrDefault(entry.getKey(), 0f),
-                        itemRestService.getLastPriceOfItem(entry.getKey(), time)))
+                .map(entry -> {
+                    BigDecimal required = BigDecimal.valueOf(entry.getValue())
+                            .setScale(3, RoundingMode.CEILING);
+                    BigDecimal rest = BigDecimal.valueOf(itemRestMap.getOrDefault(entry.getKey(), 0f))
+                            .setScale(3, RoundingMode.CEILING);
+                    float quantity = required.subtract(rest).floatValue();
+                    return new ItemQuantityPriceDTO(
+                            entry.getKey(), quantity, itemRestService.getLastPriceOfItem(entry.getKey(), time));})
                 .collect(Collectors.toList());
     }
 
@@ -215,8 +225,7 @@ public class Hold1CDocksService {
         ItemDoc doc = getPostingDoc(storage, project, time);
         Set<DocumentItem> docItems = dtoList.stream().
                 map(dto -> {
-                    DocumentItem item = getDocumentItem(doc, dto.getItem(), dto.getQuantity());
-                    item.setPrice(dto.getPrice());
+                    DocumentItem item = new DocumentItem(doc, dto.getItem(), dto.getQuantity(), dto.getPrice());
                     saveDocumentItem(item);
                     return item;
                 }).collect(Collectors.toSet());
@@ -229,19 +238,11 @@ public class Hold1CDocksService {
     public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap, LocalDateTime time) {
         ItemDoc doc = getWriteOffDoc(storage, project, time);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
-                .map(entry -> saveDocumentItem(getDocumentItem(doc, entry.getKey(), entry.getValue())))
+                .map(entry -> saveDocumentItem(new DocumentItem(doc, entry.getKey(), entry.getValue())))
                 .collect(Collectors.toSet());
         doc.setDocumentItems(docItemSet);
         itemDocRepository.save(doc);
         return doc;
-    }
-
-    public DocumentItem getDocumentItem(ItemDoc itemDoc, Item item, float quantity) {
-        DocumentItem docItem = new DocumentItem();
-        docItem.setItemDoc(itemDoc);
-        docItem.setItem(item);
-        docItem.setQuantity(quantity);
-        return docItem;
     }
 
     public DocumentItem saveDocumentItem(DocumentItem docItem) {

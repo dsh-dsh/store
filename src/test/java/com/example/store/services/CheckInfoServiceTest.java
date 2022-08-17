@@ -43,12 +43,12 @@ class CheckInfoServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void addCheckInfoTest() {
-        Document document = documentService.getDocumentById(1);
+        Document document = documentService.getDocumentById(7);
         CheckInfoDTO dto = getInfoDTO();
         checkInfoService.addCheckInfo(dto, (ItemDoc) document);
         CheckInfo checkInfo = checkInfoService.getCheckInfo((ItemDoc) document);
         assertNotNull(checkInfo);
-        assertEquals(1, checkInfo.getCheck().getId());
+        assertEquals(7, checkInfo.getCheck().getId());
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

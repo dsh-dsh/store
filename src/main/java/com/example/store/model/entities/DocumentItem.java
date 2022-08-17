@@ -1,6 +1,7 @@
 package com.example.store.model.entities;
 
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.utils.Util;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,13 +41,13 @@ public class DocumentItem {
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = (float)Math.floor(quantity*1000)/1000;
+        this.quantity = Util.floorValue(quantity,1000);
     }
 
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity, float price) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = (float)Math.floor(quantity*1000)/1000;
-        this.price = price;
+        this.quantity = Util.floorValue(quantity,1000);
+        this.price = Util.floorValue(price,100);
     }
 }

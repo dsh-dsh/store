@@ -357,6 +357,21 @@ class DocumentControllerTest {
     }
 
     @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/addCheckDocAndDocItemsOnly.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void holdSerialDocWhenUnHoldenChecksExistTest() throws Exception {
+        env.setPeriodStart();
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/serial/" + 6)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE));
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
             "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

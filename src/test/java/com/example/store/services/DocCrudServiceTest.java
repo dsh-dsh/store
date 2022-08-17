@@ -3,10 +3,8 @@ package com.example.store.services;
 import com.example.store.components.EnvironmentVars;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.documents.DocDTO;
-import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.responses.ListResponse;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
@@ -22,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,6 +101,54 @@ class DocCrudServiceTest {
         assertEquals(2, lotRepository.findAll().size());
         assertEquals(2, lotMoveRepository.findAll().size());
     }
+
+    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void softDeleteBaseDocsTest() {
+        List<Document> docs = documentService.getAllDocuments();
+        List<LocalDate> dates = List.of(LocalDate.parse("2022-04-16"));
+        docCrudService.softDeleteBaseDocs(docs, dates);
+        docs = documentService.getAllDocuments();
+        assertFalse(docs.get(0).isDeleted());
+        assertFalse(docs.get(1).isDeleted());
+        assertFalse(docs.get(2).isDeleted());
+        assertTrue(docs.get(3).isDeleted());
+        assertTrue(docs.get(4).isDeleted());
+    }
+
+    @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDatesOfChecksTest() {
+        List<Document> docs = documentService.getAllDocuments();
+        List<LocalDate> dates = docCrudService.getDatesOfChecks(docs);
+        assertEquals(2, dates.size());
+        assertEquals(LocalDate.parse("2022-04-15"), dates.get(0));
+        assertEquals(LocalDate.parse("2022-04-16"), dates.get(1));
+    }
+
+    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getAllChecksToUnHoldTest() {
+        Document check = documentService.getDocumentById(2);
+        List<Document> docs = documentService.getDocumentsAfterAndInclude(check);
+        docs = docCrudService.getAllChecksToUnHold(docs);
+        assertEquals(5, docs.size());
+    }
+
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkingFogUnHoldenChecksTest() {
+        List<Document> docs = documentService.getAllDocuments();
+        List<Document> finalDocs = docs;
+        BadRequestException exception = assertThrows(BadRequestException.class,
+                () -> docCrudService.checkingFogUnHoldenChecks(finalDocs));
+        assertEquals(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE, exception.getMessage());
+    }
+
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

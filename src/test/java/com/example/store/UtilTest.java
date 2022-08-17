@@ -36,6 +36,13 @@ class UtilTest extends TestService {
     }
 
     @Test
+    void floorValueTest() {
+        assertEquals(7.200f, Util.floorValue(7.1999998f, 1000));
+        assertEquals(7.200f, Util.floorValue(7.1999998f, 100));
+        assertEquals(2.13f, Util.floorValue(2.1399998f, 100));
+    }
+
+    @Test
     void longToLocalDateTime() {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         LocalDateTime oldTime = LocalDateTime.parse("2022-03-16 06:30:36.395", timeFormatter);

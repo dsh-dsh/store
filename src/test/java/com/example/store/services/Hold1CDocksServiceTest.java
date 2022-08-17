@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.TransactionException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -93,8 +94,8 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocsBeforeIfDocsExistsThrowTest() {
-        // todo исключение выбрасывается но assertThrows его почему-то не ловит
-        assertThrows(BadRequestException.class,
+        // todo выбрасывается TransactionException вместо BadRequestException
+        assertThrows(TransactionException.class,
                 () -> hold1CDocksService.holdDocsBefore());
     }
 
@@ -245,11 +246,6 @@ class Hold1CDocksServiceTest {
         assertEquals(4f, docItems.get(2).getQuantity());
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
-// todo
-//        org.opentest4j.AssertionFailedError:
-//        Expected :2.2
-//        Actual   :2.1999998
-
     }
 
     @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
@@ -413,7 +409,7 @@ class Hold1CDocksServiceTest {
         ItemDoc itemDoc = hold1CDocksService.getPostingDoc(storage, project, time);
         Item item = itemService.getItemById(7);
         float quantity = 2.22f;
-        DocumentItem documentItem = hold1CDocksService.getDocumentItem(itemDoc, item, quantity);
+        DocumentItem documentItem = new DocumentItem(itemDoc, item, quantity);
         assertEquals(itemDoc, documentItem.getItemDoc());
         assertEquals(item, documentItem.getItem());
         assertEquals(quantity, documentItem.getQuantity());

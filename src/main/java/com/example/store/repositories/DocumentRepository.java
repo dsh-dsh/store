@@ -15,7 +15,8 @@ import java.util.Optional;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
-    boolean existsByDateTimeBeforeAndIsDeletedAndIsHold(LocalDateTime dateTime, boolean isDeleted, boolean isHold);
+    boolean existsByDateTimeBeforeAndIsDeletedAndIsHold(
+            LocalDateTime dateTime, boolean isDeleted, boolean isHold);
 
     boolean existsByDateTimeAfterAndIsHold(LocalDateTime dateTime, boolean isHold);
 
@@ -23,7 +24,8 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "FROM Document doc " +
             "WHERE (:filter = '' OR doc.docType IN (:types)) " +
             "AND doc.dateTime BETWEEN :start AND :end")
-    List<Document> findByDocInFilter(String filter, Collection<DocumentType> types, LocalDateTime start, LocalDateTime end);
+    List<Document> findByDocInFilter(
+            String filter, Collection<DocumentType> types, LocalDateTime start, LocalDateTime end);
 
     @Query(value = "SELECT number " +
             "FROM document " +
@@ -33,11 +35,18 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             , nativeQuery = true)
     int getLastNumber(String docType);
 
-    List<Document> findByIsHoldAndDateTimeAfter(boolean isHold, LocalDateTime dateTime, Sort sort);
+    List<Document> findByIsHoldAndDateTimeAfter(
+            boolean isHold, LocalDateTime dateTime, Sort sort);
 
-    List<Document> findByIsHoldAndIsDeletedAndDateTimeBefore(boolean isHold, boolean isDeleted, LocalDateTime dateTime, Sort sort);
+    List<Document> findByIsHoldAndIsDeletedAndDateTimeBefore(
+            boolean isHold, boolean isDeleted, LocalDateTime dateTime, Sort sort);
 
-    List<Document> findByIsHoldAndIsDeletedAndDateTimeBetween(boolean isHold, boolean isDeleted, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
+    List<Document> findByIsHoldAndIsDeletedAndDateTimeBetween(
+            boolean isHold, boolean isDeleted, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
+
+    List<Document> findByDocTypeAndIsHoldAndIsDeletedAndDateTimeBetween(
+            DocumentType docType, boolean isHold, boolean isDeleted,
+            LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 
     boolean existsByDateTime(LocalDateTime dateTime);
 

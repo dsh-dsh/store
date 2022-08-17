@@ -79,7 +79,7 @@ public class DocController {
 
     @PostMapping("/hold/serial/{id}")
     public ResponseEntity<Response<String>> serialHoldDocument(@PathVariable int id) {
-        docCrudService.serialHoldDocument(id);
+        docCrudService.serialHoldDocuments(id);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
