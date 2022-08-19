@@ -3,11 +3,13 @@ package com.example.store.services;
 import com.example.store.components.EnvironmentVars;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.Storage;
 import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -35,12 +37,9 @@ class ItemRestServiceTest {
     private StorageService storageService;
     @Autowired
     private EnvironmentVars env;
-
-    @Test
-    void setSettingsTest() {
-        itemRestService.setSettings();
-        assertTrue(itemRestService.isUsingAveragePriceOfLots());
-    }
+    @Autowired
+    @Qualifier("periodAveragePrice")
+    private PropertySetting periodAveragePriceSetting;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -51,8 +50,8 @@ class ItemRestServiceTest {
         env.setPeriodStart();
         Storage storage = storageService.getById(3);
         Item item = itemService.getItemById(7);
-        Map<Item, ItemRestService.RestPriceValue> map
-                = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
+        Map<Item, ItemRestService.RestPriceValue> map = itemRestService
+                .getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(2, map.size());
         assertEquals(6, map.get(item).getRest());
         assertEquals(200, map.get(item).getPrice());
@@ -77,9 +76,15 @@ class ItemRestServiceTest {
     void getRestAndPriceWhenLastPriceTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
-        itemRestService.setUsingAveragePriceOfLots(false);
-        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
-        itemRestService.setUsingAveragePriceOfLots(true);
+
+        int currentAveragePriceSetting = periodAveragePriceSetting.getProperty();
+        periodAveragePriceSetting.setProperty(0);
+
+        ItemRestService.RestPriceValue value = itemRestService
+                .getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+
+        periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
+
         assertEquals(2, value.getRest());
         assertEquals(200, value.getPrice());
     }
@@ -91,8 +96,15 @@ class ItemRestServiceTest {
     void getRestAndPriceWhenAveragePriceTest() {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
-        itemRestService.setUsingAveragePriceOfLots(true);
-        ItemRestService.RestPriceValue value = itemRestService.getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+
+        int currentAveragePriceSetting = periodAveragePriceSetting.getProperty();
+        periodAveragePriceSetting.setProperty(1);
+
+        ItemRestService.RestPriceValue value = itemRestService
+                .getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
+
+        periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
+
         assertEquals(2, value.getRest());
         assertEquals(150, value.getPrice());
     }

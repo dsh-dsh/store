@@ -9,6 +9,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.repositories.SettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,15 @@ public class SettingService {
     private UserService userService;
     @Autowired
     private User systemUser;
+    @Autowired
+    @Qualifier("addRestForHold")
+    private PropertySetting addRestForHoldSetting;
+    @Autowired
+    @Qualifier("periodAveragePrice")
+    private PropertySetting periodAveragePriceSetting;
+    @Autowired
+    @Qualifier("docsAveragePrice")
+    private PropertySetting docsAveragePriceSetting;
 
     public PropertySetting getSettingByType(User user, SettingType type) {
         Optional<PropertySetting> setting = settingRepository.findByUserAndSettingType(user, type);
@@ -60,8 +70,12 @@ public class SettingService {
     }
 
     public void setAddShortageSetting(SettingDTO settingDTO) {
+        setAddShortageSetting(settingDTO.getProperty());
+    }
+
+    public void setAddShortageSetting(int property) {
+        addRestForHoldSetting.setProperty(property);
         SettingType settingType = SettingType.ADD_REST_FOR_HOLD_1C_DOCS;
-        int property = settingDTO.getProperty();
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, property));
         setting.setProperty(property);
@@ -69,8 +83,12 @@ public class SettingService {
     }
 
     public void setAveragePriceForPeriodCloseSetting(SettingDTO settingDTO) {
+        setAveragePriceForPeriodCloseSetting(settingDTO.getProperty());
+    }
+
+    public void setAveragePriceForPeriodCloseSetting(int property) {
+        periodAveragePriceSetting.setProperty(property);
         SettingType settingType = SettingType.PERIOD_AVERAGE_PRICE;
-        int property = settingDTO.getProperty();
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, property));
         setting.setProperty(property);
@@ -78,8 +96,12 @@ public class SettingService {
     }
 
     public void setAveragePriceForDocsSetting(SettingDTO settingDTO) {
+        setAveragePriceForDocsSetting(settingDTO.getProperty());
+    }
+
+    public void setAveragePriceForDocsSetting(int property) {
+        docsAveragePriceSetting.setProperty(property);
         SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
-        int property = settingDTO.getProperty();
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, property));
         setting.setProperty(property);
@@ -116,5 +138,10 @@ public class SettingService {
                 .orElseGet(() -> getSetting(systemUser, settingType, 1));
         UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
         return new Response<>(getSettingDTO(setting, userDTO));
+    }
+
+    public PropertySetting getSystemSetting(SettingType settingType) {
+        return settingRepository.findByUserAndSettingType(systemUser, settingType)
+                .orElseGet(() -> getSetting(systemUser, settingType, 1));
     }
 }

@@ -8,7 +8,6 @@ import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
 import com.example.store.model.dto.StorageDTO;
-import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.LotRepository;
@@ -18,9 +17,9 @@ import com.example.store.utils.Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,17 +48,8 @@ public class ItemRestService {
     @Autowired
     private EnvironmentVars env;
     @Autowired
-    private List<PropertySetting> systemSettings;
-
-    private boolean usingAveragePriceOfLots = true;
-
-    @PostConstruct
-    protected void setSettings() {
-        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.PERIOD_AVERAGE_PRICE);
-        if(setting != null) {
-            usingAveragePriceOfLots = setting.getProperty() == 1;
-        }
-    }
+    @Qualifier("periodAveragePrice")
+    private PropertySetting periodAveragePriceSetting;
 
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
@@ -121,7 +111,9 @@ public class ItemRestService {
 
     protected RestPriceValue getRestAndPriceForClosingPeriod(Item item, Storage storage, LocalDateTime time) {
         float rest = getRestOfItemOnStorage(item, storage, time);
-        float price = usingAveragePriceOfLots? getAveragePriceOfItem(item, storage, time, rest) : getLastPriceOfItem(item, time);
+        float price = periodAveragePriceSetting.getProperty() == 1 ?
+                getAveragePriceOfItem(item, storage, time, rest) :
+                getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
     }
 

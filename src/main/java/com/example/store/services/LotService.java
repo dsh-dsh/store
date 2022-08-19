@@ -6,7 +6,6 @@ import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
@@ -14,9 +13,9 @@ import com.example.store.utils.Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -41,23 +40,13 @@ public class LotService {
     @Autowired
     private EnvironmentVars env;
     @Autowired
-    private List<PropertySetting> systemSettings;
+    @Qualifier("addRestForHold")
+    private PropertySetting addRestForHoldSetting;
+    @Autowired
+    @Qualifier("docsAveragePrice")
+    private PropertySetting docsAveragePriceSetting;
 
-    private boolean addRestForHold1CDocs = true;
-    private boolean usingAveragePriceOfLots = true;
     private boolean is1CDoc = false;
-
-    @PostConstruct
-    protected void setSettings() {
-        PropertySetting restSetting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
-        if(restSetting != null) {
-            addRestForHold1CDocs = restSetting.getProperty() == 1;
-        }
-        PropertySetting averagePriceSetting = PropertySetting.getByType(systemSettings, SettingType.DOCS_AVERAGE_PRICE);
-        if(averagePriceSetting != null) {
-            usingAveragePriceOfLots = averagePriceSetting.getProperty() == 1;
-        }
-    }
 
     public Lot getById(long id) {
         return lotRepository.getById(id);
@@ -125,7 +114,7 @@ public class LotService {
     }
 
     protected void setAveragePrice(DocumentItem docItem, Map<Lot, Float> lotMap) {
-        if(!usingAveragePriceOfLots) return;
+        if(docsAveragePriceSetting.getProperty() == 0) return;
         float averagePrice = ((float) lotMap.entrySet()
                 .stream()
                 .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue())
@@ -135,7 +124,7 @@ public class LotService {
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
         Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
-        if(!is1CDoc || addRestForHold1CDocs) {
+        if(!is1CDoc || addRestForHoldSetting.getProperty() == 1) {
             itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());

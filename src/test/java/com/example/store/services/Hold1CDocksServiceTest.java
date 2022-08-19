@@ -3,15 +3,13 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.TransactionException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
-import com.example.store.model.entities.DocumentItem;
-import com.example.store.model.entities.Item;
-import com.example.store.model.entities.Project;
-import com.example.store.model.entities.Storage;
+import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.repositories.OrderDocRepository;
 import org.junit.jupiter.api.Test;
@@ -19,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -59,6 +58,9 @@ class Hold1CDocksServiceTest {
     private UserService userService;
     @Autowired
     private LotService lotService;
+    @Autowired
+    @Qualifier("addRestForHold")
+    private PropertySetting addRestForHoldSetting;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -67,12 +69,6 @@ class Hold1CDocksServiceTest {
 
     private final Comparator<DocumentItem> documentItemComparator
             = Comparator.comparing(item -> item.getItem().getName());
-
-    @Test
-    void setSettingsTest() {
-        hold1CDocksService.setSettings();
-        assertTrue(hold1CDocksService.isAddRestForHold1CDocs());
-    }
 
     @Test
     void holdDocsBeforeIfDocsNotExistsTest() {
@@ -173,10 +169,10 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
-        boolean holdServiceCurrentValue = hold1CDocksService.isAddRestForHold1CDocs();
-        hold1CDocksService.setAddRestForHold1CDocs(false);
-        boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
-        lotService.setAddRestForHold1CDocs(false);
+
+        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
+        addRestForHoldSetting.setProperty(0);
+
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         assertNull(hold1CDocksService.getPostingDoc());
@@ -185,8 +181,9 @@ class Hold1CDocksServiceTest {
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
         assertEquals(0, postingItems.size());
         assertEquals(4, writeOffItems.size());
-        hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
-        lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+
+        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
@@ -225,18 +222,19 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
-        boolean holdServiceCurrentValue = hold1CDocksService.isAddRestForHold1CDocs();
-        hold1CDocksService.setAddRestForHold1CDocs(true);
-        boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
-        lotService.setAddRestForHold1CDocs(true);
+
+        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
+        addRestForHoldSetting.setProperty(1);
+
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
         assertEquals(5, documents.size());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
-        hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
-        lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+
+        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
@@ -253,10 +251,10 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
-        boolean holdServiceCurrentValue = hold1CDocksService.isAddRestForHold1CDocs();
-        hold1CDocksService.setAddRestForHold1CDocs(true);
-        boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
-        lotService.setAddRestForHold1CDocs(true);
+
+        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
+        addRestForHoldSetting.setProperty(1);
+
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
@@ -270,8 +268,9 @@ class Hold1CDocksServiceTest {
         assertEquals(3f, docItems.get(0).getQuantity());
         assertEquals(2.2f, docItems.get(1).getQuantity());
         assertEquals(4f, docItems.get(2).getQuantity());
-        hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
-        lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+
+        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
@@ -288,10 +287,10 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
-        boolean holdServiceCurrentValue = hold1CDocksService.isAddRestForHold1CDocs();
-        hold1CDocksService.setAddRestForHold1CDocs(false);
-        boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
-        lotService.setAddRestForHold1CDocs(false);
+
+        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
+        addRestForHoldSetting.setProperty(0);
+
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
 
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
@@ -303,8 +302,8 @@ class Hold1CDocksServiceTest {
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
 
-        hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
-        lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
+        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());

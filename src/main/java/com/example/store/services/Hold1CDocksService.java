@@ -7,7 +7,6 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
-import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -15,11 +14,11 @@ import com.example.store.utils.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -64,7 +63,8 @@ public class Hold1CDocksService {
     @Autowired
     private PeriodService periodService;
     @Autowired
-    private List<PropertySetting> systemSettings;
+    @Qualifier("addRestForHold")
+    private PropertySetting addRestForHoldSetting;
     @Autowired
     private User systemUser;
 
@@ -74,16 +74,6 @@ public class Hold1CDocksService {
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
-
-    private boolean addRestForHold1CDocs = true;
-
-    @PostConstruct
-    protected void setSettings() {
-        PropertySetting setting = PropertySetting.getByType(systemSettings, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
-        if(setting != null) {
-            addRestForHold1CDocs = setting.getProperty() == 1;
-        }
-    }
 
     @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
@@ -169,7 +159,7 @@ public class Hold1CDocksService {
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
-        if(addRestForHold1CDocs) {
+        if(addRestForHoldSetting.getProperty() == 1) {
             List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
             postingDoc = createPostingDoc(storage, project, postingItemList, from);
         }
