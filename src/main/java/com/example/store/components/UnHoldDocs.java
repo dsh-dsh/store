@@ -35,6 +35,6 @@ public class UnHoldDocs {
             List<DocumentItem> items = docItemService.getItemsByDoc((ItemDoc) document);
             lotService.removeLots(items);
         }
-        documentService.setHoldAndSave(false, document);
+        documentService.setIsHoldAndSave(false, document);
     }
 }

@@ -853,48 +853,7 @@ class DocumentControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @WithUserDetails(TestService.EXISTING_EMAIL)
-    void hold1CDocsTest() throws Exception {
-        List<Document> docs = documentService.getAllDocuments();
-        docs.forEach(document -> {
-            document.setDateTime(LocalDateTime.now().minusDays(1));
-            documentRepository.save(document);
-        });
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold1c")
-                                .param("id", String.valueOf(TestService.DOC_ID)))
-                .andDo(print())
-                .andExpect(status().isOk());
-        List<Document> documents = documentService.getAllDocuments();
-        assertEquals(7, documents.size());
-        List<Lot> lots = lotRepository.findAll();
-        assertFalse(lots.isEmpty());
-        List<LotMovement> lotMovements = lotMoveRepository.findAll();
-        assertFalse(lotMovements.isEmpty());
-    }
 
-    @Test
-    @WithUserDetails(TestService.EXISTING_EMAIL)
-    void hold1CDocsThenNoDocsTest() throws Exception {
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold1c")
-                                .param("id", String.valueOf(TestService.DOC_ID)))
-                .andDo(print())
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void hold1CDocsUnauthorizedTest() throws Exception {
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold1c")
-                                .param("id", String.valueOf(TestService.DOC_ID)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
 
     @Sql(value = {"/sql/documents/add5DocList.sql",
             "/sql/documents/addOrderDoc.sql",

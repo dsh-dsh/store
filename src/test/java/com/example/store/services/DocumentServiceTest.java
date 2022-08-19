@@ -1,7 +1,6 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
@@ -15,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -111,7 +109,7 @@ class DocumentServiceTest {
     @Test
     void setHoldAndSaveTest() {
         Document document = documentService.getDocumentById(1);
-        documentService.setHoldAndSave(false, document);
+        documentService.setIsHoldAndSave(false, document);
         assertFalse(document.isHold());
     }
 

@@ -57,7 +57,7 @@ public class DocumentService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
     }
 
-    public void setHoldAndSave(boolean hold, Document document) {
+    public void setIsHoldAndSave(boolean hold, Document document) {
         document.setHold(hold);
         documentRepository.save(document);
     }

@@ -177,11 +177,15 @@ public class Hold1CDocksService {
 
     public void holdDocsAndChecksByStoragesAndPeriod() {
         if (postingDoc != null) {
+            postingDoc.setBaseDocument(writeOffDoc);
             holdDocsService.holdDoc(postingDoc);
         }
         if(writeOffDoc != null) {
             holdDocsService.hold1CDoc(writeOffDoc);
-            checks.forEach(check -> documentService.setHoldAndSave(true, check));
+            checks.forEach(check -> {
+                check.setBaseDocument(writeOffDoc);
+                documentService.setIsHoldAndSave(true, check);
+            });
         }
     }
 

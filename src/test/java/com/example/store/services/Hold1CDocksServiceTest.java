@@ -263,6 +263,8 @@ class Hold1CDocksServiceTest {
         List<Document> documents = documentService.getAllDocuments();
         assertEquals(6, documents.size());
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
+        assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(0).getBaseDocument());
+        assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(5).getBaseDocument());
         assertEquals(6, documents.stream().filter(Document::isHold).count());
         List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(5));
         assertEquals(3f, docItems.get(0).getQuantity());
@@ -291,12 +293,16 @@ class Hold1CDocksServiceTest {
         boolean lotServiceCurrentValue = lotService.isAddRestForHold1CDocs();
         lotService.setAddRestForHold1CDocs(false);
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
+
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
+
         List<Document> documents = documentService.getAllDocuments();
+        assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(0).getBaseDocument());
         assertEquals(5, documents.size());
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
+
         hold1CDocksService.setAddRestForHold1CDocs(holdServiceCurrentValue);
         lotService.setAddRestForHold1CDocs(lotServiceCurrentValue);
         hold1CDocksService.setPostingDoc(null);
