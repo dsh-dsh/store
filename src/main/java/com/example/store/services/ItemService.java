@@ -67,20 +67,24 @@ public class ItemService {
         // todo в тесте не добавляется quantities в третьем ингредиенте
     }
 
+    // todo add test case with time 0
     public List<ItemDTOForList> getItemDTOList(long time) {
-        LocalDateTime dateTime = Util.getLocalDateTime(time);
+        LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
         List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
         return items.stream()
                 .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());
     }
 
+    // todo add test case with dateTime null
     protected ItemDTOForList mapToDTOForList(Item item, LocalDateTime dateTime) {
         ItemDTOForList dto = new ItemDTOForList();
         dto.setId(item.getId());
         dto.setName(item.getName());
-        dto.setRestList(itemRestService.getItemRestList(item, dateTime));
-        dto.setPrice(itemRestService.getLastPriceOfItem(item, dateTime));
+        if(dateTime != null) {
+            dto.setRestList(itemRestService.getItemRestList(item, dateTime));
+            dto.setPrice(itemRestService.getLastPriceOfItem(item, dateTime));
+        }
         dto.setParentId(item.getParentId());
         return dto;
     }
