@@ -55,4 +55,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     boolean existsByNumberAndDocTypeAndDateTimeAfter(long number, DocumentType docType, LocalDateTime dateTime);
 
     int deleteByIsDeleted(boolean isDeleted);
+
+    Optional<Document> getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(LocalDateTime dateTime, DocumentType docType, boolean isHold, boolean isDeleted, Sort sort);
 }

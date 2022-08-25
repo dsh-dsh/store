@@ -6,10 +6,7 @@ import com.example.store.services.DocCrudService;
 import com.example.store.services.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/1с")
@@ -21,6 +18,12 @@ public class Document1cController {
     private SchedulerService schedulerService;
 
     // todo add tests
+
+    @GetMapping("/check")
+    public ResponseEntity<Response<String>> checkUnHolden1CDocs() {
+        String firstDate = docCrudService.checkUnHoldenChecks();
+        return ResponseEntity.ok(new Response<>(firstDate));
+    }
 
     @PostMapping("/docs")
     public ResponseEntity<Response<String>> addDocsFrom1CTest(

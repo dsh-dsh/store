@@ -262,4 +262,15 @@ public class DocCrudService extends AbstractDocCrudService {
         DocumentType documentType = DocumentType.getByValue(type);
         return getNextDocumentNumber(documentType);
     }
+
+
+    // todo add tests
+    public String checkUnHoldenChecks() {
+        Optional<Document> document = documentRepository
+                .getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(
+                        env.getPeriodStart(), DocumentType.CHECK_DOC,
+                        false, false,
+                        Sort.by(Constants.DATE_TIME_STRING));
+        return document.map(value -> value.getDateTime().toString().substring(0, 10)).orElse("");
+    }
 }
