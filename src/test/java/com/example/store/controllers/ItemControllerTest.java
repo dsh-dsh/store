@@ -134,6 +134,23 @@ class ItemControllerTest extends TestService {
 
     }
 
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemListWhenNoDateTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[0].id").value(7))
+                .andExpect(jsonPath("$.data.[0].rest_list").doesNotExist())
+                .andExpect(jsonPath("$.data.[1].id").value(8))
+                .andExpect(jsonPath("$.data.[1].rest_list").doesNotExist());
+
+    }
+
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

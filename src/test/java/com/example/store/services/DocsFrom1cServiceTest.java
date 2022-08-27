@@ -48,11 +48,11 @@ class DocsFrom1cServiceTest {
         docDTO.setProject(testService.setProject(3, "Жаровня 3"));
         docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
         docDTO.setIndividual(testService.setIndividualDTO(1, "Иванов"));
-        docDTO.setSupplier(testService.setCompanyDTO(1, "ИП Шипилов М.В."));
+        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
         docDTO.setStorageFrom(testService.setStorageDTO(3, "Жаровня 3"));
         docDTO.setCheckInfo( testService.setCHeckInfo(0, "16.03.22 12:00:12"));
         docDTO.setDocItems(testService.setDocItemDTOList(5));
-        docDTO.setDate("2022-03-16");
+        docDTO.setDate("27.08.22 00:00:00");
 
         docsFrom1cService.addDocument(docDTO);
         List<Document> docs = documentService.getAllDocuments();
@@ -113,6 +113,7 @@ class DocsFrom1cServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getNewTimeTest() {
+        docsFrom1cService.setDocDateTime(null);
         LocalDate date = LocalDate.parse("2022-03-16");
         assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docsFrom1cService.getNewTime(date));
     }

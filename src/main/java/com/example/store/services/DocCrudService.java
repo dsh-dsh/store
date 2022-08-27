@@ -146,7 +146,6 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    // todo add tests
     protected void serialHold(Document document) {
         List<Document> documents = documentRepository
                 .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
@@ -156,7 +155,6 @@ public class DocCrudService extends AbstractDocCrudService {
         documents.forEach(doc -> holdDocsService.holdDocument(doc));
     }
 
-    // todo add tests
     protected void serialUnHold(Document document) {
         List<Document> documents = documentRepository
                 .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
@@ -229,6 +227,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transactional
     public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
+        docsFrom1cService.setDocDateTime(null);
         itemDocListRequestDTO.getCheckDTOList()
                 .forEach(docsFrom1cService::addDocument);
     }
@@ -263,8 +262,6 @@ public class DocCrudService extends AbstractDocCrudService {
         return getNextDocumentNumber(documentType);
     }
 
-
-    // todo add tests
     public String checkUnHoldenChecks() {
         Optional<Document> document = documentRepository
                 .getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(

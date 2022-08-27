@@ -17,8 +17,6 @@ public class Document1cController {
     @Autowired
     private SchedulerService schedulerService;
 
-    // todo add tests
-
     @GetMapping("/check")
     public ResponseEntity<Response<String>> checkUnHolden1CDocs() {
         String firstDate = docCrudService.checkUnHoldenChecks();
@@ -26,7 +24,7 @@ public class Document1cController {
     }
 
     @PostMapping("/docs")
-    public ResponseEntity<Response<String>> addDocsFrom1CTest(
+    public ResponseEntity<Response<String>> addDocsFrom1C(
             @RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
         docCrudService.addDocsFrom1C(itemDocListRequestDTO);
         return ResponseEntity.ok(new Response<>("ok"));

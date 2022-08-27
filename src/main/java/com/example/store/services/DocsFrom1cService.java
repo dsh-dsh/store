@@ -60,7 +60,7 @@ public class DocsFrom1cService {
         document.setDateTime(getNewTime(Util.getLocalDate(docDTO.getDate())));
         document.setProject(projectService.getByName(docDTO.getProject().getName()));
         document.setAuthor(userService.getByName(docDTO.getAuthor().getName()));
-        document.setSupplier(companyService.getByName(docDTO.getSupplier().getName()));
+        document.setSupplier(companyService.getByInn(docDTO.getSupplier().getInn()));
         document.setIndividual(userService.getByName(docDTO.getIndividual().getName()));
         document.setDocType(docType);
 

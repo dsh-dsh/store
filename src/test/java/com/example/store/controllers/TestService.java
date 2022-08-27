@@ -137,6 +137,12 @@ public class TestService {
         return companyDTO;
     }
 
+    public CompanyDTO setCompanyDTO(long inn) {
+        CompanyDTO companyDTO = new CompanyDTO();
+        companyDTO.setInn(inn);
+        return companyDTO;
+    }
+
     public StorageDTO setStorageDTO(int id) {
         StorageDTO storageDTO = new StorageDTO();
         storageDTO.setId(id);

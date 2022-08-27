@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,6 +44,8 @@ class PeriodServiceTest {
     private DocumentService documentService;
     @Autowired
     private EnvironmentVars env;
+    @Autowired
+    private ItemService itemService;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
@@ -86,7 +89,10 @@ class PeriodServiceTest {
             "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @Transactional
     void closePeriodForStorage3Test() {
+        Item frenchFries = itemService.getItemById(7);
+        Item flour = itemService.getItemById(8);
         env.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
@@ -94,7 +100,10 @@ class PeriodServiceTest {
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-02").atStartOfDay());
         assertEquals(2, itemRestMap.size());
-        // todo assert quantity (after period close)
+        assertEquals(12.0f, itemRestMap.get(frenchFries).getRest());
+        assertEquals(200.0f, itemRestMap.get(frenchFries).getPrice());
+        assertEquals(14.0f, itemRestMap.get(flour).getRest());
+        assertEquals(100.0f, itemRestMap.get(flour).getPrice());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",

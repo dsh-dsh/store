@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -92,6 +93,45 @@ class ItemServiceTest extends TestService {
         List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
         assertEquals(3, ingredients.size());
         // todo в тесте не добавляется quantities в новом ингредиенте quantities из нового ингредиента добавляются в старый, хотя через браузер все работает
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void mapToDTOForListRestExistsTest() {
+        Item item = itemService.getItemById(7);
+        ItemDTOForList dto = itemService.mapToDTOForList(item, LocalDate.parse("2022-03-17").atStartOfDay());
+        assertEquals(7, dto.getId());
+        assertEquals(2, dto.getParentId());
+        assertEquals(4, dto.getRestList().size());
+        assertEquals(200.00f, dto.getPrice());
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void mapToDTOForListTest() {
+        Item item = itemService.getItemById(7);
+        ItemDTOForList dto = itemService.mapToDTOForList(item, LocalDate.parse("2022-03-15").atStartOfDay());
+        assertEquals(7, dto.getId());
+        assertEquals(2, dto.getParentId());
+        assertEquals(0, dto.getRestList().get(0).getQuantity());
+        assertEquals(0, dto.getPrice());
+    }
+
+    @Test
+    @Transactional
+    void mapToDTOForListWhenDateIsNullTest() {
+        Item item = itemService.getItemById(7);
+        ItemDTOForList dto = itemService.mapToDTOForList(item, null);
+        assertEquals(7, dto.getId());
+        assertEquals(2, dto.getParentId());
+        assertNull(dto.getRestList());
+        assertEquals(0, dto.getPrice());
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

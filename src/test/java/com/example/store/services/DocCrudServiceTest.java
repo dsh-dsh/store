@@ -143,9 +143,8 @@ class DocCrudServiceTest {
     @Test
     void checkingFogUnHoldenChecksTest() {
         List<Document> docs = documentService.getAllDocuments();
-        List<Document> finalDocs = docs;
         BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> docCrudService.checkingFogUnHoldenChecks(finalDocs));
+                () -> docCrudService.checkingFogUnHoldenChecks(docs));
         assertEquals(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE, exception.getMessage());
     }
 
@@ -220,6 +219,20 @@ class DocCrudServiceTest {
         Sort sort = Sort.by(Constants.DATE_TIME_STRING);
         boolean next = false;
         assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getDocTime(docDate, sort, next));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkUnHoldenChecksTest() {
+        assertEquals("", docCrudService.checkUnHoldenChecks());
+    }
+
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkUnHoldenChecksExistsTest() {
+        assertEquals("2022-04-16", docCrudService.checkUnHoldenChecks());
     }
 
 }

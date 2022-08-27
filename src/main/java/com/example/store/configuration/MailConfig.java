@@ -17,8 +17,8 @@ public class MailConfig {
     @Value("${spring.mail.from.email}")
     private String fromEmail;
 
-    @Value("${spring.mail.password}")
-    private String password;
+//    @Value("${spring.mail.password}")
+    private String password = "WLbazdt6huqnntZGPBeB"; // todo move to env vars
 
     @Value("${spring.mail.port}")
     private int port;

@@ -31,6 +31,11 @@ public class CompanyService {
                 .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, name)));
     }
 
+    public Company getByInn(long inn) {
+        return companyRepository.findByInn(inn)
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, inn)));
+    }
+
     public List<CompanyDTO> getCompanyDTOList() {
         return companyRepository.findAll().stream()
                 .map(this::mapToDTO)
