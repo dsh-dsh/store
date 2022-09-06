@@ -2,7 +2,6 @@ package com.example.store.repositories;
 
 import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +16,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     Item getByName(String name);
 
     Optional<Item> findByNumber(int number);
+
+    Item getByNumber(int number);
 
     @Query(value = "select * from item where parent_id in (:ids) order by name", nativeQuery = true)
     List<Item> findByParentIds(List<Integer> ids);

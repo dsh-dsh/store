@@ -56,5 +56,17 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     int deleteByIsDeleted(boolean isDeleted);
 
-    Optional<Document> getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(LocalDateTime dateTime, DocumentType docType, boolean isHold, boolean isDeleted, Sort sort);
+    Optional<Document> getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(
+            LocalDateTime dateTime, DocumentType docType,
+            boolean isHold, boolean isDeleted, Sort sort);
+
+    @Query(value = "SELECT * " +
+            "FROM document " +
+            "WHERE date_time > :dateTime " +
+            "AND number >= :from AND number < :to " +
+            "ORDER BY date_time DESC " +
+            "LIMIT 1",
+            nativeQuery = true)
+    Optional<Document> getLast1CDocNumber(long from, long to, LocalDateTime dateTime);
+
 }

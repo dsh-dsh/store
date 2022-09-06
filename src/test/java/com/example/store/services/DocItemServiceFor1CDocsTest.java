@@ -62,7 +62,7 @@ class DocItemServiceFor1CDocsTest {
         DocItemDTO dto = getDocItemDTO(5, 1, 180, 18);
         BadRequestException exception = assertThrows(BadRequestException.class,
             () -> service.createDocItem(dto, doc));
-        assertEquals(Constants.NO_SUCH_ITEM_MESSAGE, exception.getMessage());
+        assertEquals(String.format(Constants.NO_SUCH_CODE_ITEM_MESSAGE, 5), exception.getMessage());
     }
 
     public DocItemDTO getDocItemDTO(int itemId, float quantity, float price, float discount) {

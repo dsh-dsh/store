@@ -71,7 +71,7 @@ class Document1CControllerTest {
     @Autowired
     private DocItemService docItemService;
 
-    private static final String URL_PREFIX = "/api/v1/1с";
+    private static final String URL_PREFIX = "/api/v1/1c";
 
     @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

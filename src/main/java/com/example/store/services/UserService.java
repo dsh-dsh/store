@@ -37,6 +37,11 @@ public class UserService {
         return personMapper.mapToPersonDTO(user);
     }
 
+    public User getByCode(int code) {
+        return userRepository.findByCode(code)
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, code)));
+    }
+
     public User getByName(String name) {
         return userRepository.findByLastNameStartingWithIgnoreCase(name)
                 .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, name)));

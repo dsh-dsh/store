@@ -103,7 +103,12 @@ public class ItemService {
     }
 
     public Item getItemById(int id) {
-        return itemRepository.getById(id);
+        return itemRepository.getById(id); // todo может здесь нужно .orElseThrow
+    }
+
+    public Item getItemByNumber(int number) {
+        return itemRepository.findByNumber(number)
+                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_INGREDIENT_MESSAGE, number)));
     }
 
     public Optional<Item> findItemByNumber(int number) {

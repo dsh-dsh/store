@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/1с")
+@RequestMapping("/api/v1/1c")
 public class Document1cController {
 
     @Autowired
@@ -21,6 +21,14 @@ public class Document1cController {
     public ResponseEntity<Response<String>> checkUnHolden1CDocs() {
         String firstDate = docCrudService.checkUnHoldenChecks();
         return ResponseEntity.ok(new Response<>(firstDate));
+    }
+
+    // todo add test
+    @GetMapping("/last/doc")
+    public ResponseEntity<Response<String>> getLast1CDocNumber(
+            @RequestParam(defaultValue = "") int prefix) {
+        String strDoc = docCrudService.getLastCheckNumber(prefix);
+        return ResponseEntity.ok(new Response<>(strDoc));
     }
 
     @PostMapping("/docs")

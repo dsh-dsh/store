@@ -1,0 +1,1 @@
+alter table users add code integer default 1;

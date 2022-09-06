@@ -24,6 +24,8 @@ public class User implements EntityInterface{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private int code;
+
     private String firstName;
 
     private String lastName;

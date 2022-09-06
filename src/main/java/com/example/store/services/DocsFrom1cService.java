@@ -45,6 +45,8 @@ public class DocsFrom1cService {
 
     private LocalDateTime docDateTime;
 
+    // todo update tests
+
     public void addDocument(DocDTO docDTO) {
         DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
         if(isDocNumberExists(docDTO.getNumber(), docType)) return;
@@ -61,7 +63,6 @@ public class DocsFrom1cService {
         document.setProject(projectService.getByName(docDTO.getProject().getName()));
         document.setAuthor(userService.getByName(docDTO.getAuthor().getName()));
         document.setSupplier(companyService.getByInn(docDTO.getSupplier().getInn()));
-        document.setIndividual(userService.getByName(docDTO.getIndividual().getName()));
         document.setDocType(docType);
 
         if(docType == DocumentType.CHECK_DOC) {
@@ -74,6 +75,7 @@ public class DocsFrom1cService {
             OrderDoc orderDoc = (OrderDoc) document;
             orderDoc.setAmount(docDTO.getAmount());
             orderDoc.setTax(docDTO.getTax());
+            document.setIndividual(userService.getByCode(docDTO.getIndividual().getCode()));
             orderDocRepository.save((OrderDoc) document);
         }
     }
@@ -89,6 +91,11 @@ public class DocsFrom1cService {
     }
 
     protected LocalDateTime getNewTime(LocalDate docDate) {
+        // todo update tests
+        if(this.docDateTime != null && !docDate.equals(this.docDateTime.toLocalDate())) {
+            this.docDateTime = null;
+        }
+        //
         if(this.docDateTime == null) {
             this.docDateTime = getLastDocTime(docDate).plus(1, ChronoUnit.MILLIS);
         } else {

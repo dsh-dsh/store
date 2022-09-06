@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByLastNameStartingWithIgnoreCase(String email);
 
+    Optional<User> findByCode(int code);
+
     List<User> findByEmailNotLike(String email, Sort sort);
 
 }

@@ -26,4 +26,12 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/1c/login")
+    public ResponseEntity<Response<String>> login1C(@RequestBody AuthUserRequest authUserRequest) {
+        String token = "<" + authService.login(authUserRequest).getToken() + ">";
+        Response<String> response = new Response<>(token);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

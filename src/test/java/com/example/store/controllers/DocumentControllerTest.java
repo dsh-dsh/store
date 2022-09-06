@@ -77,8 +77,6 @@ class DocumentControllerTest {
     @Autowired
     private EnvironmentVars env;
 
-    // todo add fields validation tests
-
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)

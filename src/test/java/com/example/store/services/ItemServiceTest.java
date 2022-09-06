@@ -166,7 +166,7 @@ class ItemServiceTest extends TestService {
     void findItemByNumberTest() {
         Optional<Item> item = itemService.findItemByNumber(3611);
         assertTrue(item.isPresent());
-        assertEquals("Cуп лапша (1)", item.get().getName());
+        assertEquals(4, item.get().getId());
     }
 
     @Sql(value = "/sql/items/addNewItem.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

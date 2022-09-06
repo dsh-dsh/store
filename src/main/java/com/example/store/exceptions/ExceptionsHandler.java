@@ -31,8 +31,9 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex) {
 
-        mailService.send(toEmail, Constants.ERROR_SUBJECT,
-                ex.getExceptionType().getValue() + ex.getMessage());
+//        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+//                ex.getExceptionType().getValue() + ex.getMessage());
+        System.out.println(ex.getMessage());
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
                         ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
@@ -42,7 +43,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleTransactionException(
             TransactionException ex) {
 
-        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+//        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+        System.out.println(ex.getMessage());
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
