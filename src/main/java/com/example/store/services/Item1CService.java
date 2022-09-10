@@ -29,9 +29,23 @@ public class Item1CService extends ItemService{
         List<Item1CDTO> dtoList = itemList1CRequestDTO.getItem1CDTOList();
         dtoList.sort(Comparator.comparing(Item1CDTO::getNumber));
 
+        addRootItems(dtoList);
+
         setItemsRecursive(new ArrayList<>(dtoList));
 
         dtoList.forEach(this::setIngredientsAndSets);
+    }
+
+    // todo add test
+    protected void addRootItems(List<Item1CDTO> dtoList) {
+        dtoList.stream().filter(dto -> dto.getParentNumber() == 0).forEach(this::setItem);
+        setNullParentIdFieldsToIntNullInDB();
+    }
+
+    // todo add test
+    private void setNullParentIdFieldsToIntNullInDB() {
+        List<Item> items = itemRepository.findByParent(null);
+        items.forEach(item -> itemRepository.setParentIdNotNull(item.getId()));
     }
 
     private void setItemsRecursive(List<Item1CDTO> dtoList) {
@@ -66,10 +80,12 @@ public class Item1CService extends ItemService{
     }
 
     public void setNewItem(Item1CDTO item1CDTO) {
-        Item parent = findItemByNumber(item1CDTO.getParentNumber())
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
         Item item = itemMapper.mapToItem(item1CDTO);
-        item.setParent(parent);
+        if(item1CDTO.getParentNumber() > 0) {
+            Item parent = findItemByNumber(item1CDTO.getParentNumber())
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+            item.setParent(parent);
+        }
         itemRepository.save(item);
         priceService.addPrices(item, item1CDTO);
     }
@@ -98,9 +114,11 @@ public class Item1CService extends ItemService{
         item.setIncludeSauce(dto.isIncludeSauce());
         item.setWorkshop(Workshop.valueOf(dto.getWorkshop().getCode()));
         item.setUnit(Unit.valueOf(dto.getUnit().getCode()));
-        Item parent = findItemByNumber(((Item1CDTO)dto).getParentNumber())
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
-        item.setParent(parent);
+        if(((Item1CDTO)dto).getParentNumber() > 0) {
+            Item parent = findItemByNumber(((Item1CDTO)dto).getParentNumber())
+                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+            item.setParent(parent);
+        }
     }
 
 }

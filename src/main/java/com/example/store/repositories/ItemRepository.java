@@ -3,8 +3,10 @@ package com.example.store.repositories;
 import com.example.store.model.projections.ItemDTOForListInterface;
 import com.example.store.model.entities.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,5 +32,12 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     @Query(value = "select i.id, i.name, i.parent_id as parentId from item as i", nativeQuery = true)
     List<ItemDTOForListInterface> getItemDTOList();
+
+    List<Item> findByParent(Item item);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update item set parent_id = 0 where id = :itemId", nativeQuery = true)
+    void setParentIdNotNull(int itemId);
 
 }
