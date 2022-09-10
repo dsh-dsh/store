@@ -82,6 +82,6 @@ public class MappingConverters {
 
     private Item getItem(int itemId) {
         if(itemId == 0) return null;
-        return itemService.getItemById(itemId);
+        return itemService.findItemById(itemId);
     }
 }

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,7 +72,24 @@ class Item1CControllerTest extends TestService {
                 .andExpect(status().isOk());
 
         List<Item> items = itemRepository.findAll();
-        assertEquals(16 , items.size());
+        assertEquals(19 , items.size());
+        Item item = itemRepository.getByNumber(17);
+        assertEquals(0, itemRepository.findByParent(null).size());
+    }
+
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setItemsFrom1CUnauthorizedTest() throws Exception {
+
+        ItemList1CRequestDTO itemList1CRequestDTO = new ItemList1CRequestDTO();
+        itemList1CRequestDTO.setItem1CDTOList(getItemDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(itemList1CRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
     private List<Item1CDTO> getItemDTOList() {
@@ -90,6 +108,9 @@ class Item1CControllerTest extends TestService {
                         180.00f, 220.00f)));
         list.add(getItemDTO(15, 11, "Ингредиент 1", List.of()));
         list.add(getItemDTO(16, 11, "Ингредиент 2", List.of()));
+        list.add(getItemDTO(18, 17, "Рецепт 1", List.of()));
+        list.add(getItemDTO(17, 0, "Рецепты", List.of()));
+        list.add(getItemDTO(19, 17, "Рецепт 2", List.of()));
         return list;
     }
 

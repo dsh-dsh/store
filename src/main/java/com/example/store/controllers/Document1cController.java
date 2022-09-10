@@ -23,7 +23,6 @@ public class Document1cController {
         return ResponseEntity.ok(new Response<>(firstDate));
     }
 
-    // todo add test
     @GetMapping("/last/doc")
     public ResponseEntity<Response<String>> getLast1CDocNumber(
             @RequestParam(defaultValue = "") int prefix) {

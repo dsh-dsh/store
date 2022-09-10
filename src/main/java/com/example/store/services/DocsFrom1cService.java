@@ -45,8 +45,6 @@ public class DocsFrom1cService {
 
     private LocalDateTime docDateTime;
 
-    // todo update tests
-
     public void addDocument(DocDTO docDTO) {
         DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
         if(isDocNumberExists(docDTO.getNumber(), docType)) return;
@@ -91,7 +89,6 @@ public class DocsFrom1cService {
     }
 
     protected LocalDateTime getNewTime(LocalDate docDate) {
-        // todo update tests
         if(this.docDateTime != null && !docDate.equals(this.docDateTime.toLocalDate())) {
             this.docDateTime = null;
         }

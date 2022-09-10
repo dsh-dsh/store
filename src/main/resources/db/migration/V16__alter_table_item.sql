@@ -1,0 +1,1 @@
+ALTER TABLE item MODIFY COLUMN  parent_id integer default 0;

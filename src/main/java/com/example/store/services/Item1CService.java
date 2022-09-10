@@ -36,14 +36,12 @@ public class Item1CService extends ItemService{
         dtoList.forEach(this::setIngredientsAndSets);
     }
 
-    // todo add test
     protected void addRootItems(List<Item1CDTO> dtoList) {
         dtoList.stream().filter(dto -> dto.getParentNumber() == 0).forEach(this::setItem);
         setNullParentIdFieldsToIntNullInDB();
     }
 
-    // todo add test
-    private void setNullParentIdFieldsToIntNullInDB() {
+    protected void setNullParentIdFieldsToIntNullInDB() {
         List<Item> items = itemRepository.findByParent(null);
         items.forEach(item -> itemRepository.setParentIdNotNull(item.getId()));
     }

@@ -8,6 +8,7 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
+import com.example.store.repositories.ItemRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties =
@@ -37,6 +39,8 @@ class Item1CServiceTest extends TestService {
     private Item1CService item1CService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private ItemRepository itemRepository;
 
     private static final int NUMBER = 444;
     private static final int PARENT_NUMBER = 3;
@@ -46,6 +50,31 @@ class Item1CServiceTest extends TestService {
     private static final long PRICE_DATE = 1648760400000L; // 2022-04-01
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addRootItemsTest() {
+        List<Item1CDTO> list = new ArrayList<>();
+        list.add(getItemDTO(10, 0, "Рецепты1", List.of()));
+        list.add(getItemDTO(11, 0, "Рецепты2", List.of()));
+        list.add(getItemDTO(12, 0, "Рецепты3", List.of()));
+
+        item1CService.addRootItems(list);
+
+        List<Item> items = itemRepository.findByIntNullParent();
+        assertEquals(5, items.size());
+    }
+
+    @Sql(value = "/sql/items/addNewItemWithNullParent.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setNullParentIdFieldsToIntNullInDBTest() {
+
+        item1CService.setNullParentIdFieldsToIntNullInDB();
+
+        List<Item> items = itemRepository.findByIntNullParent();
+        assertEquals(3, items.size());
+    }
 
     @Sql(value = "/sql/items/deleteNewItem.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -72,6 +101,24 @@ class Item1CServiceTest extends TestService {
         assertEquals(5, itemOptional.get().getPrices().size());
     }
 
+    @Test
+    void updateItemFieldsWhenParentNumberExistsTest() {
+        Item1CDTO dto = getItemDTO(PRICE_DATE);
+        Item item = new Item();
+        item1CService.updateItemFields(item, dto);
+        assertNotNull(item.getParent());
+    }
+
+    @Test
+    void updateItemFieldsWhenParentNumberNotExistsTest() {
+        Item1CDTO dto = getItemDTO(PRICE_DATE);
+        dto.setParentNumber(0);
+        Item item = new Item();
+        item1CService.updateItemFields(item, dto);
+        assertNull(item.getParent());
+    }
+
+
     Item1CDTO getItemDTO(long date) {
 
         PriceDTO retailPrice = PriceDTO.builder()
@@ -95,6 +142,19 @@ class Item1CServiceTest extends TestService {
         dto.setNumber(NUMBER);
         dto.setParentNumber(PARENT_NUMBER);
 
+        return dto;
+    }
+
+    private Item1CDTO getItemDTO(int number, int parentNumber, String name, List<PriceDTO> prices) {
+        Item1CDTO dto = new Item1CDTO();
+        dto.setName(name);
+        dto.setPrintName(name);
+        dto.setRegTime(Instant.now().toEpochMilli());
+        dto.setUnit(getUnitDTO(Unit.KG));
+        dto.setWorkshop(getWorkshopDTO(Workshop.BAR));
+        dto.setPrices(prices);
+        dto.setNumber(number);
+        dto.setParentNumber(parentNumber);
         return dto;
     }
 }

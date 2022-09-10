@@ -182,6 +182,7 @@ class ItemControllerTest extends TestService {
                 .andExpect(status().isUnauthorized());
 
     }
+
     @Sql(value = "/sql/hold1CDocs/addIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -196,6 +197,21 @@ class ItemControllerTest extends TestService {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.ingredients").isArray())
                 .andExpect(jsonPath("$.data.item_name").isString());
+
+    }
+
+    @Sql(value = "/sql/hold1CDocs/addIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemCalculationWhenItemDoesNotExistsTest() throws Exception{
+        String date = String.valueOf(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/calculation")
+                                .param("date", date)
+                                .param("id", String.valueOf(20)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
 
     }
 

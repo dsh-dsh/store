@@ -124,6 +124,12 @@ public class TestService {
         return individualDTO;
     }
 
+    public UserDTO setIndividualDTO(int id, int code) {
+        UserDTO individualDTO = new UserDTO();
+        individualDTO.setCode(code);
+        return individualDTO;
+    }
+
     public CompanyDTO setCompanyDTO(int id) {
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(id);

@@ -35,6 +35,9 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     List<Item> findByParent(Item item);
 
+    @Query(value = "select * from item where parent_id = 0", nativeQuery = true)
+    List<Item> findByIntNullParent();
+
     @Transactional
     @Modifying
     @Query(value = "update item set parent_id = 0 where id = :itemId", nativeQuery = true)

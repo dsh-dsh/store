@@ -6,6 +6,7 @@ import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,6 +67,56 @@ class DocsFrom1cServiceTest {
 
     }
 
+    @Sql(value = "/sql/users/addNotUserWithCode46.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/documents/after.sql",
+            "/sql/users/deleteUserCode46.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addDocumentWhenOrderDocTest() {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        docDTO.setProject(testService.setProject(3, "Жаровня 3"));
+        docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
+        docDTO.setIndividual(testService.setIndividualDTO(1, 46));
+        docDTO.setDate("27.08.22 00:00:00");
+        docDTO.setAmount(120f);
+        docDTO.setTax(12f);
+        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+
+        docsFrom1cService.addDocument(docDTO);
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(1, docs.size());
+        OrderDoc orderDoc = (OrderDoc) docs.get(0);
+        assertEquals(DocumentType.CREDIT_ORDER_DOC, orderDoc.getDocType());
+        assertEquals(120f, orderDoc.getAmount());
+
+    }
+
+    @Sql(value = {"/sql/users/addNotUserWithCode46.sql",
+            "/sql/documents/addOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/documents/after.sql",
+            "/sql/users/deleteUserCode46.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void skipAddDocumentWhenDocWithNumberExistsTest() {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.CREDIT_ORDER_DOC);
+        docDTO.setNumber(6L);
+        docDTO.setProject(testService.setProject(3, "Жаровня 3"));
+        docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
+        docDTO.setIndividual(testService.setIndividualDTO(1, 46));
+        docDTO.setDate("27.08.22 00:00:00");
+        docDTO.setAmount(120f);
+        docDTO.setTax(12f);
+        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+
+        docsFrom1cService.addDocument(docDTO);
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(1, docs.size());
+        OrderDoc orderDoc = (OrderDoc) docs.get(0);
+        assertEquals(DocumentType.CREDIT_ORDER_DOC, orderDoc.getDocType());
+        assertEquals(6L, orderDoc.getNumber());
+
+    }
+
     @Sql(value = "/sql/documents/addCheckDocOnly.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -116,6 +167,15 @@ class DocsFrom1cServiceTest {
         docsFrom1cService.setDocDateTime(null);
         LocalDate date = LocalDate.parse("2022-03-16");
         assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docsFrom1cService.getNewTime(date));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNewTimeWhenNextDateTest() {
+        LocalDate date = LocalDate.parse("2022-03-17");
+        docsFrom1cService.setDocDateTime(LocalDateTime.parse("2022-03-16T11:30:36.596"));
+        assertEquals(LocalDateTime.parse("2022-03-17T01:00:00.001"), docsFrom1cService.getNewTime(date));
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

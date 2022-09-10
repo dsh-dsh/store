@@ -35,7 +35,7 @@ public class DocItemService {
     protected DocumentItem createDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);
-        item.setItem(itemService.getItemById(docItemDTO.getItemId()));
+        item.setItem(itemService.findItemById(docItemDTO.getItemId()));
         item.setQuantity(Util.floorValue(docItemDTO.getQuantity(), 1000));
         item.setQuantityFact(Util.floorValue(docItemDTO.getQuantityFact(), 1000));
         item.setPrice(docItemDTO.getPrice());

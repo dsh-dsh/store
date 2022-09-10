@@ -102,8 +102,13 @@ public class ItemService {
         item.setParent(findItemById(dto.getParentId()));
     }
 
+    public Item findItemById(int id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+    }
+
     public Item getItemById(int id) {
-        return itemRepository.getById(id); // todo может здесь нужно .orElseThrow
+        return itemRepository.getById(id);
     }
 
     public Item getItemByNumber(int number) {
@@ -134,11 +139,6 @@ public class ItemService {
         item.setDeleted(true);
         itemRepository.save(item);
         ingredientService.softDeleteIngredients(item, LocalDate.now());
-    }
-
-    public Item findItemById(int id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
     public Item getParent(Item child) {

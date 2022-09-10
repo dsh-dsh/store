@@ -39,8 +39,8 @@ public class Ingredient1CService extends IngredientService {
 
     @Override
     public void setIngredient(Item item, IngredientDTO dto) {
-        Ingredient ingredient = ingredientMapper.mapToEntity(dto); // todo переделать в метод
-        ingredient.setChild(itemService.getItemByNumber(dto.getChildId())); // todo переделать в метод
+        Ingredient ingredient = ingredientMapper.mapToEntity(dto);
+        ingredient.setChild(itemService.getItemByNumber(dto.getChildId()));
         ingredient.setParent(item);
         ingredientRepository.save(ingredient);
         periodicValue1CService.setQuantities(ingredient, dto);

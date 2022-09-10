@@ -27,8 +27,8 @@ public class CalculationService {
     @Autowired
     private PeriodicValueService periodicValueService;
 
-    public CalculationDTO getCalculation(int itenId, long longDate) {
-        Item item = itemService.getItemById(itenId);
+    public CalculationDTO getCalculation(int itemId, long longDate) {
+        Item item = itemService.findItemById(itemId);
         LocalDate date = Util.getLocalDate(longDate);
         return getCalculationDTO(item, date);
     }

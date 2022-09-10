@@ -105,6 +105,28 @@ class Document1CControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getLast1CDocNumberTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/last/doc")
+                                .param("prefix", "3"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("<3000000003>CHECK_DOC*"));
+    }
+
+    @Test
+    void getLast1CDocNumberUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/last/doc")
+                                .param("prefix", "3"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -198,18 +220,5 @@ class Document1CControllerTest {
         }
         return list;
     }
-//    {"id": 0,"number":2000000025,"date":"27.08.22 00:00:00",
-//            "doc_type":"×åê ÊÊÌ","is_payed":true,"is_hold":false,
-//            "is_deleted":false,"is_delivery":false,
-//        "author":{"id":0,"name":"Àäìèíèñòðàòîð"},
-//        "project":{"id":0,"name":"Æàðîâíÿ 3"},
-//        "storage_from":{"id":0,"name":"Æàðîâíÿ 4"},
-//        "individual":{"id":0,"name":"Øèïèëîâ Ä.Ì."},
-//        "supplier":{"id":0,"name":"ÈÏ Øèïèëîâ Ì.Â.","inn":2309006080},
-//        "check_info":{"waiter":"","check_number":0,"cash_register_number":123456789,
-//            "amount_received":0,"guest_number":0,"table_number":0,"time":"27.08.22 16:16:07",
-//            "is_return":false,"is_KKM_checked":true,"is_payed":true,"is_payed_by_card":false,
-//            "is_delivery":false}
-//        ,"doc_items": [{"quantity":"1","amount":180,"price":180,"discount":0,
-//            "document_id":2000000025,"item_id":3601,"item_name":"Áîðù (1)"}]}
+
 }

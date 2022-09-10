@@ -77,4 +77,51 @@ class AuthControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void getTokenWithRightCredentialsTest() throws Exception{
+
+        AuthUserRequest request = new AuthUserRequest();
+        request.setLogin("admin@mail.ru");
+        request.setPassword("12345678");
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data").isString());
+    }
+
+    @Test
+    void getTokenWithWrongCredentialsTest() throws Exception{
+
+        AuthUserRequest request = new AuthUserRequest();
+        request.setLogin("customer@mail.ru");
+        request.setPassword("wrongPassword");
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void getTokenWithNoSuchUserTest() throws Exception{
+
+        AuthUserRequest request = new AuthUserRequest();
+        request.setLogin("no_such@user.ru");
+        request.setPassword("password");
+
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }
