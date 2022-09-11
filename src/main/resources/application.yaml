@@ -28,8 +28,6 @@ our.company.id : 1
 
 cors.urls : http://localhost:8082
 
-item.directories : [3]
-
 spring.mail.to.email : daniilshipilov@yandex.ru
 
 spring.mail.host : smtp.mail.ru
@@ -39,3 +37,5 @@ spring.mail.port : 465
 spring.mail.protocol : smtps
 spring.mail.properties.mail.smtp.auth : true
 spring.mail.debug : false
+
+item.directories : 1998, 1990

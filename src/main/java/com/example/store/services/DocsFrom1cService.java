@@ -50,7 +50,7 @@ public class DocsFrom1cService {
         if(isDocNumberExists(docDTO.getNumber(), docType)) return;
 
         Document document;
-        if(docType == DocumentType.CHECK_DOC) {
+        if(docType == DocumentType.CHECK_DOC || docType == DocumentType.INVENTORY_DOC) {
             document = new ItemDoc();
         } else {
             document = new OrderDoc();
@@ -68,6 +68,11 @@ public class DocsFrom1cService {
             itemDoc.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
             itemDocRepository.save(itemDoc);
             checkInfoServiceFor1CDock.addCheckInfo(docDTO.getCheckInfo(), itemDoc);
+            addDocItems(docDTO, itemDoc);
+        } else if(docType == DocumentType.INVENTORY_DOC) {
+            ItemDoc itemDoc = (ItemDoc) document;
+            itemDoc.setStorageFrom(storageService.getByName(docDTO.getStorageFrom().getName()));
+            itemDocRepository.save(itemDoc);
             addDocItems(docDTO, itemDoc);
         } else {
             OrderDoc orderDoc = (OrderDoc) document;

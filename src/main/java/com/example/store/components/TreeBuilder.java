@@ -17,12 +17,11 @@ public class TreeBuilder <E extends EntityInterface>{
     private ItemMapper itemMapper;
 
     private ItemDTOForTree[] itemArray;
-    private List<ItemDTOForTree> itemList;
 
     public List<ItemDTOForTree> getItemTree(List<E> list) {
         fillItemArray(list);
         fillChildren();
-        itemList = Arrays.stream(itemArray)
+        List<ItemDTOForTree> itemList = Arrays.stream(itemArray)
                 .filter(Objects::nonNull)
                 .filter(dto -> dto.getParentId() == 0).collect(Collectors.toList());
         setKeys(itemList, "");

@@ -24,10 +24,17 @@ public class DocItemMapper {
                     return (docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount();
             };
 
+    private static final Converter<DocumentItem, Float> amountFactConverter =
+            item -> {
+                DocumentItem docItem = item.getSource();
+                return docItem.getQuantityFact() * docItem.getPrice();
+            };
+
     public DocItemMapper() {
         this.modelMapper = new ModelMapper();
         this.modelMapper.createTypeMap(DocumentItem.class, DocItemDTO.class)
                 .addMappings(mapper -> mapper.using(amountConverter).map(src -> src, DocItemDTO::setAmount))
+                .addMappings(mapper -> mapper.using(amountFactConverter).map(src -> src, DocItemDTO::setAmountFact))
                 .addMappings(mapper -> mapper.using(idConverter).map(DocumentItem::getItem, DocItemDTO::setItemId))
                 .addMappings(mapper -> mapper.using(nameConverter).map(DocumentItem::getItem, DocItemDTO::setItemName));
     }
