@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,10 +25,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
-@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class DocsFrom1cServiceTest {
 
     @Autowired
@@ -48,7 +47,6 @@ class DocsFrom1cServiceTest {
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
         docDTO.setProject(testService.setProject(3, "Жаровня 3"));
         docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
-        docDTO.setIndividual(testService.setIndividualDTO(1, "Иванов"));
         docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
         docDTO.setStorageFrom(testService.setStorageDTO(3, "Жаровня 3"));
         docDTO.setCheckInfo( testService.setCHeckInfo(0, "16.03.22 12:00:12"));
@@ -56,6 +54,7 @@ class DocsFrom1cServiceTest {
         docDTO.setDate("27.08.22 00:00:00");
 
         docsFrom1cService.addDocument(docDTO);
+
         List<Document> docs = documentService.getAllDocuments();
         assertEquals(1, docs.size());
         ItemDoc check = (ItemDoc) docs.get(0);
@@ -83,11 +82,37 @@ class DocsFrom1cServiceTest {
         docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
 
         docsFrom1cService.addDocument(docDTO);
+
         List<Document> docs = documentService.getAllDocuments();
         assertEquals(1, docs.size());
         OrderDoc orderDoc = (OrderDoc) docs.get(0);
         assertEquals(DocumentType.CREDIT_ORDER_DOC, orderDoc.getDocType());
         assertEquals(120f, orderDoc.getAmount());
+
+    }
+
+    @Sql(value = "/sql/users/addNotUserWithCode46.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/documents/after.sql",
+            "/sql/users/deleteUserCode46.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void addDocumentWhenInventoryDocTest() {
+
+        DocDTO docDTO = testService.setDTOFields(DocumentType.INVENTORY_DOC);
+        docDTO.setProject(testService.setProject(3, "Жаровня 3"));
+        docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
+        docDTO.setDate("27.08.22 00:00:00");
+        docDTO.setStorageFrom(testService.setStorageDTO(3, "Жаровня 3"));
+        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+        docDTO.setDocItems(testService.setDocItemDTOList(5));
+
+        docsFrom1cService.addDocument(docDTO);
+
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(1, docs.size());
+        ItemDoc itemDoc = (ItemDoc) docs.get(0);
+        assertEquals(DocumentType.INVENTORY_DOC, itemDoc.getDocType());
+        List<DocumentItem> documentItemList = docItemService.getItemsByDoc(itemDoc);
+        assertEquals(4, documentItemList.size());
 
     }
 

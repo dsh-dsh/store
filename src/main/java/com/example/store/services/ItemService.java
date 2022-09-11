@@ -14,6 +14,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,9 @@ public class ItemService {
     protected IngredientService ingredientService;
     @Autowired
     private TreeBuilder<Item> treeBuilder;
+
+    @Value("#{'${item.directories}'.split(',')}")
+    private List<Integer> ingredientParentDirectories;
 
     public List<ItemDTOForTree> getItemDTOTree() {
         List<Item> items = itemRepository.findAll(Sort.by("id"));
@@ -69,7 +73,7 @@ public class ItemService {
 
     public List<ItemDTOForList> getItemDTOList(long time) {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
-        List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
+        List<Item> items = itemRepository.findByParentIds(ingredientParentDirectories);
         return items.stream()
                 .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());

@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -45,10 +46,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties =
-        "spring.datasource.url=jdbc:mysql://localhost:3306/skladtest")
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class Document1CControllerTest {
 
 
@@ -132,7 +132,7 @@ class Document1CControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addDocsFrom1CTest() throws Exception {
         ItemDocListRequestDTO docListRequestDTO = new ItemDocListRequestDTO();
-        docListRequestDTO.setCheckDTOList(getDocDTOList(DocumentType.CHECK_DOC));
+        docListRequestDTO.setCheckDTOList(getDocDTOList());
         this.mockMvc.perform(
                         post(URL_PREFIX + "/docs")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -140,11 +140,31 @@ class Document1CControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         List<Document> docs = documentService.getAllDocuments();
-        assertEquals(5, docs.size());
+        assertEquals(7, docs.size());
         ItemDoc check = (ItemDoc) docs.get(0);
         assertEquals(DocumentType.CHECK_DOC, check.getDocType());
         CheckInfo checkInfo = checkInfoService.getCheckInfo(check);
         assertEquals(654321, checkInfo.getCheckNumber());
+        List<DocumentItem> documentItemList = docItemService.getItemsByDoc(check);
+        assertEquals(4, documentItemList.size());
+    }
+
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void addInventoryDocFrom1CTest() throws Exception {
+        ItemDocListRequestDTO docListRequestDTO = new ItemDocListRequestDTO();
+        docListRequestDTO.setCheckDTOList(getInventoryDocDTOList());
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/docs")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(docListRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<Document> docs = documentService.getAllDocuments();
+        assertEquals(1, docs.size());
+        ItemDoc check = (ItemDoc) docs.get(0);
+        assertEquals(DocumentType.INVENTORY_DOC, check.getDocType());
         List<DocumentItem> documentItemList = docItemService.getItemsByDoc(check);
         assertEquals(4, documentItemList.size());
     }
@@ -197,23 +217,59 @@ class Document1CControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    List<DocDTO> getDocDTOList(DocumentType type) {
+    List<DocDTO> getDocDTOList() {
         List<DocDTO> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             DocDTO dto = new DocDTO();
             dto.setNumber(3000000000L + i);
-            dto.setDocType(type.getValue());
+            dto.setDocType(DocumentType.CHECK_DOC.getValue());
             dto.setDate("27.08.22 00:00:00");
             dto.setProject(testService.setProject(0, "Жаровня 3"));
             dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
-            dto.setIndividual(testService.setIndividualDTO(0, "Иванов"));
             dto.setSupplier(testService.setCompanyDTO(230902612219L));
             dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
             dto.setPayed(false);
             dto.setHold(false);
 
-            String time = "21.08.22 16:1"+ i +":00";
+            String time = "21.08.22 16:1" + i + ":00";
             dto.setCheckInfo(testService.setCHeckInfo(i, time));
+            dto.setDocItems(testService.setDocItemDTOList(5));
+
+            list.add(dto);
+        }
+        for (int i = 5; i < 7; i++) {
+            DocDTO dto = new DocDTO();
+            dto.setNumber(3000000000L + i);
+            dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
+            dto.setDate("27.08.22 00:00:00");
+            dto.setProject(testService.setProject(0, "Жаровня 3"));
+            dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
+            dto.setIndividual(testService.setIndividualDTO(0, 4));
+            dto.setSupplier(testService.setCompanyDTO(230902612219L));
+            dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
+            dto.setPayed(false);
+            dto.setHold(false);
+            dto.setAmount(1000f);
+            dto.setTax(1000f);
+
+            list.add(dto);
+        }
+        return list;
+    }
+
+    List<DocDTO> getInventoryDocDTOList() {
+        List<DocDTO> list = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            DocDTO dto = new DocDTO();
+            dto.setNumber(3000000000L + i);
+            dto.setDocType(DocumentType.INVENTORY_DOC.getValue());
+            dto.setDate("27.08.22 00:00:00");
+            dto.setProject(testService.setProject(0, "Жаровня 3"));
+            dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
+            dto.setSupplier(testService.setCompanyDTO(230902612219L));
+            dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
+            dto.setPayed(false);
+            dto.setHold(false);
             dto.setDocItems(testService.setDocItemDTOList(5));
 
             list.add(dto);

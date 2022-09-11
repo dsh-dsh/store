@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -51,6 +52,9 @@ public class ItemRestService {
     @Qualifier("periodAveragePrice")
     private PropertySetting periodAveragePriceSetting;
 
+    @Value("#{'${item.directories}'.split(',')}")
+    private List<Integer> ingredientParentDirectories;
+
     public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
         if(docItemQuantity > lotsQuantitySum) {
@@ -68,7 +72,7 @@ public class ItemRestService {
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
         LocalDateTime dateTime = Util.getLocalDateTime(time);
         Storage storage = storageService.getById(storageId);
-        List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
+        List<Item> items = itemRepository.findByParentIds(ingredientParentDirectories);
         return items.stream()
                 .map(item -> getDocItemDTO(docId, item, storage, dateTime))
                 .collect(Collectors.toList());
@@ -99,7 +103,7 @@ public class ItemRestService {
     }
 
     public Map<Item, RestPriceValue> getItemsRestOnStorageForClosingPeriod(Storage storage, LocalDateTime time) {
-        List<Item> items = itemRepository.findByParentIds(Constants.INGREDIENTS_PARENT_IDS);
+        List<Item> items = itemRepository.findByParentIds(ingredientParentDirectories);
         return items.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
