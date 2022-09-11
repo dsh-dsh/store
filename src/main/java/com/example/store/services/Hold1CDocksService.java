@@ -76,6 +76,15 @@ public class Hold1CDocksService {
     private List<ItemDoc> checks;
 
     @Transactional
+    public void holdFirstUnHoldenChecks() {
+        Period period = periodService.getCurrentPeriod();
+        LocalDateTime from = documentService.getFirstUnHoldenCheck(period.getStartDate().atStartOfDay())
+                .getDateTime().toLocalDate().atStartOfDay();
+        LocalDateTime to = from.plusDays(1);
+        hold1CDocsByPeriod(from, to);
+    }
+
+    @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         List<Storage> storages = storageService.getStorageList();
         for (Storage storage : storages) {
@@ -150,7 +159,7 @@ public class Hold1CDocksService {
                 .filter(doc -> (doc.getDocType() != DocumentType.CHECK_DOC
                         && doc.getDocType() != DocumentType.CREDIT_ORDER_DOC
                         && doc.getDocType() != DocumentType.WITHDRAW_ORDER_DOC))
-                .forEach(doc -> holdDocsService.holdDocument(doc));
+                .forEach(doc -> holdDocsService.holdDoc(doc));
     }
 
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {

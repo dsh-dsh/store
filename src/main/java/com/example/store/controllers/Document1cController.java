@@ -3,6 +3,7 @@ package com.example.store.controllers;
 import com.example.store.model.dto.requests.ItemDocListRequestDTO;
 import com.example.store.model.responses.Response;
 import com.example.store.services.DocCrudService;
+import com.example.store.services.Hold1CDocksService;
 import com.example.store.services.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ public class Document1cController {
     private DocCrudService docCrudService;
     @Autowired
     private SchedulerService schedulerService;
+    @Autowired
+    private Hold1CDocksService hold1CDocksService;
 
     @GetMapping("/check")
     public ResponseEntity<Response<String>> checkUnHolden1CDocs() {
@@ -39,7 +42,7 @@ public class Document1cController {
 
     @PostMapping("/hold")
     public ResponseEntity<Response<String>> hold1CDocuments() {
-        schedulerService.holdChecksForADay();
+        hold1CDocksService.holdFirstUnHoldenChecks();
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

@@ -52,14 +52,6 @@ public class HoldDocsService {
     }
 
     @Transaction
-    public void holdDocument(Document document) {
-        if(document.isHold()) {
-            unHoldDoc(document);
-        } else {
-            holdDoc(document);
-        }
-    }
-
     public void holdDoc(Document document) {
         document.setHold(true);
         if(document instanceof ItemDoc) {

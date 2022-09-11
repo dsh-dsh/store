@@ -131,7 +131,7 @@ public class DocCrudService extends AbstractDocCrudService {
         Document document = documentService.getDocumentById(docId);
         checkTimePeriod(document);
         if(holdDocsService.checkPossibilityToHold(document)) {
-            holdDocsService.holdDocument(document);
+            holdDocsService.holdDoc(document);
         }
     }
 
@@ -150,9 +150,13 @@ public class DocCrudService extends AbstractDocCrudService {
         List<Document> documents = documentRepository
                 .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
                         document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
-        checkingFogUnHoldenChecks(documents);
         documents.add(document);
-        documents.forEach(doc -> holdDocsService.holdDocument(doc));
+        for (Document doc : documents) {
+            if(doc.getDocType() == DocumentType.CHECK_DOC) {
+                throw new BadRequestException(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE);
+            }
+            holdDocsService.holdDoc(doc);
+        }
     }
 
     protected void serialUnHold(Document document) {
@@ -162,8 +166,8 @@ public class DocCrudService extends AbstractDocCrudService {
         documents = getAllChecksToUnHold(documents);
         List<LocalDate> dates = getDatesOfChecks(documents);
         softDeleteBaseDocs(documents, dates);
-        documents.forEach(doc -> holdDocsService.holdDocument(doc));
-        holdDocsService.holdDocument(document);
+        documents.forEach(doc -> holdDocsService.unHoldDoc(doc));
+        holdDocsService.unHoldDoc(document);
     }
 
     protected void checkingFogUnHoldenChecks(List<Document> documents) {
@@ -196,7 +200,9 @@ public class DocCrudService extends AbstractDocCrudService {
         return dates;
     }
 
+    // add checks of the day that wasn't chosen
     protected List<Document> getAllChecksToUnHold(List<Document> documents) {
+        // todo refactoring: simplify - get first doc and if it checkDoc find other checkDocs
         List<Document> checks = documents.stream()
                 .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).collect(Collectors.toList());
         if(!checks.isEmpty()) {
@@ -215,7 +221,7 @@ public class DocCrudService extends AbstractDocCrudService {
     }
 
     protected void softDeleteDoc(Document document) {
-        holdDocsService.holdDocument(document);
+        holdDocsService.unHoldDoc(document);
         document.setDeleted(true);
         documentRepository.save(document);
     }

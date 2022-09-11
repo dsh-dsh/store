@@ -88,7 +88,7 @@ public class  PeriodService {
             documentRepository.save(doc);
             List<DocumentItem> items = getDocItems(doc, itemRestMap);
             items.forEach(item -> docItemService.save(item));
-            holdDocService.holdDocument(doc);
+            holdDocService.holdDoc(doc);
         }
     }
 

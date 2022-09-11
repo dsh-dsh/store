@@ -16,6 +16,7 @@ import com.example.store.repositories.LotRepository;
 import com.example.store.services.CheckInfoService;
 import com.example.store.services.DocItemService;
 import com.example.store.services.DocumentService;
+import com.example.store.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -206,7 +207,8 @@ class Document1CControllerTest {
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE));
     }
 
     @Test

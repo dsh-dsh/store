@@ -33,6 +33,12 @@ public class DocumentService {
     @Autowired
     private CheckInfoService checkInfoService;
 
+    public Document getFirstUnHoldenCheck(LocalDateTime from) {
+        return documentRepository.getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(from,
+                DocumentType.CHECK_DOC, false, false, Sort.by(Constants.DATE_TIME_STRING))
+                .orElseThrow(() -> new BadRequestException(Constants.NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE));
+    }
+
     public List<Document> getDocumentsAfterAndInclude(Document document) {
         List<Document> documents = documentRepository
                 .findByIsHoldAndDateTimeAfter(true, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING).descending());

@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.entities.Period;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
@@ -32,7 +33,17 @@ class DocumentServiceTest {
     private StorageService storageService;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private PeriodService periodService;
 
+    @Sql(value = "/sql/documents/addSomeCheckDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getFirstUnHoldenCheckTest() {
+        Period period = periodService.getCurrentPeriod();
+        Document document = documentService.getFirstUnHoldenCheck(period.getStartDate().atStartOfDay());
+        assertEquals(4, document.getId());
+    }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
