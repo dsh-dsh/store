@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    protected UserRepository userRepository;
     @Autowired
-    private PersonMapper personMapper;
+    protected PersonMapper personMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired

@@ -1,6 +1,7 @@
 package com.example.store.mappers;
 
 import com.example.store.model.dto.PersonDTO;
+import com.example.store.model.dto.User1CDTO;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,11 @@ public class PersonMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(longToDateTimeConverter).map(PersonDTO::getRegDate, User::setRegTime))
                 .addMappings(mapper -> mapper.using(longToDateConverter).map(PersonDTO::getBirthDate, User::setBirthDate))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
+        modelMapper.createTypeMap(User1CDTO.class, User.class)
+                .addMappings(mapper -> mapper.map(User1CDTO::getId, User::setId))
+                .addMappings(mapper -> mapper.map(User1CDTO::getName, User::setLastName))
+                .addMappings(mapper -> mapper.using(userParentConverter).map(User1CDTO::getParentId, User::setParent))
+                .addMappings(mapper -> mapper.using(longToDateConverter).map(User1CDTO::getBirthDate, User::setBirthDate));
     }
 
     public PersonDTO mapToPersonDTO(User user) {
@@ -40,6 +46,10 @@ public class PersonMapper extends MappingConverters {
 
     public User mapToUser(PersonDTO personDTO) {
         return modelMapper.map(personDTO, User.class);
+    }
+
+    public User mapToUser(User1CDTO user1CDTO) {
+        return modelMapper.map(user1CDTO, User.class);
     }
 
 }

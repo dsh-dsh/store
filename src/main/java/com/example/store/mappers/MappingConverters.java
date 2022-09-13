@@ -29,6 +29,8 @@ public class MappingConverters {
     private ItemRestService itemRestService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private UserService userService;
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
@@ -74,6 +76,9 @@ public class MappingConverters {
     protected final Converter<User, String> nameConverter =
             user -> user.getSource().getLastName() + " " + user.getSource().getFirstName();
 
+    protected final Converter<Integer, User> userParentConverter =
+            src -> getUser(src.getSource());
+
     protected final Converter<ItemDoc, CheckInfoDTO> checkInfoConverter =
             doc -> checkInfoService.getCheckInfoDTO(doc.getSource());
 
@@ -83,5 +88,10 @@ public class MappingConverters {
     private Item getItem(int itemId) {
         if(itemId == 0) return null;
         return itemService.findItemById(itemId);
+    }
+
+    private User getUser(int userId) {
+        if(userId == 0) return null;
+        return userService.getByCode(userId);
     }
 }
