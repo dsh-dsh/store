@@ -35,19 +35,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             "/",
             "/api/v1/auth/**",
             "/api/v1/auth/login",
-            "/api/v1/account/register",
-            "/api/v1/account/password/**",
-            "/api/v1/account/shift-email",
-            "/api/v1/admin/login",
-            "/api/v1/platform/languages",
-            "/change-password",
-            "/shift-email",
-            "/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html",
-            "/actuator/**",
-            "/static/**", "/webjars/**", "/favicon.ico",
-            "/js/**", "/css/**", "/app.js",
-            "/login", "/profile", "/push", "/friends", "/im", "/statistics", "/settings",
-            //"/docs", "/items", "/home",
+            "/static/**", "/favicon.ico", "/fonts/**",
             "/ws"
     };
 

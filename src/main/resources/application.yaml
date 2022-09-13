@@ -26,7 +26,7 @@ hold.docs.scheduling.cron.expression : 0 0 3 * * ?
 
 our.company.id : 1
 
-cors.urls : http://localhost:8082
+cors.urls : http://localhost:8082, http://localhost:8081
 
 spring.mail.to.email : daniilshipilov@yandex.ru
 
