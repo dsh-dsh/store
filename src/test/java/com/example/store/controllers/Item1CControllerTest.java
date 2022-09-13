@@ -3,12 +3,16 @@ package com.example.store.controllers;
 import com.example.store.ItemTestService;
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.PriceDTO;
+import com.example.store.model.dto.User1CDTO;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
+import com.example.store.model.dto.requests.UserList1CRequestDTO;
 import com.example.store.model.entities.Item;
+import com.example.store.model.entities.User;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
+import com.example.store.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class Item1CControllerTest extends TestService {
 
-    private static final String URL_PREFIX = "/items";
+    private static final String URL_ITEMS = "/items";
+    private static final String URL_USERS = "/users";
 
     @Autowired
     private ItemTestService itemTestService;
@@ -52,6 +56,8 @@ class Item1CControllerTest extends TestService {
     private ObjectMapper objectMapper;
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
@@ -65,7 +71,7 @@ class Item1CControllerTest extends TestService {
         itemList1CRequestDTO.setItem1CDTOList(getItemDTOList());
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_ITEMS)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(itemList1CRequestDTO)))
                 .andDo(print())
@@ -85,11 +91,72 @@ class Item1CControllerTest extends TestService {
         itemList1CRequestDTO.setItem1CDTOList(getItemDTOList());
 
         this.mockMvc.perform(
-                        post(URL_PREFIX)
+                        post(URL_ITEMS)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(itemList1CRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/users/deleteNewUsers.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setUserFrom1CTest() throws Exception {
+
+        UserList1CRequestDTO userList1CRequestDTO = new UserList1CRequestDTO();
+        userList1CRequestDTO.setUser1CDTOList(getUserDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_USERS)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(userList1CRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<User> users = userRepository.findAll();
+        assertEquals(16, users.size());
+    }
+
+    @Sql(value = "/sql/users/deleteNewUsers.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setUserFrom1CUnauthorizedTest() throws Exception {
+
+        UserList1CRequestDTO userList1CRequestDTO = new UserList1CRequestDTO();
+        userList1CRequestDTO.setUser1CDTOList(getUserDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_USERS)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(userList1CRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    private List<User1CDTO> getUserDTOList() {
+        List<User1CDTO> list = new ArrayList<>();
+        list.add(getUserDTO(10, 1, "user10", "10@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(11, 1, "user11", "11@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(15, 13, "user15", "15@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(17, 16, "user17", "17@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(18, 16, "user18", "18@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(19, 16, "user19", "19@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(12, 1, "user12", "12@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(16, 13, "dirUser16", "16@mail.ru", "", 1234567890, true));
+        list.add(getUserDTO(13, 0, "rootUser2", "13@mail.ru", "", 1234567890, true));
+        list.add(getUserDTO(14, 13, "user14", "14@mail.ru", "", 1234567890, false));
+        return list;
+    }
+
+    private User1CDTO getUserDTO(int code, int parentId, String name,
+                                 String email, String phone, long birthDate, boolean isNode) {
+        User1CDTO dto = new User1CDTO();
+        dto.setName(name);
+        dto.setCode(code);
+        dto.setEmail(email);
+        dto.setParentId(parentId);
+        dto.setPhone(phone);
+        dto.setBirthDate(birthDate);
+        dto.setNode(isNode);
+        return dto;
     }
 
     private List<Item1CDTO> getItemDTOList() {

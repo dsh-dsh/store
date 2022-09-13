@@ -26,7 +26,6 @@ public class Item1CController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
-    // todo add tests
     @PostMapping("/users")
     public ResponseEntity<Response<String>>  setUsers(
             @RequestBody UserList1CRequestDTO userList1CRequestDTO) {
