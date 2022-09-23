@@ -46,6 +46,9 @@ public class DocCrudService extends AbstractDocCrudService {
         LocalDateTime endDate = Util.getLocalDateTime(end);
         List<DocumentType> types;
         switch (filter) {
+            case "default" :
+                types = List.of(DocumentType.POSTING_DOC, DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
+                break;
             case "posting" :
                 types = List.of(DocumentType.POSTING_DOC);
                 break;
