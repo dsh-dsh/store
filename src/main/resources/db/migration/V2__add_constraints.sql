@@ -20,7 +20,7 @@ alter table document add constraint FK_storage_from_id foreign key (storage_from
 
 alter table document add constraint FK_supplier_id foreign key (supplier_id) references company (id);
 
-alter table check_KKM_info add constraint FK_check_id foreign key (check_id) references document (id);
+alter table check_kkm_info add constraint FK_check_id foreign key (check_id) references document (id);
 
 alter table document_item add constraint FK_item_id foreign key (item_id) references item (id);
 

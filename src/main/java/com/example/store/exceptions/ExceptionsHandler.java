@@ -2,6 +2,7 @@ package com.example.store.exceptions;
 
 import com.example.store.model.responses.ErrorResponse;
 import com.example.store.services.MailService;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex) {
 
-//        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getExceptionType().getValue() + ex.getMessage());
+        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getExceptionType().getValue() + ex.getMessage());
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
                         ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
@@ -40,7 +41,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleTransactionException(
             TransactionException ex) {
 
-//        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
