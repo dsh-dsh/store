@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.mappers.CompanyMapper;
 import com.example.store.model.dto.CompanyDTO;
 import com.example.store.model.entities.Company;
 import org.junit.jupiter.api.Test;
@@ -19,13 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class CompanyServiceTest {
 
+    public static final long OUR_INN = 230902612219L;
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private CompanyMapper companyMapper;
 
     @Test
     void getByIdTest() {
         Company company = companyService.getById(1);
-        assertEquals(230902612219L, company.getInn());
+        assertEquals(OUR_INN, company.getInn());
     }
 
     @Test
@@ -44,14 +48,14 @@ class CompanyServiceTest {
     @Transactional
     void getOurCompanyTest() {
         Company company = companyService.getOurCompany();
-        assertEquals(230902612219L, company.getInn());
+        assertEquals(OUR_INN, company.getInn());
     }
 
     @Test
     @Transactional
     void mapToDTOTest() {
         Company company = companyService.getOurCompany();
-        CompanyDTO dto = companyService.mapToDTO(company);
+        CompanyDTO dto = companyMapper.mapToDTO(company);
         assertTrue(dto.isMine());
     }
 }

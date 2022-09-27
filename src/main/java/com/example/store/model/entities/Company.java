@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @EqualsAndHashCode(of = "inn")
-public class Company {
+public class Company  implements EntityInterface {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -32,4 +32,18 @@ public class Company {
     private List<Account> accounts = new ArrayList<>();
 
     private boolean isMine;
+    private boolean isNode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Item parent;
+
+    private int code;
+    private String phone;
+    private String email;
+
+    @Override
+    public int getParentId() {
+        return parent.getId();
+    }
 }
