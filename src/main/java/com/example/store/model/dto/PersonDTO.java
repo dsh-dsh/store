@@ -35,4 +35,7 @@ public class PersonDTO {
 
     private String token;
 
+    @JsonProperty("parent_id")
+    private int parentId;
+
 }

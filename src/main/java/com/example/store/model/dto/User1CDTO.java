@@ -11,7 +11,6 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User1CDTO extends UserDTO{
 
-
     private String phone;
 
     @JsonProperty("birth_date")

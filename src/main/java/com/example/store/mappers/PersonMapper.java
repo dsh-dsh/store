@@ -28,6 +28,7 @@ public class PersonMapper extends MappingConverters {
         modelMapper.createTypeMap(PersonDTO.class, User.class)
                 .addMappings(mapper -> mapper.using(longToDateTimeConverter).map(PersonDTO::getRegDate, User::setRegTime))
                 .addMappings(mapper -> mapper.using(longToDateConverter).map(PersonDTO::getBirthDate, User::setBirthDate))
+                .addMappings(mapper -> mapper.using(userParentIdConverter).map(PersonDTO::getParentId, User::setParent))
                 .addMappings(mapper -> mapper.skip(PersonDTO::getId, User::setId));
         modelMapper.createTypeMap(User1CDTO.class, User.class)
                 .addMappings(mapper -> mapper.map(User1CDTO::getId, User::setId))

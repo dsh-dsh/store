@@ -57,11 +57,14 @@ public class UserService {
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
     }
 
+    // todo update tests
     public void setPerson(PersonDTO personDTO) {
         User user = personMapper.mapToUser(personDTO);
         user.setRegTime(LocalDateTime.now());
-        user.setPassword(passwordEncoder.encode(personDTO.getPassword()));
         userRepository.save(user);
+        if(user.getParent() == null) {
+            userRepository.setParentIdNotNull(user.getId());
+        }
     }
 
     public void updatePerson(PersonDTO personDTO) {
