@@ -41,6 +41,10 @@ public class Constants {
     public static final String SALE_CASH_PAYMENT_TYPE = "Выручка наличными";
     public static final String SALE_CARD_PAYMENT_TYPE = "Выручка по картам";
 
+    public static final String NET_TYPE = "Нетто";
+    public static final String GROSS_TYPE = "Брутто";
+    public static final String ENABLE_TYPE = "Используется";
+
     public static final String RETAIL_PRICE_TYPE = "Розничная";
     public static final String DELIVERY_PRICE_TYPE = "На доставку";
 
@@ -86,12 +90,6 @@ public class Constants {
     public static final String NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
-
-
-
-    public static final String NET_TYPE = "Нетто";
-    public static final String GROSS_TYPE = "Брутто";
-    public static final String ENABLE_TYPE = "Используется";
 
     public static final String DATE_TIME_STRING = "dateTime";
 

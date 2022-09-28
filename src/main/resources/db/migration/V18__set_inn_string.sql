@@ -1,0 +1,1 @@
+ALTER TABLE company MODIFY COLUMN inn varchar(12);

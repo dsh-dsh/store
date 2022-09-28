@@ -47,7 +47,7 @@ class DocsFrom1cServiceTest {
         DocDTO docDTO = testService.setDTOFields(DocumentType.CHECK_DOC);
         docDTO.setProject(testService.setProject(3, "Жаровня 3"));
         docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
-        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+        docDTO.setSupplier(testService.setCompanyDTO("230902612219"));
         docDTO.setStorageFrom(testService.setStorageDTO(3, "Жаровня 3"));
         docDTO.setCheckInfo( testService.setCHeckInfo(0, "16.03.22 12:00:12"));
         docDTO.setDocItems(testService.setDocItemDTOList(5));
@@ -79,7 +79,7 @@ class DocsFrom1cServiceTest {
         docDTO.setDate("27.08.22 00:00:00");
         docDTO.setAmount(120f);
         docDTO.setTax(12f);
-        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+        docDTO.setSupplier(testService.setCompanyDTO("230902612219"));
 
         docsFrom1cService.addDocument(docDTO);
 
@@ -102,7 +102,7 @@ class DocsFrom1cServiceTest {
         docDTO.setAuthor(testService.setAuthorDTO(1, "Иванов"));
         docDTO.setDate("27.08.22 00:00:00");
         docDTO.setStorageFrom(testService.setStorageDTO(3, "Жаровня 3"));
-        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+        docDTO.setSupplier(testService.setCompanyDTO("230902612219"));
         docDTO.setDocItems(testService.setDocItemDTOList(5));
 
         docsFrom1cService.addDocument(docDTO);
@@ -131,7 +131,7 @@ class DocsFrom1cServiceTest {
         docDTO.setDate("27.08.22 00:00:00");
         docDTO.setAmount(120f);
         docDTO.setTax(12f);
-        docDTO.setSupplier(testService.setCompanyDTO(230902612219L));
+        docDTO.setSupplier(testService.setCompanyDTO("230902612219"));
 
         docsFrom1cService.addDocument(docDTO);
         List<Document> docs = documentService.getAllDocuments();

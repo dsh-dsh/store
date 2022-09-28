@@ -24,7 +24,7 @@ public class Company  implements EntityInterface {
     private String name;
 
     @Column(nullable = false)
-    private long inn;
+    private String inn;
 
     private int kpp;
 
@@ -36,7 +36,7 @@ public class Company  implements EntityInterface {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Item parent;
+    private Company parent;
 
     private int code;
     private String phone;

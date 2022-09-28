@@ -14,9 +14,10 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     Optional<Company> findByNameIgnoreCase(String name);
-    Optional<Company> findByInn(long inn);
+    Optional<Company> findByInn(String inn);
     Optional<Company> findByCode(int code);
     List<Company> findByParent(Company company);
+    boolean existsByCode(int code);
 
     @Transactional
     @Modifying

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class CompanyServiceTest {
 
-    public static final long OUR_INN = 230902612219L;
+    public static final String OUR_INN = "230902612219";
     @Autowired
     private CompanyService companyService;
     @Autowired
@@ -35,7 +35,7 @@ class CompanyServiceTest {
     @Test
     void getByNameTest() {
         Company company = companyService.getByName("ООО \"Защита\"");
-        assertEquals(230000000001L, company.getInn());
+        assertEquals("230000000001", company.getInn());
     }
 
     @Test

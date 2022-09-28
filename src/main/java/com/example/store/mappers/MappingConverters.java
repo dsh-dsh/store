@@ -1,6 +1,7 @@
 package com.example.store.mappers;
 
 import com.example.store.model.dto.*;
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
@@ -31,6 +32,8 @@ public class MappingConverters {
     private IngredientService ingredientService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CompanyService companyService;
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
@@ -79,19 +82,38 @@ public class MappingConverters {
     protected final Converter<Integer, User> userParentConverter =
             src -> getUser(src.getSource());
 
+    protected final Converter<Integer, User> userParentIdConverter =
+            src -> getUserById(src.getSource());
+
+    protected final Converter<Integer, Company> companyParentConverter =
+            src -> getCompanyByCode(src.getSource());
+
     protected final Converter<ItemDoc, CheckInfoDTO> checkInfoConverter =
             doc -> checkInfoService.getCheckInfoDTO(doc.getSource());
 
     protected final Converter<ItemDoc, Float> docItemAmountConverter =
             doc -> docItemService.getItemsAmount(doc.getSource());
 
+    // todo move to service
     private Item getItem(int itemId) {
         if(itemId == 0) return null;
         return itemService.findItemById(itemId);
     }
 
-    private User getUser(int userId) {
+    // todo move to service
+    private User getUser(int code) {
+        if(code == 0) return null;
+        return userService.getByCode(code);
+    }
+
+    // todo move to service
+    private User getUserById(int userId) {
         if(userId == 0) return null;
-        return userService.getByCode(userId);
+        return userService.getById(userId);
+    }
+
+    // todo move to service
+    private Company getCompanyByCode(int code) {
+        return companyService.getByCode(code);
     }
 }

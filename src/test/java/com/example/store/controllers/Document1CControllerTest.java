@@ -228,7 +228,7 @@ class Document1CControllerTest {
             dto.setDate("27.08.22 00:00:00");
             dto.setProject(testService.setProject(0, "Жаровня 3"));
             dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
-            dto.setSupplier(testService.setCompanyDTO(230902612219L));
+            dto.setSupplier(testService.setCompanyDTO("230902612219"));
             dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
             dto.setPayed(false);
             dto.setHold(false);
@@ -247,7 +247,7 @@ class Document1CControllerTest {
             dto.setProject(testService.setProject(0, "Жаровня 3"));
             dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
             dto.setIndividual(testService.setIndividualDTO(0, 4));
-            dto.setSupplier(testService.setCompanyDTO(230902612219L));
+            dto.setSupplier(testService.setCompanyDTO("230902612219"));
             dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
             dto.setPayed(false);
             dto.setHold(false);
@@ -268,7 +268,7 @@ class Document1CControllerTest {
             dto.setDate("27.08.22 00:00:00");
             dto.setProject(testService.setProject(0, "Жаровня 3"));
             dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));
-            dto.setSupplier(testService.setCompanyDTO(230902612219L));
+            dto.setSupplier(testService.setCompanyDTO("230902612219"));
             dto.setStorageFrom(testService.setStorageDTO(0, "Жаровня 3"));
             dto.setPayed(false);
             dto.setHold(false);

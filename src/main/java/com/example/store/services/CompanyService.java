@@ -25,7 +25,7 @@ public class CompanyService {
     @Autowired
     private TreeBuilder<Company> treeBuilder;
     @Autowired
-    private CompanyMapper companyMapper;
+    protected CompanyMapper companyMapper;
 
     @Value("${our.company.id}")
     private int ourCompanyId;
@@ -40,7 +40,7 @@ public class CompanyService {
                 .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, name)));
     }
 
-    public Company getByInn(long inn) {
+    public Company getByInn(String inn) {
         return companyRepository.findByInn(inn)
                 .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, inn)));
     }
@@ -91,9 +91,13 @@ public class CompanyService {
         company.setPhone(dto.getPhone());
         company.setEmail(dto.getEmail());
         companyRepository.save(company);
+        if(company.getParent() == null) {
+            companyRepository.setParentIdNotNull(company.getId());
+        }
     }
 
     public Company getByCode(int code) {
+        if(code == 0) return null;
         return companyRepository.findByCode(code)
             .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, code)));
     }

@@ -18,7 +18,7 @@ public class CompanyDTO {
 
     private String name;
 
-    private long inn;
+    private String inn;
 
     private int kpp;
 
