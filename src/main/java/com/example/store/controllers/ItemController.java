@@ -1,9 +1,6 @@
 package com.example.store.controllers;
 
-import com.example.store.model.dto.CalculationDTO;
-import com.example.store.model.dto.ItemDTO;
-import com.example.store.model.dto.ItemDTOForList;
-import com.example.store.model.dto.ItemDTOForTree;
+import com.example.store.model.dto.*;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.CalculationService;
@@ -34,6 +31,13 @@ public class ItemController {
     public ResponseEntity<ListResponse<ItemDTOForList>> getItemList(@RequestParam(defaultValue = "0") long time) {
         List<ItemDTOForList> list = itemService.getItemDTOList(time);
         return ResponseEntity.ok(new ListResponse<>(list));
+    }
+
+    // todo add tests
+    @GetMapping("/dirs/list")
+    public ResponseEntity<ListResponse<ItemDTO>> getItemDirsList() {
+        List<ItemDTO> dirs = itemService.getItemDirList();
+        return ResponseEntity.ok(new ListResponse<>(dirs));
     }
 
     @GetMapping

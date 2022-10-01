@@ -79,6 +79,14 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    // todo add tests
+    public List<ItemDTO> getItemDirList() {
+        List<Item> items = itemRepository.getByIsNode(true);
+        return items.stream()
+                .map(itemMapper::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     protected ItemDTOForList mapToDTOForList(Item item, LocalDateTime dateTime) {
         ItemDTOForList dto = new ItemDTOForList();
         dto.setId(item.getId());

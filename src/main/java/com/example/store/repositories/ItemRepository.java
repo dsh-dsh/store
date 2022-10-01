@@ -21,6 +21,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     Item getByNumber(int number);
 
+    List<Item> getByIsNode(boolean isNode);
+
     @Query(value = "select * from item where parent_id in (:ids) order by name", nativeQuery = true)
     List<Item> findByParentIds(List<Integer> ids);
 

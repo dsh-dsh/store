@@ -52,6 +52,7 @@ public class CompanyService {
 
     public List<CompanyDTO> getCompanyDTOList() {
         return companyRepository.findAll().stream()
+                .filter(company -> !company.isNode())
                 .map(companyMapper::mapToDTO)
                 .collect(Collectors.toList());
     }

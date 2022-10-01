@@ -27,7 +27,8 @@ public class SettingController {
 
     @GetMapping("/add/shortage")
     public ResponseEntity<Response<SettingDTO>> getHoldingSettings() {
-        return ResponseEntity.ok(settingService.getAddShortageForHoldSetting());
+        Response<SettingDTO> response = new Response<>(settingService.getAddShortageForHoldSetting());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/average/price/period")
@@ -38,6 +39,16 @@ public class SettingController {
     @GetMapping("/average/price/docs")
     public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSettings() {
         return ResponseEntity.ok(settingService.getAveragePriceForDocsSettings());
+    }
+
+    @GetMapping("/our/company")
+    public ResponseEntity<Response<SettingDTO>> getOurCompanySetting() {
+        return ResponseEntity.ok(settingService.getOurCompanySettings());
+    }
+
+    @GetMapping("/ingredient/dir")
+    public ResponseEntity<Response<SettingDTO>> getIngredientDirSettings() {
+        return ResponseEntity.ok(settingService.getIngredientDirSettings());
     }
 
     @GetMapping("/period")
@@ -66,6 +77,18 @@ public class SettingController {
     @PostMapping("/average/price/docs")
     public ResponseEntity<Response<String>> setAveragePriceForDocsSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setAveragePriceForDocsSetting(settingDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/our/company")
+    public ResponseEntity<Response<String>> setOurCompanySetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setOurCompanySetting(settingDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/ingredient/dir")
+    public ResponseEntity<Response<String>> setIngredientDirSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setIngredientDirSetting(settingDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

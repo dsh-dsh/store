@@ -27,13 +27,19 @@ public class SettingService {
     private User systemUser;
     @Autowired
     @Qualifier("addRestForHold")
-    private PropertySetting addRestForHoldSetting;
+    protected PropertySetting addRestForHoldSetting;
     @Autowired
     @Qualifier("periodAveragePrice")
     private PropertySetting periodAveragePriceSetting;
     @Autowired
     @Qualifier("docsAveragePrice")
     private PropertySetting docsAveragePriceSetting;
+    @Autowired
+    @Qualifier("ourCompany")
+    private PropertySetting ourCompanySetting;
+    @Autowired
+    @Qualifier("ingredientDir")
+    private PropertySetting ingredientDirSetting;
 
     public PropertySetting getSettingByType(User user, SettingType type) {
         Optional<PropertySetting> setting = settingRepository.findByUserAndSettingType(user, type);
@@ -108,6 +114,25 @@ public class SettingService {
         settingRepository.save(setting);
     }
 
+    public void setOurCompanySetting(SettingDTO settingDTO) {
+        ourCompanySetting.setProperty(settingDTO.getProperty());
+        setSystemSetting(settingDTO, SettingType.OUR_COMPANY_ID);
+    }
+
+    public void setIngredientDirSetting(SettingDTO settingDTO) {
+        ingredientDirSetting.setProperty(settingDTO.getProperty());
+        setSystemSetting(settingDTO, SettingType.INGREDIENT_DIR_ID);
+    }
+
+    public void setSystemSetting(SettingDTO dto, SettingType settingType) {
+        PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
+                .orElseGet(() -> getSetting(systemUser, settingType, dto.getProperty()));
+        setting.setProperty(dto.getProperty());
+        settingRepository.save(setting);
+    }
+
+
+
     private PropertySetting getSetting(User user, SettingType type, int property) {
         PropertySetting setting = new PropertySetting();
         setting.setUser(user);
@@ -116,12 +141,9 @@ public class SettingService {
         return  setting;
     }
 
-    public Response<SettingDTO> getAddShortageForHoldSetting() {
-        SettingType settingType = SettingType.ADD_REST_FOR_HOLD_1C_DOCS;
-        PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
-                .orElseGet(() -> getSetting(systemUser, settingType, 1));
+    public SettingDTO getAddShortageForHoldSetting() {
         UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return new Response<>(getSettingDTO(setting, userDTO));
+        return getSettingDTO(addRestForHoldSetting, userDTO);
     }
 
     public Response<SettingDTO> getAveragePriceForPeriodCloseSettings() {
@@ -134,6 +156,19 @@ public class SettingService {
 
     public Response<SettingDTO> getAveragePriceForDocsSettings() {
         SettingType settingType = SettingType.DOCS_AVERAGE_PRICE;
+        PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
+                .orElseGet(() -> getSetting(systemUser, settingType, 1));
+        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
+        return new Response<>(getSettingDTO(setting, userDTO));
+    }
+
+    public Response<SettingDTO> getOurCompanySettings() {
+        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
+        return new Response<>(getSettingDTO(ourCompanySetting, userDTO));
+    }
+
+    public Response<SettingDTO> getIngredientDirSettings() {
+        SettingType settingType = SettingType.INGREDIENT_DIR_ID;
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, 1));
         UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");

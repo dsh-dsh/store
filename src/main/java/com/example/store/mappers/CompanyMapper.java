@@ -18,7 +18,8 @@ public class CompanyMapper extends MappingConverters {
     @PostConstruct
     public void init() {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        this.modelMapper.createTypeMap(Company.class, CompanyDTO.class);
+        this.modelMapper.createTypeMap(Company.class, CompanyDTO.class)
+                .addMappings(mapper -> mapper.skip(Company::getAccounts, CompanyDTO::setAccounts));
         this.modelMapper.createTypeMap(CompanyDTO.class, Company.class);
     }
 

@@ -34,4 +34,12 @@ public class PropertySetting {
         return list.stream().filter(setting -> setting.getSettingType() == type).findFirst().orElse(null);
     }
 
+    public static PropertySetting of(SettingType type, User user, int property) {
+        PropertySetting setting = new PropertySetting();
+        setting.settingType = type;
+        setting.user = user;
+        setting.property = property;
+        return setting;
+    }
+
 }

@@ -28,7 +28,7 @@ public class Config {
     public PropertySetting getAddRestForHoldSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
                 .findByUserAndSettingType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
-                .orElse(null);
+                .orElse(PropertySetting.of(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, systemUser,1));
     }
 
     @Bean
@@ -36,7 +36,7 @@ public class Config {
     public PropertySetting getPeriodAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
                 .findByUserAndSettingType(systemUser, SettingType.PERIOD_AVERAGE_PRICE)
-                .orElse(null);
+                .orElse(PropertySetting.of(SettingType.PERIOD_AVERAGE_PRICE, systemUser,1));
     }
 
     @Bean
@@ -44,7 +44,23 @@ public class Config {
     public PropertySetting getDocsAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
                 .findByUserAndSettingType(systemUser, SettingType.DOCS_AVERAGE_PRICE)
-                .orElse(null);
+                .orElse(PropertySetting.of(SettingType.DOCS_AVERAGE_PRICE, systemUser,1));
+    }
+
+    @Bean
+    @Qualifier("ourCompany")
+    public PropertySetting getOurCompanySetting(SettingRepository settingRepository, User systemUser) {
+        return settingRepository
+                .findByUserAndSettingType(systemUser, SettingType.OUR_COMPANY_ID)
+                .orElse(PropertySetting.of(SettingType.OUR_COMPANY_ID, systemUser,1));
+    }
+
+    @Bean
+    @Qualifier("ingredientDir")
+    public PropertySetting getIngredientDirSetting(SettingRepository settingRepository, User systemUser) {
+        return settingRepository
+                .findByUserAndSettingType(systemUser, SettingType.INGREDIENT_DIR_ID)
+                .orElse(PropertySetting.of(SettingType.INGREDIENT_DIR_ID, systemUser,1));
     }
 
 }
