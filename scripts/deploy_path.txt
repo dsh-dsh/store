@@ -1,0 +1,3 @@
+
+C:/Users/Daniil/Documents/skillbox/store/scripts/deploy-outside.sh
+C:/Users/Daniil/Documents/skillbox/store/scripts/deploy-outside-back-only.sh
