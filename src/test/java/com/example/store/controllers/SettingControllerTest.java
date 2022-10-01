@@ -2,20 +2,22 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.UserDTO;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
 import com.example.store.services.SettingService;
 import com.example.store.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +45,23 @@ class SettingControllerTest {
     private SettingService settingService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private User systemUser;
+    @Autowired
+    @Qualifier("addRestForHold")
+    protected PropertySetting addRestForHoldSetting;
+    @Autowired
+    @Qualifier("periodAveragePrice")
+    private PropertySetting periodAveragePriceSetting;
+    @Autowired
+    @Qualifier("docsAveragePrice")
+    private PropertySetting docsAveragePriceSetting;
+    @Autowired
+    @Qualifier("ourCompany")
+    private PropertySetting ourCompanySetting;
+    @Autowired
+    @Qualifier("ingredientDir")
+    private PropertySetting ingredientDirSetting;
 
     @Test
     void getSettingsUnauthorizedTest()  throws Exception {
@@ -80,6 +99,7 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getHoldingSettingsTest()  throws Exception {
+        addRestForHoldSetting.setProperty(1);
         this.mockMvc.perform(
                         get(URL_PREFIX + "/add/shortage"))
                 .andDo(print())
@@ -92,8 +112,19 @@ class SettingControllerTest {
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    void getHoldingSettingsUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/add/shortage"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForPeriodCloseSettingsTest()  throws Exception {
+        periodAveragePriceSetting.setProperty(1);
         this.mockMvc.perform(
                         get(URL_PREFIX + "/average/price/period"))
                 .andDo(print())
@@ -118,6 +149,7 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForDocsSettingsTest()  throws Exception {
+        docsAveragePriceSetting.setProperty(1);
         this.mockMvc.perform(
                         get(URL_PREFIX + "/average/price/docs"))
                 .andDo(print())
@@ -140,9 +172,47 @@ class SettingControllerTest {
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getHoldingSettingsUnauthorizedTest()  throws Exception {
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getOurCompanySettingsTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/add/shortage"))
+                        get(URL_PREFIX + "/our/company"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.user.id").value(6))
+                .andExpect(jsonPath("$.data.type").value("OUR_COMPANY_ID"))
+                .andExpect(jsonPath("$.data.property").value(1));
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getOurCompanySettingsUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/our/company"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getIngredientDirSettingsTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/ingredient/dir"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.user.id").value(6))
+                .andExpect(jsonPath("$.data.type").value("INGREDIENT_DIR_ID"))
+                .andExpect(jsonPath("$.data.property").value(1));
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getIngredientDirSettingsUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/ingredient/dir"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -180,29 +250,23 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void setAddShortageSettingTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/add/shortage")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        User user = userService.getSystemAuthor();
-        assertEquals(0, settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD_1C_DOCS).getProperty());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS).getProperty());
+        assertEquals(0, addRestForHoldSetting.getProperty());
+        addRestForHoldSetting.setProperty(1);
+
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAddShortageSettingUnauthorizedTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/add/shortage")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -215,11 +279,7 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void setAveragePriceForPeriodCloseSettingTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.PERIOD_AVERAGE_PRICE.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/average/price/period")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -228,16 +288,14 @@ class SettingControllerTest {
                 .andExpect(status().isOk());
         User user = userService.getSystemAuthor();
         assertEquals(0, settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE).getProperty());
+        assertEquals(0, periodAveragePriceSetting.getProperty());
+        periodAveragePriceSetting.setProperty(1);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForPeriodCloseSettingUnauthorizedTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.PERIOD_AVERAGE_PRICE.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/average/price/period")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -250,31 +308,80 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void setAveragePriceForDocsSettingTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.DOCS_AVERAGE_PRICE.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/average/price/docs")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
-        User user = userService.getSystemAuthor();
-        assertEquals(0, settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE).getProperty());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.DOCS_AVERAGE_PRICE).getProperty());
+        assertEquals(0, docsAveragePriceSetting.getProperty());
+        periodAveragePriceSetting.setProperty(1);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForDocsSettingUnauthorizedTest()  throws Exception {
-        UserDTO userDTO = new UserDTO();
-        SettingDTO settingDTO = new SettingDTO();
-        settingDTO.setUser(userDTO);
-        settingDTO.setType(SettingType.DOCS_AVERAGE_PRICE.toString());
-        settingDTO.setProperty(0);
+        SettingDTO settingDTO = getSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
                         post(URL_PREFIX + "/average/price/docs")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setIngredientDirSettingTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.INGREDIENT_DIR_ID.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/ingredient/dir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID).getProperty());
+        assertEquals(0, ingredientDirSetting.getProperty());
+        ingredientDirSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setIngredientDirSettingUnauthorizedTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.INGREDIENT_DIR_ID.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/ingredient/dir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setOurCompanySettingTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.OUR_COMPANY_ID.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/our/company")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.OUR_COMPANY_ID).getProperty());
+        assertEquals(0, ourCompanySetting.getProperty());
+        ourCompanySetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setOurCompanySettingUnauthorizedTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.OUR_COMPANY_ID.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/our/company")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -321,5 +428,14 @@ class SettingControllerTest {
                         post(URL_PREFIX + "/period"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    private SettingDTO getSettingDTO(String type, int property) {
+        UserDTO userDTO = new UserDTO();
+        SettingDTO settingDTO = new SettingDTO();
+        settingDTO.setUser(userDTO);
+        settingDTO.setType(type);
+        settingDTO.setProperty(property);
+        return settingDTO;
     }
 }

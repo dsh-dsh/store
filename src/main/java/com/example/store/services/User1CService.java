@@ -24,7 +24,6 @@ public class User1CService extends UserService {
 
     protected void addRootUsers(List<User1CDTO> dtoList) {
         dtoList.stream().filter(dto -> dto.getParentId() == 0).forEach(this::setUser);
-//        setNullParentIdFieldsToIntNullInDB();
     }
 
     private void setUserRecursive(List<User1CDTO> dtoList) {
@@ -43,11 +42,6 @@ public class User1CService extends UserService {
             setUserRecursive(dtoList);
         }
     }
-
-//    protected void setNullParentIdFieldsToIntNullInDB() {
-//        List<User> users = userRepository.findByParent(null);
-//        users.forEach(user -> userRepository.setParentIdNotNull(user.getId()));
-//    }
 
     public void setUser(User1CDTO dto) {
         Optional<User> userOptional = findByCode(dto.getCode());
@@ -79,7 +73,7 @@ public class User1CService extends UserService {
 
     public void setPerson(User1CDTO user1CDTO) {
         User user = personMapper.mapToUser(user1CDTO);
-        user.setFirstName("");
+        user.setFirstName(""); // todo check it up
         user.setRegTime(LocalDateTime.now());
         if(user1CDTO.getEmail() != null && !user1CDTO.getEmail().equals("")) {
             user.setEmail(user1CDTO.getEmail());

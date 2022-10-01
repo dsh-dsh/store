@@ -8,6 +8,7 @@ import com.example.store.model.enums.SettingType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -28,6 +29,23 @@ class SettingServiceTest {
     private SettingService settingService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private User systemUser;
+    @Autowired
+    @Qualifier("addRestForHold")
+    protected PropertySetting addRestForHoldSetting;
+    @Autowired
+    @Qualifier("periodAveragePrice")
+    private PropertySetting periodAveragePriceSetting;
+    @Autowired
+    @Qualifier("docsAveragePrice")
+    private PropertySetting docsAveragePriceSetting;
+    @Autowired
+    @Qualifier("ourCompany")
+    private PropertySetting ourCompanySetting;
+    @Autowired
+    @Qualifier("ingredientDir")
+    private PropertySetting ingredientDirSetting;
 
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -47,7 +65,7 @@ class SettingServiceTest {
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getSettingsByUserTest() {
-        List<SettingDTO> settings = settingService.getSettingsByUser(1).getData();
+        List<SettingDTO> settings = settingService.getSettingsByUser(1);
         assertEquals(1, settings.get(0).getUser().getId());
         assertEquals(1, settings.get(0).getProperty());
     }
@@ -81,50 +99,84 @@ class SettingServiceTest {
     @Test
     void setAddShortageSettingTest() {
         SettingDTO dto = new SettingDTO();
-        dto.setProperty(1);
+        dto.setProperty(0);
         settingService.setAddShortageSetting(dto);
-        User user = userService.getById(6);
-        PropertySetting setting = settingService.getSettingByType(user, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
-        assertEquals(1, setting.getProperty());
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, addRestForHoldSetting.getProperty());
+        addRestForHoldSetting.setProperty(1);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForPeriodCloseSettingTest() {
         SettingDTO dto = new SettingDTO();
-        dto.setProperty(1);
+        dto.setProperty(0);
         settingService.setAveragePriceForPeriodCloseSetting(dto);
-        User user = userService.getById(6);
-        PropertySetting setting = settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE);
-        assertEquals(1, setting.getProperty());
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.PERIOD_AVERAGE_PRICE);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, periodAveragePriceSetting.getProperty());
+        periodAveragePriceSetting.setProperty(1);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForDocsSettingTest() {
         SettingDTO dto = new SettingDTO();
-        dto.setProperty(1);
+        dto.setProperty(0);
         settingService.setAveragePriceForDocsSetting(dto);
-        User user = userService.getById(6);
-        PropertySetting setting = settingService.getSettingByType(user, SettingType.DOCS_AVERAGE_PRICE);
-        assertEquals(1, setting.getProperty());
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.DOCS_AVERAGE_PRICE);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, docsAveragePriceSetting.getProperty());
+        docsAveragePriceSetting.setProperty(1);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setOurCompanySettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(0);
+        settingService.setOurCompanySetting(dto);
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.OUR_COMPANY_ID);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, ourCompanySetting.getProperty());
+        ourCompanySetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setIngredientDirSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(0);
+        settingService.setIngredientDirSetting(dto);
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, ingredientDirSetting.getProperty());
+        ingredientDirSetting.setProperty(1);
+    }
+
     @Test
     void getAddShortageForHoldSettingTest() {
-        assertEquals(1, settingService.getAddShortageForHoldSetting().getData().getProperty());
+        assertEquals(1, settingService.getAddShortageForHoldSetting().getProperty());
     }
 
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForPeriodCloseSettingsTest() {
-        assertEquals(1, settingService.getAveragePriceForPeriodCloseSettings().getData().getProperty());
+        assertEquals(1, settingService.getAveragePriceForPeriodCloseSettings().getProperty());
     }
 
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForDocsSettingsTest() {
-        assertEquals(1, settingService.getAveragePriceForDocsSettings().getData().getProperty());
+        assertEquals(1, settingService.getAveragePriceForDocsSettings().getProperty());
+    }
+
+    @Test
+    void getOurCompanyIdSettingsTest() {
+        assertEquals(1, settingService.getOurCompanySettings().getProperty());
+    }
+
+    @Test
+    void getIngredientDirIdSettingsTest() {
+        assertEquals(1, settingService.getIngredientDirSettings().getProperty());
     }
 }

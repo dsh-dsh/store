@@ -22,33 +22,32 @@ public class SettingController {
     @GetMapping
     public ResponseEntity<ListResponse<SettingDTO>> getSettings(
             @RequestParam(defaultValue = "") int userId) {
-        return ResponseEntity.ok(settingService.getSettingsByUser(userId));
+        return ResponseEntity.ok(new ListResponse<>(settingService.getSettingsByUser(userId)));
     }
 
     @GetMapping("/add/shortage")
     public ResponseEntity<Response<SettingDTO>> getHoldingSettings() {
-        Response<SettingDTO> response = new Response<>(settingService.getAddShortageForHoldSetting());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new Response<>(settingService.getAddShortageForHoldSetting()));
     }
 
     @GetMapping("/average/price/period")
     public ResponseEntity<Response<SettingDTO>> getAveragePriceForPeriodCloseSettings() {
-        return ResponseEntity.ok(settingService.getAveragePriceForPeriodCloseSettings());
+        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForPeriodCloseSettings()));
     }
 
     @GetMapping("/average/price/docs")
     public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSettings() {
-        return ResponseEntity.ok(settingService.getAveragePriceForDocsSettings());
+        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForDocsSettings()));
     }
 
     @GetMapping("/our/company")
     public ResponseEntity<Response<SettingDTO>> getOurCompanySetting() {
-        return ResponseEntity.ok(settingService.getOurCompanySettings());
+        return ResponseEntity.ok(new Response<>(settingService.getOurCompanySettings()));
     }
 
     @GetMapping("/ingredient/dir")
     public ResponseEntity<Response<SettingDTO>> getIngredientDirSettings() {
-        return ResponseEntity.ok(settingService.getIngredientDirSettings());
+        return ResponseEntity.ok(new Response<>(settingService.getIngredientDirSettings()));
     }
 
     @GetMapping("/period")
