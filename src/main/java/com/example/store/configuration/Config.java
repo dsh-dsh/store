@@ -60,7 +60,7 @@ public class Config {
     public PropertySetting getIngredientDirSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
                 .findByUserAndSettingType(systemUser, SettingType.INGREDIENT_DIR_ID)
-                .orElse(PropertySetting.of(SettingType.INGREDIENT_DIR_ID, systemUser,1));
+                .orElse(PropertySetting.of(SettingType.INGREDIENT_DIR_ID, systemUser,2));
     }
 
 }

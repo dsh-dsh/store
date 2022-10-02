@@ -2,6 +2,7 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForDir;
 import com.example.store.model.entities.Item;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,7 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(workshopConverter).map(Item::getWorkshop, ItemDTO::setWorkshop))
                 .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, ItemDTO::setUnit))
                 .addMappings(mapper -> mapper.using(parentConverter).map(Item::getParent, ItemDTO::setParentId));
+        this.modelMapper.createTypeMap(Item.class, ItemDTOForDir.class);
         this.modelMapper.createTypeMap(ItemDTO.class, Item.class)
                 .addMappings(mapper -> mapper.using(longToDateTimeConverter).map(ItemDTO::getRegTime, Item::setRegTime))
                 .addMappings(mapper -> mapper.using(workshopDTOConverter).map(ItemDTO::getWorkshop, Item::setWorkshop))
@@ -38,6 +40,10 @@ public class ItemMapper extends MappingConverters {
 
     public ItemDTO mapToDTO(Item item) {
         return modelMapper.map(item, ItemDTO.class);
+    }
+
+    public ItemDTOForDir mapToDTOForDir(Item item) {
+        return modelMapper.map(item, ItemDTOForDir.class);
     }
     public Item mapToItem(ItemDTO dto) {
         return modelMapper.map(dto, Item.class);

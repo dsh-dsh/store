@@ -5,6 +5,7 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.model.enums.Unit;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -56,6 +58,9 @@ class ItemServiceTest extends TestService {
     private ItemService itemService;
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    @Qualifier("ingredientDir")
+    private PropertySetting ingredientDirSetting;
 
     @Test
     void getItemDTOTreeTest() {
@@ -149,10 +154,20 @@ class ItemServiceTest extends TestService {
 
     @Test
     void getItemDTOListTest() {
+        ingredientDirSetting.setProperty(2);
         List<ItemDTOForList> list = itemService.getItemDTOList(UPDATE_DATE);
         assertNotNull(list);
         assertEquals(7, list.get(0).getId());
         assertEquals(4, list.get(0).getRestList().size());
+    }
+
+    @Test
+    void getItemDirListTest() {
+        ingredientDirSetting.setProperty(2);
+        List<ItemDTOForDir> list = itemService.getItemDirList();
+        assertNotNull(list);
+        assertEquals(3, list.size());
+        assertEquals(1, list.get(0).getId());
     }
 
     @Transactional

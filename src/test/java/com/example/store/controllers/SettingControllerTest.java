@@ -204,7 +204,7 @@ class SettingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("INGREDIENT_DIR_ID"))
-                .andExpect(jsonPath("$.data.property").value(1));
+                .andExpect(jsonPath("$.data.property").value(2));
     }
 
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -345,7 +345,7 @@ class SettingControllerTest {
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID).getProperty());
         assertEquals(0, ingredientDirSetting.getProperty());
-        ingredientDirSetting.setProperty(1);
+        ingredientDirSetting.setProperty(2);
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

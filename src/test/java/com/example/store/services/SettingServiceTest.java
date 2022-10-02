@@ -177,6 +177,6 @@ class SettingServiceTest {
 
     @Test
     void getIngredientDirIdSettingsTest() {
-        assertEquals(1, settingService.getIngredientDirSettings().getProperty());
+        assertEquals(2, settingService.getIngredientDirSettings().getProperty());
     }
 }

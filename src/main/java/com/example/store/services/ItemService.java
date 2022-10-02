@@ -4,9 +4,11 @@ import com.example.store.components.TreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.ItemDTOForDir;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
+import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
@@ -14,7 +16,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +43,9 @@ public class ItemService {
     protected IngredientService ingredientService;
     @Autowired
     private TreeBuilder<Item> treeBuilder;
-
-    @Value("#{'${item.directories}'.split(',')}")
-    private List<Integer> ingredientParentDirectories;
+    @Autowired
+    @Qualifier("ingredientDir")
+    private PropertySetting ingredientDirSetting;
 
     public List<ItemDTOForTree> getItemDTOTree() {
         List<Item> items = itemRepository.findAll(Sort.by("id"));
@@ -73,17 +75,16 @@ public class ItemService {
 
     public List<ItemDTOForList> getItemDTOList(long time) {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
-        List<Item> items = itemRepository.findByParentIds(ingredientParentDirectories);
+        List<Item> items = itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty()));
         return items.stream()
                 .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());
     }
 
-    // todo add tests
-    public List<ItemDTO> getItemDirList() {
+    public List<ItemDTOForDir> getItemDirList() {
         List<Item> items = itemRepository.getByIsNode(true);
         return items.stream()
-                .map(itemMapper::mapToDTO)
+                .map(itemMapper::mapToDTOForDir)
                 .collect(Collectors.toList());
     }
 

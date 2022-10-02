@@ -38,6 +38,4 @@ spring.mail.protocol : smtps
 spring.mail.properties.mail.smtp.auth : true
 spring.mail.debug : false
 
-item.directories : 1998, 1990
-
 our.company.id : 1
