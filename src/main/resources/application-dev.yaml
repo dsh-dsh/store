@@ -33,5 +33,3 @@ spring.mail.port : 465
 spring.mail.protocol : smtps
 spring.mail.properties.mail.smtp.auth : true
 spring.mail.debug : false
-
-our.company.id : 1

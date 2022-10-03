@@ -24,8 +24,6 @@ server.port : 8081
 # every night at 3.00
 hold.docs.scheduling.cron.expression : 0 0 3 * * ?
 
-our.company.id : 1
-
 cors.urls : http://localhost:8082
 
 spring.mail.to.email : daniilshipilov@yandex.ru

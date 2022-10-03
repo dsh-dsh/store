@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 public class Config {
@@ -18,12 +19,13 @@ public class Config {
         return new ModelMapper();
     }
 
-    @Bean
+    @Bean("systemUser")
     public User getSystemUser(UserService userService) {
         return userService.getSystemAuthor();
     }
 
     @Bean
+    @DependsOn("systemUser")
     @Qualifier("addRestForHold")
     public PropertySetting getAddRestForHoldSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
@@ -32,6 +34,7 @@ public class Config {
     }
 
     @Bean
+    @DependsOn("systemUser")
     @Qualifier("periodAveragePrice")
     public PropertySetting getPeriodAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
@@ -40,6 +43,7 @@ public class Config {
     }
 
     @Bean
+    @DependsOn("systemUser")
     @Qualifier("docsAveragePrice")
     public PropertySetting getDocsAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
@@ -48,6 +52,7 @@ public class Config {
     }
 
     @Bean
+    @DependsOn("systemUser")
     @Qualifier("ourCompany")
     public PropertySetting getOurCompanySetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
@@ -56,6 +61,7 @@ public class Config {
     }
 
     @Bean
+    @DependsOn("systemUser")
     @Qualifier("ingredientDir")
     public PropertySetting getIngredientDirSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository

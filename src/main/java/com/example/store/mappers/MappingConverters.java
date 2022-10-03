@@ -1,5 +1,6 @@
 package com.example.store.mappers;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Item;
@@ -7,7 +8,9 @@ import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.*;
+import com.example.store.repositories.CompanyRepository;
 import com.example.store.services.*;
+import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.modelmapper.Condition;
 import org.modelmapper.Converter;
@@ -33,7 +36,7 @@ public class MappingConverters {
     @Autowired
     private UserService userService;
     @Autowired
-    private CompanyService companyService;
+    private CompanyRepository companyRepository;
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
@@ -114,6 +117,8 @@ public class MappingConverters {
 
     // todo move to service
     private Company getCompanyByCode(int code) {
-        return companyService.getByCode(code);
+        return companyRepository.findByCode(code)
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_COMPANY_MESSAGE, code)));
     }
 }
