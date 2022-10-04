@@ -5,7 +5,9 @@ import java.time.format.DateTimeFormatter;
 
 public class Util {
 
-    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static LocalDateTime getLocalDateTime(long time) {
         return Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -16,11 +18,11 @@ public class Util {
     }
 
     public static LocalDate getLocalDate(String time) {
-        return LocalDate.parse(time, timeFormatter);
+        return LocalDate.parse(time, dateTimeFormatter);
     }
 
     public static LocalDateTime getLocalDateTime(String time) {
-        return LocalDateTime.parse(time, timeFormatter);
+        return LocalDateTime.parse(time, dateTimeFormatter);
     }
 
     public static long getLongLocalDateTime(LocalDateTime time) {
@@ -33,6 +35,18 @@ public class Util {
 
     public static float floorValue(float value, int k) {
         return (float) Math.floor(value * k) / k;
+    }
+
+    public static String getDate(LocalDateTime localDateTime) {
+        return localDateTime.format(dateFormatter);
+    }
+
+    public static String getDateAndTime(LocalDateTime localDateTime) {
+        return localDateTime.format(dateTimeFormatter);
+    }
+
+    public static String getTime(LocalDateTime localDateTime) {
+        return localDateTime.format(timeFormatter);
     }
 
     private Util() {

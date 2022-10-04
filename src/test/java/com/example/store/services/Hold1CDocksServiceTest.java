@@ -520,6 +520,20 @@ class Hold1CDocksServiceTest {
         assertEquals(222, itemDoc.getNumber());
     }
 
+    @Sql(value = "/sql/hold1CDocs/addOneCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkUnHoldenDocksExistsIfExistsTest() {
+        assertTrue(hold1CDocksService.checkUnHoldenDocksExists());
+    }
+
+    @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkUnHoldenDocksExistsTest() {
+        assertFalse(hold1CDocksService.checkUnHoldenDocksExists());
+    }
+
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {
         ItemQuantityPriceDTO dto = new ItemQuantityPriceDTO();
         dto.setItem(item);

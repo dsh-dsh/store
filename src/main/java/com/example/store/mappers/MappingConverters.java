@@ -38,8 +38,6 @@ public class MappingConverters {
     @Autowired
     private CompanyRepository companyRepository;
 
-    protected final Condition<Document, Document> isCheck =
-            doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
 
     protected final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
     protected final Converter<String, PeriodicValueType> typeConverter = str -> PeriodicValueType.valueOf(str.getSource());
@@ -50,19 +48,11 @@ public class MappingConverters {
     protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());
     protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
+    protected final Converter<Workshop, EnumDTO> workshopConverter = shop -> getEnumDTO(shop.getSource());
+    protected final Converter<Unit, EnumDTO> unitConverter = unit -> getEnumDTO(unit.getSource());
 
-    protected final Converter<Workshop, EnumDTO> workshopConverter = shop -> {
-        EnumDTO dto = new EnumDTO();
-        dto.setName(shop.getSource().getValue());
-        dto.setCode(shop.getSource().toString());
-        return dto;
-    };
-    protected final Converter<Unit, EnumDTO> unitConverter = unit -> {
-        EnumDTO dto = new EnumDTO();
-        dto.setName(unit.getSource().getValue());
-        dto.setCode(unit.getSource().toString());
-        return dto;
-    };
+    protected final Condition<Document, Document> isCheck =
+            doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;
 
     protected final Converter<LocalDateTime, Long> dateTimeToLongConverter =
             time -> ZonedDateTime.of(time.getSource(), ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -97,25 +87,28 @@ public class MappingConverters {
     protected final Converter<ItemDoc, Float> docItemAmountConverter =
             doc -> docItemService.getItemsAmount(doc.getSource());
 
-    // todo move to service
+    private EnumDTO getEnumDTO(EnumeratedInterface enumeratedInterface) {
+        EnumDTO dto = new EnumDTO();
+        dto.setName(enumeratedInterface.getValue());
+        dto.setCode(enumeratedInterface.toString());
+        return dto;
+    }
+
     private Item getItem(int itemId) {
         if(itemId == 0) return null;
         return itemService.findItemById(itemId);
     }
 
-    // todo move to service
     private User getUser(int code) {
         if(code == 0) return null;
         return userService.getByCode(code);
     }
 
-    // todo move to service
     private User getUserById(int userId) {
         if(userId == 0) return null;
         return userService.getById(userId);
     }
 
-    // todo move to service
     private Company getCompanyByCode(int code) {
         return companyRepository.findByCode(code)
                 .orElseThrow(() -> new BadRequestException(

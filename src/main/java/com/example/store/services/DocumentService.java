@@ -36,7 +36,7 @@ public class DocumentService {
     public Document getFirstUnHoldenCheck(LocalDateTime from) {
         return documentRepository.getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(from,
                 DocumentType.CHECK_DOC, false, false, Sort.by(Constants.DATE_TIME_STRING))
-                .orElseThrow(() -> new BadRequestException(Constants.NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(Constants.NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE));
     }
 
     public List<Document> getDocumentsAfterAndInclude(Document document) {

@@ -87,7 +87,9 @@ public class Constants {
     public static final String OUT_OF_PERIOD_MESSAGE = "Нельзя изменять документы до начала периода %s";
     public static final String NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE = "Существуют не проведенные документы в периоде";
     public static final String NOT_HOLDEN_CHECKS_EXIST_MESSAGE = "Существуют не проведенные чеки за предыдущие дни. Проведение текущих документов не возможно";
-    public static final String NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
+    public static final String NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
+    public static final String CHECKS_HOLDING_FAIL_MESSAGE = "После проведения чеков за %s все еще остались не проведенные документы";
+    public static final String CHECKS_HOLDING_FAIL_SUBJECT = "Ошибка проведения чеков - %s";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
 

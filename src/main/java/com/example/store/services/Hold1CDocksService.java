@@ -11,10 +11,12 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +69,11 @@ public class Hold1CDocksService {
     private PropertySetting addRestForHoldSetting;
     @Autowired
     private User systemUser;
+    @Autowired
+    private MailService mailService;
+
+    @Value("${spring.mail.to.email}")
+    private String toEmail;
 
     @Autowired
     private LotMoveService lotMoveService;
@@ -100,6 +107,7 @@ public class Hold1CDocksService {
         }
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
+        checkUnHoldenDocksExists();
     }
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
@@ -257,6 +265,19 @@ public class Hold1CDocksService {
     public List<OrderDoc> getUnHoldenOrdersByProjectAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_ORDER_DOC);
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
+    }
+
+    public boolean checkUnHoldenDocksExists() {
+        if(documentRepository
+                .existsByDateTimeBeforeAndIsDeletedAndIsHold(
+                LocalDateTime.now(), false, false)) {
+            LocalDateTime localDateTime = LocalDateTime.now();
+            mailService.send(toEmail,
+                    String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(localDateTime)),
+                    String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(localDateTime.minusDays(1))));
+            return true;
+        }
+        return false;
     }
 
     public ItemDoc getWriteOffDoc(Storage storage, Project project, LocalDateTime time) {

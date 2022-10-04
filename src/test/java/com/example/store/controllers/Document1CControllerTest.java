@@ -1,6 +1,5 @@
 package com.example.store.controllers;
 
-import com.example.store.ItemTestService;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.ItemDocListRequestDTO;
 import com.example.store.model.entities.CheckInfo;
@@ -26,14 +25,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,7 +204,7 @@ class Document1CControllerTest {
                         post(URL_PREFIX + "/hold"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_CHECKS_DOS_NOT_EXIST_MESSAGE));
+                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE));
     }
 
     @Test

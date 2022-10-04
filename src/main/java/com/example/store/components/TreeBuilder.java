@@ -6,6 +6,7 @@ import com.example.store.model.entities.EntityInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class TreeBuilder <E extends EntityInterface>{
     private ItemDTOForTree[] itemArray;
 
     public List<ItemDTOForTree> getItemTree(List<E> list) {
+        if(list.isEmpty()) return new ArrayList<>();
         fillItemArray(list);
         fillChildren();
         List<ItemDTOForTree> itemList = Arrays.stream(itemArray)
