@@ -39,9 +39,7 @@ public class Ingredient1CService extends IngredientService {
 
     @Override
     public void setIngredient(Item item, IngredientDTO dto) {
-        Ingredient ingredient = ingredientMapper.mapToEntity(dto);
-        ingredient.setChild(itemService.getItemByNumber(dto.getChildId()));
-        ingredient.setParent(item);
+        Ingredient ingredient = mapToEntity(item, dto);
         ingredientRepository.save(ingredient);
         periodicValue1CService.setQuantities(ingredient, dto);
     }
@@ -51,5 +49,13 @@ public class Ingredient1CService extends IngredientService {
         ingredient.setDeleted(dto.isDeleted());
         ingredientRepository.save(ingredient);
         periodicValue1CService.updateQuantities(ingredient, dto);
+    }
+
+    public Ingredient mapToEntity(Item item, IngredientDTO dto) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setDeleted(dto.isDeleted());
+        ingredient.setParent(item);
+        ingredient.setChild(itemService.getItemByNumber(dto.getChildId()));
+        return ingredient;
     }
 }

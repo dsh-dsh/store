@@ -28,11 +28,8 @@ public class Item1CService extends ItemService{
         date = LocalDate.now();
         List<Item1CDTO> dtoList = itemList1CRequestDTO.getItem1CDTOList();
         dtoList.sort(Comparator.comparing(Item1CDTO::getNumber));
-
         addRootItems(dtoList);
-
         setItemsRecursive(new ArrayList<>(dtoList));
-
         dtoList.forEach(this::setIngredientsAndSets);
     }
 
