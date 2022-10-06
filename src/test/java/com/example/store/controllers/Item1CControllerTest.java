@@ -133,21 +133,21 @@ class Item1CControllerTest extends TestService {
 
     private List<User1CDTO> getUserDTOList() {
         List<User1CDTO> list = new ArrayList<>();
-        list.add(getUserDTO(10, 1, "user10", "10@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(11, 1, "user11", "11@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(15, 13, "user15", "15@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(17, 16, "user17", "17@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(18, 16, "user18", "18@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(19, 16, "user19", "19@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(12, 1, "user12", "12@mail.ru", "", 1234567890, false));
-        list.add(getUserDTO(16, 13, "dirUser16", "16@mail.ru", "", 1234567890, true));
-        list.add(getUserDTO(13, 0, "rootUser2", "13@mail.ru", "", 1234567890, true));
-        list.add(getUserDTO(14, 13, "user14", "14@mail.ru", "", 1234567890, false));
+        list.add(getUserDTO(10, 1, "user10", "10@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(11, 1, "user11", "11@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(15, 13, "user15", "15@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(17, 16, "user17", "17@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(18, 16, "user18", "18@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(19, 16, "user19", "19@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(12, 1, "user12", "12@mail.ru", "", 1234567890, false, ""));
+        list.add(getUserDTO(16, 13, "dirUser16", "16@mail.ru", "", 1234567890, true, null));
+        list.add(getUserDTO(13, 0, "rootUser2", "13@mail.ru", "", 1234567890, true, ""));
+        list.add(getUserDTO(14, 13, "user14", "14@mail.ru", "", 1234567890, false, "12345678"));
         return list;
     }
 
     private User1CDTO getUserDTO(int code, int parentId, String name,
-                                 String email, String phone, long birthDate, boolean isNode) {
+                                 String email, String phone, long birthDate, boolean isNode, String password) {
         User1CDTO dto = new User1CDTO();
         dto.setName(name);
         dto.setCode(code);
@@ -156,6 +156,7 @@ class Item1CControllerTest extends TestService {
         dto.setPhone(phone);
         dto.setBirthDate(birthDate);
         dto.setNode(isNode);
+        dto.setPassword(password);
         return dto;
     }
 

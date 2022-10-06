@@ -52,33 +52,42 @@ public class User1CService extends UserService {
         }
     }
 
+    // todo update tests
     public void updatePerson(User1CDTO user1CDTO) {
         User user = getByCode(user1CDTO.getCode());
         updateUserFields(user, user1CDTO);
         userRepository.save(user);
     }
 
+    // todo update tests
     public void updateUserFields(User user, User1CDTO dto) {
-        if(dto.getName() != null && !dto.getName().equals("")) user.setLastName(dto.getName());
+        if(dto.getName() != null && !dto.getName().isEmpty()) user.setLastName(dto.getName());
         user.setFirstName("");
-        if(dto.getEmail() != null && !dto.getEmail().equals("")) {
+        if(dto.getEmail() != null && !dto.getEmail().isEmpty()) {
             user.setEmail(dto.getEmail());
         } else {
             user.setEmail(dto.getCode() + "@email.com");
         }
-        if(dto.getPhone() != null && !dto.getPhone().equals("")) user.setPhone(dto.getPhone());
+        if(!dto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+        if(dto.getPhone() != null && !dto.getPhone().isEmpty()) user.setPhone(dto.getPhone());
         user.setBirthDate(Util.getLocalDate(dto.getBirthDate()));
         user.setRole(Role.NONE);
     }
 
+    // todo update tests
     public void setPerson(User1CDTO user1CDTO) {
         User user = personMapper.mapToUser(user1CDTO);
-        user.setFirstName(""); // todo check it up
+        user.setFirstName("");
         user.setRegTime(LocalDateTime.now());
-        if(user1CDTO.getEmail() != null && !user1CDTO.getEmail().equals("")) {
+        if(user1CDTO.getEmail() != null && !user1CDTO.getEmail().isEmpty()) {
             user.setEmail(user1CDTO.getEmail());
         } else {
             user.setEmail(user1CDTO.getCode() + "@email.com");
+        }
+        if(user1CDTO.getPassword() != null && !user1CDTO.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user1CDTO.getPassword()));
         }
         user.setRole(Role.NONE);
         userRepository.save(user);

@@ -22,4 +22,6 @@ public class User1CDTO extends UserDTO{
     @JsonProperty("is_node")
     private boolean isNode;
 
+    private String password;
+
 }

@@ -28,7 +28,7 @@ public class UserService {
     @Autowired
     protected PersonMapper personMapper;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    protected PasswordEncoder passwordEncoder;
     @Autowired
     private TreeBuilder<User> treeBuilder;
 
