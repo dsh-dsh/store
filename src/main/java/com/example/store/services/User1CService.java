@@ -24,6 +24,12 @@ public class User1CService extends UserService {
 
     protected void addRootUsers(List<User1CDTO> dtoList) {
         dtoList.stream().filter(dto -> dto.getParentId() == 0).forEach(this::setUser);
+        setNullParentIdFieldsToIntNullInDB();
+    }
+
+    protected void setNullParentIdFieldsToIntNullInDB() {
+        List<User> items = userRepository.findByParent(null);
+        items.forEach(item -> userRepository.setParentIdNotNull(item.getId()));
     }
 
     private void setUserRecursive(List<User1CDTO> dtoList) {

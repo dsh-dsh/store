@@ -10,6 +10,7 @@ import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
+import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,8 @@ class ItemServiceTest extends TestService {
 
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private ItemRepository itemRepository;
     @Autowired
     private IngredientService ingredientService;
     @Autowired
@@ -157,8 +160,18 @@ class ItemServiceTest extends TestService {
         ingredientDirSetting.setProperty(2);
         List<ItemDTOForList> list = itemService.getItemDTOList(UPDATE_DATE);
         assertNotNull(list);
+        assertEquals(2, list.size());
         assertEquals(7, list.get(0).getId());
         assertEquals(4, list.get(0).getRestList().size());
+    }
+
+    @Test
+    void getIngredientItemsListTest() {
+        List<Item> list = itemService.getIngredientItemsList(itemRepository.findByParentIds(List.of(1)));
+        assertNotNull(list);
+        assertEquals(2, list.size());
+        assertEquals(7, list.get(0).getId());
+        assertEquals(8, list.get(1).getId());
     }
 
     @Test

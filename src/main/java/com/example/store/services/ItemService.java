@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -75,10 +76,22 @@ public class ItemService {
 
     public List<ItemDTOForList> getItemDTOList(long time) {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
-        List<Item> items = itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty()));
+        List<Item> items = getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
         return items.stream()
                 .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());
+    }
+
+    public List<Item> getIngredientItemsList(List<Item> items) {
+        List<Item> itemList = new ArrayList<>();
+        for(Item item : items) {
+            if(item.isNode()) {
+                itemList.addAll(itemRepository.findByParentIds(List.of(item.getId())));
+            } else {
+                itemList.add(item);
+            }
+        }
+        return itemList;
     }
 
     public List<ItemDTOForDir> getItemDirList() {
