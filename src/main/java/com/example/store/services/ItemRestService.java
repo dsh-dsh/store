@@ -36,6 +36,8 @@ public class ItemRestService {
     @Autowired
     private ItemRepository itemRepository;
     @Autowired
+    private ItemService itemService;
+    @Autowired
     private LotRepository lotRepository;
     @Autowired
     private LotMoveService lotMoveService;
@@ -71,7 +73,7 @@ public class ItemRestService {
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
         LocalDateTime dateTime = Util.getLocalDateTime(time);
         Storage storage = storageService.getById(storageId);
-        List<Item> items = itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty()));
+        List<Item> items = itemService.getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
         return items.stream()
                 .map(item -> getDocItemDTO(docId, item, storage, dateTime))
                 .collect(Collectors.toList());

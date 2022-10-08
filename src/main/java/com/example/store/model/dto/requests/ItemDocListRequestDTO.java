@@ -13,5 +13,5 @@ import java.util.List;
 @ToString
 public class ItemDocListRequestDTO {
     @JsonProperty("item_doc_dto_list")
-    private List<DocDTO> checkDTOList;
+    private List<DocDTO> docDTOList;
 }

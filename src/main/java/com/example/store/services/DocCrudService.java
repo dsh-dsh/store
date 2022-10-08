@@ -238,7 +238,7 @@ public class DocCrudService extends AbstractDocCrudService {
     @Transactional
     public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
         docsFrom1cService.setDocDateTime(null);
-        itemDocListRequestDTO.getCheckDTOList()
+        itemDocListRequestDTO.getDocDTOList()
                 .forEach(docsFrom1cService::addDocument);
     }
 

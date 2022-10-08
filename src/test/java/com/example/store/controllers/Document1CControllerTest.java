@@ -129,7 +129,7 @@ class Document1CControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addDocsFrom1CTest() throws Exception {
         ItemDocListRequestDTO docListRequestDTO = new ItemDocListRequestDTO();
-        docListRequestDTO.setCheckDTOList(getDocDTOList());
+        docListRequestDTO.setDocDTOList(getDocDTOList());
         this.mockMvc.perform(
                         post(URL_PREFIX + "/docs")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +151,7 @@ class Document1CControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addInventoryDocFrom1CTest() throws Exception {
         ItemDocListRequestDTO docListRequestDTO = new ItemDocListRequestDTO();
-        docListRequestDTO.setCheckDTOList(getInventoryDocDTOList());
+        docListRequestDTO.setDocDTOList(getInventoryDocDTOList());
         this.mockMvc.perform(
                         post(URL_PREFIX + "/docs")
                                 .contentType(MediaType.APPLICATION_JSON)
