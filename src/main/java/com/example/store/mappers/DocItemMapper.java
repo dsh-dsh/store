@@ -3,6 +3,7 @@ package com.example.store.mappers;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
+import com.example.store.utils.Util;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -21,13 +22,13 @@ public class DocItemMapper {
     private static final Converter<DocumentItem, Float> amountConverter =
             item -> {
                     DocumentItem docItem = item.getSource();
-                    return (docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount();
+                    return Util.floorValue((docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount(), 100);
             };
 
     private static final Converter<DocumentItem, Float> amountFactConverter =
             item -> {
                 DocumentItem docItem = item.getSource();
-                return docItem.getQuantityFact() * docItem.getPrice();
+                return Util.floorValue(docItem.getQuantityFact() * docItem.getPrice(), 100);
             };
 
     public DocItemMapper() {

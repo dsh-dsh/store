@@ -112,7 +112,7 @@ class Document1CControllerTest {
                                 .param("prefix", "3"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value("<3000000003>CHECK_DOC*"));
+                .andExpect(jsonPath("$").value("<3000000003>CHECK_DOC*"));
     }
 
     @Test

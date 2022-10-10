@@ -27,10 +27,9 @@ public class Document1cController {
     }
 
     @GetMapping("/last/doc")
-    public ResponseEntity<Response<String>> getLast1CDocNumber(
+    public String getLast1CDocNumber(
             @RequestParam(defaultValue = "") int prefix) {
-        String strDoc = docCrudService.getLastCheckNumber(prefix);
-        return ResponseEntity.ok(new Response<>(strDoc));
+        return docCrudService.getLastCheckNumber(prefix);
     }
 
     @PostMapping("/docs")

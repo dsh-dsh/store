@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class ItemService {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
         List<Item> items = getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
         return items.stream()
+                .sorted(Comparator.comparing(Item::getName))
                 .map(item -> mapToDTOForList(item, dateTime))
                 .collect(Collectors.toList());
     }

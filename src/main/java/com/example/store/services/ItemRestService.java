@@ -136,10 +136,11 @@ public class ItemRestService {
     }
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
-        return (float) lotRepository
+        float rest = (float)lotRepository
                 .getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), docTime)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
+        return Util.floorValue(rest, 1000);
     }
 
     public float getRestOfLot(Lot lot, Storage storage) {
