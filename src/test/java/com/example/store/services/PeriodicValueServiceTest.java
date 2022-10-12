@@ -34,7 +34,7 @@ class PeriodicValueServiceTest {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setQuantitiesTest() {
@@ -55,7 +55,7 @@ class PeriodicValueServiceTest {
         assertEquals(1f, list.get(2).getQuantity());
     }
 
-    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void updateQuantitiesSetNewIfNewDateTest() {
@@ -74,10 +74,11 @@ class PeriodicValueServiceTest {
         assertEquals(2f, list.get(1).getQuantity());
         assertEquals(PeriodicValueType.ENABLE, list.get(2).getType());
         assertEquals(0f, list.get(2).getQuantity());
-        assertEquals(6, periodicValueRepository.findByIngredient(ingredient).size());
+        List<PeriodicValue> values = periodicValueRepository.findByIngredient(ingredient);
+        assertEquals(5, values.size());
     }
 
-    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void updateQuantitiesUpdateIfExistingDateTest() {
@@ -99,7 +100,7 @@ class PeriodicValueServiceTest {
         assertEquals(3, periodicValueRepository.findByIngredient(ingredient).size());
     }
 
-    @Sql(value = "/sql/ingredients/before.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void softDeleteQuantitiesTest() {

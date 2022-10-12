@@ -12,6 +12,7 @@ import com.example.store.model.enums.PaymentType;
 import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.repositories.OrderDocRepository;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -240,10 +241,10 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setChecks(new ArrayList<>());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
+    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",  // todo change to setIngredients from ingredients
             "/sql/hold1CDocs/addThreeChecks.sql",
-            "/sql/hold1CDocs/addRestDocsWithValue5.sql",
-            "/sql/hold1CDocs/addRestLotsWithValue5.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/hold1CDocs/addRestDocsWithValue1.sql",
+            "/sql/hold1CDocs/addRestLotsWithValue1.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
@@ -265,9 +266,10 @@ class Hold1CDocksServiceTest {
         assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(5).getBaseDocument());
         assertEquals(6, documents.stream().filter(Document::isHold).count());
         List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(5));
-        assertEquals(3f, docItems.get(0).getQuantity());
-        assertEquals(2.2f, docItems.get(1).getQuantity());
-        assertEquals(4f, docItems.get(2).getQuantity());
+        assertEquals(1.4f, Util.floorValue(docItems.get(0).getQuantity(), 10));
+        assertEquals(7f, docItems.get(1).getQuantity());
+        assertEquals(6.2f, docItems.get(2).getQuantity());
+        assertEquals(8f, docItems.get(3).getQuantity());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
@@ -292,7 +294,6 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(0);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, from, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
 
@@ -301,6 +302,11 @@ class Hold1CDocksServiceTest {
         assertEquals(5, documents.size());
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
+        List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(4));
+        assertEquals(2.4f, docItems.get(0).getQuantity());
+        assertEquals(8f, docItems.get(1).getQuantity());
+        assertEquals(7.2f, docItems.get(2).getQuantity());
+        assertEquals(9f, docItems.get(3).getQuantity());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 

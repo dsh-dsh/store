@@ -11,6 +11,7 @@ import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,26 +58,57 @@ public class IngredientService {
     }
 
     public Map<Item, Float> getIngredientMapOfItem(Item item, LocalDate date) {
+        float totalWeight = 0;
         ingredientMapOfItem = new HashMap<>();
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
-        ingredients.forEach(ingredient ->
-                setIngredientMapOfItemRecursively(ingredient,
-                        periodicValueService.getQuantityRatio(ingredient, date), date));
+        if(ingredients.size() == 1) {
+            totalWeight = 1;
+        } else {
+            totalWeight = getTotalWeight(ingredients, date);
+        }
+        if(totalWeight > 0) {
+            for (Ingredient ingredient : ingredients) {
+                Float grossWeight = getGrossQuantity(ingredient, date);
+                if (grossWeight == null) continue;
+                setIngredientMapOfItemRecursively(ingredient, grossWeight / totalWeight, date);
+            }
+        }
         return ingredientMapOfItem;
     }
 
-    private void setIngredientMapOfItemRecursively(Ingredient currentIngredient, float quantityRatio, LocalDate date) {
+    private void setIngredientMapOfItemRecursively(Ingredient currentIngredient, float currentIngredientWeight, LocalDate date) {
         List<Ingredient> ingredients = getIngredientsNotDeleted(currentIngredient.getChild());
-        if(!ingredients.isEmpty()) {
-            for(Ingredient ingredient : ingredients) {
-                float ratio = periodicValueService.getQuantityRatio(ingredient, date) * quantityRatio;
-                setIngredientMapOfItemRecursively(ingredient, ratio, date);
-            }
+        if(ingredients.isEmpty()) {
+            ingredientMapOfItem.put(currentIngredient.getChild(), Util.floorValue(currentIngredientWeight, 1000));
         } else {
-            Optional<PeriodicValue> grossQuantity = periodicValueService.getGrossQuantity(currentIngredient, date);
-            if(grossQuantity.isEmpty()) return;
-            ingredientMapOfItem.put(currentIngredient.getChild(), grossQuantity.get().getQuantity() * quantityRatio);
+            float totalWeight = getTotalWeight(ingredients, date);
+            if(totalWeight == 0) return;
+            for(Ingredient ingredient : ingredients) {
+                Float grossWeight = getGrossQuantity(ingredient, date);
+                if(grossWeight == null) continue;
+                setIngredientMapOfItemRecursively(ingredient, (grossWeight / totalWeight) * currentIngredientWeight, date);
+
+            }
         }
+    }
+
+    public Float getGrossQuantity(Ingredient ingredient, LocalDate date) {
+        Optional<PeriodicValue> optional = periodicValueService.getGrossQuantity(ingredient, date);
+        if(optional.isPresent()) {
+            return optional.get().getQuantity();
+        }
+        return null;
+    }
+
+    private float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
+        float netWeight = 0;
+        for(Ingredient ingredient : ingredients) {
+            Optional<PeriodicValue> netValue = periodicValueService.getNetQuantity(ingredient, date);
+            if(netValue.isPresent()) {
+                netWeight += netValue.get().getQuantity();
+            }
+        }
+        return netWeight;
     }
 
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
@@ -110,7 +142,7 @@ public class IngredientService {
                 }).collect(Collectors.toList());
     }
 
-    protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
+    protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) { // todo перенести в periodicValueService
         for(PeriodicValueDTO valueDTO : valueDTOList) {
             switch (valueDTO.getType()) {
                 case "NET":

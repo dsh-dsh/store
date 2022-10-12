@@ -57,6 +57,12 @@ public class PeriodicValueService {
                 .findFirst();
     }
 
+    public Optional<PeriodicValue> getNetQuantity(Ingredient ingredient, LocalDate date) {
+        return getQuantityList(ingredient, date).stream().
+                filter(q -> q.getType().equals(PeriodicValueType.NET))
+                .findFirst();
+    }
+
     public void setQuantities(Ingredient ingredient, IngredientDTO dto) {
         setQuantity(ingredient, dto.getNetto());
         setQuantity(ingredient, dto.getGross());

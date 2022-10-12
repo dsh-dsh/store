@@ -1,4 +1,4 @@
---приход на 3 склад четырех ингредиентов по 5 кг
+--приход на 3 склад четырех ингредиентов по 1 кг
 insert into document
 (id, author_id, base_document_id, date_time, doc_type, individual_id, is_hold, is_payed, number, project_id, supplier_id,
 recipient_id, storage_from_id, storage_to_id, is_deleted, d_type)
@@ -8,7 +8,7 @@ values
 insert into document_item
 (id, discount, item_id, document_id, price, quantity, quantity_fact)
 values
-(10, 0.0, 15, 4, 150.00, 5.0, 0.0),
-(11, 0.0, 16, 4, 150.00, 5.0, 0.0),
-(12, 0.0, 17, 4, 150.00, 5.0, 0.0),
-(13, 0.0, 18, 4, 150.00, 5.0, 0.0);
+(10, 0.0, 15, 4, 150.00, 1.0, 0.0),
+(11, 0.0, 16, 4, 150.00, 1.0, 0.0),
+(12, 0.0, 17, 4, 150.00, 1.0, 0.0),
+(13, 0.0, 18, 4, 150.00, 1.0, 0.0);
