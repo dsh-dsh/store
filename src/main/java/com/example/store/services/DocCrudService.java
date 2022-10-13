@@ -138,6 +138,15 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    // todo add tests
+    public void unHoldDocument(int docId) {
+        Document document = documentService.getDocumentById(docId);
+        checkTimePeriod(document);
+        if(holdDocsService.checkPossibilityToHold(document)) {
+            holdDocsService.unHoldDoc(document);
+        }
+    }
+
     @Transactional
     public void serialHoldDocuments(int docId) {
         Document document = documentService.getDocumentById(docId);

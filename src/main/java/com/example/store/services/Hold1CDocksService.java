@@ -107,7 +107,7 @@ public class Hold1CDocksService {
         }
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
-        checkUnHoldenDocksExists();
+        checkUnHoldenDocksExists(to);
     }
 
     public void createSaleOrders(Storage storage, LocalDateTime time) {
@@ -267,14 +267,12 @@ public class Hold1CDocksService {
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 
-    public boolean checkUnHoldenDocksExists() {
+    public boolean checkUnHoldenDocksExists(LocalDateTime untilDateTime) {
         if(documentRepository
-                .existsByDateTimeBeforeAndIsDeletedAndIsHold(
-                LocalDateTime.now(), false, false)) {
-            LocalDateTime localDateTime = LocalDateTime.now();
+                .existsByDateTimeBeforeAndIsDeletedAndIsHold(untilDateTime, false, false)) {
             mailService.send(toEmail,
-                    String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(localDateTime)),
-                    String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(localDateTime.minusDays(1))));
+                    String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(LocalDateTime.now())),
+                    String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(untilDateTime)));
             return true;
         }
         return false;

@@ -68,13 +68,15 @@ public class HoldDocsService {
         itemDocRepository.save(itemDoc);
     }
 
+
+    @Transaction
     public void unHoldDoc(Document document) {
         document.setHold(false);
         if(document instanceof ItemDoc) {
             List<DocumentItem> items =
                     docItemService.getItemsByDoc((ItemDoc) document);
             lotMoveService.removeByDocument((ItemDoc) document);
-            lotService.removeLots(items);
+            lotService.removeLotsForItems(items);
             itemDocRepository.save((ItemDoc) document);
         } else {
             orderDocRepository.save((OrderDoc) document);

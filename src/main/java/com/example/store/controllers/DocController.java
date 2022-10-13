@@ -74,6 +74,12 @@ public class DocController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @PostMapping("/un/hold/{id}")
+    public ResponseEntity<Response<String>> unHoldDocument(@PathVariable int id) {
+        docCrudService.unHoldDocument(id);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
     @PostMapping("/hold/serial/{id}")
     public ResponseEntity<Response<String>> serialHoldDocument(@PathVariable int id) {
         docCrudService.serialHoldDocuments(id);

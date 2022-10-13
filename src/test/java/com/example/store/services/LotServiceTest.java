@@ -7,19 +7,16 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
-import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -154,8 +151,9 @@ class LotServiceTest {
     @Test
     void checkQuantityShortageExceptionThrownTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
+        Item item = getItem(8);
         assertThrows(BadRequestException.class,
-                () -> itemRestService.checkQuantityShortage(mapOfLotAndFloat, 20.00f));
+                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndFloat, 20.00f));
     }
 
     @Sql(value = "/sql/lots/addTwoDocsAndLots.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -234,8 +232,9 @@ class LotServiceTest {
     @Test
     void checkQuantityShortageNoExceptionTest() {
         Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
+        Item item = getItem(8);
         assertDoesNotThrow(
-                () -> itemRestService.checkQuantityShortage(mapOfLotAndFloat, 15.00f));
+                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndFloat, 15.00f));
     }
 
     @Sql(value = "/sql/lots/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -268,7 +267,7 @@ class LotServiceTest {
     void removeLotsTest() {
         Document document = documentService.getDocumentById(1);
         List<DocumentItem> documentItems = docItemService.getItemsByDoc((ItemDoc)document);
-        lotService.removeLots(documentItems);
+        lotService.removeLotsForItems(documentItems);
         assertEquals(0, lotRepository.findAll().size());
     }
 

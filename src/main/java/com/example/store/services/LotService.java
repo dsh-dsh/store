@@ -123,9 +123,10 @@ public class LotService {
     }
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
+        Item item = docItem.getItem();
         Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
         if(!is1CDoc || addRestForHoldSetting.getProperty() == 1) {
-            itemRestService.checkQuantityShortage(lotMap, docItem.getQuantity());
+            itemRestService.checkQuantityShortage(item, lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());
     }
@@ -167,7 +168,7 @@ public class LotService {
         lotMoveService.addPlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
 
-    public void removeLots(List<DocumentItem> items) {
+    public void removeLotsForItems(List<DocumentItem> items) {
         items.forEach(this::removeLot);
     }
 

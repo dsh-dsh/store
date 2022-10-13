@@ -33,7 +33,7 @@ public class UnHoldDocs {
         if (document instanceof ItemDoc) {
             lotMoveService.removeByDocument((ItemDoc) document);
             List<DocumentItem> items = docItemService.getItemsByDoc((ItemDoc) document);
-            lotService.removeLots(items);
+            lotService.removeLotsForItems(items);
         }
         documentService.setIsHoldAndSave(false, document);
     }

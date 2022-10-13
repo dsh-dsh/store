@@ -56,16 +56,11 @@ public class ItemRestService {
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
 
-    public void checkQuantityShortage(Map<Lot, Float> lotMap, float docItemQuantity) {
+    public void checkQuantityShortage(Item item, Map<Lot, Float> lotMap, float docItemQuantity) {
         double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
         if(docItemQuantity > lotsQuantitySum) {
-            String itemName = "";
-            Optional<Lot> lot = lotMap.keySet().stream().findFirst();
-            if(lot.isPresent()) {
-                itemName = lot.get().getDocumentItem().getItem().getName();
-            }
             throw new BadRequestException(
-                    String.format(Constants.SHORTAGE_OF_ITEM_MESSAGE, itemName, docItemQuantity, lotsQuantitySum),
+                    String.format(Constants.SHORTAGE_OF_ITEM_MESSAGE, item.getName(), docItemQuantity, lotsQuantitySum),
                     ExceptionType.HOLD_EXCEPTION);
         }
     }
