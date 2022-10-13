@@ -50,6 +50,11 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(settingService.getIngredientDirSettings()));
     }
 
+    @GetMapping("/hold/dialog/enable")
+    public ResponseEntity<Response<SettingDTO>> getHoldingDialogEnableSettings() {
+        return ResponseEntity.ok(new Response<>(settingService.getHoldingDialogEnableSettings()));
+    }
+
     @GetMapping("/period")
     public ResponseEntity<Response<PeriodDTO>> getCurrentPeriod() {
         return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
@@ -88,6 +93,12 @@ public class SettingController {
     @PostMapping("/ingredient/dir")
     public ResponseEntity<Response<String>> setIngredientDirSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setIngredientDirSetting(settingDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
+    @PostMapping("/hold/dialog/enable")
+    public ResponseEntity<Response<String>> setHoldDialogEnableSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setHoldingDialogEnableSetting(settingDTO);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

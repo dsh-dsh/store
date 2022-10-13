@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +39,16 @@ public class SettingService {
     @Autowired
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
+    @Autowired
+    @Qualifier("holdingDialogEnable")
+    private PropertySetting holdingDialogEnableSetting;
+
+    private UserDTO systemUserDTO;
+
+    @PostConstruct
+    public void init() {
+        systemUserDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
+    }
 
     public PropertySetting getSettingByType(User user, SettingType type) {
         Optional<PropertySetting> setting = settingRepository.findByUserAndSettingType(user, type);
@@ -97,6 +108,11 @@ public class SettingService {
         setSystemSetting(settingDTO, SettingType.INGREDIENT_DIR_ID);
     }
 
+    public void setHoldingDialogEnableSetting(SettingDTO settingDTO) {
+        holdingDialogEnableSetting.setProperty(settingDTO.getProperty());
+        setSystemSetting(settingDTO, SettingType.HOLDING_DIALOG_ENABLE);
+    }
+
     public void setSystemSetting(SettingDTO dto, SettingType settingType) {
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, dto.getProperty()));
@@ -113,27 +129,26 @@ public class SettingService {
     }
 
     public SettingDTO getAddShortageForHoldSetting() {
-        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return getSettingDTO(addRestForHoldSetting, userDTO);
+        return getSettingDTO(addRestForHoldSetting, systemUserDTO);
     }
 
     public SettingDTO getAveragePriceForPeriodCloseSettings() {
-        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return getSettingDTO(periodAveragePriceSetting, userDTO);
+        return getSettingDTO(periodAveragePriceSetting, systemUserDTO);
     }
 
     public SettingDTO getAveragePriceForDocsSettings() {
-        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return getSettingDTO(docsAveragePriceSetting, userDTO);
+        return getSettingDTO(docsAveragePriceSetting, systemUserDTO);
     }
 
     public SettingDTO getOurCompanySettings() {
-        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return getSettingDTO(ourCompanySetting, userDTO);
+        return getSettingDTO(ourCompanySetting, systemUserDTO);
     }
 
     public SettingDTO getIngredientDirSettings() {
-        UserDTO userDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
-        return getSettingDTO(ingredientDirSetting, userDTO);
+        return getSettingDTO(ingredientDirSetting, systemUserDTO);
+    }
+
+    public SettingDTO getHoldingDialogEnableSettings() {
+        return getSettingDTO(holdingDialogEnableSetting, systemUserDTO);
     }
 }

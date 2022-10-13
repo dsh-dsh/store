@@ -69,4 +69,13 @@ public class Config {
                 .orElse(PropertySetting.of(SettingType.INGREDIENT_DIR_ID, systemUser,2));
     }
 
+    @Bean
+    @DependsOn("systemUser")
+    @Qualifier("holdingDialogEnable")
+    public PropertySetting getHoldingDialogEnableSetting(SettingRepository settingRepository, User systemUser) {
+        return settingRepository
+                .findByUserAndSettingType(systemUser, SettingType.HOLDING_DIALOG_ENABLE)
+                .orElse(PropertySetting.of(SettingType.HOLDING_DIALOG_ENABLE, systemUser,1));
+    }
+
 }
