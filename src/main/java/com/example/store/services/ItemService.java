@@ -72,7 +72,6 @@ public class ItemService {
         priceService.updateItemPrices(item, itemDTO.getPrices(), date);
         setService.updateSets(item, itemDTO.getSets());
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
-        // todo в тесте не добавляется quantities в третьем ингредиенте
     }
 
     public List<ItemDTOForList> getItemDTOList(long time) {
@@ -107,6 +106,7 @@ public class ItemService {
         ItemDTOForList dto = new ItemDTOForList();
         dto.setId(item.getId());
         dto.setName(item.getName());
+        dto.setUnit(item.getUnit().getValue());
         if(dateTime != null) {
             dto.setRestList(itemRestService.getItemRestList(item, dateTime));
             dto.setPrice(itemRestService.getLastPriceOfItem(item, dateTime));

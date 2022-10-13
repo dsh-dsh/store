@@ -15,6 +15,7 @@ public class ItemDTOForList {
 
     private int id;
     private String name;
+    private String unit;
 
     @JsonProperty("parent_id")
     private int parentId;
