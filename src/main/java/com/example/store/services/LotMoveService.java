@@ -1,10 +1,11 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.UnHoldDocumentException;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.LotMoveRepository;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class LotMoveService {
 
     public void removeLotMovement(Lot lot) {
         List<LotMovement> movements = getLotMovements(lot);
-        if(movements.size() > 1) throw new UnHoldDocumentException();
+        if(movements.size() > 1) throw new HoldDocumentException(Constants.UN_HOLD_FAILED_MESSAGE);
         lotMoveRepository.delete(movements.get(0));
     }
 

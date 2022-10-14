@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.UnHoldDocumentException;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,7 +124,7 @@ class LotMoveServiceTest {
     void removeLotMovementThrowExceptionTest() {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(3);
         Lot lot = lotService.getById(1);
-        assertThrows(UnHoldDocumentException.class, () -> lotMoveService.removeLotMovement(lot));
+        assertThrows(HoldDocumentException.class, () -> lotMoveService.removeLotMovement(lot));
     }
 
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

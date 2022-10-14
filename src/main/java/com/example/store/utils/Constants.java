@@ -67,7 +67,7 @@ public class Constants {
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String SHORTAGE_OF_ITEM_MESSAGE = "Не достаточный остаток %s, требуется %f в наличии %f";
     public static final String HOLD_FAILED_MESSAGE = "Проведение документа не удалось";
-    public static final String UN_HOLD_FORBIDDEN_MESSAGE = "Отмена проведения документа не удалась";
+    public static final String UN_HOLD_FAILED_MESSAGE = "Отмена проведения документа не удалась";
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "В документе отсутствует товары";
     public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "Существуют более ранние не проведенные документы";
     public static final String HOLDEN_DOCS_EXISTS_AFTER_MESSAGE = "Существуют более поздние проведенные документы";

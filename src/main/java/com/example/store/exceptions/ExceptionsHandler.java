@@ -46,6 +46,15 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HoldDocumentException.class)
+    protected ResponseEntity<ErrorResponse> handleHoldDocumentException(
+            TransactionException ex) {
+
+        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,

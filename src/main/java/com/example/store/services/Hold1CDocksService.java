@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,6 @@ import java.util.stream.Collectors;
 @Service
 public class Hold1CDocksService {
 
-    public static final boolean BY_CARD_KEY = true;
-    public static final boolean BY_CASH_KEY = false;
     @Autowired
     private DocumentService documentService;
     @Autowired
@@ -72,6 +71,14 @@ public class Hold1CDocksService {
     @Autowired
     private MailService mailService;
 
+    public static final boolean BY_CARD_KEY = true;
+    public static final boolean BY_CASH_KEY = false;
+
+    public static final int POSTING_DOC_OFFSET = 1;
+    public static final int WRITE_OFF_DOC_OFFSET = 2;
+    public static final int SALE_CARD_PAYMENT_OFFSET = 3;
+    public static final int SALE_CASH_PAYMENT_OFFSET = 4;
+
     @Value("${spring.mail.to.email}")
     private String toEmail;
 
@@ -81,6 +88,7 @@ public class Hold1CDocksService {
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
+    private LocalDateTime lastCheckTime;
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
@@ -99,8 +107,9 @@ public class Hold1CDocksService {
             if (checks.isEmpty()) {
                 continue;
             }
-            createDocsToHoldByStoragesAndPeriod(storage, from, to);
-            createSaleOrders(storage, from);
+            setLastCheckTime();
+            createDocsToHoldByStoragesAndPeriod(storage, to);
+            createCreditOrders(storage);
             holdDocsAndChecksByStoragesAndPeriod();
             postingDoc = null;
             writeOffDoc = null;
@@ -110,7 +119,14 @@ public class Hold1CDocksService {
         checkUnHoldenDocksExists(to);
     }
 
-    public void createSaleOrders(Storage storage, LocalDateTime time) {
+    protected void setLastCheckTime() {
+        lastCheckTime = null;
+        checks.stream()
+                .max(Comparator.comparing(ItemDoc::getDateTime))
+                .ifPresent(itemDoc -> lastCheckTime = itemDoc.getDateTime());
+    }
+
+    public void createCreditOrders(Storage storage) {
         Optional<Project> optionalProject = projectService.getProjectByStorageName(storage.getName());
         Project project;
         if(optionalProject.isEmpty()) return;
@@ -118,15 +134,17 @@ public class Hold1CDocksService {
 
         Map<Boolean, Float> sumMap = getSumMap();
         if(sumMap.get(BY_CARD_KEY) > 0) {
-            createOrderDoc(sumMap.get(BY_CARD_KEY), PaymentType.SALE_CARD_PAYMENT, project, time);
+            createOrderDoc(sumMap.get(BY_CARD_KEY), PaymentType.SALE_CARD_PAYMENT, project,
+                    lastCheckTime.plus(SALE_CARD_PAYMENT_OFFSET, ChronoUnit.MILLIS));
         }
         if(sumMap.get(BY_CASH_KEY) > 0) {
-            createOrderDoc(sumMap.get(BY_CASH_KEY), PaymentType.SALE_CASH_PAYMENT, project, time);
+            createOrderDoc(sumMap.get(BY_CASH_KEY), PaymentType.SALE_CASH_PAYMENT, project,
+                    lastCheckTime.plus(SALE_CASH_PAYMENT_OFFSET, ChronoUnit.MILLIS));
         }
     }
 
     public void createOrderDoc(float sum, PaymentType type, Project project, LocalDateTime time) {
-        DocumentType docType = DocumentType.CREDIT_ORDER_DOC;
+        DocumentType docType = DocumentType.WITHDRAW_ORDER_DOC;
         OrderDoc order = new OrderDoc();
         order.setNumber(documentService.getNextDocumentNumber(docType));
         order.setDateTime(time);
@@ -170,15 +188,17 @@ public class Hold1CDocksService {
                 .forEach(doc -> holdDocsService.holdDoc(doc));
     }
 
-    public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+    public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
         holdDocsBefore();
         Project project = checks.get(0).getProject();
         Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
-        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, from.plusSeconds(30L));
+        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
+                lastCheckTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
         if(addRestForHoldSetting.getProperty() == 1) {
             List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
-            postingDoc = createPostingDoc(storage, project, postingItemList, from);
+            postingDoc = createPostingDoc(storage, project, postingItemList,
+                    lastCheckTime.plus(POSTING_DOC_OFFSET, ChronoUnit.MILLIS));
         }
     }
 
