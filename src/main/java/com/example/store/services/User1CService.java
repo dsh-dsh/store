@@ -79,7 +79,6 @@ public class User1CService extends UserService {
         }
         if(dto.getPhone() != null && !dto.getPhone().isEmpty()) user.setPhone(dto.getPhone());
         user.setBirthDate(Util.getLocalDate(dto.getBirthDate()));
-        user.setRole(Role.NONE);
     }
 
     // todo update tests

@@ -46,12 +46,6 @@ public class CatalogController {
         return ResponseEntity.ok(new ListResponse<>(companyDTOList));
     }
 
-    @GetMapping("/persons")
-    public ResponseEntity<ListResponse<PersonDTO>> getPersons() {
-        List<PersonDTO> personDTOList = userService.getPersonDTOList();
-        return ResponseEntity.ok(new ListResponse<>(personDTOList));
-    }
-
     @GetMapping("/users")
     public ResponseEntity<ListResponse<UserDTO>> getUsers() {
         List<UserDTO> userDTOList = userService.getUserDTOList();

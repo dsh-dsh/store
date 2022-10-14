@@ -5,13 +5,11 @@ import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.Role;
 import com.example.store.repositories.UserRepository;
-import org.assertj.core.util.VisibleForTesting;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -90,12 +88,6 @@ class UserServiceTest {
     void getSystemAuthorTest() {
         User user = userService.getSystemAuthor();
         assertEquals("system@user.com", user.getEmail());
-    }
-
-    @Test
-    void getPersonDTOListTest() {
-        List<PersonDTO> persons = userService.getPersonDTOList();
-        assertEquals(6, persons.size());
     }
 
     @Sql(value = "/sql/users/addNewUser.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

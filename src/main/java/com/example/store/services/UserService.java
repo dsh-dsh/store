@@ -82,14 +82,8 @@ public class UserService {
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
     }
 
-    public List<PersonDTO> getPersonDTOList() {
-        return userRepository.findAll().stream()
-                .map(personMapper::mapToPersonDTO)
-                .collect(Collectors.toList());
-    }
-
     public List<UserDTO> getUserDTOList() {
-        return userRepository.findAll().stream()
+        return userRepository.findByIsNodeAndRoleNotLike(false, Role.SYSTEM, Sort.by("lastName")).stream()
                 .map(personMapper::mapToUserDTO)
                 .collect(Collectors.toList());
     }
@@ -102,7 +96,7 @@ public class UserService {
 
     public List<ItemDTOForTree> getUserDTOTree() {
         List<User> users = userRepository
-                .findByEmailNotLike(Constants.SYSTEM_USER_EMAIL, Sort.by("id"));
+                .findByRoleNotLike(Role.SYSTEM, Sort.by("id"));
         return treeBuilder.getItemTree(users);
     }
 }

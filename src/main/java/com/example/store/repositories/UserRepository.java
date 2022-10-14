@@ -1,6 +1,7 @@
 package com.example.store.repositories;
 
 import com.example.store.model.entities.User;
+import com.example.store.model.enums.Role;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,7 +19,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByCode(int code);
 
-    List<User> findByEmailNotLike(String email, Sort sort);
+    List<User> findByRoleNotLike(Role role, Sort sort);
+
+    List<User> findByIsNodeAndRoleNotLike(boolean isNode, Role role, Sort sort);
 
     List<User> findByParent(User item);
 

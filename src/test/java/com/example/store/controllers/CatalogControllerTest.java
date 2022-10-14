@@ -258,8 +258,8 @@ class CatalogControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[5]").exists())
-                .andExpect(jsonPath("$.data.[6]").doesNotExist());
+                .andExpect(jsonPath("$.data.[3]").exists())
+                .andExpect(jsonPath("$.data.[4]").doesNotExist());
     }
 
     @Test
@@ -268,18 +268,6 @@ class CatalogControllerTest {
                         get(URL_PREFIX + "/persons"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @WithUserDetails(TestService.EXISTING_EMAIL)
-    void getPersonsTest() throws Exception{
-        this.mockMvc.perform(
-                        get(URL_PREFIX + "/persons"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[5]").exists())
-                .andExpect(jsonPath("$.data.[6]").doesNotExist());
     }
 
 }
