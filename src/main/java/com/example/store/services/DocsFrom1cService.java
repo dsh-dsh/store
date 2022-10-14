@@ -12,6 +12,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +43,13 @@ public class DocsFrom1cService {
     protected DocumentRepository documentRepository;
     @Autowired
     protected OrderDocRepository orderDocRepository;
+    @Autowired
+    private MailService mailService;
 
     private LocalDateTime docDateTime;
+
+    @Value("${spring.mail.to.email}")
+    private String toEmail;
 
     public void addDocument(DocDTO docDTO) {
         DocumentType docType = DocumentType.getByValue(docDTO.getDocType());
@@ -90,14 +96,17 @@ public class DocsFrom1cService {
 
     public boolean isDocNumberExists(long number, DocumentType type) {
         LocalDateTime startOfYear = LocalDate.now().withMonth(1).withDayOfMonth(1).atStartOfDay();
-        return documentRepository.existsByNumberAndDocTypeAndDateTimeAfter(number, type, startOfYear);
+        boolean exists = documentRepository.existsByNumberAndDocTypeAndDateTimeAfter(number, type, startOfYear);
+        if(exists) {
+            mailService.send(toEmail, Constants.MESSAGE_SUBJECT, String.format(Constants.DOC_NUMBER_EXISTS_MESSAGE, type.getValue(), number));
+        }
+        return exists;
     }
 
     protected LocalDateTime getNewTime(LocalDate docDate) {
         if(this.docDateTime != null && !docDate.equals(this.docDateTime.toLocalDate())) {
             this.docDateTime = null;
         }
-        //
         if(this.docDateTime == null) {
             this.docDateTime = getLastDocTime(docDate).plus(1, ChronoUnit.MILLIS);
         } else {
