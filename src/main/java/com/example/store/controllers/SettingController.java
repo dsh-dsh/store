@@ -6,6 +6,7 @@ import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.PeriodService;
 import com.example.store.services.SettingService;
+import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,43 +64,43 @@ public class SettingController {
     @PostMapping("/property")
     public ResponseEntity<Response<String>> setSettings(@RequestBody SettingDTO settingDTO) {
         settingService.setProperty(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/add/shortage")
     public ResponseEntity<Response<String>> setAddShortageSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setAddShortageSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/average/price/period")
     public ResponseEntity<Response<String>> setAveragePriceForPeriodCloseSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setAveragePriceForPeriodCloseSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/average/price/docs")
     public ResponseEntity<Response<String>> setAveragePriceForDocsSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setAveragePriceForDocsSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/our/company")
     public ResponseEntity<Response<String>> setOurCompanySetting(@RequestBody SettingDTO settingDTO) {
         settingService.setOurCompanySetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/ingredient/dir")
     public ResponseEntity<Response<String>> setIngredientDirSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setIngredientDirSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/hold/dialog/enable")
     public ResponseEntity<Response<String>> setHoldDialogEnableSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setHoldingDialogEnableSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>("ok"));
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/period")

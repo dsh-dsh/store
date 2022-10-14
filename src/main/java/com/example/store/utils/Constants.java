@@ -62,6 +62,7 @@ public class Constants {
     public static final String BAR = "Бар";
 
     public static final String ERROR_SUBJECT = "Ошибка в приложении";
+    public static final String MESSAGE_SUBJECT = "Сообщение из приложения";
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String SHORTAGE_OF_ITEM_MESSAGE = "Не достаточный остаток %s, требуется %f в наличии %f";
@@ -90,6 +91,7 @@ public class Constants {
     public static final String NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
     public static final String CHECKS_HOLDING_FAIL_MESSAGE = "После проведения чеков за %s все еще остались не проведенные документы";
     public static final String CHECKS_HOLDING_FAIL_SUBJECT = "Ошибка проведения чеков - %s";
+    public static final String DOC_NUMBER_EXISTS_MESSAGE = "Документ %s № %s существует";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
 
