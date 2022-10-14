@@ -17,7 +17,7 @@ public class ItemQuantityPriceDTO {
 
     public ItemQuantityPriceDTO(Item item, float quantity, float price) {
         this.item = item;
-        this.quantity = Util.floorValue(quantity, 1000);
-        this.price = Util.floorValue(price, 100);
+        this.quantity = Util.floorValue(quantity, 3);
+        this.price = Util.floorValue(price, 3);
     }
 }

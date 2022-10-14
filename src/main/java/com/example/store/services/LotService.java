@@ -119,7 +119,7 @@ public class LotService {
                 .stream()
                 .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue())
                 .sum()) / docItem.getQuantity();
-        docItem.setPrice(Util.floorValue(averagePrice, 100));
+        docItem.setPrice(Util.floorValue(averagePrice, 2));
     }
 
     public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {

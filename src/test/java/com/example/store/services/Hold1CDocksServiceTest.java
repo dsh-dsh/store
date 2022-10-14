@@ -303,7 +303,7 @@ class Hold1CDocksServiceTest {
         assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(5).getBaseDocument());
         assertEquals(6, documents.stream().filter(Document::isHold).count());
         List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(5));
-        assertEquals(1.4f, Util.floorValue(docItems.get(0).getQuantity(), 10));
+        assertEquals(1.4f, Util.floorValue(docItems.get(0).getQuantity(), 1));
         assertEquals(7f, docItems.get(1).getQuantity());
         assertEquals(6.2f, docItems.get(2).getQuantity());
         assertEquals(8f, docItems.get(3).getQuantity());

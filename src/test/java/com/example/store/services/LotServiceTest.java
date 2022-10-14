@@ -290,7 +290,7 @@ class LotServiceTest {
         Map<Lot, Float> lotMap = getMapOfLotAndFloat();
         lotService.setAveragePrice(docItem, lotMap);
         float expectedPrice = ((float)(50*5 + 60*10)) / 15;
-        assertEquals(Util.floorValue(expectedPrice, 100), docItem.getPrice());
+        assertEquals(Util.floorValue(expectedPrice, 2), docItem.getPrice());
     }
 
     private Map<Lot, Float> getMapOfLotAndFloat() {

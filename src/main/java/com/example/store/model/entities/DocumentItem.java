@@ -41,13 +41,13 @@ public class DocumentItem {
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = Util.floorValue(quantity,1000);
+        this.quantity = Util.floorValue(quantity,3);
     }
 
     public DocumentItem(ItemDoc itemDoc, Item item, float quantity, float price) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = Util.floorValue(quantity,1000);
-        this.price = Util.floorValue(price,100);
+        this.quantity = Util.floorValue(quantity,3);
+        this.price = Util.floorValue(price,2);
     }
 }

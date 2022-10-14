@@ -37,9 +37,9 @@ class UtilTest extends TestService {
 
     @Test
     void floorValueTest() {
-        assertEquals(7.200f, Util.floorValue(7.1999998f, 1000));
-        assertEquals(7.200f, Util.floorValue(7.1999998f, 100));
-        assertEquals(2.13f, Util.floorValue(2.1399998f, 100));
+        assertEquals(7.200f, Util.floorValue(7.1999998f, 3));
+        assertEquals(7.200f, Util.floorValue(7.1999998f, 2));
+        assertEquals(2.13f, Util.floorValue(2.1399998f, 2));
     }
 
     @Test

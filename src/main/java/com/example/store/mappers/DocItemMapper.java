@@ -22,13 +22,13 @@ public class DocItemMapper {
     private static final Converter<DocumentItem, Float> amountConverter =
             item -> {
                     DocumentItem docItem = item.getSource();
-                    return Util.floorValue((docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount(), 100);
+                    return Util.floorValue((docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount(), 2);
             };
 
     private static final Converter<DocumentItem, Float> amountFactConverter =
             item -> {
                 DocumentItem docItem = item.getSource();
-                return Util.floorValue(docItem.getQuantityFact() * docItem.getPrice(), 100);
+                return Util.floorValue(docItem.getQuantityFact() * docItem.getPrice(), 2);
             };
 
     public DocItemMapper() {

@@ -33,7 +33,8 @@ public class Util {
         return time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    public static float floorValue(float value, int k) {
+    public static float floorValue(float value, int fractionalLength) {
+        float k = (float) Math.pow(10, fractionalLength);
         return (float) Math.floor(value * k) / k;
     }
 

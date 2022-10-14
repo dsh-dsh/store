@@ -79,7 +79,7 @@ public class IngredientService {
     private void setIngredientMapOfItemRecursively(Ingredient currentIngredient, float currentIngredientWeight, LocalDate date) {
         List<Ingredient> ingredients = getIngredientsNotDeleted(currentIngredient.getChild());
         if(ingredients.isEmpty()) {
-            ingredientMapOfItem.put(currentIngredient.getChild(), Util.floorValue(currentIngredientWeight, 1000));
+            ingredientMapOfItem.put(currentIngredient.getChild(), Util.floorValue(currentIngredientWeight, 3));
         } else {
             float totalWeight = getTotalWeight(ingredients, date);
             if(totalWeight == 0) return;
@@ -142,7 +142,7 @@ public class IngredientService {
                 }).collect(Collectors.toList());
     }
 
-    protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) { // todo перенести в periodicValueService
+    protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
         for(PeriodicValueDTO valueDTO : valueDTOList) {
             switch (valueDTO.getType()) {
                 case "NET":

@@ -135,7 +135,7 @@ public class ItemRestService {
                 .getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), docTime)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
-        return Util.floorValue(rest, 1000);
+        return Util.floorValue(rest, 3);
     }
 
     public float getRestOfLot(Lot lot, Storage storage) {
