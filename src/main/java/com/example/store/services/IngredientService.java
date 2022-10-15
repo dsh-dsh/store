@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.IngredientCalculation;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
@@ -7,11 +8,9 @@ import com.example.store.model.dto.PeriodicValueDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.IngredientRepository;
 import com.example.store.utils.Constants;
-import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,24 +28,19 @@ public class IngredientService {
     protected IngredientRepository ingredientRepository;
     @Autowired
     private PeriodicValueService periodicValueService;
-
-    private Map<Item, Float> ingredientMapOfItem;
+    @Autowired
+    private IngredientCalculation ingredientCalculation;
 
     public Ingredient getIngredientById(int id) {
         return ingredientRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
     }
 
-    public boolean haveIngredients(Item item) {
-        return ingredientRepository.existsByParentAndIsDeleted(item, false);
-    }
-
     public Map<Item, Float> getIngredientQuantityMap(Map<Item, Float> itemMap, LocalDate date) {
         return itemMap.entrySet().stream()
-                .flatMap(itemEntry -> getIngredientMapOfItem(itemEntry.getKey(), date)
-                            .entrySet().stream()
-                            .map(item -> new AbstractMap.SimpleImmutableEntry<>(
-                                    item.getKey(), item.getValue() * itemEntry.getValue())))
+                .flatMap(itemEntry -> ingredientCalculation.getIngredientMapOfItem(itemEntry.getKey(), itemEntry.getValue(), date)
+                        .entrySet().stream()
+                        .map(item -> new AbstractMap.SimpleImmutableEntry<>(item.getKey(), item.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Float::sum));
     }
 
@@ -55,60 +49,6 @@ public class IngredientService {
                 .collect(Collectors.toMap(
                         ingredient -> ingredient.getChild().getId(),
                         Function.identity()));
-    }
-
-    public Map<Item, Float> getIngredientMapOfItem(Item item, LocalDate date) {
-        float totalWeight = 0;
-        ingredientMapOfItem = new HashMap<>();
-        List<Ingredient> ingredients = getIngredientsNotDeleted(item);
-        if(ingredients.size() == 1) {
-            totalWeight = 1;
-        } else {
-            totalWeight = getTotalWeight(ingredients, date);
-        }
-        if(totalWeight > 0) {
-            for (Ingredient ingredient : ingredients) {
-                Float grossWeight = getGrossQuantity(ingredient, date);
-                if (grossWeight == null) continue;
-                setIngredientMapOfItemRecursively(ingredient, grossWeight / totalWeight, date);
-            }
-        }
-        return ingredientMapOfItem;
-    }
-
-    private void setIngredientMapOfItemRecursively(Ingredient currentIngredient, float currentIngredientWeight, LocalDate date) {
-        List<Ingredient> ingredients = getIngredientsNotDeleted(currentIngredient.getChild());
-        if(ingredients.isEmpty()) {
-            ingredientMapOfItem.put(currentIngredient.getChild(), Util.floorValue(currentIngredientWeight, 3));
-        } else {
-            float totalWeight = getTotalWeight(ingredients, date);
-            if(totalWeight == 0) return;
-            for(Ingredient ingredient : ingredients) {
-                Float grossWeight = getGrossQuantity(ingredient, date);
-                if(grossWeight == null) continue;
-                setIngredientMapOfItemRecursively(ingredient, (grossWeight / totalWeight) * currentIngredientWeight, date);
-
-            }
-        }
-    }
-
-    public Float getGrossQuantity(Ingredient ingredient, LocalDate date) {
-        Optional<PeriodicValue> optional = periodicValueService.getGrossQuantity(ingredient, date);
-        if(optional.isPresent()) {
-            return optional.get().getQuantity();
-        }
-        return null;
-    }
-
-    private float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
-        float netWeight = 0;
-        for(Ingredient ingredient : ingredients) {
-            Optional<PeriodicValue> netValue = periodicValueService.getNetQuantity(ingredient, date);
-            if(netValue.isPresent()) {
-                netWeight += netValue.get().getQuantity();
-            }
-        }
-        return netWeight;
     }
 
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
@@ -184,6 +124,10 @@ public class IngredientService {
         ingredient.setDeleted(true);
         ingredientRepository.save(ingredient);
         periodicValueService.softDeleteQuantities(ingredient, date);
+    }
+
+    public boolean haveIngredients(Item item) {
+        return ingredientRepository.existsByParentAndIsDeleted(item, false);
     }
 
     public void addInnerItems(List<DocumentItem> docItems, LocalDate date) {

@@ -96,13 +96,13 @@ class IngredientServiceTest {
         Map<Item, Float> map = ingredientService.getIngredientQuantityMap(itemMap, date);
         assertFalse(map.isEmpty());
         assertThat(map, hasKey(item1));
-        assertEquals(1.5f, map.get(item1));
+        assertEquals(3f, map.get(item1));
         assertThat(map, hasKey(item2));
-        assertEquals(1.8f, map.get(item2));
+        assertEquals(3.6f, map.get(item2));
         assertThat(map, hasKey(item3));
-        assertEquals(1.2f, map.get(item3));
+        assertEquals(2.4f, map.get(item3));
         assertThat(map, hasKey(item4));
-        assertEquals(1.2f, map.get(item4));
+        assertEquals(2.4f, map.get(item4));
     }
 
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -125,71 +125,6 @@ class IngredientServiceTest {
         Item item = itemService.getItemById(9);
         Map<Integer, Ingredient> map = ingredientService.getIdIngredientMap(item);
         assertEquals(0, map.size());
-    }
-
-    @Sql(value = "/sql/ingredients/smashPotatoIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void getIngredientMapOfItemSmashPotatoTest() {
-        Item item = itemService.getItemById(10);
-        Item potato = itemService.getItemById(14);
-        Item milk = itemService.getItemById(15);
-        Item butter = itemService.getItemById(16);
-        Map<Item, Float> map = ingredientService.getIngredientMapOfItem(item, LocalDate.now());
-        assertFalse(map.isEmpty());
-        assertEquals(0.196F, map.get(potato));
-        assertEquals(0.047F, map.get(milk));
-        assertEquals(0.015F, map.get(butter));
-    }
-
-    @Sql(value = "/sql/ingredients/threeStepsIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void getIngredientMapOfItemThreeStepsTest() {
-        Item item = itemService.getItemById(10);
-        Item ingr1 = itemService.getItemById(14);
-        Item ingr2 = itemService.getItemById(15);
-        Item ingr3 = itemService.getItemById(16);
-        Item ingr4 = itemService.getItemById(17);
-        Map<Item, Float> map = ingredientService.getIngredientMapOfItem(item, LocalDate.now());
-        assertFalse(map.isEmpty());
-        assertEquals(1F, map.get(ingr1));
-        assertEquals(1.2F, map.get(ingr2));
-        assertEquals(0.4F, map.get(ingr3));
-        assertEquals(0.4F, map.get(ingr4));
-    }
-
-    @Sql(value = "/sql/ingredients/beverage.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void getIngredientMapOfItemBeverageTest() {
-        Item bear = itemService.getItemById(10);
-        Item bearIngredient = itemService.getItemById(17);
-        Map<Item, Float> map = ingredientService.getIngredientMapOfItem(bear, LocalDate.now());
-        assertFalse(map.isEmpty());
-        assertEquals(0.3F, map.get(bearIngredient));
-    }
-
-    @Sql(value = "/sql/ingredients/smallValues.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void getIngredientMapOfItemSmallValuesTest() {
-        Item item = itemService.getItemById(10);
-        Item ingr1 = itemService.getItemById(14);
-        Item ingr2 = itemService.getItemById(15);
-        Item ingr3 = itemService.getItemById(16);
-        Item ingr4 = itemService.getItemById(17);
-        Item bearIngredient = itemService.getItemById(17);
-        Map<Item, Float> map = ingredientService.getIngredientMapOfItem(item, LocalDate.now());
-        assertFalse(map.isEmpty());
-        assertEquals(0.373F, map.get(ingr1));
-        assertEquals(0.64F, map.get(ingr2));
-        assertEquals(0.9F, map.get(ingr3));
-        assertEquals(1.08F, map.get(ingr4));
     }
 
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -326,7 +261,7 @@ class IngredientServiceTest {
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void addInnerItemsTest() {
+    void addInnerItemsWeightTest() {
         ItemDoc document = new ItemDoc();
         LocalDate date = LocalDate.now();
         List<DocumentItem> docItems = new ArrayList<>();
@@ -347,10 +282,34 @@ class IngredientServiceTest {
         assertEquals(1.2f, docItems.get(4).getQuantity());
     }
 
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void addInnerItemsWeightAndPortionTest() {
+        ItemDoc document = new ItemDoc();
+        LocalDate date = LocalDate.now();
+        List<DocumentItem> docItems = new ArrayList<>();
+        docItems.add(new DocumentItem(document, getItem(7), 1));
+        docItems.add(new DocumentItem(document, getItem(10), 1));
+        docItems.add(new DocumentItem(document, getItem(11), 1));
+        docItems.add(new DocumentItem(document, getItem(12), 2));
+        ingredientService.addInnerItems(docItems, date);
+        assertEquals(5, docItems.size());
+        assertEquals(7, docItems.get(0).getItem().getId());
+        assertEquals(1f, docItems.get(0).getQuantity());
+        assertEquals(16, docItems.get(1).getItem().getId());
+        assertEquals(2.4f, docItems.get(1).getQuantity());
+        assertEquals(15, docItems.get(2).getItem().getId());
+        assertEquals(3.6f, docItems.get(2).getQuantity());
+        assertEquals(14, docItems.get(3).getItem().getId());
+        assertEquals(3.0f, docItems.get(3).getQuantity());
+        assertEquals(17, docItems.get(4).getItem().getId());
+        assertEquals(2.4f, docItems.get(4).getQuantity());
+    }
+
     Item getItem(int id) {
-        Item item = new Item(id);
-        item.setName("name" + id);
-        return item;
+        return itemService.findItemById(id);
     }
 
     private IngredientDTO getIngredientDTO(int parentId, int childId, float netQuantity, float enableQuantity) {

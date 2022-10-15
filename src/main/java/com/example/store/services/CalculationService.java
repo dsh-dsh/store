@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.IngredientCalculation;
 import com.example.store.model.dto.CalculationDTO;
 import com.example.store.model.dto.IngredientCalculationDTO;
 import com.example.store.model.entities.Ingredient;
@@ -21,7 +22,7 @@ public class CalculationService {
     @Autowired
     private ItemService itemService;
     @Autowired
-    private IngredientService ingredientService;
+    private IngredientCalculation ingredientCalculation;
     @Autowired
     private ItemRestService itemRestService;
     @Autowired
@@ -34,7 +35,7 @@ public class CalculationService {
     }
 
     public CalculationDTO getCalculationDTO(Item item, LocalDate date) {
-        List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
+        List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item);
         List<IngredientCalculationDTO> list = ingredients.stream()
                 .map(ingredient -> getCostCalculation(ingredient, date))
                 .collect(Collectors.toList());
@@ -46,7 +47,8 @@ public class CalculationService {
     }
 
     public IngredientCalculationDTO getCostCalculation(Ingredient ingredient, LocalDate date) {
-        Map<Item, Float> map = ingredientService.getIngredientMapOfItem(ingredient.getChild(), date);
+        float itemQuantity = ingredientCalculation.getNetQuantity(ingredient, date);
+        Map<Item, Float> map = ingredientCalculation.getIngredientMapOfItem(ingredient.getChild(), itemQuantity, date);
 
         float quantity = 0;
         float amount = 0;
