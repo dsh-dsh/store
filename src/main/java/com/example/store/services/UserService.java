@@ -39,22 +39,30 @@ public class UserService {
 
     public User getByCode(int code) {
         return userRepository.findByCode(code)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, code)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_USER_MESSAGE, code),
+                        this.getClass().getName() + " - getByCode(int code)"));
     }
 
     public User getByName(String name) {
         return userRepository.findByLastNameStartingWithIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, name)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_USER_MESSAGE, name),
+                        this.getClass().getName() + " - getByName(String name)"));
     }
 
     public User getByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_USER_MESSAGE, email)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_USER_MESSAGE, email),
+                        this.getClass().getName() + " - getByEmail(String email)"));
     }
 
     public User getById(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_USER_MESSAGE,
+                        this.getClass().getName() + " - getById(int id)"));
     }
 
     // todo update tests
@@ -91,7 +99,9 @@ public class UserService {
     public User getSystemAuthor() {
         String systemUserEmail = Constants.SYSTEM_USER_EMAIL;
         return userRepository.findByEmailIgnoreCase(systemUserEmail)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_USER_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_USER_MESSAGE,
+                        this.getClass().getName() + " - getSystemAuthor()"));
     }
 
     public List<ItemDTOForTree> getUserDTOTree() {

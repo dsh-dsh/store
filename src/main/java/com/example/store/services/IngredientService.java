@@ -33,7 +33,9 @@ public class IngredientService {
 
     public Ingredient getIngredientById(int id) {
         return ingredientRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_ITEM_MESSAGE,
+                        this.getClass().getName() + " - getIngredientById(int id)"));
     }
 
     public Map<Item, Float> getIngredientQuantityMap(Map<Item, Float> itemMap, LocalDate date) {

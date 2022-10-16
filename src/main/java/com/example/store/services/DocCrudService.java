@@ -171,7 +171,9 @@ public class DocCrudService extends AbstractDocCrudService {
         documents.add(document);
         for (Document doc : documents) {
             if(doc.getDocType() == DocumentType.CHECK_DOC) {
-                throw new BadRequestException(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE);
+                throw new BadRequestException(
+                        Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE,
+                        this.getClass().getName() + " serialHold(Document document)");
             }
             holdDocsService.holdDoc(doc);
         }
@@ -192,7 +194,9 @@ public class DocCrudService extends AbstractDocCrudService {
         Optional<Document> optional = documents.stream()
                 .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).findFirst();
         if(optional.isPresent()) {
-            throw new BadRequestException(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE);
+            throw new BadRequestException(
+                    Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE,
+                    this.getClass().getName() + " checkingFogUnHoldenChecks(List<Document> documents)");
         }
     }
 
@@ -270,15 +274,21 @@ public class DocCrudService extends AbstractDocCrudService {
     protected void checkTimePeriod(DocDTO docDTO) {
         LocalDateTime docTime = Util.getLocalDateTime(docDTO.getDateTime());
         if(docTime.isBefore(env.getPeriodStart())) {
-            throw new BadRequestException(String.format(
-                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()));
+            throw new BadRequestException(
+                    String.format(
+                        Constants.OUT_OF_PERIOD_MESSAGE,
+                        env.getPeriodStart().toString()),
+                    this.getClass().getName() + " checkTimePeriod(DocDTO docDTO)");
         }
     }
 
     protected void checkTimePeriod(Document document) {
         if(document.getDateTime().isBefore(env.getPeriodStart())) {
-            throw new BadRequestException(String.format(
-                    Constants.OUT_OF_PERIOD_MESSAGE, env.getPeriodStart().toString()));
+            throw new BadRequestException(
+                    String.format(
+                        Constants.OUT_OF_PERIOD_MESSAGE,
+                        env.getPeriodStart().toString()),
+                    this.getClass().getName() + " checkTimePeriod(Document document)");
         }
     }
 

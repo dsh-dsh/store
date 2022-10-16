@@ -76,7 +76,9 @@ public class  PeriodService {
                 currentPeriod.getEndDate().atStartOfDay(),
                 Sort.by(Constants.DATE_TIME_STRING));
         if(!notHoldenDocs.isEmpty()) {
-            throw new BadRequestException(Constants.NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE);
+            throw new BadRequestException(
+                    Constants.NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE,
+                    this.getClass().getName() + " - checkPossibilityToClosePeriod()");
         }
     }
 

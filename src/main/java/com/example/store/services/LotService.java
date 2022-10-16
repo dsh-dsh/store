@@ -54,7 +54,9 @@ public class LotService {
 
     public Lot getLotByDocumentItemForPosting(DocumentItem documentItem) {
         return lotRepository.findByDocumentItem(documentItem)
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_LOT_MESSAGE,
+                            this.getClass().getName() + " - getLotByDocumentItemForPosting(DocumentItem documentItem)"));
     }
 
     public List<Lot> getLotsByDocumentItemForStorageDocs(DocumentItem docItem) {
@@ -64,7 +66,11 @@ public class LotService {
     public void updateLotMovements(ItemDoc itemDoc) {
         List<DocumentItem> items =
                 docItemService.getItemsByDoc(itemDoc);
-        if(items.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
+        if(items.isEmpty()) {
+            throw new BadRequestException(
+                    Constants.NO_DOCUMENT_ITEMS_MESSAGE,
+                    this.getClass().getName() + " - updateLotMovements(ItemDoc itemDoc)");
+        }
         updateLots(itemDoc);
     }
 
@@ -75,7 +81,9 @@ public class LotService {
 
     public void updateLot(DocumentItem item) {
         Lot lot = lotRepository.findByDocumentItem(item)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_LOT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_LOT_MESSAGE,
+                        this.getClass().getName() + " - updateLot(DocumentItem item)"));
         lotMoveService.updatePlusLotMovement(lot, item.getItemDoc(), item.getQuantity());
     }
 
@@ -88,7 +96,11 @@ public class LotService {
     public void addLotMovements(Document document) {
         List<DocumentItem> docItems =
                 docItemService.getItemsByDoc((ItemDoc) document);
-        if(docItems.isEmpty()) throw new BadRequestException(Constants.NO_DOCUMENT_ITEMS_MESSAGE);
+        if(docItems.isEmpty()) {
+            throw new BadRequestException(
+                    Constants.NO_DOCUMENT_ITEMS_MESSAGE,
+                    this.getClass().getName() + " - addLotMovements(Document document)");
+        }
         DocumentType type = document.getDocType();
         if (type == DocumentType.RECEIPT_DOC || type == DocumentType.POSTING_DOC || type == DocumentType.PERIOD_REST_MOVE_DOC) {
             addLots(document);

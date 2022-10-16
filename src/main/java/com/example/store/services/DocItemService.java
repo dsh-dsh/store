@@ -74,7 +74,9 @@ public class DocItemService {
 
     public DocumentItem getItemById(int id) {
         return docItemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_ITEM_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_DOCUMENT_ITEM_MESSAGE,
+                        this.getClass().getName() + " - getItemById(int id)"));
     }
 
     public List<DocumentItem> getItemsByDoc(ItemDoc doc) {

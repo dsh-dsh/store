@@ -817,7 +817,8 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCheckDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
-                        .param("id", String.valueOf(TestService.DOC_ID)))
+                        .param("id", String.valueOf(TestService.DOC_ID))
+                        .param("copy", String.valueOf(false)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1))
@@ -833,7 +834,8 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getPostingDocTest() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
-                        .param("id", String.valueOf(TestService.DOC_ID)))
+                        .param("id", String.valueOf(TestService.DOC_ID))
+                        .param("copy", String.valueOf(false)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value(1))

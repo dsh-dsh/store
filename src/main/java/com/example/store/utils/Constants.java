@@ -71,7 +71,7 @@ public class Constants {
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "В документе отсутствует товары";
     public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "Существуют более ранние не проведенные документы";
     public static final String HOLDEN_DOCS_EXISTS_AFTER_MESSAGE = "Существуют более поздние проведенные документы";
-    public static final String WRONG_CREDENTIALS_MESSAGE = "Не правильные логин и пароль";
+    public static final String WRONG_CREDENTIALS_MESSAGE = "Не правильные логин и пароль - %s";
     public static final String NO_SUCH_USER_MESSAGE = "Пользователь %s отсутствует в системе";
     public static final String NO_SUCH_COMPANY_MESSAGE = "Компания %s отсутствует в системе";
     public static final String NO_SUCH_STORAGE_MESSAGE = "Склад %s отсутствует в системе";

@@ -78,7 +78,9 @@ public class Item1CService extends ItemService{
         Item item = itemMapper.mapToItem(item1CDTO);
         if(item1CDTO.getParentNumber() > 0) {
             Item parent = findItemByNumber(item1CDTO.getParentNumber())
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_ITEM_MESSAGE,
+                            this.getClass().getName() + " - setNewItem(Item1CDTO item1CDTO)"));
             item.setParent(parent);
         }
         itemRepository.save(item);
@@ -111,7 +113,9 @@ public class Item1CService extends ItemService{
         item.setUnit(Unit.valueOf(dto.getUnit().getCode()));
         if(((Item1CDTO)dto).getParentNumber() > 0) {
             Item parent = findItemByNumber(((Item1CDTO)dto).getParentNumber())
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_ITEM_MESSAGE,
+                            this.getClass().getName() + " - updateItemFields(Item item, ItemDTO dto)"));
             item.setParent(parent);
         }
     }

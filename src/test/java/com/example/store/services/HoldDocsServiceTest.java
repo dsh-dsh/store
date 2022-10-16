@@ -57,7 +57,6 @@ class HoldDocsServiceTest {
         BadRequestException exception = assertThrows(BadRequestException.class,
                 () -> holdDocsService.checkPossibilityToHold(document));
         assertEquals(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE, exception.getMessage());
-        assertEquals(ExceptionType.HOLD_EXCEPTION, exception.getExceptionType());
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -72,7 +71,6 @@ class HoldDocsServiceTest {
         BadRequestException exception = assertThrows(BadRequestException.class,
                 () -> holdDocsService.checkPossibilityToHold(document));
         assertEquals(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE, exception.getMessage());
-        assertEquals(ExceptionType.UN_HOLD_EXCEPTION, exception.getExceptionType());
     }
 
     // tod

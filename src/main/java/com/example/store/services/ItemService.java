@@ -132,7 +132,9 @@ public class ItemService {
 
     public Item findItemById(int id) {
         return itemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_ITEM_MESSAGE,
+                        this.getClass().getName() + " - findItemById(int id)"));
     }
 
     public Item getItemById(int id) {
@@ -141,7 +143,9 @@ public class ItemService {
 
     public Item getItemByNumber(int number) {
         return itemRepository.findByNumber(number)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_INGREDIENT_MESSAGE, number)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_INGREDIENT_MESSAGE, number),
+                        this.getClass().getName() + " - getItemByNumber(int number)"));
     }
 
     public Optional<Item> findItemByNumber(int number) {
@@ -151,7 +155,9 @@ public class ItemService {
     public ItemDTO getItemDTOById(int id, long longDate) {
         LocalDate date = Util.getLocalDate(longDate);
         Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_ITEM_MESSAGE,
+                        this.getClass().getName() + " - getItemDTOById(int id, long longDate)"));
         item.setParent(getParent(item));
         item.setPrices(priceService.getPriceListOfItem(item, date));
         ItemDTO itemDTO = itemMapper.mapToDTO(item);
@@ -172,6 +178,8 @@ public class ItemService {
     public Item getParent(Item child) {
         int parentId = itemRepository.getParentId(child.getId());
         return itemRepository.findById(parentId)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_ITEM_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_ITEM_MESSAGE,
+                        this.getClass().getName() + " - getParent(Item child)"));
     }
 }

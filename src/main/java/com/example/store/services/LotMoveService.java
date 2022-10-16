@@ -53,7 +53,11 @@ public class LotMoveService {
 
     public void removeLotMovement(Lot lot) {
         List<LotMovement> movements = getLotMovements(lot);
-        if(movements.size() > 1) throw new HoldDocumentException(Constants.UN_HOLD_FAILED_MESSAGE);
+        if(movements.size() > 1) {
+            throw new HoldDocumentException(
+                    Constants.UN_HOLD_FAILED_MESSAGE,
+                    this.getClass().getName() + " - removeLotMovement(Lot lot)");
+        }
         lotMoveRepository.delete(movements.get(0));
     }
 

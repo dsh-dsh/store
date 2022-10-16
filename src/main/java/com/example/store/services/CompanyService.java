@@ -33,17 +33,23 @@ public class CompanyService {
 
     public Company getById(int id) {
         return companyRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_COMPANY_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_COMPANY_MESSAGE,
+                        this.getClass().getName() + " - getById(int id)"));
     }
 
     public Company getByName(String name) {
         return companyRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, name)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_COMPANY_MESSAGE, name),
+                        this.getClass().getName() + " - getByName(String name)"));
     }
 
     public Company getByInn(String inn) {
         return companyRepository.findByInn(inn)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, inn)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_COMPANY_MESSAGE, inn),
+                        this.getClass().getName() + " - getByInn(String inn)"));
     }
 
     // todo add tests
@@ -101,6 +107,8 @@ public class CompanyService {
     public Company getByCode(int code) {
         if(code == 0) return null;
         return companyRepository.findByCode(code)
-            .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_COMPANY_MESSAGE, code)));
+            .orElseThrow(() -> new BadRequestException(
+                    String.format(Constants.NO_SUCH_COMPANY_MESSAGE, code),
+                    this.getClass().getName() + " - getByCode(int code)"));
     }
 }

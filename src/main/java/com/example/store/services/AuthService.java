@@ -32,11 +32,16 @@ public class AuthService {
         try{
             user = userService.getByEmail(authUserRequest.getLogin());
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
+            throw new AuthenticationCredentialsNotFoundException(
+                    String.format(
+                            Constants.WRONG_CREDENTIALS_MESSAGE,
+                            this.getClass().getName() + " login(AuthUserRequest authUserRequest)"));
         }
 
         if(!passwordEncoder.matches(authUserRequest.getPassword(), user.getPassword())) {
-            throw new AuthenticationCredentialsNotFoundException(Constants.WRONG_CREDENTIALS_MESSAGE);
+            throw new AuthenticationCredentialsNotFoundException(String.format(
+                    Constants.WRONG_CREDENTIALS_MESSAGE,
+                    this.getClass().getName() + " login(AuthUserRequest authUserRequest)"));
         }
         PersonDTO personDTO = personMapper.mapToPersonDTO(user);
         personDTO.setToken(jwtProvider.generateToken(user));

@@ -20,12 +20,16 @@ public class ProjectService {
 
     public Project getByName(String name) {
         return projectRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_PROJECT_MESSAGE, name)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_PROJECT_MESSAGE, name),
+                        this.getClass().getName() + " - getByName(String name)"));
     }
 
     public Project getById(int id) {
         return projectRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_PROJECT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_PROJECT_MESSAGE, id),
+                        this.getClass().getName() + " - getById(int id)"));
     }
 
     public List<ProjectDTO> getProjectDTOList() {

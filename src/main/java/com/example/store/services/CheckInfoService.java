@@ -26,7 +26,9 @@ public class CheckInfoService {
 
     public CheckInfo getCheckInfo(ItemDoc check) {
         return checkInfoRepository.findByCheck(check)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_CHECK_INFO_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_CHECK_INFO_MESSAGE,
+                        this.getClass().getName() + " - getCheckInfo(ItemDoc check)"));
     }
 
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {

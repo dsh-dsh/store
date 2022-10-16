@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
+    public static final String FORMAT_MESSAGE = "%s%n%s%n%s";
     @Autowired
     private MailService mailService;
 
@@ -31,7 +32,8 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex) {
 
-        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getExceptionType().getValue() + ex.getMessage());
+        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "BadRequestException"));
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
                         ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
@@ -41,16 +43,18 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleTransactionException(
             TransactionException ex) {
 
-        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "TransactionException"));
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HoldDocumentException.class)
     protected ResponseEntity<ErrorResponse> handleHoldDocumentException(
-            TransactionException ex) {
+            HoldDocumentException ex) {
 
-        mailService.send(toEmail, Constants.ERROR_SUBJECT, ex.getMessage());
+        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "HoldDocumentException"));
 
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }

@@ -93,7 +93,9 @@ public abstract class AbstractDocCrudService {
 
     public void deleteItemDoc(int docId) {
         ItemDoc itemDoc = itemDocRepository.findById(docId)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_DOCUMENT_MESSAGE,
+                        this.getClass().getName() + " - deleteItemDoc(int docId)"));
         unHoldDocs.unHoldAllDocsAfter(itemDoc);
         itemDoc.setDeleted(!itemDoc.isDeleted());
         itemDocRepository.save(itemDoc);
@@ -101,7 +103,9 @@ public abstract class AbstractDocCrudService {
 
     public void deleteOrderDoc(int docId) {
         OrderDoc order = orderDocRepository.findById(docId)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_DOCUMENT_MESSAGE,
+                        this.getClass().getName() + " - deleteOrderDoc(int docId)"));
         unHoldDocs.unHoldAllDocsAfter(order);
         order.setDeleted(!order.isDeleted());
         orderDocRepository.save(order);
@@ -119,7 +123,9 @@ public abstract class AbstractDocCrudService {
         int docId = docDTO.getId();
         if(docId != 0) {
             return itemDocRepository.findById(docId)
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_DOCUMENT_MESSAGE,
+                            this.getClass().getName() + " - getOrAddItemDoc(DocDTO docDTO)"));
         } else {
             return new ItemDoc();
         }
@@ -130,7 +136,9 @@ public abstract class AbstractDocCrudService {
         int docId = docDTO.getId();
         if(docId != 0) {
             return orderDocRepository.findById(docId)
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_DOCUMENT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_DOCUMENT_MESSAGE,
+                            this.getClass().getName() + " - getOrAddOrderDoc(DocDTO docDTO)"));
         } else {
             return new OrderDoc();
         }
@@ -229,7 +237,9 @@ public abstract class AbstractDocCrudService {
     protected void setBaseDocument(Document document, DocDTO docDTO) {
         if(docDTO.getBaseDocumentId() > 0) {
             Document baseDoc = documentRepository.findById(docDTO.getBaseDocumentId())
-                    .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_BASE_DOCUMENT_MESSAGE));
+                    .orElseThrow(() -> new BadRequestException(
+                            Constants.NO_SUCH_BASE_DOCUMENT_MESSAGE,
+                            this.getClass().getName() + " - setBaseDocument(Document document, DocDTO docDTO)"));
             document.setBaseDocument(baseDoc);
         }
     }

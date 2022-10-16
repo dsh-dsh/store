@@ -29,12 +29,16 @@ public class StorageService {
 
     public Storage getById(int id) {
         return storageRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(Constants.NO_SUCH_STORAGE_MESSAGE));
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_STORAGE_MESSAGE,
+                        this.getClass().getName() + " - getById(int id)"));
     }
 
     public Storage getByName(String name) {
         return storageRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new BadRequestException(String.format(Constants.NO_SUCH_STORAGE_MESSAGE, name)));
+                .orElseThrow(() -> new BadRequestException(
+                        String.format(Constants.NO_SUCH_STORAGE_MESSAGE, name),
+                        this.getClass().getName() + " - getByName(String name)"));
     }
 
     public StorageDTO mapToDTO(Storage storage) {
