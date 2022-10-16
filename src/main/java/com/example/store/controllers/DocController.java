@@ -30,8 +30,10 @@ public class DocController {
     }
 
     @GetMapping
-    public ResponseEntity<Response<DocDTO>> getDocumentById(@RequestParam int id) {
-        DocDTO docDTO = docCrudService.getDocDTOById(id);
+    public ResponseEntity<Response<DocDTO>> getDocumentById(
+            @RequestParam int id,
+            @RequestParam boolean copy) {
+        DocDTO docDTO = docCrudService.getDocDTOById(id, copy);
         return ResponseEntity.ok(new Response<>(docDTO));
     }
 

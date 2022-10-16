@@ -8,6 +8,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ class DocCrudServiceTest {
     @Test
     @Transactional
     void getPostingDocDTOByIdTest() {
-        DocDTO dto = docCrudService.getDocDTOById(1);
+        DocDTO dto = docCrudService.getDocDTOById(1, false);
         assertEquals("Поступление", dto.getDocType());
         assertEquals(1, dto.getId());
     }
@@ -59,9 +60,35 @@ class DocCrudServiceTest {
     @Test
     @Transactional
     void getOrderDocDTOByIdTest() {
-        DocDTO dto = docCrudService.getDocDTOById(6);
+        DocDTO dto = docCrudService.getDocDTOById(6, false);
         assertEquals("Расходный кассовый ордер", dto.getDocType());
         assertEquals(6, dto.getId());
+    }
+
+    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getCopyPostingDocDTOByIdTest() {
+        DocDTO dto = docCrudService.getDocDTOById(1, true);
+        assertEquals("Поступление", dto.getDocType());
+        assertEquals(0, dto.getId());
+        assertEquals(2, dto.getNumber());
+        assertEquals(false, dto.isHold());
+        assertEquals(LocalDate.now(), Util.getLocalDate(dto.getDateTime()));
+    }
+
+    @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getCopyOrderDocDTOByIdTest() {
+        DocDTO dto = docCrudService.getDocDTOById(6, true);
+        assertEquals("Расходный кассовый ордер", dto.getDocType());
+        assertEquals(0, dto.getId());
+        assertEquals(7, dto.getNumber());
+        assertEquals(false, dto.isHold());
+        assertEquals(LocalDate.now(), Util.getLocalDate(dto.getDateTime()));
     }
 
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

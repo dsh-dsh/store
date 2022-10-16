@@ -83,13 +83,19 @@ public class DocCrudService extends AbstractDocCrudService {
         return new ListResponse<>(dtoList);
     }
 
-    public DocDTO getDocDTOById(int docId) {
+    public DocDTO getDocDTOById(int docId, boolean docCopy) {
         DocDTO dto;
         Document document = documentService.getDocumentById(docId);
         if(document instanceof ItemDoc) {
             dto = docMapper.mapToDocDTO((ItemDoc) document);
         } else {
             dto = docMapper.mapToDocDTO((OrderDoc) document);
+        }
+        if(docCopy) {
+            dto.setNumber(getNewDocNumber(dto.getDocType()));
+            dto.setId(0);
+            dto.setHold(false);
+            dto.setDateTime(Util.getLongLocalDateTime(LocalDateTime.now()));
         }
         return dto;
     }
