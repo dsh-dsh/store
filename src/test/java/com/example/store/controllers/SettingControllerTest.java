@@ -62,6 +62,12 @@ class SettingControllerTest {
     @Autowired
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
+    @Autowired
+    @Qualifier("holdingDialogEnable")
+    private PropertySetting holdingDialogEnableSetting;
+    @Autowired
+    @Qualifier("checkHoldingEnable")
+    private PropertySetting checkHoldingEnableSetting;
 
     @Test
     void getSettingsUnauthorizedTest()  throws Exception {
@@ -94,8 +100,6 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.[2].property").value(3));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getHoldingSettingsTest()  throws Exception {
@@ -109,8 +113,6 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getHoldingSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
@@ -119,8 +121,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForPeriodCloseSettingsTest()  throws Exception {
@@ -134,8 +134,6 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForPeriodCloseSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
@@ -144,8 +142,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForDocsSettingsTest()  throws Exception {
@@ -159,8 +155,6 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getAveragePriceForDocsSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
@@ -169,8 +163,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getOurCompanySettingsTest()  throws Exception {
@@ -183,8 +175,6 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.property").value(1));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getOurCompanySettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
@@ -193,8 +183,6 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getIngredientDirSettingsTest()  throws Exception {
@@ -207,12 +195,50 @@ class SettingControllerTest {
                 .andExpect(jsonPath("$.data.property").value(2));
     }
 
-    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getIngredientDirSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
                         get(URL_PREFIX + "/ingredient/dir"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getHoldingDialogEnableSettingTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/hold/dialog/enable"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.user.id").value(6))
+                .andExpect(jsonPath("$.data.type").value("HOLDING_DIALOG_ENABLE"))
+                .andExpect(jsonPath("$.data.property").value(1));
+    }
+
+    @Test
+    void getHoldingDialogEnableSettingUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/hold/dialog/enable"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getCheckHoldingEnableSettingTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/check/holding/enable"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.user.id").value(6))
+                .andExpect(jsonPath("$.data.type").value("CHECK_HOLDING_ENABLE"))
+                .andExpect(jsonPath("$.data.property").value(1));
+    }
+
+    @Test
+    void getCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/check/holding/enable"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -387,6 +413,63 @@ class SettingControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setHoldingDialogEnableSettingTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/dialog/enable")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.HOLDING_DIALOG_ENABLE).getProperty());
+        assertEquals(0, holdingDialogEnableSetting.getProperty());
+        holdingDialogEnableSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setHoldingDialogEnableSettingUnauthorizedTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/hold/dialog/enable")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setCheckHoldingEnableSettingTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/check/holding/enable")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        assertEquals(0, settingService.getSettingByType(systemUser, SettingType.CHECK_HOLDING_ENABLE).getProperty());
+        assertEquals(0, checkHoldingEnableSetting.getProperty());
+        checkHoldingEnableSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
+        SettingDTO settingDTO = getSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString(), 0);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/check/holding/enable")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

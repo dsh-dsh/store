@@ -27,33 +27,38 @@ public class SettingController {
     }
 
     @GetMapping("/add/shortage")
-    public ResponseEntity<Response<SettingDTO>> getHoldingSettings() {
+    public ResponseEntity<Response<SettingDTO>> getAddShortageForHoldSetting() {
         return ResponseEntity.ok(new Response<>(settingService.getAddShortageForHoldSetting()));
     }
 
     @GetMapping("/average/price/period")
-    public ResponseEntity<Response<SettingDTO>> getAveragePriceForPeriodCloseSettings() {
-        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForPeriodCloseSettings()));
+    public ResponseEntity<Response<SettingDTO>> getAveragePriceForPeriodCloseSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForPeriodCloseSetting()));
     }
 
     @GetMapping("/average/price/docs")
-    public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSettings() {
-        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForDocsSettings()));
+    public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForDocsSetting()));
     }
 
     @GetMapping("/our/company")
     public ResponseEntity<Response<SettingDTO>> getOurCompanySetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getOurCompanySettings()));
+        return ResponseEntity.ok(new Response<>(settingService.getOurCompanySetting()));
     }
 
     @GetMapping("/ingredient/dir")
-    public ResponseEntity<Response<SettingDTO>> getIngredientDirSettings() {
-        return ResponseEntity.ok(new Response<>(settingService.getIngredientDirSettings()));
+    public ResponseEntity<Response<SettingDTO>> getIngredientDirSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getIngredientDirSetting()));
     }
 
     @GetMapping("/hold/dialog/enable")
-    public ResponseEntity<Response<SettingDTO>> getHoldingDialogEnableSettings() {
-        return ResponseEntity.ok(new Response<>(settingService.getHoldingDialogEnableSettings()));
+    public ResponseEntity<Response<SettingDTO>> getHoldingDialogEnableSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getHoldingDialogEnableSetting()));
+    }
+
+    @GetMapping("/check/holding/enable")
+    public ResponseEntity<Response<SettingDTO>> getCheckHoldingEnableSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getCheckHoldingEnableSetting()));
     }
 
     @GetMapping("/period")
@@ -100,6 +105,12 @@ public class SettingController {
     @PostMapping("/hold/dialog/enable")
     public ResponseEntity<Response<String>> setHoldDialogEnableSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setHoldingDialogEnableSetting(settingDTO);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    @PostMapping("/check/holding/enable")
+    public ResponseEntity<Response<String>> setCheckHoldingEnableSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setCheckHoldingEnableSetting(settingDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 

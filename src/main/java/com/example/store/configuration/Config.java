@@ -78,4 +78,13 @@ public class Config {
                 .orElse(PropertySetting.of(SettingType.HOLDING_DIALOG_ENABLE, systemUser,1));
     }
 
+    @Bean
+    @DependsOn("systemUser")
+    @Qualifier("checkHoldingEnable")
+    public PropertySetting getCheckHoldingEnableSetting(SettingRepository settingRepository, User systemUser) {
+        return settingRepository
+                .findByUserAndSettingType(systemUser, SettingType.CHECK_HOLDING_ENABLE)
+                .orElse(PropertySetting.of(SettingType.CHECK_HOLDING_ENABLE, systemUser,1));
+    }
+
 }

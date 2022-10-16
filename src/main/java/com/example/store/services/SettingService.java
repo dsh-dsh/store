@@ -42,6 +42,9 @@ public class SettingService {
     @Autowired
     @Qualifier("holdingDialogEnable")
     private PropertySetting holdingDialogEnableSetting;
+    @Autowired
+    @Qualifier("checkHoldingEnable")
+    private PropertySetting checkHoldingEnableSetting;
 
     private UserDTO systemUserDTO;
 
@@ -113,6 +116,11 @@ public class SettingService {
         setSystemSetting(settingDTO, SettingType.HOLDING_DIALOG_ENABLE);
     }
 
+    public void setCheckHoldingEnableSetting(SettingDTO settingDTO) {
+        checkHoldingEnableSetting.setProperty(settingDTO.getProperty());
+        setSystemSetting(settingDTO, SettingType.CHECK_HOLDING_ENABLE);
+    }
+
     public void setSystemSetting(SettingDTO dto, SettingType settingType) {
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
                 .orElseGet(() -> getSetting(systemUser, settingType, dto.getProperty()));
@@ -132,23 +140,27 @@ public class SettingService {
         return getSettingDTO(addRestForHoldSetting, systemUserDTO);
     }
 
-    public SettingDTO getAveragePriceForPeriodCloseSettings() {
+    public SettingDTO getAveragePriceForPeriodCloseSetting() {
         return getSettingDTO(periodAveragePriceSetting, systemUserDTO);
     }
 
-    public SettingDTO getAveragePriceForDocsSettings() {
+    public SettingDTO getAveragePriceForDocsSetting() {
         return getSettingDTO(docsAveragePriceSetting, systemUserDTO);
     }
 
-    public SettingDTO getOurCompanySettings() {
+    public SettingDTO getOurCompanySetting() {
         return getSettingDTO(ourCompanySetting, systemUserDTO);
     }
 
-    public SettingDTO getIngredientDirSettings() {
+    public SettingDTO getIngredientDirSetting() {
         return getSettingDTO(ingredientDirSetting, systemUserDTO);
     }
 
-    public SettingDTO getHoldingDialogEnableSettings() {
+    public SettingDTO getHoldingDialogEnableSetting() {
         return getSettingDTO(holdingDialogEnableSetting, systemUserDTO);
+    }
+
+    public SettingDTO getCheckHoldingEnableSetting() {
+        return getSettingDTO(checkHoldingEnableSetting, systemUserDTO);
     }
 }

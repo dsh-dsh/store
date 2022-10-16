@@ -9,10 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -46,6 +44,12 @@ class SettingServiceTest {
     @Autowired
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
+    @Autowired
+    @Qualifier("holdingDialogEnable")
+    private PropertySetting holdingDialogEnableSetting;
+    @Autowired
+    @Qualifier("checkHoldingEnable")
+    private PropertySetting checkHoldingEnableSetting;
 
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -147,12 +151,36 @@ class SettingServiceTest {
     @Test
     void setIngredientDirSettingTest() {
         SettingDTO dto = new SettingDTO();
-        dto.setProperty(0);
+        dto.setProperty(10);
         settingService.setIngredientDirSetting(dto);
         PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID);
+        assertEquals(10, setting.getProperty());
+        assertEquals(10, ingredientDirSetting.getProperty());
+        ingredientDirSetting.setProperty(2);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setHoldingDialogEnableSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(0);
+        settingService.setHoldingDialogEnableSetting(dto);
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.HOLDING_DIALOG_ENABLE);
         assertEquals(0, setting.getProperty());
-        assertEquals(0, ingredientDirSetting.getProperty());
-        ingredientDirSetting.setProperty(1);
+        assertEquals(0, holdingDialogEnableSetting.getProperty());
+        holdingDialogEnableSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setCheckHoldingEnableSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(0);
+        settingService.setCheckHoldingEnableSetting(dto);
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.CHECK_HOLDING_ENABLE);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, checkHoldingEnableSetting.getProperty());
+        checkHoldingEnableSetting.setProperty(1);
     }
 
     @Test
@@ -161,22 +189,32 @@ class SettingServiceTest {
     }
 
     @Test
-    void getAveragePriceForPeriodCloseSettingsTest() {
-        assertEquals(1, settingService.getAveragePriceForPeriodCloseSettings().getProperty());
+    void getAveragePriceForPeriodCloseSettingTest() {
+        assertEquals(1, settingService.getAveragePriceForPeriodCloseSetting().getProperty());
     }
 
     @Test
-    void getAveragePriceForDocsSettingsTest() {
-        assertEquals(1, settingService.getAveragePriceForDocsSettings().getProperty());
+    void getAveragePriceForDocsSettingTest() {
+        assertEquals(1, settingService.getAveragePriceForDocsSetting().getProperty());
     }
 
     @Test
-    void getOurCompanyIdSettingsTest() {
-        assertEquals(1, settingService.getOurCompanySettings().getProperty());
+    void getOurCompanyIdSettingTest() {
+        assertEquals(1, settingService.getOurCompanySetting().getProperty());
     }
 
     @Test
-    void getIngredientDirIdSettingsTest() {
-        assertEquals(2, settingService.getIngredientDirSettings().getProperty());
+    void getIngredientDirIdSettingTest() {
+        assertEquals(2, settingService.getIngredientDirSetting().getProperty());
+    }
+
+    @Test
+    void getHoldingDialogEnableSettingTest() {
+        assertEquals(1, settingService.getHoldingDialogEnableSetting().getProperty());
+    }
+
+    @Test
+    void getCheckHoldingEnableSettingTest() {
+        assertEquals(1, settingService.getCheckHoldingEnableSetting().getProperty());
     }
 }
