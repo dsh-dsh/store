@@ -1,7 +1,10 @@
 package com.example.store.services;
 
 import com.example.store.components.IngredientCalculation;
+import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.Item;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,19 +149,11 @@ class IngredientCalculationTest {
     void getIngredientMapOfItemWithPlateDecorationInWeightDishTest() {
         Item item = itemService.getItemById(10);
         Item decoration = itemService.getItemById(14);
-        Item ingr1 = itemService.getItemById(15);
-        Item ingr2 = itemService.getItemById(16);
-        Item ingr3 = itemService.getItemById(17);
-        Item ingr4 = itemService.getItemById(18);
-        Item tomato = itemService.getItemById(19);
-        Item cucumber = itemService.getItemById(20);
-        Map<Item, Float> map = ingredientCalculation.getIngredientMapOfItem(item, 1, LocalDate.now());
-        assertFalse(map.isEmpty());
-        assertEquals(0.07f, map.get(ingr1));
-        assertEquals(0.12f, map.get(ingr2));
-        assertNotEquals(0.1f, map.get(ingr3));
-        assertNotEquals(0.175f, map.get(ingr4));
-        assertNotEquals(0.02f, map.get(tomato));
-        assertNotEquals(0.03f, map.get(cucumber));
+        Item weightItem = itemService.getItemById(11);
+        HoldDocumentException exception = assertThrows(HoldDocumentException.class,
+                () -> ingredientCalculation.getIngredientMapOfItem(item, 1, LocalDate.now()));
+        assertEquals(String.format(
+                String.format(Constants.PORTION_ITEM_MESSAGE, decoration.getName(), weightItem.getName())),
+                exception.getMessage());
     }
 }
