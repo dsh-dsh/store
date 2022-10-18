@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.enums.ExceptionType;
@@ -48,7 +48,7 @@ public class ItemRestService {
     @Autowired
     private PeriodRepository periodRepository;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
     @Autowired
     @Qualifier("periodAveragePrice")
     private PropertySetting periodAveragePriceSetting;
@@ -74,7 +74,7 @@ public class ItemRestService {
                 .collect(Collectors.toList());
     }
 
-    public LocalDateTime getPeriodStart() {
+    public LocalDateTime getPeriodStartDateTime() {
         Optional<Period> period = periodRepository.findByIsCurrent(true);
         return period.map(value -> value.getStartDate().atStartOfDay())
                 .orElseGet(() -> LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
@@ -120,7 +120,7 @@ public class ItemRestService {
     public float getAveragePriceOfItem(Item item, Storage storage, LocalDateTime time, float quantity) {
         if(quantity == 0) return 0;
         float amount = (float) lotRepository
-                .getLotAmountOfItem(item.getId(), storage.getId(), env.getPeriodStart(), time)
+                .getLotAmountOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), time)
                 .stream().mapToDouble(LotFloat::getValue).sum();
         return amount/quantity;
     }
@@ -132,7 +132,7 @@ public class ItemRestService {
 
     public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
         float rest = (float)lotRepository
-                .getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), docTime)
+                .getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), docTime)
                 .stream()
                 .mapToDouble(LotFloat::getValue).sum();
         return Util.floorValue(rest, 3);

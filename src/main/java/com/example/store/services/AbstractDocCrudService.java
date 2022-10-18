@@ -75,7 +75,7 @@ public abstract class AbstractDocCrudService {
 
     public DocInterface updateItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
-        boolean reHoldPossible = reHoldChecking.checkPossibility(itemDoc, docDTO);
+        boolean reHoldPossible = reHoldChecking.checkFalsePossibility(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
         updateDocItems(itemDoc);
         if(reHoldPossible) {

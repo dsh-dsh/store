@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.DocumentItem;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,7 @@ class PeriodServiceTest {
     @Autowired
     private DocumentService documentService;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
     @Autowired
     private ItemService itemService;
 
@@ -93,7 +92,7 @@ class PeriodServiceTest {
     void closePeriodForStorage3Test() {
         Item frenchFries = itemService.getItemById(7);
         Item flour = itemService.getItemById(8);
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
         periodService.closePeriodForStorage(newPeriodStart, storage);
@@ -111,7 +110,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage1Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(1);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
@@ -128,7 +127,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage3Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);

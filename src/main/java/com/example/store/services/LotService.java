@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -38,7 +38,7 @@ public class LotService {
     @Autowired
     private ItemRestService itemRestService;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
     @Autowired
     @Qualifier("addRestForHold")
     private PropertySetting addRestForHoldSetting;
@@ -144,7 +144,7 @@ public class LotService {
     }
 
     public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime endTime) {
-        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), env.getPeriodStart(), endTime);
+        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), endTime);
         return lotsOfItem.stream()
                 .collect(Collectors.toMap(
                         lotFloat -> getLotById(lotFloat.getId()),

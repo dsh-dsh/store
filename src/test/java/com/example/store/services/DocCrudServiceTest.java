@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.Document;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,7 @@ class DocCrudServiceTest {
     @Autowired
     private LotMoveRepository lotMoveRepository;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
 
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -99,7 +98,7 @@ class DocCrudServiceTest {
         dto.setDocType(DocumentType.POSTING_DOC.getValue());
         dto.setDateTime(1647443208000L); // 16/04/2022
         dto.setId(1);
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         docCrudService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(1).isDeleted());
     }
@@ -113,7 +112,7 @@ class DocCrudServiceTest {
         dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
         dto.setDateTime(1647443208000L); // 16/04/2022
         dto.setId(docId);
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         docCrudService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(docId).isDeleted());
     }
@@ -123,7 +122,7 @@ class DocCrudServiceTest {
     @Test
     void holdDocumentTest() {
         int docId = 1;
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         docCrudService.holdDocument(docId);
         assertEquals(2, lotRepository.findAll().size());
         assertEquals(2, lotMoveRepository.findAll().size());
@@ -182,7 +181,7 @@ class DocCrudServiceTest {
     void checkTimePeriodThrowExceptionTest() {
         DocDTO dto = new DocDTO();
         dto.setDateTime(START);
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         assertThrows(BadRequestException.class,
                 () -> docCrudService.checkTimePeriod(dto));
     }
@@ -193,7 +192,7 @@ class DocCrudServiceTest {
     @Test
     void checkTimePeriodByDocumentThrowExceptionTest() {
         Document document = documentService.getDocumentById(6);
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         assertThrows(BadRequestException.class,
                 () -> docCrudService.checkTimePeriod(document));
     }

@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.PropertySetting;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +35,7 @@ class ItemRestServiceTest {
     @Autowired
     private StorageService storageService;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
     @Autowired
     @Qualifier("periodAveragePrice")
     private PropertySetting periodAveragePriceSetting;
@@ -47,7 +46,7 @@ class ItemRestServiceTest {
     @Test
     @Transactional
     void getItemsRestOnStorageForPeriodTest() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         Storage storage = storageService.getById(3);
         Item item = itemService.getItemById(7);
         Map<Item, ItemRestService.RestPriceValue> map = itemRestService
@@ -61,12 +60,12 @@ class ItemRestServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getPeriodStartTest() {
-        assertEquals(LocalDate.parse("2022-04-01").atStartOfDay(), itemRestService.getPeriodStart());
+        assertEquals(LocalDate.parse("2022-04-01").atStartOfDay(), itemRestService.getPeriodStartDateTime());
     }
 
     @Test
     void getPeriodStarDefaultTest() {
-        assertEquals(LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay(), itemRestService.getPeriodStart());
+        assertEquals(LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay(), itemRestService.getPeriodStartDateTime());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
@@ -153,7 +152,7 @@ class ItemRestServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getRestOfItemOnStorageTest() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         assertEquals(5, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(3), LocalDateTime.now()));
         assertEquals(3, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(3), LocalDateTime.now()));
         assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(2), LocalDateTime.now()));

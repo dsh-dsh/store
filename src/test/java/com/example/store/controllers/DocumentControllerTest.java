@@ -1,6 +1,6 @@
 package com.example.store.controllers;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -75,7 +74,7 @@ class DocumentControllerTest {
     @Autowired
     private DocumentRepository documentRepository;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -128,7 +127,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addReceiptDocThrowExceptionPeriodTest() throws Exception {
 
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
         docDTO.setDateTime(ZonedDateTime.of(LocalDateTime.parse("2022-01-01T00:00:00.000")
                 , ZoneId.systemDefault()).toInstant().toEpochMilli());
@@ -280,7 +279,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void holdDocTest() throws Exception {
 
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -298,7 +297,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notHoldDocThenExistsNotHoldenDocBeforeTest() throws Exception {
 
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 2)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -313,7 +312,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notUnHoldDocThenExistsHoldenDocAfterTest() throws Exception {
 
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -360,7 +359,7 @@ class DocumentControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void holdSerialDocWhenUnHoldenChecksExistTest() throws Exception {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/serial/" + 6)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -500,7 +499,7 @@ class DocumentControllerTest {
         docDTO.setDateTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         this.mockMvc.perform(
                         put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)

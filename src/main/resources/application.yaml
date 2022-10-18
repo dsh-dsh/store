@@ -32,7 +32,7 @@ spring.mail.to.email : daniilshipilov@yandex.ru
 
 spring.mail.host : smtp.mail.ru
 spring.mail.from.email : idiplomov@inbox.ru
-spring.mail.password : ${EMAIL_PASSWORD}
+spring.mail.password : WLbazdt6huqnntZGPBeB
 spring.mail.port : 465
 spring.mail.protocol : smtps
 spring.mail.properties.mail.smtp.auth : true

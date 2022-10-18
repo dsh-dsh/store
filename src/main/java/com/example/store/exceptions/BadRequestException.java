@@ -31,4 +31,10 @@ public class BadRequestException extends RuntimeException {
         this.exceptionType = exceptionType;
     }
 
+    public BadRequestException(String message, ExceptionType exceptionType, String info) {
+        super(message);
+        this.exceptionType = exceptionType;
+        this.info = info;
+    }
+
 }

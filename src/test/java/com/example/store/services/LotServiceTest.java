@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -46,7 +46,7 @@ class LotServiceTest {
     @Autowired
     private DocItemService docItemService;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
 
     @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -85,7 +85,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void getLotMapThanTime20220320Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
         Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), endTime);
         assertEquals(1, map.size());
@@ -97,7 +97,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void getLotMapThanTime20220311Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
         Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), endTime);
         assertEquals(2, map.size());
@@ -110,7 +110,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void getOneLotOfItemThanTime20220320Time() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
         Map<Lot, Float> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
@@ -123,7 +123,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void getTwoLotsOfItemThanTime20220310Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
         Map<Lot, Float> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
@@ -211,7 +211,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addStorageDocMovement_whenWriteOffDoc_Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         DocumentItem item = docItemService.getItemById(3);
         lotService.addStorageDocMovement(item);
         assertEquals(1, lotService.getLotsByDocumentItemForStorageDocs(item).get(0).getId());
@@ -222,7 +222,7 @@ class LotServiceTest {
     @Test
     @Transactional
     void addStorageDocMovement_whenMovementDoc_Test() {
-        env.setPeriodStart();
+        periodStartDateTime.setPeriodStart();
         DocumentItem item = docItemService.getItemById(3);
         lotService.addStorageDocMovement(item);
         List<Lot> lots = lotService.getLotsByDocumentItemForStorageDocs(item);

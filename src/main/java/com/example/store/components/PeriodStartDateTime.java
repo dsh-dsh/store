@@ -12,21 +12,21 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
-public class EnvironmentVars {
+public class PeriodStartDateTime {
 
     @Autowired
     private PeriodRepository periodRepository;
 
-    private LocalDateTime periodStart;
+    private LocalDateTime dateTime;
 
     @PostConstruct
     public void setPeriodStart() {
         Optional<Period> period = periodRepository.findByIsCurrent(true);
-        this.periodStart = period.map(value -> value.getStartDate().atStartOfDay())
+        this.dateTime = period.map(value -> value.getStartDate().atStartOfDay())
                 .orElseGet(() -> LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
     }
 
-    public LocalDateTime getPeriodStart() {
-        return periodStart;
+    public LocalDateTime get() {
+        return dateTime;
     }
 }

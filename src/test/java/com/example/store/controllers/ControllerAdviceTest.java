@@ -74,7 +74,7 @@ class ControllerAdviceTest {
                                 .content(objectMapper.writeValueAsString(requestDTO)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NO_SUCH_PROJECT_MESSAGE));
+                .andExpect(jsonPath("$.error").value(String.format(Constants.NO_SUCH_PROJECT_MESSAGE, 0)));
     }
 
 

@@ -27,6 +27,10 @@ public class ReHoldChecking {
     @Autowired
     private DocItemService docItemService;
 
+    public boolean checkFalsePossibility(ItemDoc itemDoc, DocDTO docDTO) {
+        return false;
+    }
+
     public boolean checkPossibility(ItemDoc itemDoc, DocDTO docDTO) {
         if(!itemDoc.isHold()) return false;
 //        if(!itemDoc.getDateTime().format(Constants.TIME_FORMATTER).equals(docDTO.getTime())) return false;
