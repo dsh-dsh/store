@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.EnvironmentVars;
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
@@ -39,7 +39,9 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private DocsFrom1cService docsFrom1cService;
     @Autowired
-    private EnvironmentVars env;
+    private PeriodStartDateTime periodStartDateTime;
+    @Autowired
+    private AuthService authService;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -97,6 +99,24 @@ public class DocCrudService extends AbstractDocCrudService {
             dto.setHold(false);
             dto.setDateTime(Util.getLongLocalDateTime(LocalDateTime.now()));
         }
+        return dto;
+    }
+
+    // todo add test
+    public DocDTO getMoveDocFromRequest(int docId) {
+        Document document = documentService.getDocumentById(docId);
+        DocDTO dto = docMapper.mapToDocDTO((ItemDoc) document);
+//        dto.setDateTime(Util.getLongLocalDateTime(LocalDateTime.now()));
+        dto.setNumber(getNextDocumentNumber(DocumentType.MOVEMENT_DOC));
+        dto.setDocType(DocumentType.MOVEMENT_DOC.getValue());
+        dto.setId(0);
+        dto.setHold(false);
+        dto.setBaseDocumentId(document.getId());
+        dto.getDocItems().forEach(item -> {
+            item.setQuantityFact(item.getQuantity());
+            item.setQuantity(0f);
+            item.setAmount(0f);
+        });
         return dto;
     }
 
@@ -273,21 +293,21 @@ public class DocCrudService extends AbstractDocCrudService {
 
     protected void checkTimePeriod(DocDTO docDTO) {
         LocalDateTime docTime = Util.getLocalDateTime(docDTO.getDateTime());
-        if(docTime.isBefore(env.getPeriodStart())) {
+        if(docTime.isBefore(periodStartDateTime.get())) {
             throw new BadRequestException(
                     String.format(
                         Constants.OUT_OF_PERIOD_MESSAGE,
-                        env.getPeriodStart().toString()),
+                            periodStartDateTime.get().toString()),
                     this.getClass().getName() + " checkTimePeriod(DocDTO docDTO)");
         }
     }
 
     protected void checkTimePeriod(Document document) {
-        if(document.getDateTime().isBefore(env.getPeriodStart())) {
+        if(document.getDateTime().isBefore(periodStartDateTime.get())) {
             throw new BadRequestException(
                     String.format(
                         Constants.OUT_OF_PERIOD_MESSAGE,
-                        env.getPeriodStart().toString()),
+                            periodStartDateTime.get().toString()),
                     this.getClass().getName() + " checkTimePeriod(Document document)");
         }
     }
@@ -300,14 +320,14 @@ public class DocCrudService extends AbstractDocCrudService {
     public String checkUnHoldenChecks() {
         Optional<Document> document = documentRepository
                 .getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(
-                        env.getPeriodStart(), DocumentType.CHECK_DOC,
+                        periodStartDateTime.get(), DocumentType.CHECK_DOC,
                         false, false,
                         Sort.by(Constants.DATE_TIME_STRING));
         return document.map(value -> value.getDateTime().toString().substring(0, 10)).orElse("");
     }
 
     public String getLastCheckNumber(int prefix) {
-        LocalDateTime periodStart = env.getPeriodStart();
+        LocalDateTime periodStart = periodStartDateTime.get();
         long from = 1000000000L * prefix;
         long to = 1000000000L * (prefix + 1);
         Document doc = documentRepository.getLast1CDocNumber(from, to, periodStart).orElse(null);
