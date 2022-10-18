@@ -106,7 +106,6 @@ public class DocCrudService extends AbstractDocCrudService {
     public DocDTO getMoveDocFromRequest(int docId) {
         Document document = documentService.getDocumentById(docId);
         DocDTO dto = docMapper.mapToDocDTO((ItemDoc) document);
-//        dto.setDateTime(Util.getLongLocalDateTime(LocalDateTime.now()));
         dto.setNumber(getNextDocumentNumber(DocumentType.MOVEMENT_DOC));
         dto.setDocType(DocumentType.MOVEMENT_DOC.getValue());
         dto.setId(0);
@@ -225,10 +224,28 @@ public class DocCrudService extends AbstractDocCrudService {
             List<Document> writeOffDocs = documents.stream()
                     .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
                     .map(Document::getBaseDocument).distinct().collect(Collectors.toList());
-            List<Document> postingDocs = writeOffDocs.stream().map(Document::getBaseDocument).collect(Collectors.toList());
-            postingDocs.forEach(this::softDeleteDoc);
-            writeOffDocs.forEach(this::softDeleteDoc);
+            List<Document> otherDocs = documents.stream()
+                    .filter(doc -> doc.getDocType() != DocumentType.CHECK_DOC)
+                    .filter(doc -> isInList(writeOffDocs, doc))
+                    .collect(Collectors.toList());
+            documents.stream()
+                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
+                    .forEach(this::clearBaseDocInCheckDoc);
+            otherDocs.forEach(doc -> {if(doc != null) softDeleteDoc(doc);});
+            writeOffDocs.forEach(doc -> {if(doc != null) softDeleteDoc(doc);});
         }
+    }
+
+    protected void clearBaseDocInCheckDoc(Document document) {
+        document.setBaseDocument(null);
+        documentRepository.save(document);
+    }
+
+    private boolean isInList(List<Document> writeOffDocs, Document doc) {
+        for (Document writeOffDoc : writeOffDocs) {
+            if (doc.getBaseDocument() == writeOffDoc) return true;
+        }
+        return false;
     }
 
     protected List<LocalDate> getDatesOfChecks(List<Document> documents) {

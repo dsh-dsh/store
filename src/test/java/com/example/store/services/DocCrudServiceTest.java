@@ -73,7 +73,7 @@ class DocCrudServiceTest {
         assertEquals("Поступление", dto.getDocType());
         assertEquals(0, dto.getId());
         assertEquals(2, dto.getNumber());
-        assertEquals(false, dto.isHold());
+        assertFalse(dto.isHold());
         assertEquals(LocalDate.now(), Util.getLocalDate(dto.getDateTime()));
     }
 
@@ -86,7 +86,7 @@ class DocCrudServiceTest {
         assertEquals("Расходный кассовый ордер", dto.getDocType());
         assertEquals(0, dto.getId());
         assertEquals(7, dto.getNumber());
-        assertEquals(false, dto.isHold());
+        assertFalse(dto.isHold());
         assertEquals(LocalDate.now(), Util.getLocalDate(dto.getDateTime()));
     }
 
@@ -137,10 +137,14 @@ class DocCrudServiceTest {
         docCrudService.softDeleteBaseDocs(docs, dates);
         docs = documentService.getAllDocuments();
         assertFalse(docs.get(0).isDeleted());
+        assertNull(docs.get(0).getBaseDocument());
         assertFalse(docs.get(1).isDeleted());
+        assertNull(docs.get(1).getBaseDocument());
         assertFalse(docs.get(2).isDeleted());
+        assertNull(docs.get(2).getBaseDocument());
         assertTrue(docs.get(3).isDeleted());
         assertTrue(docs.get(4).isDeleted());
+        assertTrue(docs.get(5).isDeleted());
     }
 
     @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

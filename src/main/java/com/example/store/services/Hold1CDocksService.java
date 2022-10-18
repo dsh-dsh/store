@@ -258,7 +258,6 @@ public class Hold1CDocksService {
                     return item;
                 }).collect(Collectors.toSet());
         doc.setDocumentItems(docItems);
-        doc.setBaseDocument(writeOffDoc);
         itemDocRepository.save(doc);
         return doc;
     }
