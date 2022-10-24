@@ -1,7 +1,9 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Item;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
@@ -10,11 +12,15 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class HoldDocsService {
@@ -70,7 +76,6 @@ public class HoldDocsService {
         itemDocRepository.save(itemDoc);
     }
 
-
     @Transaction
     public void unHoldDoc(Document document) {
         document.setHold(false);
@@ -83,5 +88,32 @@ public class HoldDocsService {
         } else {
             orderDocRepository.save((OrderDoc) document);
         }
+    }
+
+    public void checkDocItemQuantities(Document document) {
+        if(document instanceof ItemDoc) {
+            ItemDoc itemDoc = (ItemDoc) document;
+            Set<DocumentItem> documentItems = itemDoc.getDocumentItems();
+            Map<Item, Float> shortages = lotService.getShortageMapOfItems(
+                    documentItems, itemDoc.getStorageFrom(), itemDoc.getDateTime());
+            if(!shortages.isEmpty()) {
+                String formatString = "%s %s %20.3f %s,              ";
+                String message = shortages.entrySet().stream()
+                        .map(entry -> String.format(formatString,
+                                entry.getKey().getName(),
+                                getDots(entry.getKey().getName()),
+                                Util.floorValue(Math.abs(entry.getValue()), 3),
+                                entry.getKey().getUnit().getValue()))
+                        .collect(Collectors.joining());
+                throw new WarningException(
+                        String.format(Constants.SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE,
+                                document.getDocType().getValue(), document.getNumber(), message),
+                        this.getClass().getName() + " - checkDocItemQuantities(Document document)");
+            }
+        }
+    }
+    private String getDots(String value) {
+        int length = 26 - value.length();
+        return ". ".repeat(length);
     }
 }

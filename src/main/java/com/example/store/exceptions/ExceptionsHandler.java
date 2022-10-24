@@ -1,6 +1,7 @@
 package com.example.store.exceptions;
 
 import com.example.store.model.responses.ErrorResponse;
+import com.example.store.model.responses.WarningResponse;
 import com.example.store.services.MailService;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,34 +30,32 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     private String toEmail;
 
     @ExceptionHandler(BadRequestException.class)
-    protected ResponseEntity<ErrorResponse> handleBadRequestException(
-            BadRequestException ex) {
-
+    protected ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
         mailService.send(toEmail, Constants.ERROR_SUBJECT,
                 String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "BadRequestException"));
-
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage(),
                         ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(TransactionException.class)
-    protected ResponseEntity<ErrorResponse> handleTransactionException(
-            TransactionException ex) {
-
+    protected ResponseEntity<ErrorResponse> handleTransactionException(TransactionException ex) {
         mailService.send(toEmail, Constants.ERROR_SUBJECT,
                 String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "TransactionException"));
-
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HoldDocumentException.class)
-    protected ResponseEntity<ErrorResponse> handleHoldDocumentException(
-            HoldDocumentException ex) {
-
+    protected ResponseEntity<ErrorResponse> handleHoldDocumentException(HoldDocumentException ex) {
         mailService.send(toEmail, Constants.ERROR_SUBJECT,
                 String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "HoldDocumentException"));
-
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(WarningException.class)
+    protected ResponseEntity<WarningResponse> handleWarningException(WarningException ex) {
+        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "WarningException"));
+        return new ResponseEntity<>(new WarningResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @Override

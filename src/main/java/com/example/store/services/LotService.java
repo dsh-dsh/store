@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -187,6 +188,16 @@ public class LotService {
     public void removeLot(DocumentItem docItem) {
         lotRepository.findByDocumentItem(docItem)
                 .ifPresent(value -> lotRepository.delete(value));
+    }
+
+    // todo add tests
+    public Map<Item, Float> getShortageMapOfItems(Set<DocumentItem> documentItems, Storage storage, LocalDateTime docTime) {
+        return documentItems.stream()
+                .collect(Collectors.toMap(DocumentItem::getItem, DocumentItem::getQuantity, Float::sum))
+                .entrySet().stream()
+                .peek(entry -> entry.setValue(itemRestService.getRestOfItemOnStorage(entry.getKey(), storage, docTime) - entry.getValue()))
+                .filter(entry -> entry.getValue() < 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 }

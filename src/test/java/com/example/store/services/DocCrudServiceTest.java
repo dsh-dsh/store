@@ -131,6 +131,7 @@ class DocCrudServiceTest {
     @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @Transactional
     void softDeleteBaseDocsTest() {
         List<Document> docs = documentService.getAllDocuments();
         List<LocalDate> dates = List.of(LocalDate.parse("2022-04-16"));

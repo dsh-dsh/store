@@ -66,6 +66,7 @@ public class Constants {
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String SHORTAGE_OF_ITEM_MESSAGE = "Не достаточный остаток %s, требуется %f в наличии %f";
+    public static final String SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE = "В документе %s № %d не достает: %n%s";
     public static final String HOLD_FAILED_MESSAGE = "Проведение документа не удалось";
     public static final String UN_HOLD_FAILED_MESSAGE = "Отмена проведения документа не удалась";
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "В документе отсутствует товары";
