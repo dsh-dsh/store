@@ -77,12 +77,12 @@ public abstract class AbstractDocCrudService {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
         boolean reHoldPossible = reHoldChecking.checkFalsePossibility(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
-        updateDocItems(itemDoc);
         if(reHoldPossible) {
             lotService.updateLotMovements(itemDoc);
         } else {
             unHoldDocs.unHoldAllDocsAfter(itemDoc);
         }
+        updateDocItems(itemDoc);
         updateCheckInfo(itemDoc);
         return itemDoc;
     }

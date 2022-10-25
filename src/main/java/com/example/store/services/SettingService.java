@@ -63,7 +63,7 @@ public class SettingService {
         List<PropertySetting> list = settingRepository.findByUser(user);
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
         return list.stream()
-                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
+//                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
                 .map(setting -> getSettingDTO(setting, userDTO))
                 .collect(Collectors.toList());
     }

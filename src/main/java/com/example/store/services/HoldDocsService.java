@@ -7,6 +7,7 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.ExceptionType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
@@ -90,14 +91,18 @@ public class HoldDocsService {
         }
     }
 
+    // todo add tests
     public void checkDocItemQuantities(Document document) {
         if(document instanceof ItemDoc) {
             ItemDoc itemDoc = (ItemDoc) document;
+            if(itemDoc.getDocType() != DocumentType.WRITE_OFF_DOC && itemDoc.getDocType() != DocumentType.MOVEMENT_DOC) {
+                return;
+            }
             Set<DocumentItem> documentItems = itemDoc.getDocumentItems();
             Map<Item, Float> shortages = lotService.getShortageMapOfItems(
                     documentItems, itemDoc.getStorageFrom(), itemDoc.getDateTime());
             if(!shortages.isEmpty()) {
-                String formatString = "%s %s %20.3f %s,              ";
+                String formatString = "%s %s %20.3f %s,%n";
                 String message = shortages.entrySet().stream()
                         .map(entry -> String.format(formatString,
                                 entry.getKey().getName(),
