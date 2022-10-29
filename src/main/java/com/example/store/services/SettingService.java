@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.model.dto.SettingDTO;
+import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
@@ -63,7 +64,6 @@ public class SettingService {
         List<PropertySetting> list = settingRepository.findByUser(user);
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
         return list.stream()
-//                .filter(setting -> setting.getSettingType() != SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
                 .map(setting -> getSettingDTO(setting, userDTO))
                 .collect(Collectors.toList());
     }
@@ -76,14 +76,27 @@ public class SettingService {
         return dto;
     }
 
-    public void setProperty(SettingDTO settingDTO) {
-        User user = userService.getById(settingDTO.getUser().getId());
+    // todo add tests
+    public void setDocTypeFilterProperties(SettingDTOList list) {
+        User user = userService.getById(list.getUser().getId());
+        settingRepository.resetDocTypeFiltersSettings(list.getUser().getId());
+        list.getSettings().forEach(dto -> setProperty(user, dto));
+    }
+
+
+    // todo add tests
+    public void setProperty(User user, SettingDTO settingDTO) {
         SettingType settingType = SettingType.valueOf(settingDTO.getType());
         int property = settingDTO.getProperty();
         PropertySetting setting = settingRepository.findByUserAndSettingType(user, settingType)
-                .orElseGet(() -> getSetting(user, settingType, property));
+                .orElseGet(() -> getNewSetting(user, settingType, property));
         setting.setProperty(property);
         settingRepository.save(setting);
+    }
+
+    public void setProperty(SettingDTO settingDTO) {
+        User user = userService.getById(settingDTO.getUser().getId());
+        setProperty(user, settingDTO);
     }
 
     public void setAddShortageSetting(SettingDTO settingDTO) {
@@ -123,12 +136,12 @@ public class SettingService {
 
     public void setSystemSetting(SettingDTO dto, SettingType settingType) {
         PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
-                .orElseGet(() -> getSetting(systemUser, settingType, dto.getProperty()));
+                .orElseGet(() -> getNewSetting(systemUser, settingType, dto.getProperty()));
         setting.setProperty(dto.getProperty());
         settingRepository.save(setting);
     }
 
-    private PropertySetting getSetting(User user, SettingType type, int property) {
+    private PropertySetting getNewSetting(User user, SettingType type, int property) {
         PropertySetting setting = new PropertySetting();
         setting.setUser(user);
         setting.setSettingType(type);
