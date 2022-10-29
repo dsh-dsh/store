@@ -1,6 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -8,7 +7,6 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.enums.ExceptionType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -44,16 +42,14 @@ public class HoldDocsService {
     public boolean checkPossibilityToHold(Document document) {
         if(document.isHold()) {
             if(documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true)) {
-                throw new BadRequestException(
+                throw new WarningException(
                         Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
-                        ExceptionType.HOLD_EXCEPTION,
                         this.getClass().getName() + " - checkPossibilityToHold(Document document)");
             }
         } else {
             if(documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(document.getDateTime(), false, false)) {
-                throw new BadRequestException(
+                throw new WarningException(
                         Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
-                        ExceptionType.HOLD_EXCEPTION,
                         this.getClass().getName() + " - checkPossibilityToHold(Document document)");
             }
         }

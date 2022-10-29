@@ -2,6 +2,7 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.dto.SettingDTO;
+import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.PeriodService;
@@ -67,8 +68,15 @@ public class SettingController {
     }
 
     @PostMapping("/property")
-    public ResponseEntity<Response<String>> setSettings(@RequestBody SettingDTO settingDTO) {
+    public ResponseEntity<Response<String>> setSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setProperty(settingDTO);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    // todo add tests
+    @PostMapping("/doc/type/properties")
+    public ResponseEntity<Response<String>> setDocTypeFilterProperties(@RequestBody SettingDTOList settingDTOList) {
+        settingService.setDocTypeFilterProperties(settingDTOList);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
