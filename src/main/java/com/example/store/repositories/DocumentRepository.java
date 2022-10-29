@@ -30,6 +30,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     @Query(value = "SELECT number " +
             "FROM document " +
             "WHERE doc_type = :docType " +
+            "AND number < 1000000000 " + // not 1C doc
             "ORDER BY number DESC " +
             "LIMIT 1"
             , nativeQuery = true)

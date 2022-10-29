@@ -76,6 +76,7 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
+    // todo update tests
     protected int getNextDocumentNumber(DocumentType type) {
         try {
             return documentRepository.getLastNumber(type.toString()) + 1;

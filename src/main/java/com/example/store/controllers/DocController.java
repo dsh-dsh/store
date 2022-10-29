@@ -44,6 +44,7 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(docDTO));
     }
 
+    // todo update tests
     @GetMapping("/new/number")
     public ResponseEntity<Response<Integer>> getNewDocNumber(@RequestParam String type) {
         int newDocNumber = docCrudService.getNewDocNumber(type);

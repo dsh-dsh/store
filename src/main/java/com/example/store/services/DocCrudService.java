@@ -331,6 +331,7 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    // todo update tests
     public int getNewDocNumber(String type) {
         DocumentType documentType = DocumentType.getByValue(type);
         return getNextDocumentNumber(documentType);
