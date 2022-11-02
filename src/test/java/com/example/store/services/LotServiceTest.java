@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -87,9 +88,9 @@ class LotServiceTest {
     void getLotMapThanTime20220320Test() {
         periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), endTime);
+        Map<Lot, BigDecimal> map = lotService.getLotMap(getDocItem(8, 2.00f), getStorage(3), endTime);
         assertEquals(1, map.size());
-        assertThat(map, hasValue(equalTo(2.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(2.00f))));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -99,10 +100,10 @@ class LotServiceTest {
     void getLotMapThanTime20220311Test() {
         periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
-        Map<Lot, Float> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), endTime);
+        Map<Lot, BigDecimal> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), endTime);
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(4.00f)));
-        assertThat(map, hasValue(equalTo(6.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(6.00f))));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -112,10 +113,10 @@ class LotServiceTest {
     void getOneLotOfItemThanTime20220320Time() {
         periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-20T11:00:00.000000");
-        Map<Lot, Float> map
+        Map<Lot, BigDecimal> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(1, map.size());
-        assertThat(map, hasValue(equalTo(4.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -125,35 +126,34 @@ class LotServiceTest {
     void getTwoLotsOfItemThanTime20220310Test() {
         periodStartDateTime.setPeriodStart();
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
-        Map<Lot, Float> map
+        Map<Lot, BigDecimal> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(4.00f)));
-        assertThat(map, hasValue(equalTo(10.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(10.00f))));
     }
 
     @Test
     void getLotMapOfOneToHoldTest() {
-        Map<Lot, Float> map = lotService.getLotMapToHold(getMapOfLotAndFloat(), 5.00f);
+        Map<Lot, BigDecimal> map = lotService.getLotMapToHold(getMapOfLotAndBigDecimal(), BigDecimal.valueOf(5.00f));
         assertEquals(1, map.size());
-        assertThat(map, hasValue(equalTo(5.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f))));
     }
 
     @Test
     void getLotMapOfTwoToHoldTest() {
-        Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
-        Map<Lot, Float> map = lotService.getLotMapToHold(mapOfLotAndFloat, 12.00f);
+        Map<Lot, BigDecimal> map = lotService.getLotMapToHold(getMapOfLotAndBigDecimal(), BigDecimal.valueOf(12.00f));
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(5.00f)));
-        assertThat(map, hasValue(equalTo(7.00f)));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(7.00f))));
     }
 
     @Test
     void checkQuantityShortageExceptionThrownTest() {
-        Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
+        Map<Lot, BigDecimal> mapOfLotAndBigDecimal = getMapOfLotAndBigDecimal();
         Item item = getItem(8);
         assertThrows(BadRequestException.class,
-                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndFloat, 20.00f));
+                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndBigDecimal, BigDecimal.valueOf(20.00f)));
     }
 
     @Sql(value = "/sql/lots/addTwoDocsAndLots.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -164,8 +164,8 @@ class LotServiceTest {
         ItemDoc document = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
-        assertEquals(9, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageFrom(), LocalDateTime.now()));
-        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageFrom(), LocalDateTime.now()));
+        assertEquals(9, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageFrom(), LocalDateTime.now()).floatValue());
+        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageFrom(), LocalDateTime.now()).floatValue());
     }
 
     @Sql(value = "/sql/lots/addReceiptDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -176,8 +176,8 @@ class LotServiceTest {
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
-        assertEquals(5, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
-        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()));
+        assertEquals(5, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()).floatValue());
+        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()).floatValue());
     }
 
     @Sql(value = "/sql/lots/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -188,8 +188,8 @@ class LotServiceTest {
         ItemDoc document = (ItemDoc) documentService.getDocumentById(1);
         lotService.addLotMovements(document);
         List<Item> items = document.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
-        assertEquals(13, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()));
-        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()));
+        assertEquals(13, itemRestService.getRestOfItemOnStorage(items.get(0), document.getStorageTo(), LocalDateTime.now()).floatValue());
+        assertEquals(8, itemRestService.getRestOfItemOnStorage(items.get(1), document.getStorageTo(), LocalDateTime.now()).floatValue());
     }
 
     @Sql(value = "/sql/lots/addPostingDocWithLotsAndMovementDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -200,10 +200,10 @@ class LotServiceTest {
         ItemDoc movementDocument = (ItemDoc) documentService.getDocumentById(2);
         lotService.addLotMovements(movementDocument);
         List<Item> items = movementDocument.getDocumentItems().stream().map(DocumentItem::getItem).collect(Collectors.toList());
-        assertEquals(4, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageFrom(), LocalDateTime.now()));
-        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageFrom(), LocalDateTime.now()));
-        assertEquals(6, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageTo(), LocalDateTime.now()));
-        assertEquals(7, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageTo(), LocalDateTime.now()));
+        assertEquals(4, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageFrom(), LocalDateTime.now()).floatValue());
+        assertEquals(3, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageFrom(), LocalDateTime.now()).floatValue());
+        assertEquals(6, itemRestService.getRestOfItemOnStorage(items.get(0), movementDocument.getStorageTo(), LocalDateTime.now()).floatValue());
+        assertEquals(7, itemRestService.getRestOfItemOnStorage(items.get(1), movementDocument.getStorageTo(), LocalDateTime.now()).floatValue());
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addTwoDocsAndLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -231,10 +231,10 @@ class LotServiceTest {
 
     @Test
     void checkQuantityShortageNoExceptionTest() {
-        Map<Lot, Float> mapOfLotAndFloat = getMapOfLotAndFloat();
+        Map<Lot, BigDecimal> mapOfLotAndBigDecimal = getMapOfLotAndBigDecimal();
         Item item = getItem(8);
         assertDoesNotThrow(
-                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndFloat, 15.00f));
+                () -> itemRestService.checkQuantityShortage(item, mapOfLotAndBigDecimal, BigDecimal.valueOf(15.00f)));
     }
 
     @Sql(value = "/sql/lots/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -286,8 +286,8 @@ class LotServiceTest {
     void setAveragePriceTest() {
         DocumentItem docItem = new DocumentItem();
         docItem.setPrice(200.00f);
-        docItem.setQuantity(15.00f);
-        Map<Lot, Float> lotMap = getMapOfLotAndFloat();
+        docItem.setQuantity(BigDecimal.valueOf(15.00f));
+        Map<Lot, BigDecimal> lotMap = getMapOfLotAndBigDecimal();
         lotService.setAveragePrice(docItem, lotMap);
         float expectedPrice = ((float)(50*5 + 60*10)) / 15;
         assertEquals(Util.floorValue(expectedPrice, 2), docItem.getPrice());
@@ -310,11 +310,28 @@ class LotServiceTest {
         return map;
     }
 
+    private Map<Lot, BigDecimal> getMapOfLotAndBigDecimal() {
+        Lot lot1 = new Lot(
+                getDocument(1, 3), getItem(8),
+                LocalDateTime.parse("2022-01-10T10:00:00"),
+                10.00f, 50.00f);
+        lot1.setId(1);
+        Lot lot2 = new Lot(
+                getDocument(2,3), getItem(8),
+                LocalDateTime.parse("2022-01-20T10:00:00"),
+                10.00f, 60.00f);
+        Map<Lot, BigDecimal> map = new TreeMap<>();
+        lot1.setId(2);
+        map.put(lot1, BigDecimal.valueOf(5.00f));
+        map.put(lot2, BigDecimal.valueOf(10.00f));
+        return map;
+    }
+
     private DocumentItem getDocItem(int id, float quantity) {
         DocumentItem item = new DocumentItem();
         item.setItem(getItem(id));
         item.setItemDoc(new ItemDoc());
-        item.setQuantity(quantity);
+        item.setQuantity(BigDecimal.valueOf(quantity));
         return item;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,9 +97,10 @@ public class  PeriodService {
 
     public List<DocumentItem> getDocItems(ItemDoc document, Map<Item, ItemRestService.RestPriceValue> map) {
         return map.entrySet().stream()
-                .filter(entry -> entry.getValue().getRest() > 0)
+                .filter(entry -> entry.getValue().getRest().compareTo(BigDecimal.ZERO) > 0)
                 .map(entry -> new DocumentItem(document, entry.getKey(),
-                        entry.getValue().getRest(), entry.getValue().getPrice()))
+                        entry.getValue().getRest(),
+                        entry.getValue().getPrice()))
                 .collect(Collectors.toList());
     }
 

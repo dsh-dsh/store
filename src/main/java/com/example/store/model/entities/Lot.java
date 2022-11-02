@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class Lot implements Comparable<Lot> {
     private List<LotMovement> movements = new ArrayList<>();
 
     public Lot(ItemDoc document, Item item, LocalDateTime lotTime, float quantity, float price) {
-        this.documentItem = new DocumentItem(document, item, quantity, price);
+        this.documentItem = new DocumentItem(document, item, BigDecimal.valueOf(quantity).setScale(3, RoundingMode.HALF_EVEN), price);
         this.lotTime = lotTime;
     }
 

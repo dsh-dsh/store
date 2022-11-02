@@ -3,6 +3,7 @@ package com.example.store.repositories;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.model.projections.LotFloat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,22 +34,22 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "and doc.id = :docId", nativeQuery = true)
     List<Lot> findLotsByItemAndDoc(int itemId, int docId);
 
-    @Query(value = "select lot.id, sum(movement.quantity) as value from lot " +
+    @Query(value = "select lot.id, sum(movement.d_quantity) as value from lot " +
             "left join lot_movement as movement on lot.id = movement.lot_id " +
             "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
             "where doc_item.item_id = :itemId and movement.storage_id = :storageId " +
             "and (movement.movement_time >= :startTime and movement.movement_time <= :endTime) " +
             "group by lot.id " +
-            "having sum(movement.quantity) > 0", nativeQuery = true)
-    List<LotFloat> getLotsOfItem(int itemId, int storageId, LocalDateTime startTime, LocalDateTime endTime);
+            "having sum(movement.d_quantity) > 0", nativeQuery = true)
+    List<LotBigDecimal> getLotsOfItem(int itemId, int storageId, LocalDateTime startTime, LocalDateTime endTime);
 
-    @Query(value = "select lot.id, (sum(movement.quantity)*doc_item.price) as value from lot " +
+    @Query(value = "select lot.id, (sum(movement.d_quantity)*doc_item.price) as value from lot " +
             "left join lot_movement as movement on lot.id = movement.lot_id " +
             "left join document_item as doc_item on doc_item.id = lot.document_item_id " +
             "where doc_item.item_id = :itemId and movement.storage_id = :storageId " +
             "and (movement.movement_time >= :startTime and movement.movement_time <= :endTime) " +
             "group by lot.id " +
-            "having sum(movement.quantity) > 0", nativeQuery = true)
+            "having sum(movement.d_quantity) > 0", nativeQuery = true)
     List<LotFloat> getLotAmountOfItem(int itemId, int storageId, LocalDateTime startTime, LocalDateTime endTime);
 
     @Query(value = "select doc_item.price " +
@@ -61,7 +62,7 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "limit 1", nativeQuery = true)
     Float findLastPrice(int itemId, LocalDateTime time);
 
-    @Query(value = "select sum(movement.quantity) from lot " +
+    @Query(value = "select sum(movement.d_quantity) from lot " +
             "inner join lot_movement as movement on lot.id = movement.lot_id " +
             "where lot.id = :lotId and movement.storage_id = :storageId", nativeQuery = true)
     float getQuantityRestOfLot(long lotId, int storageId);

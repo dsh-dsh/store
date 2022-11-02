@@ -8,6 +8,7 @@ import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
 import com.example.store.model.dto.StorageDTO;
+import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.LotRepository;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,12 +58,13 @@ public class ItemRestService {
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
 
-    public void checkQuantityShortage(Item item, Map<Lot, Float> lotMap, float docItemQuantity) {
-        double lotsQuantitySum = lotMap.values().stream().mapToDouble(d -> d).sum();
-        if(docItemQuantity > lotsQuantitySum) {
+    public void checkQuantityShortage(Item item, Map<Lot, BigDecimal> lotMap, BigDecimal docItemQuantity) {
+        BigDecimal lotsQuantitySum = lotMap.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        if(docItemQuantity.compareTo(lotsQuantitySum) > 0) {
             throw new BadRequestException(
                     String.format(Constants.SHORTAGE_OF_ITEM_MESSAGE, item.getName(), docItemQuantity, lotsQuantitySum),
-                    ExceptionType.HOLD_EXCEPTION);
+                    ExceptionType.HOLD_EXCEPTION,
+                    this.getClass().getName() + " checkQuantityShortage(Item item, Map<Lot, Float> lotMap, float docItemQuantity)");
         }
     }
 
@@ -87,14 +90,14 @@ public class ItemRestService {
         dto.setItemId(item.getId());
         dto.setItemName(item.getName());
         dto.setDocumentId(docId);
-        dto.setQuantity(getRestOfItemOnStorage(item, storage, time));
+        dto.setQuantity(getRestOfItemOnStorage(item, storage, time).floatValue());
         dto.setPrice(getLastPriceOfItem(item, time));
         dto.setAmount(dto.getQuantity()*dto.getPrice());
         return dto;
     }
 
-    public Map<Item, Float> getItemRestMap(Map<Item, Float> itemMap, Storage storage, LocalDateTime time) {
-        return itemMap.keySet().stream()
+    public Map<Item, BigDecimal> getItemRestMap(List<Item> itemList, Storage storage, LocalDateTime time) {
+        return itemList.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         item -> getRestOfItemOnStorage(item, storage, time)));
@@ -107,14 +110,14 @@ public class ItemRestService {
                         Function.identity(),
                         item -> getRestAndPriceForClosingPeriod(item, storage, time)))
                 .entrySet().stream()
-                .filter(entry -> entry.getValue().getRest() > 0)
+                .filter(entry -> entry.getValue().getRest().floatValue() > 0)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     protected RestPriceValue getRestAndPriceForClosingPeriod(Item item, Storage storage, LocalDateTime time) {
-        float rest = getRestOfItemOnStorage(item, storage, time);
+        BigDecimal rest = getRestOfItemOnStorage(item, storage, time);
         float price = periodAveragePriceSetting.getProperty() == 1 ?
-                getAveragePriceOfItem(item, storage, time, rest) :
+                getAveragePriceOfItem(item, storage, time, rest.floatValue()) :
                 getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
     }
@@ -132,12 +135,12 @@ public class ItemRestService {
         return value == null ? 0 : value;
     }
 
-    public float getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
-        float rest = (float)lotRepository
+    public BigDecimal getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
+        return lotRepository
                 .getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), docTime)
                 .stream()
-                .mapToDouble(LotFloat::getValue).sum();
-        return Util.floorValue(rest, 3);
+                .map(LotBigDecimal::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public float getRestOfLot(Lot lot, Storage storage) {
@@ -150,7 +153,7 @@ public class ItemRestService {
         return storages.stream()
                 .map(storage -> new RestDTO(
                         new StorageDTO(storage),
-                        getRestOfItemOnStorage(item, storage, now)))
+                        getRestOfItemOnStorage(item, storage, now).floatValue()))
                 .collect(Collectors.toList());
     }
 
@@ -159,18 +162,18 @@ public class ItemRestService {
         return storages.stream()
                 .map(storage -> new RestDTO(
                         new StorageDTO(storage),
-                        getRestOfItemOnStorage(item, storage, dateTime)))
+                        getRestOfItemOnStorage(item, storage, dateTime).floatValue()))
                 .collect(Collectors.toList());
     }
 
     class RestPriceValue {
-        private float rest;
+        private BigDecimal rest;
         private float price;
-        public RestPriceValue(float rest, float price) {
+        public RestPriceValue(BigDecimal rest, float price) {
             this.rest = rest;
             this.price = price;
         }
-        public float getRest() {
+        public BigDecimal getRest() {
             return rest;
         }
         public float getPrice() {

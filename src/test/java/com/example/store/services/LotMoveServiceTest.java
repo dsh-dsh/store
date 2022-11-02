@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +42,9 @@ class LotMoveServiceTest {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
         Lot lot1 = lotService.getById(1);
         Lot lot2 = lotService.getById(2);
-        Map<Lot, Float> map = new HashMap<>();
-        map.put(lot1, 10f);
-        map.put(lot2, 10f);
+        Map<Lot, BigDecimal> map = new HashMap<>();
+        map.put(lot1, BigDecimal.valueOf(10f));
+        map.put(lot2, BigDecimal.valueOf(10f));
         lotMoveService.addPlusLotMovements(itemDoc, map);
         assertEquals(1, lotMoveRepository.findByLot(lot1).size());
         assertEquals(1, lotMoveRepository.findByLot(lot2).size());
@@ -55,7 +56,7 @@ class LotMoveServiceTest {
     void addPlusLotMovementTest() {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
         Lot lot = lotService.getById(1);
-        lotMoveService.addPlusLotMovement(lot, itemDoc, 10f);
+        lotMoveService.addPlusLotMovement(lot, itemDoc, BigDecimal.valueOf(10f));
         assertEquals(1, lotMoveRepository.findByLot(lot).size());
     }
 
@@ -66,9 +67,9 @@ class LotMoveServiceTest {
     void updatePlusLotMovement() {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
         Lot lot = lotService.getById(1);
-        lotMoveService.updatePlusLotMovement(lot, itemDoc, 15f);
+        lotMoveService.updatePlusLotMovement(lot, itemDoc, BigDecimal.valueOf(15f));
         LotMovement lotMovement = lotMoveRepository.findByLot(lot).get(0);
-        assertEquals(15, lotMovement.getQuantity());
+        assertEquals(BigDecimal.valueOf(15), lotMovement.getDQuantity());
     }
 
     @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql"},
@@ -80,9 +81,9 @@ class LotMoveServiceTest {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
         Lot lot1 = lotService.getById(1);
         Lot lot2 = lotService.getById(2);
-        Map<Lot, Float> map = new HashMap<>();
-        map.put(lot1, -5f);
-        map.put(lot2, -5f);
+        Map<Lot, BigDecimal> map = new HashMap<>();
+        map.put(lot1, BigDecimal.valueOf(-5f));
+        map.put(lot2, BigDecimal.valueOf(-5f));
         lotMoveService.addPlusLotMovements(itemDoc, map);
         assertEquals(2, lotMoveRepository.findByLot(lot1).size());
         assertEquals(2, lotMoveRepository.findByLot(lot2).size());
@@ -95,7 +96,7 @@ class LotMoveServiceTest {
     void addMinusLotMovement() {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(1);
         Lot lot = lotService.getById(1);
-        lotMoveService.addPlusLotMovement(lot, itemDoc, -5f);
+        lotMoveService.addPlusLotMovement(lot, itemDoc, BigDecimal.valueOf(-5f));
         assertEquals(2, lotMoveRepository.findByLot(lot).size());
     }
 

@@ -12,6 +12,8 @@ import com.example.store.utils.CollectionUtils;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -33,6 +35,52 @@ class UtilTest extends TestService {
 
     public Map<Integer, Long> getIntegerMapGroupingBy(List<Integer> list) {
         return list.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    @Test
+    void floatTest1() {
+        float req = 1.234567f;
+        float rest = 0.647352f;
+        assertEquals(0.587215f, req - rest, 0.0000001);
+    }
+    @Test
+    void floatTest2() {
+        float req  = 0.255569f;
+        float rest = 0.047352f;
+        assertEquals(0.208217, Util.floorValue(req - rest, 6));
+    }
+    @Test
+    void floatTest3() {
+        float req  = 0.2f;
+        float rest = 0.1f;
+        assertEquals(0.1, Util.floorValue(req - rest, 6));
+    }
+    @Test
+    void floatTest4() {
+        BigDecimal required = BigDecimal.valueOf(1.234567f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        BigDecimal rest = BigDecimal.valueOf(0.647352f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        float quantity = required.subtract(rest).floatValue();
+        assertEquals(0.587215f, quantity);
+    }
+    @Test
+    void floatTest6() {
+        BigDecimal required = BigDecimal.valueOf(0.255569f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        BigDecimal rest = BigDecimal.valueOf(0.047352f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        float quantity = required.subtract(rest).floatValue();
+        assertEquals(0.208217f, quantity);
+    }
+    @Test
+    void floatTest7() {
+        BigDecimal required = BigDecimal.valueOf(0.2f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        BigDecimal rest = BigDecimal.valueOf(0.1f)
+                .setScale(6, RoundingMode.HALF_EVEN);
+        float quantity = required.subtract(rest).floatValue();
+        assertEquals(0.100000f, quantity);
     }
 
     @Test

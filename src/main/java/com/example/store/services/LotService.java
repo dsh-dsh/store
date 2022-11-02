@@ -6,7 +6,7 @@ import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.projections.LotFloat;
+import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -115,41 +116,38 @@ public class LotService {
         ItemDoc document = docItem.getItemDoc();
         Storage storage = document.getStorageFrom();
         LocalDateTime docTime = document.getDateTime();
-
-        Map<Lot, Float> lotMap = getLotMap(docItem, storage, docTime);
+        Map<Lot, BigDecimal> lotMap = getLotMap(docItem, storage, docTime);
         lotMoveService.addMinusLotMovements(document, lotMap);
-
         setAveragePrice(docItem, lotMap);
-
         if(document.getDocType() == DocumentType.MOVEMENT_DOC) {
             lotMoveService.addPlusLotMovements(document, lotMap);
         }
     }
 
-    protected void setAveragePrice(DocumentItem docItem, Map<Lot, Float> lotMap) {
+    protected void setAveragePrice(DocumentItem docItem, Map<Lot, BigDecimal> lotMap) {
         if(docsAveragePriceSetting.getProperty() == 0) return;
         float averagePrice = ((float) lotMap.entrySet()
                 .stream()
-                .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue())
-                .sum()) / docItem.getQuantity();
+                .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue().floatValue())
+                .sum()) / docItem.getQuantity().floatValue();
         docItem.setPrice(Util.floorValue(averagePrice, 2));
     }
 
-    public Map<Lot, Float> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
+    public Map<Lot, BigDecimal> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
         Item item = docItem.getItem();
-        Map<Lot, Float> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
+        Map<Lot, BigDecimal> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
         if(!is1CDoc || addRestForHoldSetting.getProperty() == 1) {
             itemRestService.checkQuantityShortage(item, lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());
     }
 
-    public Map<Lot, Float> getLotsOfItem(Item item, Storage storage, LocalDateTime endTime) {
-        List<LotFloat> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), endTime);
+    public Map<Lot, BigDecimal> getLotsOfItem(Item item, Storage storage, LocalDateTime endTime) {
+        List<LotBigDecimal> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), endTime);
         return lotsOfItem.stream()
                 .collect(Collectors.toMap(
-                        lotFloat -> getLotById(lotFloat.getId()),
-                        LotFloat::getValue,
+                        lotBigDecimal -> getLotById(lotBigDecimal.getId()),
+                        LotBigDecimal::getValue,
                         (lf1, lf2) -> lf1,
                         TreeMap::new));
     }
@@ -158,13 +156,13 @@ public class LotService {
         return lotRepository.getById(id);
     }
 
-    public Map<Lot, Float> getLotMapToHold(Map<Lot, Float> lotMap, float quantity) {
-        Map<Lot, Float> newLotMap = new TreeMap<>();
-        for(Map.Entry<Lot, Float> entry : lotMap.entrySet()) {
-            if(quantity > 0) {
-                float lotQuantity = quantity > entry.getValue()? entry.getValue() : quantity;
+    public Map<Lot, BigDecimal> getLotMapToHold(Map<Lot, BigDecimal> lotMap, BigDecimal quantity) {
+        Map<Lot, BigDecimal> newLotMap = new TreeMap<>();
+        for(Map.Entry<Lot, BigDecimal> entry : lotMap.entrySet()) {
+            if(quantity.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal lotQuantity = quantity.compareTo(entry.getValue()) > 0? entry.getValue() : quantity;
                 newLotMap.put(entry.getKey(), lotQuantity);
-                quantity = quantity - entry.getValue();
+                quantity = quantity.subtract(entry.getValue());
             }
         }
         return newLotMap;
@@ -191,12 +189,12 @@ public class LotService {
     }
 
     // todo add tests
-    public Map<Item, Float> getShortageMapOfItems(Set<DocumentItem> documentItems, Storage storage, LocalDateTime docTime) {
+    public Map<Item, BigDecimal> getShortageMapOfItems(Set<DocumentItem> documentItems, Storage storage, LocalDateTime docTime) {
         return documentItems.stream()
-                .collect(Collectors.toMap(DocumentItem::getItem, DocumentItem::getQuantity, Float::sum))
+                .collect(Collectors.toMap(DocumentItem::getItem, DocumentItem::getQuantity, BigDecimal::add))
                 .entrySet().stream()
-                .peek(entry -> entry.setValue(itemRestService.getRestOfItemOnStorage(entry.getKey(), storage, docTime) - entry.getValue()))
-                .filter(entry -> entry.getValue() < 0)
+                .peek(entry -> entry.setValue(itemRestService.getRestOfItemOnStorage(entry.getKey(), storage, docTime).subtract(entry.getValue())))
+                .filter(entry -> entry.getValue().compareTo(BigDecimal.ZERO) < 0)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

@@ -41,16 +41,6 @@ public class PeriodicValueService {
         return quantities.stream().map(periodicValueMapper::mapToDTO).collect(Collectors.toList());
     }
 
-    public float getQuantityRatio(Ingredient ingredient, LocalDate date) {
-        List<PeriodicValue> quantities = getQuantityList(ingredient, date);
-        Optional<PeriodicValue> netQuantity = quantities.stream().
-                filter(q -> q.getType().equals(PeriodicValueType.NET)).findFirst();
-        Optional<PeriodicValue> grossQuantity = quantities.stream().
-                filter(q -> q.getType().equals(PeriodicValueType.GROSS)).findFirst();
-        if(netQuantity.isEmpty() || grossQuantity.isEmpty()) return 0f;
-        return netQuantity.get().getQuantity() / grossQuantity.get().getQuantity();
-    }
-
     public Optional<PeriodicValue> getGrossQuantity(Ingredient ingredient, LocalDate date) {
         return getQuantityList(ingredient, date).stream().
                 filter(q -> q.getType().equals(PeriodicValueType.GROSS))
@@ -60,6 +50,13 @@ public class PeriodicValueService {
     public Optional<PeriodicValue> getNetQuantity(Ingredient ingredient, LocalDate date) {
         return getQuantityList(ingredient, date).stream().
                 filter(q -> q.getType().equals(PeriodicValueType.NET))
+                .findFirst();
+    }
+
+    // todo add tests
+    public Optional<PeriodicValue> getEnableQuantity(Ingredient ingredient, LocalDate date) {
+        return getQuantityList(ingredient, date).stream().
+                filter(q -> q.getType().equals(PeriodicValueType.ENABLE))
                 .findFirst();
     }
 

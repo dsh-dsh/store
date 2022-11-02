@@ -7,15 +7,16 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Constants;
-import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,12 +45,14 @@ public class HoldDocsService {
             if(documentRepository.existsByDateTimeAfterAndIsHold(document.getDateTime(), true)) {
                 throw new WarningException(
                         Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
+                        ExceptionType.UN_HOLD_EXCEPTION,
                         this.getClass().getName() + " - checkPossibilityToHold(Document document)");
             }
         } else {
             if(documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(document.getDateTime(), false, false)) {
                 throw new WarningException(
                         Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE,
+                        ExceptionType.HOLD_EXCEPTION,
                         this.getClass().getName() + " - checkPossibilityToHold(Document document)");
             }
         }
@@ -95,7 +98,7 @@ public class HoldDocsService {
                 return;
             }
             Set<DocumentItem> documentItems = itemDoc.getDocumentItems();
-            Map<Item, Float> shortages = lotService.getShortageMapOfItems(
+            Map<Item, BigDecimal> shortages = lotService.getShortageMapOfItems(
                     documentItems, itemDoc.getStorageFrom(), itemDoc.getDateTime());
             if(!shortages.isEmpty()) {
                 String formatString = "%s %s %20.3f %s,%n";
@@ -103,7 +106,7 @@ public class HoldDocsService {
                         .map(entry -> String.format(formatString,
                                 entry.getKey().getName(),
                                 getDots(entry.getKey().getName()),
-                                Util.floorValue(Math.abs(entry.getValue()), 3),
+                                entry.getValue().abs().floatValue(),
                                 entry.getKey().getUnit().getValue()))
                         .collect(Collectors.joining());
                 throw new WarningException(

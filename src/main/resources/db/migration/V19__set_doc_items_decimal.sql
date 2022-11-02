@@ -1,0 +1,1 @@
+alter table document_item add d_quantity decimal(10,3) default 0;

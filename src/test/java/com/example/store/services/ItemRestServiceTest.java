@@ -16,9 +16,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,7 +54,7 @@ class ItemRestServiceTest {
         Map<Item, ItemRestService.RestPriceValue> map = itemRestService
                 .getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-15").atStartOfDay());
         assertEquals(2, map.size());
-        assertEquals(6, map.get(item).getRest());
+        assertEquals(6, map.get(item).getRest().floatValue());
         assertEquals(200, map.get(item).getPrice());
     }
 
@@ -84,7 +86,7 @@ class ItemRestServiceTest {
 
         periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
 
-        assertEquals(2, value.getRest());
+        assertEquals(2, value.getRest().floatValue());
         assertEquals(200, value.getPrice());
     }
 
@@ -104,7 +106,7 @@ class ItemRestServiceTest {
 
         periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
 
-        assertEquals(2, value.getRest());
+        assertEquals(2, value.getRest().floatValue());
         assertEquals(150, value.getPrice());
     }
 
@@ -125,18 +127,16 @@ class ItemRestServiceTest {
     void getItemRestMapTest() {
         Item item7 = new Item(7);
         Item item8 = new Item(8);
-        Map<Item, Float> map = new HashMap<>();
-        map.put(item7, 1f);
-        map.put(item8, 2f);
-        Map<Item, Float> items = itemRestService.getItemRestMap(map, new Storage(3), LocalDateTime.now());
-        assertEquals(11, items.get(item7));
-        assertEquals(11, items.get(item8));
-        items = itemRestService.getItemRestMap(map, new Storage(2), LocalDateTime.now());
-        assertEquals(2, items.get(item7));
-        assertEquals(2, items.get(item8));
-        items = itemRestService.getItemRestMap(map, new Storage(1), LocalDateTime.now());
-        assertEquals(2, items.get(item7));
-        assertEquals(2, items.get(item8));
+        List<Item> itemList = List.of(item7, item8);
+        Map<Item, BigDecimal> items = itemRestService.getItemRestMap(itemList, new Storage(3), LocalDateTime.now());
+        assertEquals(11, items.get(item7).floatValue());
+        assertEquals(11, items.get(item8).floatValue());
+        items = itemRestService.getItemRestMap(itemList, new Storage(2), LocalDateTime.now());
+        assertEquals(2, items.get(item7).floatValue());
+        assertEquals(2, items.get(item8).floatValue());
+        items = itemRestService.getItemRestMap(itemList, new Storage(1), LocalDateTime.now());
+        assertEquals(2, items.get(item7).floatValue());
+        assertEquals(2, items.get(item8).floatValue());
     }
 
     @Sql(value = "/sql/lotMovements/addTwoPosting.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -153,10 +153,10 @@ class ItemRestServiceTest {
     @Test
     void getRestOfItemOnStorageTest() {
         periodStartDateTime.setPeriodStart();
-        assertEquals(5, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(3), LocalDateTime.now()));
-        assertEquals(3, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(3), LocalDateTime.now()));
-        assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(2), LocalDateTime.now()));
-        assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(1), LocalDateTime.now()));
+        assertEquals(5, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(3), LocalDateTime.now()).floatValue());
+        assertEquals(3, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(3), LocalDateTime.now()).floatValue());
+        assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(7), new Storage(2), LocalDateTime.now()).floatValue());
+        assertEquals(2, itemRestService.getRestOfItemOnStorage(new Item(8), new Storage(1), LocalDateTime.now()).floatValue());
     }
 
     @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql",

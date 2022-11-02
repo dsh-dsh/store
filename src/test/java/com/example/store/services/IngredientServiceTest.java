@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -91,18 +92,18 @@ class IngredientServiceTest {
         Item item2 = itemService.getItemById(15);
         Item item3 = itemService.getItemById(16);
         Item item4 = itemService.getItemById(17);
-        Map<Item, Float> itemMap = new HashMap<>();
-        itemMap.put(item, 2f);
-        Map<Item, Float> map = ingredientService.getIngredientQuantityMap(itemMap, date);
+        Map<Item, BigDecimal> itemMap = new HashMap<>();
+        itemMap.put(item, BigDecimal.valueOf(2f));
+        Map<Item, BigDecimal> map = ingredientService.getIngredientQuantityMap(itemMap, date);
         assertFalse(map.isEmpty());
         assertThat(map, hasKey(item1));
-        assertEquals(3f, map.get(item1));
+        assertEquals(3f, map.get(item1).floatValue());
         assertThat(map, hasKey(item2));
-        assertEquals(3.6f, map.get(item2));
+        assertEquals(3.6f, map.get(item2).floatValue());
         assertThat(map, hasKey(item3));
-        assertEquals(2.4f, map.get(item3));
+        assertEquals(2.4f, map.get(item3).floatValue());
         assertThat(map, hasKey(item4));
-        assertEquals(2.4f, map.get(item4));
+        assertEquals(2.4f, map.get(item4).floatValue());
     }
 
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -265,21 +266,21 @@ class IngredientServiceTest {
         ItemDoc document = new ItemDoc();
         LocalDate date = LocalDate.now();
         List<DocumentItem> docItems = new ArrayList<>();
-        docItems.add(new DocumentItem(document, getItem(7), 1));
-        docItems.add(new DocumentItem(document, getItem(11), 1));
-        docItems.add(new DocumentItem(document, getItem(12), 2));
+        docItems.add(new DocumentItem(document, getItem(7), BigDecimal.valueOf(1)));
+        docItems.add(new DocumentItem(document, getItem(11), BigDecimal.valueOf(1)));
+        docItems.add(new DocumentItem(document, getItem(12), BigDecimal.valueOf(2)));
         ingredientService.addInnerItems(docItems, date);
         assertEquals(5, docItems.size());
         assertEquals(7, docItems.get(0).getItem().getId());
-        assertEquals(1f, docItems.get(0).getQuantity());
+        assertEquals(1f, docItems.get(0).getQuantity().floatValue());
         assertEquals(16, docItems.get(1).getItem().getId());
-        assertEquals(1.2f, docItems.get(1).getQuantity());
+        assertEquals(1.2f, docItems.get(1).getQuantity().floatValue());
         assertEquals(15, docItems.get(2).getItem().getId());
-        assertEquals(1.8f, docItems.get(2).getQuantity());
+        assertEquals(1.8f, docItems.get(2).getQuantity().floatValue());
         assertEquals(14, docItems.get(3).getItem().getId());
-        assertEquals(1.5f, docItems.get(3).getQuantity());
+        assertEquals(1.5f, docItems.get(3).getQuantity().floatValue());
         assertEquals(17, docItems.get(4).getItem().getId());
-        assertEquals(1.2f, docItems.get(4).getQuantity());
+        assertEquals(1.2f, docItems.get(4).getQuantity().floatValue());
     }
 
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -290,22 +291,22 @@ class IngredientServiceTest {
         ItemDoc document = new ItemDoc();
         LocalDate date = LocalDate.now();
         List<DocumentItem> docItems = new ArrayList<>();
-        docItems.add(new DocumentItem(document, getItem(7), 1));
-        docItems.add(new DocumentItem(document, getItem(10), 1));
-        docItems.add(new DocumentItem(document, getItem(11), 1));
-        docItems.add(new DocumentItem(document, getItem(12), 2));
+        docItems.add(new DocumentItem(document, getItem(7),  BigDecimal.valueOf(1)));
+        docItems.add(new DocumentItem(document, getItem(10),  BigDecimal.valueOf(1)));
+        docItems.add(new DocumentItem(document, getItem(11),  BigDecimal.valueOf(1)));
+        docItems.add(new DocumentItem(document, getItem(12),  BigDecimal.valueOf(2)));
         ingredientService.addInnerItems(docItems, date);
         assertEquals(5, docItems.size());
         assertEquals(7, docItems.get(0).getItem().getId());
-        assertEquals(1f, docItems.get(0).getQuantity());
+        assertEquals(1f, docItems.get(0).getQuantity().floatValue());
         assertEquals(16, docItems.get(1).getItem().getId());
-        assertEquals(2.4f, docItems.get(1).getQuantity());
+        assertEquals(2.4f, docItems.get(1).getQuantity().floatValue());
         assertEquals(15, docItems.get(2).getItem().getId());
-        assertEquals(3.6f, docItems.get(2).getQuantity());
+        assertEquals(3.6f, docItems.get(2).getQuantity().floatValue());
         assertEquals(14, docItems.get(3).getItem().getId());
-        assertEquals(3.0f, docItems.get(3).getQuantity());
+        assertEquals(3.0f, docItems.get(3).getQuantity().floatValue());
         assertEquals(17, docItems.get(4).getItem().getId());
-        assertEquals(2.4f, docItems.get(4).getQuantity());
+        assertEquals(2.4f, docItems.get(4).getQuantity().floatValue());
     }
 
     Item getItem(int id) {

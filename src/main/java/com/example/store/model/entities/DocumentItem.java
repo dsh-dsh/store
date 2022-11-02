@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -29,7 +30,11 @@ public class DocumentItem {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private float quantity;
+    @Column(name = "quantity")
+    private float fQuantity = 0f;
+
+    @Column(name = "d_quantity")
+    private BigDecimal quantity;
 
     @Column(name = "quantity_fact")
     private float quantityFact;
@@ -38,16 +43,26 @@ public class DocumentItem {
 
     private float discount;
 
-    public DocumentItem(ItemDoc itemDoc, Item item, float quantity) {
+
+    public DocumentItem(ItemDoc itemDoc, Item item, BigDecimal quantity) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = Util.floorValue(quantity,3);
+        this.quantity = quantity;
     }
 
-    public DocumentItem(ItemDoc itemDoc, Item item, float quantity, float price) {
+    public DocumentItem(ItemDoc itemDoc, Item item, BigDecimal quantity, float price) {
         this.itemDoc = itemDoc;
         this.item = item;
-        this.quantity = Util.floorValue(quantity,3);
+        this.quantity = quantity;
         this.price = Util.floorValue(price,2);
+    }
+
+    @Override
+    public String toString() {
+        return "DocumentItem{" +
+                ", item=" + item.getName() +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
     }
 }

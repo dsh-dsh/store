@@ -56,7 +56,7 @@ public class ReHoldChecking {
                 quantityDiff = entry.getValue() + rest;
             } else {
                 quantityDiff = entry.getValue() + itemRestService
-                        .getRestOfItemOnStorage(docItem.getItem(), storage, LocalDateTime.now());
+                        .getRestOfItemOnStorage(docItem.getItem(), storage, LocalDateTime.now()).floatValue();
             }
             if(quantityDiff > 0) {
                 quantityDiffMap.put(docItem.getItem(), quantityDiff);
@@ -70,8 +70,8 @@ public class ReHoldChecking {
         for (DocumentItem docItem : itemDoc.getDocumentItems()) {
             Optional<DocItemDTO> itemDTO = findDocItemDTOByItemId(itemDTOList, docItem.getItem().getId());
             if (itemDTO.isPresent()) {
-                if (docItem.getQuantity() <= itemDTO.get().getQuantity()) {
-                    map.put(docItem, itemDTO.get().getQuantity() - docItem.getQuantity());
+                if (docItem.getQuantity().floatValue() <= itemDTO.get().getQuantity()) {
+                    map.put(docItem, itemDTO.get().getQuantity() - docItem.getQuantity().floatValue());
                     itemDTOList.remove(itemDTO.get());
                 }
             } else {

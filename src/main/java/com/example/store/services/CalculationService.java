@@ -11,6 +11,7 @@ import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -47,16 +48,16 @@ public class CalculationService {
     }
 
     public IngredientCalculationDTO getCostCalculation(Ingredient ingredient, LocalDate date) {
-        float itemQuantity = ingredientCalculation.getNetQuantity(ingredient, date);
-        Map<Item, Float> map = ingredientCalculation.getIngredientMapOfItem(ingredient.getChild(), itemQuantity, date);
+        BigDecimal itemQuantity = BigDecimal.valueOf(ingredientCalculation.getNetQuantity(ingredient, date));
+        Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(ingredient.getChild(), itemQuantity, date);
 
         float quantity = 0;
         float amount = 0;
         if(map.size() > 0) {
-            for (Map.Entry<Item, Float> entry : map.entrySet()) {
-                quantity += entry.getValue();
+            for (Map.Entry<Item, BigDecimal> entry : map.entrySet()) {
+                quantity += entry.getValue().floatValue();
                 float price = itemRestService.getLastPriceOfItem(entry.getKey(), date.atStartOfDay());
-                amount += price * entry.getValue();
+                amount += price * entry.getValue().floatValue();
             }
         } else {
             quantity = 1;

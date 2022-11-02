@@ -23,9 +23,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -131,7 +133,7 @@ class Hold1CDocksServiceTest {
         assertEquals(2, map.size());
         assertEquals(
                 (float) docItemRepository.findAll().stream()
-                        .mapToDouble(item -> (item.getPrice()*item.getQuantity()) - item.getDiscount()).sum(),
+                        .mapToDouble(item -> (item.getPrice()*item.getQuantity().floatValue()) - item.getDiscount()).sum(),
                 map.values().stream().reduce(0f, Float::sum));
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
@@ -303,10 +305,10 @@ class Hold1CDocksServiceTest {
         assertEquals(hold1CDocksService.getWriteOffDoc(), documents.get(5).getBaseDocument());
         assertEquals(6, documents.stream().filter(Document::isHold).count());
         List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(5));
-        assertEquals(1.4f, Util.floorValue(docItems.get(0).getQuantity(), 1));
-        assertEquals(7f, docItems.get(1).getQuantity());
-        assertEquals(6.2f, docItems.get(2).getQuantity());
-        assertEquals(8f, docItems.get(3).getQuantity());
+        assertEquals(1.4f, Util.floorValue(docItems.get(0).getQuantity().floatValue(), 1));
+        assertEquals(7f, docItems.get(1).getQuantity().floatValue());
+        assertEquals(6.2f, docItems.get(2).getQuantity().floatValue());
+        assertEquals(8f, docItems.get(3).getQuantity().floatValue());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
@@ -341,10 +343,10 @@ class Hold1CDocksServiceTest {
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
         List<DocumentItem> docItems = docItemService.getItemsByDoc((ItemDoc) documents.get(4));
-        assertEquals(2.4f, docItems.get(0).getQuantity());
-        assertEquals(8f, docItems.get(1).getQuantity());
-        assertEquals(7.2f, docItems.get(2).getQuantity());
-        assertEquals(9f, docItems.get(3).getQuantity());
+        assertEquals(2.4f, docItems.get(0).getQuantity().floatValue());
+        assertEquals(8f, docItems.get(1).getQuantity().floatValue());
+        assertEquals(7.2f, docItems.get(2).getQuantity().floatValue());
+        assertEquals(9f, docItems.get(3).getQuantity().floatValue());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
@@ -374,20 +376,23 @@ class Hold1CDocksServiceTest {
         LocalDateTime time = LocalDateTime.now();
         Storage storage = storageService.getById(3);
         List<ItemDoc> checks = documentService.getItemDocsByType(DocumentType.CHECK_DOC);
-        Map<Item, Float> writeOffItemMap = hold1CDocksService.getItemMapFromCheckDocs(checks);
-        Map<Item, Float> itemRestMap = new HashMap<>();
-        itemRestMap.put(itemService.getItemById(5), 2.00f);
-        itemRestMap.put(itemService.getItemById(6), 10.00f);
-        itemRestMap.put(itemService.getItemById(9), 3.00f);
-        when(mockedItemRestService.getItemRestMap(writeOffItemMap, storage, time))
+        Map<Item, BigDecimal> writeOffItemMap = hold1CDocksService.getItemMapFromCheckDocs(checks);
+        Map<Item, BigDecimal> itemRestMap = new HashMap<>();
+        Item item5 = itemService.getItemById(5);
+        Item item6 = itemService.getItemById(6);
+        Item item9 = itemService.getItemById(9);
+        itemRestMap.put(item5, BigDecimal.valueOf(2.00f));
+        itemRestMap.put(item6, BigDecimal.valueOf(10.00f));
+        itemRestMap.put(item9, BigDecimal.valueOf(3.00f));
+        List<Item> items = new ArrayList<>(writeOffItemMap.keySet());
+        when(mockedItemRestService.getItemRestMap(items, storage, time))
                 .thenReturn(itemRestMap);
         when(mockedItemRestService.getLastPriceOfItem(any(Item.class), eq(time))).thenReturn(100.00f);
-        List<ItemQuantityPriceDTO> list = mockedHold1CDocksService.getPostingItemMap(writeOffItemMap, storage, time);
-        assertEquals(2, list.size());
-        assertEquals(2,     list.get(0).getQuantity());
-        assertEquals(5,     list.get(0).getItem().getId());
-        assertEquals(4,     list.get(1).getQuantity());
-        assertEquals(4,     list.get(1).getItem().getId());
+        Map<Item, BigDecimal> map = mockedHold1CDocksService.getPostingItemMap(writeOffItemMap, storage, time);
+        assertEquals(2, map.size());
+        Item item4 = itemService.getItemById(4);
+        assertEquals(2,     map.get(item5).floatValue());
+        assertEquals(4,     map.get(item4).floatValue());
     }
 
     @Sql(value = "/sql/hold1CDocs/addThreeChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -396,13 +401,13 @@ class Hold1CDocksServiceTest {
     @Transactional
     void getItemMapFromCheckDocsTest() {
         List<ItemDoc> checks = documentService.getItemDocsByType(DocumentType.CHECK_DOC);
-        Map<Item, Float> map = hold1CDocksService.getItemMapFromCheckDocs(checks);
+        Map<Item, BigDecimal> map = hold1CDocksService.getItemMapFromCheckDocs(checks);
         assertFalse(map.isEmpty());
         assertEquals(4, map.size());
-        assertEquals(1, map.get(itemService.getItemById(6)));
-        assertEquals(3, map.get(itemService.getItemById(9)));
-        assertEquals(4, map.get(itemService.getItemById(4)));
-        assertEquals(4, map.get(itemService.getItemById(5)));
+        assertEquals(1, map.get(itemService.getItemById(6)).floatValue());
+        assertEquals(3, map.get(itemService.getItemById(9)).floatValue());
+        assertEquals(4, map.get(itemService.getItemById(4)).floatValue());
+        assertEquals(4, map.get(itemService.getItemById(5)).floatValue());
     }
 
     @Sql(value = {"/sql/hold1CDocs/addThreeChecks.sql",
@@ -415,22 +420,19 @@ class Hold1CDocksServiceTest {
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
         Item item7 = itemService.getItemById(7);
-        float quantityOf7 = 2.0f;
-        float priceOf7 = 100.00f;
+        BigDecimal quantityOf7 = BigDecimal.valueOf(2.0f);
         Item item8 = itemService.getItemById(8);
-        float quantityOf8 = 3.0f;
-        float priceOf8 = 200.00f;
-        List<ItemQuantityPriceDTO> dtoList = List.of(
-                getItemQuantityPriceDTO(item7, quantityOf7, priceOf7),
-                getItemQuantityPriceDTO(item8, quantityOf8, priceOf8)
-        );
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, dtoList, time);
+        BigDecimal quantityOf8 = BigDecimal.valueOf(3.0f);
+        Map<Item, BigDecimal> map = new HashMap<>();
+        map.put(item7, quantityOf7);
+        map.put(item8, quantityOf8);
+        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, map, time);
         assertEquals(DocumentType.POSTING_DOC, postingDoc.getDocType());
         List<DocumentItem> docItems = new ArrayList<>(postingDoc.getDocumentItems());
         docItems.sort(documentItemComparator);
         assertEquals(item7, docItems.get(0).getItem());
         assertEquals(quantityOf8, docItems.get(1).getQuantity());
-        assertEquals(priceOf7, docItems.get(0).getPrice());
+        assertEquals(0f, docItems.get(0).getPrice());
     }
 
     @Test
@@ -447,8 +449,8 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
-        List<ItemQuantityPriceDTO> dtoList = new ArrayList<>();
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, dtoList, time);
+        Map<Item, BigDecimal> itemMap = new HashMap<>();
+        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, itemMap, time);
         assertNull(postingDoc);
     }
 
@@ -461,12 +463,11 @@ class Hold1CDocksServiceTest {
         Project project = projectService.getById(2);
         LocalDateTime time = LocalDateTime.now();
         Item item7 = itemService.getItemById(7);
-        float quantityOf7 = 2.0f;
         Item item8 = itemService.getItemById(8);
         float quantityOf8 = 3.0f;
-        Map<Item, Float> itemMap = new HashMap<>();
-        itemMap.put(item7, quantityOf7);
-        itemMap.put(item8, quantityOf8);
+        Map<Item, BigDecimal> itemMap = new HashMap<>();
+        itemMap.put(item7, BigDecimal.valueOf(2.0f));
+        itemMap.put(item8, BigDecimal.valueOf(3.0f));
         hold1CDocksService.setSystemUser(userService.getSystemAuthor());
         ItemDoc itemDoc = hold1CDocksService.createWriteOffDocForChecks(storage, project, itemMap, time);
         assertEquals(storage, itemDoc.getStorageFrom());
@@ -474,7 +475,7 @@ class Hold1CDocksServiceTest {
         List<DocumentItem> items = new ArrayList<>(itemDoc.getDocumentItems());
         items.sort(documentItemComparator);
         assertEquals(item7, items.get(0).getItem());
-        assertEquals(quantityOf8, items.get(1).getQuantity());
+        assertEquals(quantityOf8, items.get(1).getQuantity().floatValue());
         hold1CDocksService.setPostingDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
@@ -491,10 +492,10 @@ class Hold1CDocksServiceTest {
         ItemDoc itemDoc = hold1CDocksService.getPostingDoc(storage, project, time);
         Item item = itemService.getItemById(7);
         float quantity = 2.22f;
-        DocumentItem documentItem = new DocumentItem(itemDoc, item, quantity);
+        DocumentItem documentItem = new DocumentItem(itemDoc, item, BigDecimal.valueOf(quantity));
         assertEquals(itemDoc, documentItem.getItemDoc());
         assertEquals(item, documentItem.getItem());
-        assertEquals(quantity, documentItem.getQuantity());
+        assertEquals(quantity, documentItem.getQuantity().floatValue());
     }
 
     @Sql(value = "/sql/hold1CDocs/addThreeChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

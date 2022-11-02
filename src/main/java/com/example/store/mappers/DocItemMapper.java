@@ -22,7 +22,7 @@ public class DocItemMapper {
     private static final Converter<DocumentItem, Float> amountConverter =
             item -> {
                     DocumentItem docItem = item.getSource();
-                    return Util.floorValue((docItem.getQuantity() * docItem.getPrice()) - docItem.getDiscount(), 2);
+                    return Util.floorValue((docItem.getQuantity().floatValue() * docItem.getPrice()) - docItem.getDiscount(), 2);
             };
 
     private static final Converter<DocumentItem, Float> amountFactConverter =

@@ -6,12 +6,16 @@ import com.example.store.model.entities.Item;
 import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.enums.Unit;
 import com.example.store.repositories.IngredientRepository;
+import com.example.store.services.ItemService;
 import com.example.store.services.PeriodicValueService;
 import com.example.store.utils.Constants;
-import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -25,25 +29,44 @@ public class IngredientCalculation {
     private IngredientRepository ingredientRepository;
     @Autowired
     private PeriodicValueService periodicValueService;
+    @Autowired
+    private ItemService itemService;
 
-    private Map<Item, Float> ingredientMapOfItem;
+    @Value("${water.item.number}")
+    private int waterItemNumber;
 
-    public Map<Item, Float> getIngredientMapOfItem(Item item, float quantity, LocalDate date) {
+    private Map<Item, BigDecimal> ingredientMapOfItem;
+    private Item waterItem;
+
+    @PostConstruct
+    public void init() {
+        waterItem = itemService.getItemByNumber(waterItemNumber);
+    }
+
+    public Map<Item, BigDecimal> getIngredientMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
         ingredientMapOfItem = new HashMap<>();
         setIngredientMapOfItemRecursively(item, quantity, date);
         return ingredientMapOfItem;
     }
 
-    private void setIngredientMapOfItemRecursively(Item item, float quantity, LocalDate date) {
+    // todo update tests because of merge(), getTotalWeight and enableValue
+    private void setIngredientMapOfItemRecursively(Item item, BigDecimal quantity, LocalDate date) {
         List<Ingredient> ingredients = getIngredientsNotDeleted(item);
         if(ingredients.isEmpty()) {
-            ingredientMapOfItem.put(item, Util.floorValue(quantity, 3));
+            if(!item.equals(waterItem)) { // skip water item
+                ingredientMapOfItem.merge(item, quantity, BigDecimal::add);
+            }
         } else {
             boolean isWeight = isWeight(item);
             float totalWeight = isWeight ? getTotalWeight(ingredients, date) : 1;
             for(Ingredient ingredient : ingredients) {
                 checkForPortionItemInWeightItem(isWeight, item, ingredient.getChild());
-                float itemQuantity = getGrossQuantity(ingredient, date) / totalWeight * quantity;
+                float grossQuantity = getGrossQuantity(ingredient, date);
+                float enableValue = getEnableValue(ingredient, date);
+                if(grossQuantity == 0f || enableValue == 0f) continue;
+                BigDecimal itemQuantity =
+                        BigDecimal.valueOf(grossQuantity / totalWeight).setScale(3, RoundingMode.HALF_EVEN)
+                        .multiply(quantity);
                 setIngredientMapOfItemRecursively(ingredient.getChild(), itemQuantity, date);
             }
         }
@@ -81,13 +104,18 @@ public class IngredientCalculation {
     }
 
     // todo add tests
+    public float getEnableValue(Ingredient ingredient, LocalDate date) {
+        Optional<PeriodicValue> optional = periodicValueService.getEnableQuantity(ingredient, date);
+        return optional.map(PeriodicValue::getQuantity).orElse(0f);
+    }
+
+    // todo add tests
     private float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
         float netWeight = 0;
         for(Ingredient ingredient : ingredients) {
-            // todo чтобы правильно списывать ингредиенты из порционной позиции, которая входит в весовое блюдо
-            // todo нужно видимо исключить его вес из общего веса этого весового блюда
             Optional<PeriodicValue> netValue = periodicValueService.getNetQuantity(ingredient, date);
-            if(netValue.isPresent()) {
+            Optional<PeriodicValue> enableValue = periodicValueService.getEnableQuantity(ingredient, date);
+            if(netValue.isPresent() && enableValue.isPresent() && enableValue.get().getQuantity() == 1) {
                 netWeight += netValue.get().getQuantity();
             }
         }

@@ -1,6 +1,5 @@
 package com.example.store.services;
 
-import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -70,6 +68,8 @@ public class Hold1CDocksService {
     private User systemUser;
     @Autowired
     private MailService mailService;
+    @Autowired
+    private LotMoveService lotMoveService;
 
     public static final boolean BY_CARD_KEY = true;
     public static final boolean BY_CASH_KEY = false;
@@ -82,13 +82,33 @@ public class Hold1CDocksService {
     @Value("${spring.mail.to.email}")
     private String toEmail;
 
-    @Autowired
-    private LotMoveService lotMoveService;
-
     private ItemDoc postingDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
     private LocalDateTime lastCheckTime;
+    private List<ThreeQuantityDTO> threeQuantityDTOS = new ArrayList<>();
+
+    class ThreeQuantityDTO {
+        String item;
+        float rest;
+        float write;
+        float post;
+
+        public ThreeQuantityDTO(String item, float rest, float write, float post) {
+            this.item = item;
+            this.rest = rest;
+            this.write = write;
+            this.post = post;
+        }
+
+        @Override
+        public String toString() {
+            return "item='" + item + '\'' +
+                    ", rest=" + rest +
+                    ", write=" + write +
+                    ", post=" + post + '}';
+        }
+    }
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
@@ -168,7 +188,7 @@ public class Hold1CDocksService {
         for(ItemDoc check : checks) {
             items = docItemService.getItemsByDoc(check);
             checkInfo = checkInfoService.getCheckInfo(check);
-            float sum = (float)items.stream().mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount()).sum();
+            float sum = (float)items.stream().mapToDouble(item -> (item.getQuantity().floatValue() * item.getPrice()) - item.getDiscount()).sum();
             sumMap.merge(checkInfo.isPayedByCard(), sum, Float::sum);
         }
         return sumMap;
@@ -191,15 +211,20 @@ public class Hold1CDocksService {
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
         holdDocsBefore();
         Project project = checks.get(0).getProject();
-        Map<Item, Float> itemMap = getItemMapFromCheckDocs(checks);
-        Map<Item, Float> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
+        Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
+        Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
                 lastCheckTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
         if(addRestForHoldSetting.getProperty() == 1) {
-            List<ItemQuantityPriceDTO> postingItemList = getPostingItemMap(writeOffItemMap, storage, to);
-            postingDoc = createPostingDoc(storage, project, postingItemList,
+            Map<Item, BigDecimal> postingItemMap = getPostingItemMap(writeOffItemMap, storage, to);
+            postingDoc = createPostingDoc(storage, project, postingItemMap,
                     lastCheckTime.plus(POSTING_DOC_OFFSET, ChronoUnit.MILLIS));
         }
+//        threeQuantityDTOS.forEach(System.out::println);
+//        System.out.println();
+//        writeOffDoc.getDocumentItems().forEach(System.out::println);
+//        System.out.println();
+//        postingDoc.getDocumentItems().forEach(System.out::println);
     }
 
     public void holdDocsAndChecksByStoragesAndPeriod() {
@@ -223,52 +248,57 @@ public class Hold1CDocksService {
         }
     }
 
-    public List<ItemQuantityPriceDTO> getPostingItemMap(Map<Item, Float> writeOffItemMap, Storage storage, LocalDateTime time) {
-        Map<Item, Float> itemRestMap = itemRestService
-                .getItemRestMap(writeOffItemMap, storage, time);
+    public Map<Item, BigDecimal> getPostingItemMap(Map<Item, BigDecimal> writeOffItemMap, Storage storage, LocalDateTime time) {
+        List<Item> writeOfItems = new ArrayList<>(writeOffItemMap.keySet());
+        Map<Item, BigDecimal> itemRestMap = itemRestService.getItemRestMap(writeOfItems, storage, time);
         return writeOffItemMap.entrySet().stream()
-                .filter(entry -> itemRestMap.getOrDefault(entry.getKey(), 0f) < entry.getValue())
+                .filter(entry -> itemRestMap.getOrDefault(entry.getKey(), BigDecimal.ZERO).compareTo(entry.getValue()) < 0)
                 .map(entry -> {
-                    BigDecimal required = BigDecimal.valueOf(entry.getValue())
-                            .setScale(3, RoundingMode.CEILING);
-                    BigDecimal rest = BigDecimal.valueOf(itemRestMap.getOrDefault(entry.getKey(), 0f))
-                            .setScale(3, RoundingMode.CEILING);
-                    float quantity = required.subtract(rest).floatValue();
-                    return new ItemQuantityPriceDTO(
-                            entry.getKey(), quantity, itemRestService.getLastPriceOfItem(entry.getKey(), time));})
-                .collect(Collectors.toList());
+                    BigDecimal required = entry.getValue();
+                    BigDecimal rest = itemRestMap.getOrDefault(entry.getKey(), BigDecimal.ZERO);
+                    BigDecimal quantity = required.subtract(rest);
+
+                    threeQuantityDTOS.add(new ThreeQuantityDTO(entry.getKey().getName(), rest.floatValue(), required.floatValue(), quantity.floatValue()));
+
+                    return new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), quantity);})
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<Item, Float> getItemMapFromCheckDocs(List<ItemDoc> checks) {
+    public Map<Item, BigDecimal> getItemMapFromCheckDocs(List<ItemDoc> checks) {
         return checks.stream()
                 .flatMap(check -> docItemService.getItemsByDoc(check).stream())
                 .collect(Collectors.toMap(
                         DocumentItem::getItem,
                         DocumentItem::getQuantity,
-                        Float::sum));
+                        BigDecimal::add));
     }
 
-    public ItemDoc createPostingDoc(Storage storage, Project project, List<ItemQuantityPriceDTO> dtoList, LocalDateTime time) {
-        if(dtoList == null || dtoList.isEmpty()) return null;
+    public ItemDoc createPostingDoc(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
+        if(itemMap == null || itemMap.isEmpty()) return null;
         ItemDoc doc = getPostingDoc(storage, project, time);
-        Set<DocumentItem> docItems = dtoList.stream().
-                map(dto -> {
-                    DocumentItem item = new DocumentItem(doc, dto.getItem(), dto.getQuantity(), dto.getPrice());
+        itemDocRepository.save(doc);
+        Set<DocumentItem> docItems = itemMap.entrySet().stream()
+                .filter(entry -> entry.getValue().compareTo(BigDecimal.ZERO) != 0)
+                .map(entry -> {
+                    DocumentItem item = new DocumentItem(
+                            doc, entry.getKey(),
+                            entry.getValue(),
+                            itemRestService.getLastPriceOfItem(entry.getKey(), time));
                     saveDocumentItem(item);
                     return item;
                 }).collect(Collectors.toSet());
         doc.setDocumentItems(docItems);
-        itemDocRepository.save(doc);
         return doc;
     }
 
-    public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, Float> itemMap, LocalDateTime time) {
+    public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
         ItemDoc doc = getWriteOffDoc(storage, project, time);
+        itemDocRepository.save(doc);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
+                .filter(entry -> entry.getValue().compareTo(BigDecimal.ZERO) != 0)
                 .map(entry -> saveDocumentItem(new DocumentItem(doc, entry.getKey(), entry.getValue())))
                 .collect(Collectors.toSet());
         doc.setDocumentItems(docItemSet);
-        itemDocRepository.save(doc);
         return doc;
     }
 

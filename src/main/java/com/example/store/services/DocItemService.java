@@ -12,6 +12,8 @@ import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +38,7 @@ public class DocItemService {
         DocumentItem item = new DocumentItem();
         item.setItemDoc((ItemDoc) doc);
         item.setItem(itemService.findItemById(docItemDTO.getItemId()));
-        item.setQuantity(Util.floorValue(docItemDTO.getQuantity(), 3));
+        item.setQuantity(BigDecimal.valueOf(docItemDTO.getQuantity()).setScale(3, RoundingMode.HALF_EVEN));
         item.setQuantityFact(Util.floorValue(docItemDTO.getQuantityFact(), 3));
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
@@ -65,7 +67,7 @@ public class DocItemService {
     }
 
     public void updateDocItem(DocumentItem item, DocItemDTO dto) {
-        item.setQuantity(Util.floorValue(dto.getQuantity(),3));
+        item.setQuantity(BigDecimal.valueOf(dto.getQuantity()).setScale(3, RoundingMode.HALF_EVEN));
         item.setQuantityFact(Util.floorValue(dto.getQuantityFact(), 3));
         item.setPrice(dto.getPrice());
         item.setDiscount(dto.getDiscount());
@@ -91,7 +93,7 @@ public class DocItemService {
     public Float getItemsAmount(ItemDoc itemDoc) {
         List<DocumentItem> items = getItemsByDoc(itemDoc);
         return (float) items.stream()
-                .mapToDouble(item -> (item.getQuantity() * item.getPrice()) - item.getDiscount())
+                .mapToDouble(item -> (item.getQuantity().floatValue() * item.getPrice()) - item.getDiscount())
                 .sum();
     }
 

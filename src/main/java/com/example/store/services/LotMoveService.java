@@ -9,6 +9,7 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,29 +22,29 @@ public class LotMoveService {
 
     Map<String, String> map = new HashMap<>();
 
-    public void addPlusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+    public void addPlusLotMovements(ItemDoc document, Map<Lot, BigDecimal> newLotMap) {
         newLotMap.forEach((key, value) -> addPlusLotMovement(key, document, value));
     }
 
-    public void addPlusLotMovement(Lot lot, ItemDoc doc, float quantity) {
+    public void addPlusLotMovement(Lot lot, ItemDoc doc, BigDecimal quantity) {
         LotMovement movement =
                 new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageTo(), quantity);
         lotMoveRepository.save(movement);
     }
 
-    public void updatePlusLotMovement(Lot lot, ItemDoc itemDoc, float quantity) {
+    public void updatePlusLotMovement(Lot lot, ItemDoc itemDoc, BigDecimal quantity) {
         LotMovement lotMovement = lotMoveRepository.findByLotAndDocument(lot, itemDoc);
-        lotMovement.setQuantity(quantity);
+        lotMovement.setDQuantity(quantity);
         lotMoveRepository.save(lotMovement);
     }
 
-    public void addMinusLotMovements(ItemDoc document, Map<Lot, Float> newLotMap) {
+    public void addMinusLotMovements(ItemDoc document, Map<Lot, BigDecimal> newLotMap) {
         newLotMap.forEach((key, value) -> addMinusLotMovement(key, document, value));
     }
 
-    public void addMinusLotMovement(Lot lot, ItemDoc doc, float quantity) {
+    public void addMinusLotMovement(Lot lot, ItemDoc doc, BigDecimal quantity) {
         LotMovement movement =
-                new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageFrom(), quantity * -1);
+                new LotMovement(lot, doc, doc.getDateTime(), doc.getStorageFrom(), quantity.negate());
         lotMoveRepository.save(movement);
     }
 

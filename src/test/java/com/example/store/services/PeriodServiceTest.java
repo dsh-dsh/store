@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,9 +100,9 @@ class PeriodServiceTest {
         Map<Item, ItemRestService.RestPriceValue> itemRestMap
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, LocalDate.parse("2022-05-02").atStartOfDay());
         assertEquals(2, itemRestMap.size());
-        assertEquals(12.0f, itemRestMap.get(frenchFries).getRest());
+        assertEquals(12.0f, itemRestMap.get(frenchFries).getRest().floatValue());
         assertEquals(200.0f, itemRestMap.get(frenchFries).getPrice());
-        assertEquals(14.0f, itemRestMap.get(flour).getRest());
+        assertEquals(14.0f, itemRestMap.get(flour).getRest().floatValue());
         assertEquals(100.0f, itemRestMap.get(flour).getPrice());
     }
 
@@ -118,8 +119,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         List<DocumentItem> items = periodService.getDocItems(doc, itemRestMap);
         assertEquals(2, items.size());
-        assertEquals(3, items.get(0).getQuantity());
-        assertEquals(4, items.get(1).getQuantity());
+        assertEquals(BigDecimal.valueOf(3), items.get(0).getQuantity());
+        assertEquals(BigDecimal.valueOf(4), items.get(1).getQuantity());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
@@ -135,8 +136,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         DocumentItem[] items = periodService.getDocItems(doc, itemRestMap).toArray(new DocumentItem[0]);
         assertEquals(2, items.length);
-        assertEquals(7, items[0].getQuantity());
-        assertEquals(6, items[1].getQuantity());
+        assertEquals(BigDecimal.valueOf(7), items[0].getQuantity());
+        assertEquals(BigDecimal.valueOf(6), items[1].getQuantity());
     }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

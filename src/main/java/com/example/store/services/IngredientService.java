@@ -14,6 +14,8 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -38,12 +40,14 @@ public class IngredientService {
                         this.getClass().getName() + " - getIngredientById(int id)"));
     }
 
-    public Map<Item, Float> getIngredientQuantityMap(Map<Item, Float> itemMap, LocalDate date) {
+    public Map<Item, BigDecimal> getIngredientQuantityMap(Map<Item, BigDecimal> itemMap, LocalDate date) {
         return itemMap.entrySet().stream()
+                .filter(entry -> haveIngredients(entry.getKey()))
                 .flatMap(itemEntry -> ingredientCalculation.getIngredientMapOfItem(itemEntry.getKey(), itemEntry.getValue(), date)
                         .entrySet().stream()
-                        .map(item -> new AbstractMap.SimpleImmutableEntry<>(item.getKey(), item.getValue())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, Float::sum));
+                        .map(item -> new AbstractMap.SimpleImmutableEntry<>(
+                                item.getKey(), item.getValue().setScale(3, RoundingMode.HALF_EVEN))))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, BigDecimal::add));
     }
 
     public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
@@ -137,12 +141,12 @@ public class IngredientService {
         List<DocumentItem> itemsWithIngredients = docItems.stream()
                 .filter(docItem -> haveIngredients(docItem.getItem()))
                 .collect(Collectors.toList());
-        Map<Item, Float> docItemMap = itemsWithIngredients.stream()
+        Map<Item, BigDecimal> docItemMap = itemsWithIngredients.stream()
                 .collect(Collectors.toMap(
                         DocumentItem::getItem,
                         DocumentItem::getQuantity,
-                        Float::sum));
-        Map<Item, Float> itemMap = getIngredientQuantityMap(docItemMap, date);
+                        BigDecimal::add));
+        Map<Item, BigDecimal> itemMap = getIngredientQuantityMap(docItemMap, date);
         List<DocumentItem> listOfIngredients = itemMap.entrySet().stream()
                 .map(set -> new DocumentItem(document, set.getKey(), set.getValue()))
                 .collect(Collectors.toList());

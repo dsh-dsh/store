@@ -9,6 +9,9 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Service
 public class DocItemServiceFor1CDocs extends DocItemService {
 
@@ -26,7 +29,7 @@ public class DocItemServiceFor1CDocs extends DocItemService {
                 .orElseThrow(() -> new BadRequestException(
                         String.format(Constants.NO_SUCH_CODE_ITEM_MESSAGE, docItemDTO.getItemId()),
                         this.getClass().getName() + " - createDocItem(DocItemDTO docItemDTO, Document doc)")));
-        item.setQuantity(Util.floorValue(docItemDTO.getQuantity(), 3));
+        item.setQuantity(BigDecimal.valueOf(docItemDTO.getQuantity()).setScale(3, RoundingMode.HALF_EVEN));
         item.setQuantityFact(Util.floorValue(docItemDTO.getQuantityFact(), 3));
         item.setPrice(docItemDTO.getPrice());
         item.setDiscount(docItemDTO.getDiscount());
