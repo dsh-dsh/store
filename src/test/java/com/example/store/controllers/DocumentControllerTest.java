@@ -303,7 +303,7 @@ class DocumentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE));
+                .andExpect(jsonPath("$.warning").value(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -318,7 +318,7 @@ class DocumentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE));
+                .andExpect(jsonPath("$.warning").value(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE));
     }
 
     @Test

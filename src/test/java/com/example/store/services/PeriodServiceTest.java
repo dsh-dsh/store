@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -119,8 +120,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         List<DocumentItem> items = periodService.getDocItems(doc, itemRestMap);
         assertEquals(2, items.size());
-        assertEquals(BigDecimal.valueOf(3), items.get(0).getQuantity());
-        assertEquals(BigDecimal.valueOf(4), items.get(1).getQuantity());
+        assertEquals(BigDecimal.valueOf(3).setScale(3, RoundingMode.HALF_EVEN), items.get(0).getQuantity());
+        assertEquals(BigDecimal.valueOf(4).setScale(3, RoundingMode.HALF_EVEN), items.get(1).getQuantity());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
@@ -136,8 +137,8 @@ class PeriodServiceTest {
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         DocumentItem[] items = periodService.getDocItems(doc, itemRestMap).toArray(new DocumentItem[0]);
         assertEquals(2, items.length);
-        assertEquals(BigDecimal.valueOf(7), items[0].getQuantity());
-        assertEquals(BigDecimal.valueOf(6), items[1].getQuantity());
+        assertEquals(BigDecimal.valueOf(7).setScale(3, RoundingMode.HALF_EVEN), items[0].getQuantity());
+        assertEquals(BigDecimal.valueOf(6).setScale(3, RoundingMode.HALF_EVEN), items[1].getQuantity());
     }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

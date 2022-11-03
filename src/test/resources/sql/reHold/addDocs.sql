@@ -11,7 +11,7 @@ values
 (7, 2, null, '2022-03-30T13:00:00.000', 'WITHDRAW_ORDER_DOC', 1, B'0', B'1', 7, 3, 1, 1, null, null, 2000.00, 0.00, 'SALARY_PAYMENT', B'0', 2);
 
 insert into document_item
-(id, discount, item_id, document_id, price, quantity, quantity_fact)
+(id, discount, item_id, document_id, price, d_quantity, quantity_fact)
 values
 (1, 0.0, 7, 1, 100.00, 10.0, 0.0),
 (2, 0.0, 8, 1, 200.00, 10.0, 0.0),

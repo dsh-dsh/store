@@ -124,9 +124,10 @@ class ItemRestServiceTest {
     @Sql(value = "/sql/lotMovements/addFewLotsAndMoves.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    @Transactional
     void getItemRestMapTest() {
-        Item item7 = new Item(7);
-        Item item8 = new Item(8);
+        Item item7 = itemService.getItemById(7);
+        Item item8 = itemService.getItemById(8);
         List<Item> itemList = List.of(item7, item8);
         Map<Item, BigDecimal> items = itemRestService.getItemRestMap(itemList, new Storage(3), LocalDateTime.now());
         assertEquals(11, items.get(item7).floatValue());

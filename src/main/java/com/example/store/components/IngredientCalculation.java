@@ -13,14 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class IngredientCalculation {
@@ -36,12 +32,6 @@ public class IngredientCalculation {
     private int waterItemNumber;
 
     private Map<Item, BigDecimal> ingredientMapOfItem;
-    private Item waterItem;
-
-    @PostConstruct
-    public void init() {
-        waterItem = itemService.getItemByNumber(waterItemNumber);
-    }
 
     public Map<Item, BigDecimal> getIngredientMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
         ingredientMapOfItem = new HashMap<>();
@@ -51,10 +41,12 @@ public class IngredientCalculation {
 
     // todo update tests because of merge(), getTotalWeight and enableValue
     private void setIngredientMapOfItemRecursively(Item item, BigDecimal quantity, LocalDate date) {
-        List<Ingredient> ingredients = getIngredientsNotDeleted(item);
+        // todo refactor this to exclude from getIngredientsNotDeleted() getGrossQuantity and getEnableValue
+        // todo due to for each iteration will be at list two more select from db
+        List<Ingredient> ingredients = getIngredientsNotDeleted(item, date);
         if(ingredients.isEmpty()) {
-            if(!item.equals(waterItem)) { // skip water item
-                ingredientMapOfItem.merge(item, quantity, BigDecimal::add);
+            if(item.getNumber() != waterItemNumber) { // skip water item
+                ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
             }
         } else {
             boolean isWeight = isWeight(item);
@@ -65,7 +57,7 @@ public class IngredientCalculation {
                 float enableValue = getEnableValue(ingredient, date);
                 if(grossQuantity == 0f || enableValue == 0f) continue;
                 BigDecimal itemQuantity =
-                        BigDecimal.valueOf(grossQuantity / totalWeight).setScale(3, RoundingMode.HALF_EVEN)
+                        BigDecimal.valueOf(grossQuantity / totalWeight)
                         .multiply(quantity);
                 setIngredientMapOfItemRecursively(ingredient.getChild(), itemQuantity, date);
             }
@@ -89,8 +81,14 @@ public class IngredientCalculation {
         return unit == Unit.KG || unit == Unit.LITER;
     }
 
-    public List<Ingredient> getIngredientsNotDeleted(Item item) {
-        return ingredientRepository.findByParentAndIsDeleted(item, false);
+    public List<Ingredient> getIngredientsNotDeleted(Item item, LocalDate date) {
+        List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, false);
+        for(Ingredient ingredient : ingredients) {
+            float grossQuantity = getGrossQuantity(ingredient, date);
+            float enableValue = getEnableValue(ingredient, date);
+            if(grossQuantity > 0 && enableValue > 0) return ingredients;
+        }
+        return new ArrayList<>();
     }
 
     public float getGrossQuantity(Ingredient ingredient, LocalDate date) {

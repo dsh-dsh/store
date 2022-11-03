@@ -44,18 +44,6 @@ class UtilTest extends TestService {
         assertEquals(0.587215f, req - rest, 0.0000001);
     }
     @Test
-    void floatTest2() {
-        float req  = 0.255569f;
-        float rest = 0.047352f;
-        assertEquals(0.208217, Util.floorValue(req - rest, 6));
-    }
-    @Test
-    void floatTest3() {
-        float req  = 0.2f;
-        float rest = 0.1f;
-        assertEquals(0.1, Util.floorValue(req - rest, 6));
-    }
-    @Test
     void floatTest4() {
         BigDecimal required = BigDecimal.valueOf(1.234567f)
                 .setScale(6, RoundingMode.HALF_EVEN);
@@ -324,7 +312,7 @@ class UtilTest extends TestService {
     }
 
     public int[] twoSum(int[] nums, int target) {
-        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
         int[] answer = new int[2];
         for (int i = 0; i < nums.length; i++) {
             if (!hashMap.containsKey(target - nums[i])) {

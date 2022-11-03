@@ -8,8 +8,8 @@ insert into check_kkm_info
 is_kkm_checked, is_payed, is_payed_by_card, is_return, table_number, waiter)
 values (1, 1000.0, 63214823871, 1, 65469, '2022-03-16T06:30:36.400402400', 1, B'1', B'1', B'1', B'1', B'1', 12, 'Официант 10');
 
-insert into document_item (discount, item_id, document_id, price, quantity, quantity_fact) values (0.0, 1, 1, 0.0, 1.0, 0.0);
+insert into document_item (discount, item_id, document_id, price, d_quantity, quantity_fact) values (0.0, 1, 1, 0.0, 1.0, 0.0);
 
-insert into document_item (discount, item_id, document_id, price, quantity, quantity_fact) values (0.0, 2, 1, 0.0, 2.0, 0.0);
+insert into document_item (discount, item_id, document_id, price, d_quantity, quantity_fact) values (0.0, 2, 1, 0.0, 2.0, 0.0);
 
-insert into document_item (discount, item_id, document_id, price, quantity, quantity_fact) values (0.0, 3, 1, 0.0, 3.0, 0.0);
+insert into document_item (discount, item_id, document_id, price, d_quantity, quantity_fact) values (0.0, 3, 1, 0.0, 3.0, 0.0);

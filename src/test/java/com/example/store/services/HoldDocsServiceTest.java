@@ -1,19 +1,18 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
-import com.example.store.model.enums.ExceptionType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
-import com.example.store.utils.annotations.Transaction;
+import org.hibernate.persister.walking.spi.WalkingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -54,7 +53,7 @@ class HoldDocsServiceTest {
         document.setDateTime(LocalDateTime.now());
         document.setDocType(DocumentType.POSTING_DOC);
         document.setStorageTo(storageService.getById(3));
-        BadRequestException exception = assertThrows(BadRequestException.class,
+        WarningException exception = assertThrows(WarningException.class,
                 () -> holdDocsService.checkPossibilityToHold(document));
         assertEquals(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE, exception.getMessage());
     }
@@ -68,7 +67,7 @@ class HoldDocsServiceTest {
         document.setDocType(DocumentType.POSTING_DOC);
         document.setStorageTo(storageService.getById(2));
         document.setHold(true);
-        BadRequestException exception = assertThrows(BadRequestException.class,
+        WarningException exception = assertThrows(WarningException.class,
                 () -> holdDocsService.checkPossibilityToHold(document));
         assertEquals(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE, exception.getMessage());
     }

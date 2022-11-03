@@ -82,14 +82,10 @@ class ItemRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.[0].item_id").value(7))
+                .andExpect(jsonPath("$.data.[0].item_id").value(8))
                 .andExpect(jsonPath("$.data.[0].document_id").value(DOC_ID))
-                .andExpect(jsonPath("$.data.[0].quantity").value(0))
-                .andExpect(jsonPath("$.data.[0].price").value(200f))
-                .andExpect(jsonPath("$.data.[1].item_id").value(8))
-                .andExpect(jsonPath("$.data.[1].document_id").value(DOC_ID))
-                .andExpect(jsonPath("$.data.[1].quantity").value(3f))
-                .andExpect(jsonPath("$.data.[1].price").value(100f));
+                .andExpect(jsonPath("$.data.[0].quantity").value(3f))
+                .andExpect(jsonPath("$.data.[0].price").value(100f));
     }
 
     @Sql(value = "/sql/rest/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

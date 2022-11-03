@@ -36,11 +36,10 @@ public class CalculationService {
     }
 
     public CalculationDTO getCalculationDTO(Item item, LocalDate date) {
-        List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item);
+        List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item, date);
         List<IngredientCalculationDTO> list = ingredients.stream()
                 .map(ingredient -> getCostCalculation(ingredient, date))
                 .collect(Collectors.toList());
-
         CalculationDTO dto = new CalculationDTO();
         dto.setItemName(item.getName());
         dto.setIngredients(list);

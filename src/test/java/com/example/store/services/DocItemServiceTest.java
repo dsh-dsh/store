@@ -15,6 +15,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,7 +50,7 @@ class DocItemServiceTest {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocItemDTO dto = getDocItemDTO(1, 5, 3f, 600f);
         DocumentItem item = docItemService.createDocItem(dto, doc);
-        assertEquals(3, item.getQuantity());
+        assertEquals(BigDecimal.valueOf(3.000).setScale(3, RoundingMode.CEILING), item.getQuantity());
     }
 
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -84,7 +86,7 @@ class DocItemServiceTest {
         DocItemDTO dto = getDocItemDTO(1, 2, 2f, 300f);
         docItemService.updateDocItem(item, dto);
         item = docItemService.getItemById(1);
-        assertEquals(2, item.getQuantity());
+        assertEquals(BigDecimal.valueOf(2.000).setScale(3, RoundingMode.CEILING), item.getQuantity());
         assertEquals(300, item.getPrice());
     }
 

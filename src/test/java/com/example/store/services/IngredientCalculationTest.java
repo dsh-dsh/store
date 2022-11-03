@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -41,9 +42,9 @@ class IngredientCalculationTest {
         Item butter = itemService.getItemById(16);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(item, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(0.196F, map.get(potato).floatValue());
-        assertEquals(0.047F, map.get(milk).floatValue());
-        assertEquals(0.015F, map.get(butter).floatValue());
+        assertEquals(BigDecimal.valueOf(0.196).setScale(3, RoundingMode.HALF_EVEN), map.get(potato));
+        assertEquals(BigDecimal.valueOf(0.047).setScale(3, RoundingMode.HALF_EVEN), map.get(milk));
+        assertEquals(BigDecimal.valueOf(0.016).setScale(3, RoundingMode.HALF_EVEN), map.get(butter));
     }
 
     @Sql(value = "/sql/ingredients/threeStepsIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -58,10 +59,10 @@ class IngredientCalculationTest {
         Item ingr4 = itemService.getItemById(17);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(item, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(1.5f, map.get(ingr1).floatValue());
-        assertEquals(1.8f, map.get(ingr2).floatValue());
-        assertEquals(0.6f, map.get(ingr3).floatValue());
-        assertEquals(0.6f, map.get(ingr4).floatValue());
+        assertEquals(BigDecimal.valueOf(1.8f).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr2));
+        assertEquals(BigDecimal.valueOf(1.5f).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr1));
+        assertEquals(BigDecimal.valueOf(0.6f).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr3));
+        assertEquals(BigDecimal.valueOf(0.6f).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr4));
     }
 
     @Sql(value = "/sql/ingredients/draftBeer.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -73,7 +74,7 @@ class IngredientCalculationTest {
         Item bearIngredient = itemService.getItemById(11);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(bear, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(0.3F, map.get(bearIngredient).floatValue());
+        assertEquals(BigDecimal.valueOf(0.3F).setScale(3, RoundingMode.HALF_EVEN), map.get(bearIngredient));
     }
 
     @Sql(value = "/sql/ingredients/bottledBeer.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -85,7 +86,7 @@ class IngredientCalculationTest {
         Item bearIngredient = itemService.getItemById(11);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(bear, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(1F, map.get(bearIngredient).floatValue());
+        assertEquals(BigDecimal.valueOf(1F).setScale(3, RoundingMode.HALF_EVEN), map.get(bearIngredient));
     }
 
     @Sql(value = "/sql/ingredients/smallValues.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -100,10 +101,10 @@ class IngredientCalculationTest {
         Item ingr4 = itemService.getItemById(17);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(item, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(0.186F, map.get(ingr1).floatValue());
-        assertEquals(0.32F, map.get(ingr2).floatValue());
-        assertEquals(0.45F, map.get(ingr3).floatValue());
-        assertEquals(0.54F, map.get(ingr4).floatValue());
+        assertEquals(BigDecimal.valueOf(0.187).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr1));
+        assertEquals(BigDecimal.valueOf(0.320).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr2));
+        assertEquals(BigDecimal.valueOf(0.450).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr3));
+        assertEquals(BigDecimal.valueOf(0.540).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr4));
     }
 
     @Sql(value = "/sql/ingredients/smallValues.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -135,12 +136,12 @@ class IngredientCalculationTest {
         Item cucumber = itemService.getItemById(20);
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(item, BigDecimal.valueOf(1f), LocalDate.now());
         assertFalse(map.isEmpty());
-        assertEquals(0.07f, map.get(ingr1).floatValue());
-        assertEquals(0.12f, map.get(ingr2).floatValue());
-        assertEquals(0.1f, map.get(ingr3).floatValue());
-        assertEquals(0.175f, map.get(ingr4).floatValue());
-        assertEquals(0.02f, map.get(tomato).floatValue());
-        assertEquals(0.03f, map.get(cucumber).floatValue());
+        assertEquals(BigDecimal.valueOf(0.070).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr1));
+        assertEquals(BigDecimal.valueOf(0.120).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr2));
+        assertEquals(BigDecimal.valueOf(0.100).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr3));
+        assertEquals(BigDecimal.valueOf(0.175).setScale(3, RoundingMode.HALF_EVEN), map.get(ingr4));
+        assertEquals(BigDecimal.valueOf(0.020).setScale(3, RoundingMode.HALF_EVEN), map.get(tomato));
+        assertEquals(BigDecimal.valueOf(0.030).setScale(3, RoundingMode.HALF_EVEN), map.get(cucumber));
     }
 
     @Sql(value = "/sql/ingredients/withPlateDecorationInWeightDish.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

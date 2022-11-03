@@ -53,7 +53,7 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(WarningException.class)
     protected ResponseEntity<WarningResponse> handleWarningException(WarningException ex) {
-        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+        mailService.send(toEmail, Constants.WARNING_SUBJECT,
                 String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "WarningException"));
         return new ResponseEntity<>(new WarningResponse(ex.getMessage(),
                     ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);

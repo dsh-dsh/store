@@ -14,6 +14,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +51,7 @@ class DocItemServiceFor1CDocsTest {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(1);
         DocItemDTO dto = getDocItemDTO(3611, 1, 180, 18);
         DocumentItem item = service.createDocItem(dto, doc);
-        assertEquals(1, item.getQuantity());
+        assertEquals(BigDecimal.valueOf(1f).setScale(3, RoundingMode.HALF_EVEN), item.getQuantity());
         assertEquals(180, item.getPrice());
         assertEquals(18, item.getDiscount());
     }

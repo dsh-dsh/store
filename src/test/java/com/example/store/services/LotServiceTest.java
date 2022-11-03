@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -102,8 +103,8 @@ class LotServiceTest {
         LocalDateTime endTime = LocalDateTime.parse("2022-03-11T11:00:00.000000");
         Map<Lot, BigDecimal> map = lotService.getLotMap(getDocItem(8, 10.00f), getStorage(3), endTime);
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(6.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.000).setScale(3, RoundingMode.CEILING))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(6.000).setScale(3, RoundingMode.CEILING))));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -116,7 +117,7 @@ class LotServiceTest {
         Map<Lot, BigDecimal> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(1, map.size());
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f).setScale(3, RoundingMode.CEILING))));
     }
 
     @Sql(value = {"/sql/period/addPeriodMarch.sql", "/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -129,23 +130,23 @@ class LotServiceTest {
         Map<Lot, BigDecimal> map
                 = lotService.getLotsOfItem(getItem(8), getStorage(3), endTime);
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f))));
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(10.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(4.00f).setScale(3, RoundingMode.CEILING))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(10.00f).setScale(3, RoundingMode.CEILING))));
     }
 
     @Test
     void getLotMapOfOneToHoldTest() {
         Map<Lot, BigDecimal> map = lotService.getLotMapToHold(getMapOfLotAndBigDecimal(), BigDecimal.valueOf(5.00f));
         assertEquals(1, map.size());
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f).setScale(1, RoundingMode.CEILING))));
     }
 
     @Test
     void getLotMapOfTwoToHoldTest() {
         Map<Lot, BigDecimal> map = lotService.getLotMapToHold(getMapOfLotAndBigDecimal(), BigDecimal.valueOf(12.00f));
         assertEquals(2, map.size());
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f))));
-        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(7.00f))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(5.00f).setScale(1, RoundingMode.CEILING))));
+        assertThat(map, hasValue(equalTo(BigDecimal.valueOf(7.00f).setScale(1, RoundingMode.CEILING))));
     }
 
     @Test

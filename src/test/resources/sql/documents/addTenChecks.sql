@@ -29,7 +29,7 @@ values
 (1000.0, 63214823871, 3, 65469, '2022-03-16T06:30:36.395', 1, B'1', B'1', B'1', B'0', B'1', 12, 'Официант 10');
 
 insert into document_item
-(id, discount, item_id, document_id, price, quantity, quantity_fact)
+(id, discount, item_id, document_id, price, d_quantity, quantity_fact)
 values
 (1, 0.0, 4, 1, 120.0, 1.0, 0.0),
 (2, 0.0, 5, 2, 150.0, 1.0, 0.0),

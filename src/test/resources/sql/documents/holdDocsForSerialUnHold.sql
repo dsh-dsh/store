@@ -5,7 +5,7 @@ values
 (2, 2, '2022-03-16T10:30:36.395');
 
 insert into lot_movement
-(id, movement_time, lot_id, storage_id, document_id, quantity)
+(id, movement_time, lot_id, storage_id, document_id, d_quantity)
 values
 ('1', '2022-03-01 11:00:00.000000', '1', '3', '1', '5'),
 ('2', '2022-03-10 11:00:00.000000', '2', '3', '2', '5'),

@@ -62,6 +62,7 @@ public class Constants {
     public static final String BAR = "Бар";
 
     public static final String ERROR_SUBJECT = "Ошибка в приложении";
+    public static final String WARNING_SUBJECT = "Предупреждение в приложении";
     public static final String MESSAGE_SUBJECT = "Сообщение из приложения";
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
