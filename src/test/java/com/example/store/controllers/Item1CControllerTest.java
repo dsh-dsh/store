@@ -1,19 +1,24 @@
 package com.example.store.controllers;
 
 import com.example.store.ItemTestService;
+import com.example.store.model.dto.Company1CDTO;
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.PriceDTO;
 import com.example.store.model.dto.User1CDTO;
+import com.example.store.model.dto.requests.CompanyList1CRequestDTO;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.dto.requests.UserList1CRequestDTO;
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.PriceType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
+import com.example.store.repositories.CompanyRepository;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +52,7 @@ class Item1CControllerTest extends TestService {
 
     private static final String URL_ITEMS = "/items";
     private static final String URL_USERS = "/users";
+    private static final String URL_COMPANIES = "/companies";
 
     @Autowired
     private ItemTestService itemTestService;
@@ -58,6 +64,8 @@ class Item1CControllerTest extends TestService {
     private ItemRepository itemRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 
@@ -129,6 +137,65 @@ class Item1CControllerTest extends TestService {
                                 .content(objectMapper.writeValueAsString(userList1CRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/company/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setCompaniesFrom1CTest() throws Exception {
+
+        CompanyList1CRequestDTO companyList1CRequestDTO = new CompanyList1CRequestDTO();
+        companyList1CRequestDTO.setCompany1CDTOList(getCompaniesDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_COMPANIES)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(companyList1CRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<Company> companies = companyRepository.findAll();
+        assertEquals(13, companies.size());
+    }
+
+    @Sql(value = "/sql/company/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setCompaniesFrom1CUnauthorizedTest() throws Exception {
+
+        CompanyList1CRequestDTO companyList1CRequestDTO = new CompanyList1CRequestDTO();
+        companyList1CRequestDTO.setCompany1CDTOList(getCompaniesDTOList());
+
+        this.mockMvc.perform(
+                        post(URL_COMPANIES)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(companyList1CRequestDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    private List<Company1CDTO> getCompaniesDTOList() {
+        List<Company1CDTO> list = new ArrayList<>();
+        list.add(getCompany1CDTO(111, 0));
+        list.add(getCompany1CDTO(222, 0));
+        list.add(getCompany1CDTO(333, 222));
+        list.add(getCompany1CDTO(444, 0));
+        list.add(getCompany1CDTO(555, 222));
+        list.add(getCompany1CDTO(666, 111));
+        list.add(getCompany1CDTO(777, 222));
+        list.add(getCompany1CDTO(888, 444));
+        list.add(getCompany1CDTO(999, 1000));
+        list.add(getCompany1CDTO(1000, 0));
+        return list;
+    }
+
+
+    @NotNull
+    private Company1CDTO getCompany1CDTO(int code, int parentId) {
+        Company1CDTO dto = new Company1CDTO();
+        dto.setName("new company name");
+        dto.setInn("316316241412");
+        dto.setCode(code);
+        dto.setParentId(parentId);
+        return dto;
     }
 
     private List<User1CDTO> getUserDTOList() {

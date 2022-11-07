@@ -17,7 +17,6 @@ public class ItemRestController {
     @Autowired
     private ItemRestService itemRestService;
 
-    // todo update tests
     @GetMapping("/inventory")
     public ResponseEntity<ListResponse<DocItemDTO>> getItemRest(
             @RequestParam(defaultValue = "0") int docId,

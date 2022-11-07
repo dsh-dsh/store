@@ -1,5 +1,6 @@
 package com.example.store.components;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
@@ -39,7 +40,6 @@ public class IngredientCalculation {
         return ingredientMapOfItem;
     }
 
-    // todo update tests because of merge(), getTotalWeight and enableValue
     private void setIngredientMapOfItemRecursively(Item item, BigDecimal quantity, LocalDate date) {
         // todo refactor this to exclude from getIngredientsNotDeleted() getGrossQuantity and getEnableValue
         // todo due to for each iteration will be at list two more select from db
@@ -52,7 +52,7 @@ public class IngredientCalculation {
             boolean isWeight = isWeight(item);
             float totalWeight = isWeight ? getTotalWeight(ingredients, date) : 1;
             for(Ingredient ingredient : ingredients) {
-                checkForPortionItemInWeightItem(isWeight, item, ingredient.getChild());
+                checkForPortionItemInWeightItem(isWeight, ingredient);
                 float grossQuantity = getGrossQuantity(ingredient, date);
                 float enableValue = getEnableValue(ingredient, date);
                 if(grossQuantity == 0f || enableValue == 0f) continue;
@@ -64,19 +64,18 @@ public class IngredientCalculation {
         }
     }
 
-    // todo add tests
-    protected void checkForPortionItemInWeightItem(boolean isWeight, Item parent, Item child) {
+    public void checkForPortionItemInWeightItem(boolean isWeight, Ingredient ingredient) {
         if(!isWeight) return;
-        Unit itemUnit = child.getUnit();
+        Unit itemUnit = ingredient.getChild().getUnit();
         if(itemUnit == Unit.PORTION || itemUnit == Unit.PIECE) {
             throw new HoldDocumentException(
-                    String.format(Constants.PORTION_ITEM_MESSAGE, child.getName(), parent.getName()),
+                    String.format(Constants.PORTION_ITEM_MESSAGE,
+                            ingredient.getChild().getName(), ingredient.getParent().getName()),
                     this.getClass().getName() + " - deleteOrderDoc(int docId)");
         }
     }
 
-    // todo add tests
-    protected boolean isWeight(Item item) {
+    public boolean isWeight(Item item) {
         Unit unit = item.getUnit();
         return unit == Unit.KG || unit == Unit.LITER;
     }
@@ -101,14 +100,12 @@ public class IngredientCalculation {
         return optional.map(PeriodicValue::getQuantity).orElse(0f);
     }
 
-    // todo add tests
     public float getEnableValue(Ingredient ingredient, LocalDate date) {
         Optional<PeriodicValue> optional = periodicValueService.getEnableQuantity(ingredient, date);
         return optional.map(PeriodicValue::getQuantity).orElse(0f);
     }
 
-    // todo add tests
-    private float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
+    public float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
         float netWeight = 0;
         for(Ingredient ingredient : ingredients) {
             Optional<PeriodicValue> netValue = periodicValueService.getNetQuantity(ingredient, date);
@@ -117,8 +114,9 @@ public class IngredientCalculation {
                 netWeight += netValue.get().getQuantity();
             }
         }
-        // todo если общий вес 0, то все равно, так как ингредиенты не правильно заполнены
-        // todo может тогда при 0 делать исключение в котором сообщать, что в item не заполнены ингредиенты
-        return netWeight == 0 ? 1 : netWeight;
+        if(netWeight == 0) throw new BadRequestException(
+                Constants.NO_INGREDIENTS_IN_ITEM_MESSAGE,
+                this.getClass().getName() + " - getTotalWeight(List<Ingredient> ingredients, LocalDate date)");
+        return netWeight;
     }
 }

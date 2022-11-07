@@ -67,7 +67,7 @@ public class Constants {
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String SHORTAGE_OF_ITEM_MESSAGE = "Не достаточный остаток %s, требуется %f в наличии %f";
-    public static final String SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE = "В документе %s № %d не достает: %n%s";
+    public static final String SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE = "В документе %s № %d не достает:%n%s";
     public static final String HOLD_FAILED_MESSAGE = "Проведение документа не удалось";
     public static final String UN_HOLD_FAILED_MESSAGE = "Отмена проведения документа не удалась";
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "В документе отсутствует товары";
@@ -83,6 +83,7 @@ public class Constants {
     public static final String NO_SUCH_CHECK_INFO_MESSAGE = "Информация о чеке ККМ не найдена";
     public static final String NO_SUCH_CODE_ITEM_MESSAGE = "Номенклатура с кодом %s не найдена";
     public static final String NO_SUCH_ITEM_MESSAGE = "Номенклатура не найдена";
+    public static final String NO_INGREDIENTS_IN_ITEM_MESSAGE = "В номенклатуре нет ингредиентов";
     public static final String NO_SUCH_INGREDIENT_MESSAGE = "Ингредиента с номером %s не найдено";
     public static final String NO_SUCH_LOT_MESSAGE = "Партия не найдена";
     public static final String NO_SUCH_PROJECT_MESSAGE = "Проект %s отсутствует в системе";

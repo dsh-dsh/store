@@ -29,4 +29,9 @@ public class PeriodStartDateTime {
     public LocalDateTime get() {
         return dateTime;
     }
+
+    // for tests only
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
 }

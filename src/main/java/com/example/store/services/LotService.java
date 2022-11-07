@@ -188,7 +188,6 @@ public class LotService {
                 .ifPresent(value -> lotRepository.delete(value));
     }
 
-    // todo add tests
     public Map<Item, BigDecimal> getShortageMapOfItems(Set<DocumentItem> documentItems, Storage storage, LocalDateTime docTime) {
         return documentItems.stream()
                 .collect(Collectors.toMap(DocumentItem::getItem, DocumentItem::getQuantity, BigDecimal::add))

@@ -90,18 +90,18 @@ public class HoldDocsService {
         }
     }
 
-    // todo add tests
     public void checkDocItemQuantities(Document document) {
         if(document instanceof ItemDoc) {
             ItemDoc itemDoc = (ItemDoc) document;
-            if(itemDoc.getDocType() != DocumentType.WRITE_OFF_DOC && itemDoc.getDocType() != DocumentType.MOVEMENT_DOC) {
+            if(itemDoc.getDocType() != DocumentType.WRITE_OFF_DOC
+                    && itemDoc.getDocType() != DocumentType.MOVEMENT_DOC) {
                 return;
             }
             Set<DocumentItem> documentItems = itemDoc.getDocumentItems();
             Map<Item, BigDecimal> shortages = lotService.getShortageMapOfItems(
                     documentItems, itemDoc.getStorageFrom(), itemDoc.getDateTime());
             if(!shortages.isEmpty()) {
-                String formatString = "%s %s %20.3f %s,%n";
+                String formatString = "%s %s %20.3f %s%n";
                 String message = shortages.entrySet().stream()
                         .map(entry -> String.format(formatString,
                                 entry.getKey().getName(),
@@ -117,7 +117,7 @@ public class HoldDocsService {
         }
     }
     private String getDots(String value) {
-        int length = 26 - value.length();
+        int length = Math.max(32 - value.length(), 0);
         return ". ".repeat(length);
     }
 }

@@ -5,9 +5,11 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Util;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,10 @@ class LotServiceTest {
     private DocItemService docItemService;
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
+    @Autowired
+    private ItemService itemService;
+    @Autowired
+    private StorageService storageService;
 
     @Sql(value = {"/sql/lots/addDocs.sql", "/sql/lots/addLots.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/lots/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -292,6 +299,48 @@ class LotServiceTest {
         lotService.setAveragePrice(docItem, lotMap);
         float expectedPrice = ((float)(50*5 + 60*10)) / 15;
         assertEquals(Util.floorValue(expectedPrice, 2), docItem.getPrice());
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql", "/sql/documents/holdDocsForSerialUnHold.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getShortageMapOfItemsNoShortageTest() {
+        ItemDoc itemDoc = getItemDoc(1);
+        Map<Item, BigDecimal> map = lotService.getShortageMapOfItems(
+                itemDoc.getDocumentItems(), itemDoc.getStorageFrom(), itemDoc.getDateTime());
+        assertTrue(map.isEmpty());
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql", "/sql/documents/holdDocsForSerialUnHold.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void getShortageMapOfItemsTest() {
+        ItemDoc itemDoc = getItemDoc(10);
+        Map<Item, BigDecimal> map = lotService.getShortageMapOfItems(
+                itemDoc.getDocumentItems(), itemDoc.getStorageFrom(), itemDoc.getDateTime());
+        assertFalse(map.isEmpty());
+        assertEquals(BigDecimal.valueOf(-8).setScale(3, RoundingMode.HALF_EVEN), map.get(itemService.getItemById(7)));
+        assertEquals(BigDecimal.valueOf(-8).setScale(3, RoundingMode.HALF_EVEN), map.get(itemService.getItemById(8)));
+    }
+
+    @NotNull
+    private ItemDoc getItemDoc(float quantity) {
+        ItemDoc itemDoc = new ItemDoc();
+        itemDoc.setDateTime(LocalDateTime.now());
+        itemDoc.setDocType(DocumentType.WRITE_OFF_DOC);
+        itemDoc.setStorageFrom(storageService.getById(3));
+        Item item1 = itemService.getItemById(7);
+        Item item2 = itemService.getItemById(8);
+        Set<DocumentItem> items = Set.of(
+                new DocumentItem(itemDoc, item1, BigDecimal.valueOf(quantity).setScale(3, RoundingMode.HALF_EVEN)),
+                new DocumentItem(itemDoc, item2, BigDecimal.valueOf(quantity).setScale(3, RoundingMode.HALF_EVEN))
+        );
+        itemDoc.setDocumentItems(items);
+        return itemDoc;
     }
 
     private Map<Lot, Float> getMapOfLotAndFloat() {

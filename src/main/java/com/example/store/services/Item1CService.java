@@ -49,7 +49,8 @@ public class Item1CService extends ItemService{
             boolean interrupt = true;
             while (iterator.hasNext()) {
                 Item1CDTO dto = iterator.next();
-                if (itemRepository.existsByNumber(dto.getParentNumber())) {
+                int parentNum = dto.getParentNumber();
+                if (parentNum > 0 && itemRepository.existsByNumber(parentNum)) {
                     setItem(dto);
                     iterator.remove();
                     interrupt = false;

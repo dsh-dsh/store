@@ -1,10 +1,12 @@
 package com.example.store.controllers;
 
 import com.example.store.model.dto.SettingDTO;
+import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
+import com.example.store.repositories.SettingRepository;
 import com.example.store.services.SettingService;
 import com.example.store.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +24,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,6 +50,8 @@ class SettingControllerTest {
     private SettingService settingService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SettingRepository settingRepository;
     @Autowired
     private User systemUser;
     @Autowired
@@ -270,6 +277,63 @@ class SettingControllerTest {
                         post(URL_PREFIX + "/property"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setDocTypeFilterPropertiesTest()  throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1);
+        SettingDTOList settingDTOList = new SettingDTOList();
+        settingDTOList.setUser(userDTO);
+        settingDTOList.setSettings(getSettingDTOList());
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/doc/type/properties")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTOList)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<PropertySetting> settings = settingRepository.findByUser(userService.getById(1));
+        assertFalse(settings.isEmpty());
+        assertEquals(7, settings.size());
+        assertEquals(0, settings.get(3).getProperty());
+
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setDocTypeFilterPropertiesUnauthorizedTest()  throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1);
+        SettingDTOList settingDTOList = new SettingDTOList();
+        settingDTOList.setUser(userDTO);
+        settingDTOList.setSettings(getSettingDTOList());
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/doc/type/properties")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(settingDTOList)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    private List<SettingDTO> getSettingDTOList() {
+        return List.of(
+            getSettingDTO(null, SettingType.POSTING_DOC_TYPE_FILTER, 1),
+            getSettingDTO(null, SettingType.INVENTORY_DOC_TYPE_FILTER, 1),
+            getSettingDTO(null, SettingType.CREDIT_ORDER_DOC_TYPE_FILTER, 1)
+        );
+    }
+
+    private SettingDTO getSettingDTO(UserDTO userDTO, SettingType type, int property) {
+        SettingDTO settingDTO = new SettingDTO();
+        settingDTO.setUser(userDTO);
+        settingDTO.setType(type.toString());
+        settingDTO.setProperty(property);
+        return settingDTO;
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)

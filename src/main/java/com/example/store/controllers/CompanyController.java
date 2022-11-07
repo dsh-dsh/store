@@ -17,8 +17,6 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    // todo add tests
-
     @GetMapping("/tree")
     public ResponseEntity<ListResponse<ItemDTOForTree>> getItemTree() {
         return ResponseEntity.ok(new ListResponse<>(companyService.getCompanyDTOTree()));
@@ -31,13 +29,13 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<String>> setPerson(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<Response<String>> setCompany(@RequestBody CompanyDTO companyDTO) {
         companyService.setCompany(companyDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PutMapping
-    public ResponseEntity<Response<String>> updatePerson(@RequestBody CompanyDTO companyDTO) {
+    public ResponseEntity<Response<String>> updateCompany(@RequestBody CompanyDTO companyDTO) {
         companyService.updateCompany(companyDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }

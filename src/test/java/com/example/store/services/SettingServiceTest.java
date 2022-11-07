@@ -1,10 +1,12 @@
 package com.example.store.services;
 
 import com.example.store.model.dto.SettingDTO;
+import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
+import com.example.store.repositories.SettingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ class SettingServiceTest {
 
     @Autowired
     private SettingService settingService;
+    @Autowired
+    private SettingRepository settingRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -97,6 +101,19 @@ class SettingServiceTest {
         User user = userService.getById(1);
         PropertySetting settings = settingService.getSettingByType(user, SettingType.STORAGE_TO);
         assertEquals(5, settings.getProperty());
+    }
+
+    @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setPropertyUserTest() {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(1);
+        SettingDTO dto = new SettingDTO(userDTO, SettingType.REQUEST_DOC_TYPE_FILTER.toString(), 5);
+        User user = userService.getById(1);
+        settingService.setProperty(user, dto);
+        PropertySetting setting = settingService.getSettingByType(user, SettingType.REQUEST_DOC_TYPE_FILTER);
+        assertEquals(5, setting.getProperty());
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -181,6 +198,33 @@ class SettingServiceTest {
         assertEquals(0, setting.getProperty());
         assertEquals(0, checkHoldingEnableSetting.getProperty());
         checkHoldingEnableSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/addDocFiltersSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setDocTypeFilterPropertiesTest() {
+        SettingDTOList dtoList = new SettingDTOList();
+        dtoList.setUser(new UserDTO(4, "", ""));
+        dtoList.setSettings(
+                List.of(
+                    getSettingDTO("REQUEST_DOC_TYPE_FILTER", 1),
+                    getSettingDTO("INVENTORY_DOC_TYPE_FILTER",0))
+        );
+        settingService.setDocTypeFilterProperties(dtoList);
+        List<PropertySetting> settings = settingRepository.findByUser(userService.getById(4));
+        assertEquals(2, settings.size());
+        assertEquals(SettingType.REQUEST_DOC_TYPE_FILTER, settings.get(0).getSettingType());
+        assertEquals(1, settings.get(0).getProperty());
+        assertEquals(SettingType.INVENTORY_DOC_TYPE_FILTER, settings.get(1).getSettingType());
+        assertEquals(0, settings.get(1).getProperty());
+    }
+
+    private SettingDTO getSettingDTO(String type, int property) {
+        SettingDTO dto = new SettingDTO();
+        dto.setType(type);
+        dto.setProperty(property);
+        return dto;
     }
 
     @Test

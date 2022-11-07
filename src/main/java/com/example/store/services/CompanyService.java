@@ -52,7 +52,6 @@ public class CompanyService {
                         this.getClass().getName() + " - getByInn(String inn)"));
     }
 
-    // todo add tests
     public Optional<Company> findByCode(int code) {
         return companyRepository.findByCode(code);
     }
@@ -68,30 +67,26 @@ public class CompanyService {
         return companyRepository.getById(ourCompanySetting.getProperty());
     }
 
-    // todo add tests
     public List<ItemDTOForTree> getCompanyDTOTree() {
         List<Company> companies = companyRepository.findAll(Sort.by("id"));
         return treeBuilder.getItemTree(companies);
     }
 
-    // todo add tests
     public CompanyDTO getCompanyById(int id) {
         Company company = companyRepository.getById(id);
         return companyMapper.mapToDTO(company);
     }
 
-    // todo add tests
     public void setCompany(CompanyDTO dto) {
-        Company company = companyMapper.mapToItem(dto);
+        Company company = companyMapper.mapToCompany(dto);
         companyRepository.save(company);
         if(company.getParent() == null) {
             companyRepository.setParentIdNotNull(company.getId());
         }
     }
 
-    // todo add tests
     public void updateCompany(CompanyDTO dto) {
-        Company company = companyRepository.getById(dto.getId());
+        Company company = getById(dto.getId());
         company.setName(dto.getName());
         company.setCode(dto.getCode());
         company.setInn(dto.getInn());

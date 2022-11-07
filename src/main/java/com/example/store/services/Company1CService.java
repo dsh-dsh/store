@@ -10,8 +10,6 @@ import java.util.*;
 @Service
 public class Company1CService extends CompanyService {
 
-    // todo add tests
-
     public void setCompaniesFrom1C(CompanyList1CRequestDTO companyList1CRequestDTO) {
         List<Company1CDTO> dtoList = companyList1CRequestDTO.getCompany1CDTOList();
         dtoList.sort(Comparator.comparing(Company1CDTO::getCode));
@@ -32,13 +30,14 @@ public class Company1CService extends CompanyService {
         }
     }
 
-    private void setCompanyRecursive(List<Company1CDTO> dtoList) {
+    protected void setCompanyRecursive(List<Company1CDTO> dtoList) {
         if(!dtoList.isEmpty()) {
             Iterator<Company1CDTO> iterator = dtoList.iterator();
             boolean interrupt = true;
             while (iterator.hasNext()) {
                 Company1CDTO dto = iterator.next();
-                if (companyRepository.existsByCode(dto.getParentId())) {
+                int parentId = dto.getParentId();
+                if (parentId > 0 && companyRepository.existsByCode(parentId)) {
                     setCompanyFrom1C(dto);
                     iterator.remove();
                     interrupt = false;
@@ -49,9 +48,8 @@ public class Company1CService extends CompanyService {
         }
     }
 
-    // todo add tests
     public void setCompany(Company1CDTO dto) {
-        Company company = companyMapper.mapToItem(dto);
+        Company company = companyMapper.mapToCompany(dto);
         company.setParent(getByCode(dto.getParentId()));
         companyRepository.save(company);
         if(company.getParent() == null) {
@@ -59,7 +57,6 @@ public class Company1CService extends CompanyService {
         }
     }
 
-    // todo add tests
     public void updateCompany(Company1CDTO dto) {
         Company company = getByCode(dto.getCode());
         if(company == null) return;

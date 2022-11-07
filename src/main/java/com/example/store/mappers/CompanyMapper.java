@@ -26,7 +26,7 @@ public class CompanyMapper extends MappingConverters {
     public CompanyDTO mapToDTO(Company company) {
         return modelMapper.map(company, CompanyDTO.class);
     }
-    public Company mapToItem(CompanyDTO dto) {
+    public Company mapToCompany(CompanyDTO dto) {
         return modelMapper.map(dto, Company.class);
     }
 }

@@ -53,7 +53,6 @@ public class PeriodicValueService {
                 .findFirst();
     }
 
-    // todo add tests
     public Optional<PeriodicValue> getEnableQuantity(Ingredient ingredient, LocalDate date) {
         return getQuantityList(ingredient, date).stream().
                 filter(q -> q.getType().equals(PeriodicValueType.ENABLE))

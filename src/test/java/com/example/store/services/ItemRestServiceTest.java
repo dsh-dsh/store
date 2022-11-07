@@ -1,11 +1,13 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodStartDateTime;
+import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.Storage;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,6 +172,15 @@ class ItemRestServiceTest {
         assertEquals(2, itemRestService.getRestOfLot(lotWithId(1L), new Storage(2)));
         assertEquals(3, itemRestService.getRestOfLot(lotWithId(2L), new Storage(3)));
         assertEquals(2, itemRestService.getRestOfLot(lotWithId(2L), new Storage(1)));
+    }
+
+    @Sql(value = "/sql/lotMovements/addTwoPosting.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/lotMovements/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getItemRestTest() {
+        List<DocItemDTO> list = itemRestService.getItemRest(1, Util.getLongLocalDateTime(LocalDateTime.now()), 3);
+        assertEquals(1, list.size());
+        assertEquals(20.0f, list.get(0).getQuantity());
     }
 
     Lot lotWithId(long id){

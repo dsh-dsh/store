@@ -43,7 +43,6 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private AuthService authService;
 
-    // todo update test consider docs of last day
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
         LocalDateTime endDate = Util.getLocalDateTime(end).withHour(23);
@@ -103,7 +102,6 @@ public class DocCrudService extends AbstractDocCrudService {
         return dto;
     }
 
-    // todo add test
     public DocDTO getMoveDocFromRequest(int docId) {
         Document document = documentService.getDocumentById(docId);
         DocDTO dto = docMapper.mapToDocDTO((ItemDoc) document);
@@ -165,7 +163,6 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    // todo add tests
     public void unHoldDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
         checkTimePeriod(document);
@@ -331,7 +328,6 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    // todo update tests
     public int getNewDocNumber(String type) {
         DocumentType documentType = DocumentType.getByValue(type);
         return getNextDocumentNumber(documentType);

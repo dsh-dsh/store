@@ -38,7 +38,6 @@ public class Item1CController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
     @PostMapping("/companies")
     public ResponseEntity<Response<String>>  setCompanies(
             @RequestBody CompanyList1CRequestDTO companyList1CRequestDTO) {

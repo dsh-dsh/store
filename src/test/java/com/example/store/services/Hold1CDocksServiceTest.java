@@ -90,7 +90,6 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void holdDocsBeforeIfDocsExistsThrowTest() {
-        // todo выбрасывается TransactionException вместо BadRequestException
         assertThrows(TransactionException.class,
                 () -> hold1CDocksService.holdDocsBefore());
     }

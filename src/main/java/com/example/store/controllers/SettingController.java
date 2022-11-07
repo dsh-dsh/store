@@ -73,7 +73,6 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
     @PostMapping("/doc/type/properties")
     public ResponseEntity<Response<String>> setDocTypeFilterProperties(@RequestBody SettingDTOList settingDTOList) {
         settingService.setDocTypeFilterProperties(settingDTOList);

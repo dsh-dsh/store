@@ -226,7 +226,6 @@ public abstract class AbstractDocCrudService {
         return start.plusHours(1);
     }
 
-    // todo update tests
     protected int getNextDocumentNumber(DocumentType type) {
         try {
             return documentRepository.getLastNumber(type.toString()) + 1;

@@ -65,7 +65,6 @@ public class UserService {
                         this.getClass().getName() + " - getById(int id)"));
     }
 
-    // todo update tests
     public void setPerson(PersonDTO personDTO) {
         User user = personMapper.mapToUser(personDTO);
         user.setRegTime(LocalDateTime.now());

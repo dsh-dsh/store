@@ -3,4 +3,5 @@ insert into default_property_setting
 values
 (4, 1, "PROJECT", 1),
 (5, 1, "STORAGE_TO", 2),
-(6, 1, "STORAGE_FROM", 3);
+(6, 1, "STORAGE_FROM", 3),
+(7, 1, "CHECK_DOC_TYPE_FILTER", 1);

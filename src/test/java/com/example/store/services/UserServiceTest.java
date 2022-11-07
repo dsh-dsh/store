@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,8 +108,12 @@ class UserServiceTest {
         PersonDTO personDTO = getPersonDTO();
         personDTO.setPassword(PASSWORD);
         userService.setPerson(personDTO);
-        userRepository.findByEmailIgnoreCase(NEW_USER_EMAIL).get();
-        assertFalse(userRepository.findByEmailIgnoreCase(NEW_USER_EMAIL).isEmpty());
+        Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(NEW_USER_EMAIL);
+        assertFalse(optionalUser.isEmpty());
+        User user = optionalUser.get();
+        assertEquals(FIRST_NAME, user.getFirstName());
+        assertEquals(LAST_NAME, user.getLastName());
+        assertEquals(0, userRepository.getParentId(user.getId()));
     }
 
     @Test

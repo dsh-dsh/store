@@ -16,6 +16,7 @@ import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.services.*;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +30,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -799,6 +797,24 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.data.[4].id").value(5));
     }
 
+    @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getDocListPeriodTest() throws Exception {
+        String date = String.valueOf(Util.getLongLocalDate(LocalDate.parse("2022-04-15")));
+        this.mockMvc.perform(get(URL_PREFIX + "/list"
+                        + "?start=" + date + "&end=" + date))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[0].id").value(1))
+                .andExpect(jsonPath("$.data.[1].id").value(2))
+                .andExpect(jsonPath("$.data.[2].id").value(3))
+                .andExpect(jsonPath("$.data.[3].id").value(4))
+                .andExpect(jsonPath("$.data.[4].id").value(5))
+                .andExpect(jsonPath("$.data.[5]").doesNotExist());
+    }
+
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -847,6 +863,34 @@ class DocumentControllerTest {
     @Test
     void getPostingDocTestUnauthorized() throws Exception {
         this.mockMvc.perform(get(URL_PREFIX)
+                        .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/addRequestDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getMoveDocFromRequestTest() throws Exception {
+        this.mockMvc.perform(get(URL_PREFIX + "/move/from/request")
+                        .param("id", String.valueOf(TestService.DOC_ID)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(0))
+                .andExpect(jsonPath("$.data.check_info").doesNotExist())
+                .andExpect(jsonPath("$.data.doc_items").isArray())
+                .andExpect(jsonPath("$.data.doc_items.[1]").exists())
+                .andExpect(jsonPath("$.data.doc_items.[2]").doesNotExist())
+                .andExpect(jsonPath("$.data.doc_items.[0].quantity").value(0))
+                .andExpect(jsonPath("$.data.doc_items.[0].quantity_fact").value(1))
+                .andExpect(jsonPath("$.data.doc_items.[1].quantity").value(0))
+                .andExpect(jsonPath("$.data.doc_items.[1].quantity_fact").value(2));
+    }
+
+    @Test
+    void getMoveDocFromRequestUnauthorized() throws Exception {
+        this.mockMvc.perform(get(URL_PREFIX + "/move/from/request")
                         .param("id", String.valueOf(TestService.DOC_ID)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());

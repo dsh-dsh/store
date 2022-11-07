@@ -76,15 +76,12 @@ public class SettingService {
         return dto;
     }
 
-    // todo add tests
     public void setDocTypeFilterProperties(SettingDTOList list) {
         User user = userService.getById(list.getUser().getId());
         settingRepository.resetDocTypeFiltersSettings(list.getUser().getId());
         list.getSettings().forEach(dto -> setProperty(user, dto));
     }
 
-
-    // todo add tests
     public void setProperty(User user, SettingDTO settingDTO) {
         SettingType settingType = SettingType.valueOf(settingDTO.getType());
         int property = settingDTO.getProperty();

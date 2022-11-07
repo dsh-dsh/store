@@ -22,7 +22,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -178,6 +177,25 @@ class ItemControllerTest extends TestService {
                         get(URL_PREFIX)
                                 .param("id", String.valueOf(NEW_ITEM_ID))
                                 .param("date", LocalDate.now().toString()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemDirsListTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/dirs/list"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    void getItemDirsListUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/dirs/list"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
@@ -448,9 +466,7 @@ class ItemControllerTest extends TestService {
         child.setName("Мука");
 
         IngredientDTO first = IngredientDTO.builder()
-//                .child(child)
                 .childId(8)
-//                .quantityList(List.of(netDTO, grossDTO))
                 .netto(netDTO)
                 .gross(grossDTO)
                 .enable(enableDTO)
@@ -471,9 +487,7 @@ class ItemControllerTest extends TestService {
         child.setName("Картофель фри");
 
         IngredientDTO second = IngredientDTO.builder()
-//                .child(child)
                 .childId(7)
-//                .quantityList(List.of(netDTO, grossDTO))
                 .netto(netDTO)
                 .gross(grossDTO)
                 .enable(enableDTO)
@@ -483,16 +497,6 @@ class ItemControllerTest extends TestService {
     }
 
     private ItemDTO getItemDTO(long date) {
-//        PriceDTO oldRetailPrice = PriceDTO.builder()
-//                .date(date)
-//                .type(PriceType.RETAIL.toString())
-//                .value(RETAIL_PRICE_VALUE - 20)
-//                .build();
-//        PriceDTO oldDeliveryPrice = PriceDTO.builder()
-//                .date(date)
-//                .type(PriceType.DELIVERY.toString())
-//                .value(DELIVERY_PRICE_VALUE - 20)
-//                .build();
         PriceDTO retailPrice = PriceDTO.builder()
                 .date(date + 8640000L) // + one day
                 .type(PriceType.RETAIL.toString())
@@ -511,7 +515,6 @@ class ItemControllerTest extends TestService {
                 .regTime(Instant.now().toEpochMilli())
                 .unit(getUnitDTO(Unit.PORTION))
                 .workshop(getWorkshopDTO(Workshop.KITCHEN))
-//                .prices(List.of(oldRetailPrice, oldDeliveryPrice, retailPrice, deliveryPrice))
                 .prices(List.of(retailPrice, deliveryPrice))
                 .build();
     }

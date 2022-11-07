@@ -13,8 +13,6 @@ import java.util.*;
 @Service
 public class User1CService extends UserService {
 
-    // todo add tests
-
     public void setUsersFrom1C(UserList1CRequestDTO userList1CRequestDTO) {
         List<User1CDTO> dtoList = userList1CRequestDTO.getUser1CDTOList();
         dtoList.sort(Comparator.comparing(User1CDTO::getCode));
@@ -32,13 +30,14 @@ public class User1CService extends UserService {
         items.forEach(item -> userRepository.setParentIdNotNull(item.getId()));
     }
 
-    private void setUserRecursive(List<User1CDTO> dtoList) {
+    protected void setUserRecursive(List<User1CDTO> dtoList) {
         if(!dtoList.isEmpty()) {
             Iterator<User1CDTO> iterator = dtoList.iterator();
             boolean interrupt = true;
             while (iterator.hasNext()) {
                 User1CDTO dto = iterator.next();
-                if (userRepository.existsByCode(dto.getParentId())) {
+                int parentId = dto.getParentId();
+                if (parentId > 0 && userRepository.existsByCode(parentId)) {
                     setUser(dto);
                     iterator.remove();
                     interrupt = false;
@@ -58,14 +57,12 @@ public class User1CService extends UserService {
         }
     }
 
-    // todo update tests
     public void updatePerson(User1CDTO user1CDTO) {
         User user = getByCode(user1CDTO.getCode());
         updateUserFields(user, user1CDTO);
         userRepository.save(user);
     }
 
-    // todo update tests
     public void updateUserFields(User user, User1CDTO dto) {
         if(dto.getName() != null && !dto.getName().isEmpty()) user.setLastName(dto.getName());
         user.setFirstName("");
@@ -79,9 +76,11 @@ public class User1CService extends UserService {
         }
         if(dto.getPhone() != null && !dto.getPhone().isEmpty()) user.setPhone(dto.getPhone());
         user.setBirthDate(Util.getLocalDate(dto.getBirthDate()));
+        if(dto.getParentId() > 0) {
+            findByCode(dto.getParentId()).ifPresent(user::setParent);
+        }
     }
 
-    // todo update tests
     public void setPerson(User1CDTO user1CDTO) {
         User user = personMapper.mapToUser(user1CDTO);
         user.setFirstName("");

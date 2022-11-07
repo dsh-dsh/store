@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.WarningException;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
@@ -128,6 +129,38 @@ class DocCrudServiceTest {
         assertEquals(2, lotMoveRepository.findAll().size());
     }
 
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void unHoldDocumentTest() {
+        int docId = 6;
+        periodStartDateTime.setPeriodStart();
+        docCrudService.unHoldDocument(docId);
+        assertFalse(documentService.getDocumentById(docId).isHold());
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void unHoldDocumentWhenHoldenDocsExistsAfterTest() {
+        int docId = 5;
+        periodStartDateTime.setPeriodStart();
+        assertThrows(WarningException.class, () -> docCrudService.unHoldDocument(docId));
+    }
+
+    @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
+            "/sql/documents/holdDocsForSerialUnHold.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void unHoldDocumentWhenStartPeriodIsAfterTest() {
+        int docId = 5;
+        periodStartDateTime.setDateTime(LocalDate.parse("2022-10-10").atStartOfDay());
+        assertThrows(BadRequestException.class, () -> docCrudService.unHoldDocument(docId));
+        periodStartDateTime.setPeriodStart();
+    }
+
     @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -214,6 +247,14 @@ class DocCrudServiceTest {
     @Test
     void getNewDocNumberWhenRequestDocTest() {
         assertEquals(12, docCrudService.getNewDocNumber(DocumentType.REQUEST_DOC.getValue()));
+    }
+
+    @Sql(value = {"/sql/documents/add5DocList.sql", "/sql/documents/add1COrderDoc.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNewDocNumberWhenOrderDocAndExists1COrderDocTest() {
+        assertEquals(1, docCrudService.getNewDocNumber(DocumentType.CREDIT_ORDER_DOC.getValue()));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

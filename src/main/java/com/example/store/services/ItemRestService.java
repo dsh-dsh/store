@@ -68,11 +68,11 @@ public class ItemRestService {
         }
     }
 
-    // todo update tests
     public List<DocItemDTO> getItemRest(int docId, long time, int storageId) {
         LocalDateTime dateTime = Util.getLocalDateTime(time);
         Storage storage = storageService.getById(storageId);
-        List<Item> items = itemService.getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+        List<Item> items = itemService.getIngredientItemsList(
+                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
         return items.stream()
                 .map(item -> getDocItemDTO(docId, item, storage, dateTime))
                 .filter(item -> item.getQuantity() != 0)

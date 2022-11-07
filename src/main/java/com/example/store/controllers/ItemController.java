@@ -33,7 +33,6 @@ public class ItemController {
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 
-    // todo add tests
     @GetMapping("/dirs/list")
     public ResponseEntity<ListResponse<ItemDTOForDir>> getItemDirsList() {
         List<ItemDTOForDir> dirs = itemService.getItemDirList();

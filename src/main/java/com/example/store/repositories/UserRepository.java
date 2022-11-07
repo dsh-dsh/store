@@ -32,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsByCode(int code);
 
+    @Query(value = "select parent_id from users where id = :userId", nativeQuery = true)
+    int getParentId(int userId);
+
 }

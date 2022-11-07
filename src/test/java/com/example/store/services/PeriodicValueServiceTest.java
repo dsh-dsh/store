@@ -7,6 +7,7 @@ import com.example.store.model.entities.PeriodicValue;
 import com.example.store.model.enums.PeriodicValueType;
 import com.example.store.repositories.IngredientRepository;
 import com.example.store.repositories.PeriodicValueRepository;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,6 +114,69 @@ class PeriodicValueServiceTest {
         assertTrue(list.get(0).isDeleted());
         assertTrue(list.get(1).isDeleted());
         assertTrue(list.get(2).isDeleted());
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getGrossQuantityTest() {
+        LocalDate date = LocalDate.now();
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getGrossQuantity(ingredient, date);
+        assertTrue(optional.isPresent());
+        assertEquals(1.2, optional.get().getQuantity(), 0.0001);
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getGrossQuantityFalseTest() {
+        LocalDate date = LocalDate.parse("2022-01-01");
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getGrossQuantity(ingredient, date);
+        assertFalse(optional.isPresent());
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNetQuantityTest() {
+        LocalDate date = LocalDate.now();
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getNetQuantity(ingredient, date);
+        assertTrue(optional.isPresent());
+        assertEquals(1, optional.get().getQuantity(), 0.0001);
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNetQuantityFalseTest() {
+        LocalDate date = LocalDate.parse("2022-01-01");
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getNetQuantity(ingredient, date);
+        assertFalse(optional.isPresent());
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getEnableQuantityTest() {
+        LocalDate date = LocalDate.now();
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getEnableQuantity(ingredient, date);
+        assertTrue(optional.isPresent());
+        assertEquals(1, optional.get().getQuantity(), 0.0001);
+    }
+
+    @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getEnableQuantityFalseTest() {
+        LocalDate date = LocalDate.parse("2022-01-01");
+        Ingredient ingredient = ingredientRepository.getById(3);
+        Optional<PeriodicValue> optional = periodicValueService.getEnableQuantity(ingredient, date);
+        assertFalse(optional.isPresent());
     }
 
     private PeriodicValueDTO getPeriodicValueDTO(int id, String type, float quantity, long date) {
