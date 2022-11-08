@@ -52,10 +52,14 @@ public abstract class AbstractDocCrudService {
     private LotService lotService;
     @Autowired
     private UnHoldDocs unHoldDocs;
+    @Autowired
+    private DocInfoService docInfoService;
 
     protected DocumentType documentType;
     protected DocDTO docDTO;
     protected String saveTime;
+
+    // todo add tests
 
     public DocInterface addItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
@@ -64,12 +68,14 @@ public abstract class AbstractDocCrudService {
         if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
             addCheckInfo(itemDoc, docDTO);
         }
+        docInfoService.setDocInfo(itemDoc, docDTO.getDocInfo());
         return itemDoc;
     }
 
     public DocInterface addOrderDoc(DocDTO docDTO) {
         OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
         setAdditionalFieldsAndSave(order);
+        docInfoService.setDocInfo(order, docDTO.getDocInfo());
         return order;
     }
 
@@ -84,6 +90,7 @@ public abstract class AbstractDocCrudService {
         }
         updateDocItems(itemDoc);
         updateCheckInfo(itemDoc);
+        docInfoService.setDocInfo(itemDoc, docDTO.getDocInfo());
         return itemDoc;
     }
 

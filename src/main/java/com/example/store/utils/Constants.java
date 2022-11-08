@@ -96,6 +96,7 @@ public class Constants {
     public static final String CHECKS_HOLDING_FAIL_SUBJECT = "Ошибка проведения чеков - %s";
     public static final String DOC_NUMBER_EXISTS_MESSAGE = "Документ %s № %s существует";
     public static final String PORTION_ITEM_MESSAGE = "Не весовой ингредиент %s в весовой номенклатуре %s";
+    public static final String NO_DO_INFO_MESSAGE = "В документе нет дополнительной информации";
 
     public static final String NUMBER_OF_DELETED_DOCS_MESSAGE = "Удалено документов -  %s";
 

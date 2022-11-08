@@ -45,7 +45,8 @@ class DocCrudServiceTest {
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
 
-    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/documents/addPostingDoc.sql", "/sql/docInfo/addDocInfoOnly.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
@@ -53,6 +54,7 @@ class DocCrudServiceTest {
         DocDTO dto = docCrudService.getDocDTOById(1, false);
         assertEquals("Поступление", dto.getDocType());
         assertEquals(1, dto.getId());
+        assertEquals("SUP_NUM 123456789", dto.getDocInfo().getSupplierDocNumber());
     }
 
     @Sql(value = "/sql/documents/addOrderDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

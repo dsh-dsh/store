@@ -73,4 +73,7 @@ public class DocDTO {
     @JsonProperty("base_document_id")
     private int baseDocumentId;
 
+    @JsonProperty("doc_info")
+    private DocInfoDTO docInfo;
+
 }

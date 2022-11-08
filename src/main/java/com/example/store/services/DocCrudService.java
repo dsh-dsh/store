@@ -42,6 +42,8 @@ public class DocCrudService extends AbstractDocCrudService {
     private PeriodStartDateTime periodStartDateTime;
     @Autowired
     private AuthService authService;
+    @Autowired
+    protected DocInfoService docInfoService;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -93,6 +95,7 @@ public class DocCrudService extends AbstractDocCrudService {
         } else {
             dto = docMapper.mapToDocDTO((OrderDoc) document);
         }
+        dto.setDocInfo(docInfoService.getDocInfoDTOByDocument(document));
         if(docCopy) {
             dto.setNumber(getNewDocNumber(dto.getDocType()));
             dto.setId(0);
