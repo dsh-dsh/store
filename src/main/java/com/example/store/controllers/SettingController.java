@@ -62,6 +62,12 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(settingService.getCheckHoldingEnableSetting()));
     }
 
+    // todo add tests
+    @GetMapping("/period/close/on/check/holding")
+    public ResponseEntity<Response<SettingDTO>> getBlockDocsOnCheckHoldingSetting() {
+        return ResponseEntity.ok(new Response<>(settingService.getBlockDocsOnCheckHoldingSetting()));
+    }
+
     @GetMapping("/period")
     public ResponseEntity<Response<PeriodDTO>> getCurrentPeriod() {
         return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
@@ -118,6 +124,13 @@ public class SettingController {
     @PostMapping("/check/holding/enable")
     public ResponseEntity<Response<String>> setCheckHoldingEnableSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setCheckHoldingEnableSetting(settingDTO);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    // todo add tests
+    @PostMapping("/block/docs/on/check/holding")
+    public ResponseEntity<Response<String>> setBlockDocsOnCheckHoldingSetting(@RequestBody SettingDTO settingDTO) {
+        settingService.setBlockDocsOnCheckHoldingSetting(settingDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 

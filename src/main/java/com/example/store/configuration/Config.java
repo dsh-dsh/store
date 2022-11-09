@@ -87,4 +87,13 @@ public class Config {
                 .orElse(PropertySetting.of(SettingType.CHECK_HOLDING_ENABLE, systemUser,1));
     }
 
+    @Bean
+    @DependsOn("systemUser")
+    @Qualifier("blockDocsOnCheckHolding")
+    public PropertySetting getBlockDocsOnCheckHoldingSetting(SettingRepository settingRepository, User systemUser) {
+        return settingRepository
+                .findByUserAndSettingType(systemUser, SettingType.BLOCK_DOCS_ON_CHECK_HOLDING)
+                .orElse(PropertySetting.of(SettingType.BLOCK_DOCS_ON_CHECK_HOLDING, systemUser,1));
+    }
+
 }

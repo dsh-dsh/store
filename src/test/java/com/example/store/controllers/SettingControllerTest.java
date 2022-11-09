@@ -5,12 +5,14 @@ import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
+import com.example.store.model.entities.documents.Document;
+import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.SettingType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.SettingRepository;
 import com.example.store.services.SettingService;
 import com.example.store.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,6 +53,8 @@ class SettingControllerTest {
     private UserService userService;
     @Autowired
     private SettingRepository settingRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
     @Autowired
     private User systemUser;
     @Autowired
