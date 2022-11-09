@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.*;
@@ -48,6 +49,8 @@ public class  PeriodService {
     private DocItemService docItemService;
     @Autowired
     private User systemUser;
+    @Autowired
+    private PeriodStartDateTime periodStartDateTime;
 
 
     @Transactional
@@ -133,6 +136,7 @@ public class  PeriodService {
         return current.getEndDate().plusDays(1).atStartOfDay();
     }
 
+    // todo update due to periodStartDateTime.setPeriodStart();
     public Period setNextPeriod() {
         Period current = getCurrentPeriod();
         Period next = getNextPeriod(current);
@@ -142,6 +146,7 @@ public class  PeriodService {
         }
         next.setCurrent(true);
         periodRepository.save(next);
+        periodStartDateTime.setPeriodStart();
         return next;
     }
 

@@ -41,8 +41,6 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
     @Autowired
-    private AuthService authService;
-    @Autowired
     protected DocInfoService docInfoService;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {

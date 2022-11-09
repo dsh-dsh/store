@@ -58,6 +58,8 @@ public class ItemRestService {
     @Qualifier("ingredientDir")
     private PropertySetting ingredientDirSetting;
 
+    // todo refactor to BigDecimal all methods in class
+
     public void checkQuantityShortage(Item item, Map<Lot, BigDecimal> lotMap, BigDecimal docItemQuantity) {
         BigDecimal lotsQuantitySum = lotMap.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         if(docItemQuantity.compareTo(lotsQuantitySum) > 0) {
@@ -103,8 +105,10 @@ public class ItemRestService {
                         item -> getRestOfItemOnStorage(item, storage, time)));
     }
 
+    // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
     public Map<Item, RestPriceValue> getItemsRestOnStorageForClosingPeriod(Storage storage, LocalDateTime time) {
-        List<Item> items = itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty()));
+        List<Item> items = itemService.getIngredientItemsList(
+                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
         return items.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
@@ -145,16 +149,6 @@ public class ItemRestService {
 
     public float getRestOfLot(Lot lot, Storage storage) {
         return lotRepository.getQuantityRestOfLot(lot.getId(), storage.getId());
-    }
-
-    public List<RestDTO> getItemRestList(Item item) {
-        LocalDateTime now = LocalDateTime.now();
-        List<Storage> storages = storageService.getStorageList();
-        return storages.stream()
-                .map(storage -> new RestDTO(
-                        new StorageDTO(storage),
-                        getRestOfItemOnStorage(item, storage, now).floatValue()))
-                .collect(Collectors.toList());
     }
 
     public List<RestDTO> getItemRestList(Item item, LocalDateTime dateTime) {
