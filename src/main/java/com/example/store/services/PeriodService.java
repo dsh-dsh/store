@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,10 +66,13 @@ public class  PeriodService {
     }
 
     public void closePeriod() {
+        long docTimeMillis = 0;
         checkPossibilityToClosePeriod();
         LocalDateTime newPeriodStart = getNewPeriodStart();
         List<Storage> storages = storageService.getStorageList();
-        storages.forEach(storage -> closePeriodForStorage(newPeriodStart, storage));
+        for (Storage storage : storages) {
+            closePeriodForStorage(newPeriodStart.plus(docTimeMillis++, ChronoUnit.MILLIS), storage);
+        }
         setNextPeriod();
     }
 
@@ -92,7 +96,7 @@ public class  PeriodService {
                 = itemRestService.getItemsRestOnStorageForClosingPeriod(storage, doc.getDateTime());
         if(itemRestMap.size() > 0) {
             documentRepository.save(doc);
-            List<DocumentItem> items = getDocItems(doc, itemRestMap);
+            List<DocumentItem> items = getDocItems(doc, itemRestMap); // todo refactor it
             items.forEach(item -> docItemService.save(item));
             holdDocService.holdDoc(doc);
         }
@@ -136,7 +140,6 @@ public class  PeriodService {
         return current.getEndDate().plusDays(1).atStartOfDay();
     }
 
-    // todo update due to periodStartDateTime.setPeriodStart();
     public Period setNextPeriod() {
         Period current = getCurrentPeriod();
         Period next = getNextPeriod(current);

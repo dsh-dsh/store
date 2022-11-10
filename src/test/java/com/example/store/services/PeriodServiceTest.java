@@ -49,7 +49,7 @@ class PeriodServiceTest {
     private ItemService itemService;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/period/addDeletedOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -58,7 +58,7 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -68,17 +68,19 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void closePeriodTest() {
         periodService.closePeriod();
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.PERIOD_REST_MOVE_DOC);
         assertEquals(2, docs.size());
+        assertEquals(LocalDateTime.parse("2022-05-01T00:00:00.000000"), docs.get(0).getDateTime());
+        assertEquals(LocalDateTime.parse("2022-05-01T00:00:00.002000"), docs.get(1).getDateTime());
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -87,7 +89,7 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
@@ -108,7 +110,7 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage1Test() {
@@ -125,7 +127,7 @@ class PeriodServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage3Test() {
@@ -176,6 +178,7 @@ class PeriodServiceTest {
     void setNextPeriodTest() {
         Period period = periodService.setNextPeriod();
         assertEquals(LocalDate.parse("2022-05-31"), period.getEndDate());
+        assertEquals(LocalDateTime.parse("2022-05-01T00:00"), periodStartDateTime.get());
     }
 
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -183,6 +186,7 @@ class PeriodServiceTest {
     void setNextPeriodIfNoCurrentTest() {
         Period period = periodService.setNextPeriod();
         assertEquals(LocalDate.parse("2000-01-01"), period.getStartDate());
+        assertEquals(LocalDateTime.parse("2000-01-01T00:00"), periodStartDateTime.get());
     }
 
     @Test

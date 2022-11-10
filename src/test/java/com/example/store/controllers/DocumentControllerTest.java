@@ -51,7 +51,7 @@ class DocumentControllerTest {
     private static final int STORAGE_ID = 1;
     private static final int SUPPLIER_ID = 1;
     private static final float QUANTITY_FACT = 10.00f;
-    private static final long DATE = 1643700600000L; // "02.01.2022 10:30:00";
+    private static final long DATE = Util.getLongLocalDateTime("01.06.22 10:30:00");
 
     @Autowired
     private TestService testService;
@@ -373,6 +373,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void unHoldSerialDocTest() throws Exception {
 
+        periodStartDateTime.setDateTime(LocalDate.parse("2022-03-01").atStartOfDay());
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/serial/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -388,6 +389,7 @@ class DocumentControllerTest {
         assertEquals(0, lots.size());
         List<LotMovement> lotMovements = lotMoveRepository.findAll();
         assertEquals(0, lotMovements.size());
+        periodStartDateTime.setPeriodStart();
     }
 
     @Sql(value = "/sql/documents/addDocsForSerialHold.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -535,7 +537,7 @@ class DocumentControllerTest {
         ItemDoc doc = (ItemDoc) documentService.getDocumentById(TestService.DOC_ID);
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
-        assertEquals(Month.FEBRUARY, doc.getDateTime().getMonth());
+        assertEquals(Month.JUNE, doc.getDateTime().getMonth());
     }
 
     @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
