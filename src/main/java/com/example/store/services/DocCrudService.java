@@ -203,10 +203,9 @@ public class DocCrudService extends AbstractDocCrudService {
                 .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
                         Sort.by(Constants.DATE_TIME_STRING).descending());
         documents = getAllChecksToUnHold(documents);
-        List<LocalDate> dates = getDatesOfChecks(documents);
-        softDeleteBaseDocs(documents, dates);
         documents.forEach(doc -> holdDocsService.unHoldDoc(doc));
         holdDocsService.unHoldDoc(document);
+        softDeleteBaseDocs(documents);
     }
 
     protected void checkingFogUnHoldenChecks(List<Document> documents) {
@@ -219,7 +218,8 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    protected void softDeleteBaseDocs(List<Document> documents, List<LocalDate> dates) {
+    protected void softDeleteBaseDocs(List<Document> documents) {
+        List<LocalDate> dates = getDatesOfChecks(documents);
         if(!dates.isEmpty()) {
             List<Document> writeOffDocs = documents.stream()
                     .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)

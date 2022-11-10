@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ class ItemRestServiceTest {
     private PropertySetting periodAveragePriceSetting;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional

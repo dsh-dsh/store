@@ -169,8 +169,7 @@ class DocCrudServiceTest {
     @Transactional
     void softDeleteBaseDocsTest() {
         List<Document> docs = documentService.getAllDocuments();
-        List<LocalDate> dates = List.of(LocalDate.parse("2022-04-16"));
-        docCrudService.softDeleteBaseDocs(docs, dates);
+        docCrudService.softDeleteBaseDocs(docs);
         docs = documentService.getAllDocuments();
         assertFalse(docs.get(0).isDeleted());
         assertNull(docs.get(0).getBaseDocument());

@@ -62,19 +62,19 @@ public class Hold1CDocksService {
     @Autowired
     private PeriodService periodService;
     @Autowired
-    @Qualifier("addRestForHold")
-    private PropertySetting addRestForHoldSetting;
-    @Autowired
     private User systemUser;
     @Autowired
     private MailService mailService;
     @Autowired
     private LotMoveService lotMoveService;
+    @Autowired
+    @Qualifier("addRestForHold")
+    private PropertySetting addRestForHoldSetting;
 
     public static final boolean BY_CARD_KEY = true;
     public static final boolean BY_CASH_KEY = false;
 
-    public static final int POSTING_DOC_OFFSET = 1;
+    public static final int RECEIPT_DOC_OFFSET = 1;
     public static final int WRITE_OFF_DOC_OFFSET = 2;
     public static final int SALE_CARD_PAYMENT_OFFSET = 3;
     public static final int SALE_CASH_PAYMENT_OFFSET = 4;
@@ -82,33 +82,10 @@ public class Hold1CDocksService {
     @Value("${spring.mail.to.email}")
     private String toEmail;
 
-    private ItemDoc postingDoc;
+    private ItemDoc receiptDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
     private LocalDateTime lastCheckTime;
-    private List<ThreeQuantityDTO> threeQuantityDTOS = new ArrayList<>();
-
-    class ThreeQuantityDTO {
-        String item;
-        float rest;
-        float write;
-        float post;
-
-        public ThreeQuantityDTO(String item, float rest, float write, float post) {
-            this.item = item;
-            this.rest = rest;
-            this.write = write;
-            this.post = post;
-        }
-
-        @Override
-        public String toString() {
-            return "item='" + item + '\'' +
-                    ", rest=" + rest +
-                    ", write=" + write +
-                    ", post=" + post + '}';
-        }
-    }
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
@@ -131,7 +108,7 @@ public class Hold1CDocksService {
             createDocsToHoldByStoragesAndPeriod(storage, to);
             createCreditOrders(storage);
             holdDocsAndChecksByStoragesAndPeriod();
-            postingDoc = null;
+            receiptDoc = null;
             writeOffDoc = null;
         }
         List<Project> projects = projectService.getProjectList();
@@ -209,28 +186,23 @@ public class Hold1CDocksService {
     }
 
     public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
-        holdDocsBefore();
+//        holdDocsBefore(); todo refactor this
         Project project = checks.get(0).getProject();
         Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
                 lastCheckTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
         if(addRestForHoldSetting.getProperty() == 1) {
-            Map<Item, BigDecimal> postingItemMap = getPostingItemMap(writeOffItemMap, storage, to);
-            postingDoc = createPostingDoc(storage, project, postingItemMap,
-                    lastCheckTime.plus(POSTING_DOC_OFFSET, ChronoUnit.MILLIS));
+            Map<Item, BigDecimal> receiptItemMap = getReceiptItemMap(writeOffItemMap, storage, to);
+            receiptDoc = createReceiptDoc(storage, project, receiptItemMap,
+                    lastCheckTime.plus(RECEIPT_DOC_OFFSET, ChronoUnit.MILLIS));
         }
-//        threeQuantityDTOS.forEach(System.out::println);
-//        System.out.println();
-//        writeOffDoc.getDocumentItems().forEach(System.out::println);
-//        System.out.println();
-//        postingDoc.getDocumentItems().forEach(System.out::println);
     }
 
     public void holdDocsAndChecksByStoragesAndPeriod() {
-        if (postingDoc != null) {
-            postingDoc.setBaseDocument(writeOffDoc);
-            holdDocsService.holdDoc(postingDoc);
+        if (receiptDoc != null) {
+            receiptDoc.setBaseDocument(writeOffDoc);
+            holdDocsService.holdDoc(receiptDoc);
         }
         if(writeOffDoc != null) {
             holdDocsService.hold1CDoc(writeOffDoc);
@@ -248,7 +220,7 @@ public class Hold1CDocksService {
         }
     }
 
-    public Map<Item, BigDecimal> getPostingItemMap(Map<Item, BigDecimal> writeOffItemMap, Storage storage, LocalDateTime time) {
+    public Map<Item, BigDecimal> getReceiptItemMap(Map<Item, BigDecimal> writeOffItemMap, Storage storage, LocalDateTime time) {
         List<Item> writeOfItems = new ArrayList<>(writeOffItemMap.keySet());
         Map<Item, BigDecimal> itemRestMap = itemRestService.getItemRestMap(writeOfItems, storage, time);
         return writeOffItemMap.entrySet().stream()
@@ -257,9 +229,6 @@ public class Hold1CDocksService {
                     BigDecimal required = entry.getValue();
                     BigDecimal rest = itemRestMap.getOrDefault(entry.getKey(), BigDecimal.ZERO);
                     BigDecimal quantity = required.subtract(rest);
-
-                    threeQuantityDTOS.add(new ThreeQuantityDTO(entry.getKey().getName(), rest.floatValue(), required.floatValue(), quantity.floatValue()));
-
                     return new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), quantity);})
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -273,9 +242,9 @@ public class Hold1CDocksService {
                         BigDecimal::add));
     }
 
-    public ItemDoc createPostingDoc(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
+    public ItemDoc createReceiptDoc(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
         if(itemMap == null || itemMap.isEmpty()) return null;
-        ItemDoc doc = getPostingDoc(storage, project, time);
+        ItemDoc doc = getReceiptDoc(storage, project, time);
         itemDocRepository.save(doc);
         Set<DocumentItem> docItems = itemMap.entrySet().stream()
                 .filter(entry -> entry.getValue().compareTo(BigDecimal.ZERO) != 0)
@@ -333,8 +302,8 @@ public class Hold1CDocksService {
         return itemDocOfType;
     }
 
-    public ItemDoc getPostingDoc(Storage storage, Project project, LocalDateTime time) {
-        ItemDoc itemDocOfType = getItemDocOfType(DocumentType.POSTING_DOC, project, time);
+    public ItemDoc getReceiptDoc(Storage storage, Project project, LocalDateTime time) {
+        ItemDoc itemDocOfType = getItemDocOfType(DocumentType.RECEIPT_DOC, project, time);
         itemDocOfType.setStorageTo(storage);
         return itemDocOfType;
     }

@@ -29,6 +29,10 @@ public class Util {
         return ZonedDateTime.of(time, ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
+    public static long getLongLocalDateTime(String time) {
+        return ZonedDateTime.of(LocalDateTime.parse(time, dateTimeFormatter), ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
     public static long getLongLocalDate(LocalDate time) {
         return time.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }

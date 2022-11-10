@@ -27,7 +27,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +75,7 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -85,7 +84,7 @@ class Hold1CDocksServiceTest {
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenPostingDocAndMovementDoc.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/hold1CDocs/addNotHoldenWriteOffDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -111,7 +110,7 @@ class Hold1CDocksServiceTest {
         assertEquals(2, orders.size());
         assertEquals(PaymentType.SALE_CARD_PAYMENT, orders.get(0).getPaymentType());
         assertEquals(PaymentType.SALE_CASH_PAYMENT, orders.get(1).getPaymentType());
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -134,7 +133,7 @@ class Hold1CDocksServiceTest {
                 (float) docItemRepository.findAll().stream()
                         .mapToDouble(item -> (item.getPrice()*item.getQuantity().floatValue()) - item.getDiscount()).sum(),
                 map.values().stream().reduce(0f, Float::sum));
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -151,13 +150,13 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLastCheckTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
-        assertEquals(DocumentType.POSTING_DOC, hold1CDocksService.getPostingDoc().getDocType());
+        assertEquals(DocumentType.RECEIPT_DOC, hold1CDocksService.getReceiptDoc().getDocType());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
-        List<DocumentItem> postingItems = docItemService.getItemsByDoc(hold1CDocksService.getPostingDoc());
+        List<DocumentItem> receiptItems = docItemService.getItemsByDoc(hold1CDocksService.getReceiptDoc());
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
-        assertEquals(4, postingItems.size());
+        assertEquals(4, receiptItems.size());
         assertEquals(4, writeOffItems.size());
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -178,16 +177,16 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLastCheckTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
-        assertNull(hold1CDocksService.getPostingDoc());
+        assertNull(hold1CDocksService.getReceiptDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
-        List<DocumentItem> postingItems = docItemService.getItemsByDoc(hold1CDocksService.getPostingDoc());
+        List<DocumentItem> receiptItems = docItemService.getItemsByDoc(hold1CDocksService.getReceiptDoc());
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
-        assertEquals(0, postingItems.size());
+        assertEquals(0, receiptItems.size());
         assertEquals(4, writeOffItems.size());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -199,20 +198,20 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
-    void createDocsToHoldNoPostingDocByStoragesAndPeriodTest() {
+    void createDocsToHoldNoReceiptDocByStoragesAndPeriodTest() {
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLastCheckTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
-        assertNull(hold1CDocksService.getPostingDoc());
+        assertNull(hold1CDocksService.getReceiptDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
-        List<DocumentItem> postingItems = docItemService.getItemsByDoc(hold1CDocksService.getPostingDoc());
+        List<DocumentItem> receiptItems = docItemService.getItemsByDoc(hold1CDocksService.getReceiptDoc());
         List<DocumentItem> writeOffItems = docItemService.getItemsByDoc(hold1CDocksService.getWriteOffDoc());
-        assertEquals(0, postingItems.size());
+        assertEquals(0, receiptItems.size());
         assertEquals(4, writeOffItems.size());
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -240,7 +239,7 @@ class Hold1CDocksServiceTest {
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -266,14 +265,14 @@ class Hold1CDocksServiceTest {
         documents.sort(Comparator.comparing(Document::getDateTime));
         assertEquals(7, documents.size());
         assertEquals(DocumentType.CHECK_DOC, documents.get(0).getDocType());
-        assertEquals(DocumentType.POSTING_DOC, documents.get(3).getDocType());
+        assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(DocumentType.WRITE_OFF_DOC, documents.get(4).getDocType());
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(5).getDocType());
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(6).getDocType());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -311,7 +310,7 @@ class Hold1CDocksServiceTest {
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -349,7 +348,7 @@ class Hold1CDocksServiceTest {
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -371,7 +370,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
-    void getPostingItemMapTest() {
+    void getReceiptItemMapTest() {
         LocalDateTime time = LocalDateTime.now();
         Storage storage = storageService.getById(3);
         List<ItemDoc> checks = documentService.getItemDocsByType(DocumentType.CHECK_DOC);
@@ -387,7 +386,7 @@ class Hold1CDocksServiceTest {
         when(mockedItemRestService.getItemRestMap(items, storage, time))
                 .thenReturn(itemRestMap);
         when(mockedItemRestService.getLastPriceOfItem(any(Item.class), eq(time))).thenReturn(100.00f);
-        Map<Item, BigDecimal> map = mockedHold1CDocksService.getPostingItemMap(writeOffItemMap, storage, time);
+        Map<Item, BigDecimal> map = mockedHold1CDocksService.getReceiptItemMap(writeOffItemMap, storage, time);
         assertEquals(2, map.size());
         Item item4 = itemService.getItemById(4);
         assertEquals(2,     map.get(item5).floatValue());
@@ -414,7 +413,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @Transactional
-    void createPostingDocTest() {
+    void createReceiptDocTest() {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
@@ -425,9 +424,9 @@ class Hold1CDocksServiceTest {
         Map<Item, BigDecimal> map = new HashMap<>();
         map.put(item7, quantityOf7);
         map.put(item8, quantityOf8);
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, map, time);
-        assertEquals(DocumentType.POSTING_DOC, postingDoc.getDocType());
-        List<DocumentItem> docItems = new ArrayList<>(postingDoc.getDocumentItems());
+        ItemDoc receiptDoc = hold1CDocksService.createReceiptDoc(storage, project, map, time);
+        assertEquals(DocumentType.RECEIPT_DOC, receiptDoc.getDocType());
+        List<DocumentItem> docItems = new ArrayList<>(receiptDoc.getDocumentItems());
         docItems.sort(documentItemComparator);
         assertEquals(item7, docItems.get(0).getItem());
         assertEquals(quantityOf8, docItems.get(1).getQuantity());
@@ -435,22 +434,22 @@ class Hold1CDocksServiceTest {
     }
 
     @Test
-    void getNullWhileCreatePostingDocIfDTOListIsNullTest() {
+    void getNullWhileCreateReceiptDocIfDTOListIsNullTest() {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, null, time);
-        assertNull(postingDoc);
+        ItemDoc receiptDoc = hold1CDocksService.createReceiptDoc(storage, project, null, time);
+        assertNull(receiptDoc);
     }
 
     @Test
-    void getNullWhileCreatePostingDocIfDTOListIsEmptyTest() {
+    void getNullWhileCreateReceiptDocIfDTOListIsEmptyTest() {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
         Map<Item, BigDecimal> itemMap = new HashMap<>();
-        ItemDoc postingDoc = hold1CDocksService.createPostingDoc(storage, project, itemMap, time);
-        assertNull(postingDoc);
+        ItemDoc receiptDoc = hold1CDocksService.createReceiptDoc(storage, project, itemMap, time);
+        assertNull(receiptDoc);
     }
 
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -475,7 +474,7 @@ class Hold1CDocksServiceTest {
         items.sort(documentItemComparator);
         assertEquals(item7, items.get(0).getItem());
         assertEquals(quantityOf8, items.get(1).getQuantity().floatValue());
-        hold1CDocksService.setPostingDoc(null);
+        hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
     }
@@ -488,7 +487,7 @@ class Hold1CDocksServiceTest {
         Storage storage = storageService.getById(2);
         Project project = projectService.getById(2);
         LocalDateTime time = LocalDateTime.now();
-        ItemDoc itemDoc = hold1CDocksService.getPostingDoc(storage, project, time);
+        ItemDoc itemDoc = hold1CDocksService.getReceiptDoc(storage, project, time);
         Item item = itemService.getItemById(7);
         float quantity = 2.22f;
         DocumentItem documentItem = new DocumentItem(itemDoc, item, BigDecimal.valueOf(quantity));
@@ -535,22 +534,22 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getPostingDocTest() {
+    void getReceiptDocTest() {
         Storage storage = storageService.getById(3);
         Project project = projectService.getById(3);
         LocalDateTime time = LocalDateTime.now();
-        ItemDoc postingDoc = hold1CDocksService.getPostingDoc(storage, project, time);
-        assertEquals(DocumentType.POSTING_DOC, postingDoc.getDocType());
-        assertEquals(storage, postingDoc.getStorageTo());
+        ItemDoc receiptDoc = hold1CDocksService.getReceiptDoc(storage, project, time);
+        assertEquals(DocumentType.RECEIPT_DOC, receiptDoc.getDocType());
+        assertEquals(storage, receiptDoc.getStorageTo());
     }
 
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getItemDocOfTypePostingTest() {
+    void getItemDocOfTypeReceiptTest() {
         Project project = projectService.getById(1);
         LocalDateTime time = LocalDateTime.now();
-        ItemDoc itemDoc = hold1CDocksService.getItemDocOfType(DocumentType.POSTING_DOC, project, time);
+        ItemDoc itemDoc = hold1CDocksService.getItemDocOfType(DocumentType.RECEIPT_DOC, project, time);
         assertEquals(333, itemDoc.getNumber());
     }
 
