@@ -172,4 +172,13 @@ public class  PeriodService {
         return dto;
     }
 
+
+    public Long getBlockTime() {
+        Document document = documentRepository
+                .findFirstByAuthorAndIsHold(systemUser, true, Sort.by(Constants.DATE_TIME_STRING).descending())
+                .orElse(null);
+        return document != null?
+                Util.getLongLocalDateTime(document.getDateTime()) :
+                Util.getLongLocalDateTime(LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
+    }
 }

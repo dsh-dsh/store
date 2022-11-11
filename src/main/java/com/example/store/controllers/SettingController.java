@@ -73,6 +73,11 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
     }
 
+    @GetMapping("/block/time")
+    public ResponseEntity<Response<Long>> getBlockTime() {
+        return ResponseEntity.ok(new Response<>(periodService.getBlockTime()));
+    }
+
     @PostMapping("/property")
     public ResponseEntity<Response<String>> setSetting(@RequestBody SettingDTO settingDTO) {
         settingService.setProperty(settingDTO);

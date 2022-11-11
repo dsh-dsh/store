@@ -10,6 +10,7 @@ import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,5 +204,18 @@ class PeriodServiceTest {
         assertEquals(1651352400000L, dto.getStartDate());
     }
 
+    @Sql(value = "/sql/period/add7DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getBlockTimeIfExistsTest () {
+        assertEquals(Util.getLongLocalDateTime("16.10.22 01:00:00") + 402L, periodService.getBlockTime());
+    }
+
+    @Test
+    void getBlockTimeIfNotExistsTest () {
+        assertEquals(Util.getLongLocalDateTime(
+                LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay()),
+                periodService.getBlockTime());
+    }
 
 }

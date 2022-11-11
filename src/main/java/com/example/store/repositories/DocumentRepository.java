@@ -1,5 +1,6 @@
 package com.example.store.repositories;
 
+import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
 import org.springframework.data.domain.Sort;
@@ -69,5 +70,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "LIMIT 1",
             nativeQuery = true)
     Optional<Document> getLast1CDocNumber(long from, long to, LocalDateTime dateTime);
+
+    Optional<Document> findFirstByAuthorAndIsHold(User author, boolean isHold, Sort sort);
 
 }
