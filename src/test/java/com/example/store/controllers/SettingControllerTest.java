@@ -12,6 +12,8 @@ import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.SettingRepository;
 import com.example.store.services.SettingService;
 import com.example.store.services.UserService;
+import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -248,7 +251,38 @@ class SettingControllerTest {
     @Test
     void getCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/check/holding/enable"))
+                get(URL_PREFIX + "/check/holding/enable"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/period/add7DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getBlockTimeIfHoldenChecksExistsTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/block/time"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data")
+                        .value(Util.getLongLocalDateTime("16.10.22 01:00:00") + 402L));
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getBlockTimeIfHoldenChecksNotExistsTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/block/time"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(Util.getLongLocalDate(LocalDate.parse(Constants.DEFAULT_PERIOD_START))));
+    }
+
+    @Test
+    void getBlockTimeUnauthorizedTest()  throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/block/time"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

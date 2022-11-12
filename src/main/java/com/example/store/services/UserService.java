@@ -13,6 +13,8 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -107,5 +109,13 @@ public class UserService {
         List<User> users = userRepository
                 .findByRoleNotLike(Role.SYSTEM, Sort.by("id"));
         return treeBuilder.getItemTree(users);
+    }
+
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByEmailIgnoreCase(auth.getName())
+                .orElseThrow(() -> new BadRequestException(
+                        Constants.NO_SUCH_USER_MESSAGE,
+                        this.getClass().getName() + " - getCurrentUser()"));
     }
 }

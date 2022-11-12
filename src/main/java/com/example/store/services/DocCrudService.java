@@ -106,7 +106,7 @@ public class DocCrudService extends AbstractDocCrudService {
     public DocDTO getMoveDocFromRequest(int docId) {
         Document document = documentService.getDocumentById(docId);
         DocDTO dto = docMapper.mapToDocDTO((ItemDoc) document);
-        dto.setNumber(getNextDocumentNumber(DocumentType.MOVEMENT_DOC));
+        dto.setNumber(documentService.getNextDocumentNumber(DocumentType.MOVEMENT_DOC));
         dto.setDocType(DocumentType.MOVEMENT_DOC.getValue());
         dto.setId(0);
         dto.setHold(false);
@@ -331,7 +331,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public int getNewDocNumber(String type) {
         DocumentType documentType = DocumentType.getByValue(type);
-        return getNextDocumentNumber(documentType);
+        return documentService.getNextDocumentNumber(documentType);
     }
 
     public String checkUnHoldenChecks() {
@@ -349,5 +349,19 @@ public class DocCrudService extends AbstractDocCrudService {
         long to = 1000000000L * (prefix + 1);
         Document doc = documentRepository.getLast1CDocNumber(from, to, periodStart).orElse(null);
         return doc != null? "<" + doc.getNumber() + ">" + doc.getDocType() + "*" : "";
+    }
+
+    @Transactional
+    public void addPayment(int docId) {
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(docId);
+        OrderDoc orderDoc = getSupplierPaymentDoc(itemDoc);
+        setPayed(itemDoc, orderDoc);
+    }
+
+    @Transactional
+    public void deletePayment(int docId) {
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(docId);
+        softDeletePaymentDocOf(itemDoc);
+        unSetPayed(itemDoc);
     }
 }

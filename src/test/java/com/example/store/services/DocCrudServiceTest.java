@@ -4,7 +4,10 @@ import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
+import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
@@ -12,6 +15,8 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -44,6 +50,10 @@ class DocCrudServiceTest {
     private LotMoveRepository lotMoveRepository;
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
+    @Autowired
+    private DocItemService docItemService;
+    @Autowired
+    private UserService userService;
 
     @Sql(value = {"/sql/documents/addPostingDoc.sql", "/sql/docInfo/addDocInfoOnly.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -265,7 +275,7 @@ class DocCrudServiceTest {
         LocalDate docDate = LocalDate.parse("2022-03-16");
         Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
         boolean next = true;
-        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docCrudService.getDocTime(docDate, sort, next));
+        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docCrudService.getNewDocTime(docDate, sort, next));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -275,7 +285,7 @@ class DocCrudServiceTest {
         LocalDate docDate = LocalDate.parse("2022-03-16");
         Sort sort = Sort.by(Constants.DATE_TIME_STRING);
         boolean next = false;
-        assertEquals(LocalDateTime.parse("2022-03-16T06:30:36.394"), docCrudService.getDocTime(docDate, sort, next));
+        assertEquals(LocalDateTime.parse("2022-03-16T06:30:36.394"), docCrudService.getNewDocTime(docDate, sort, next));
     }
 
     @Test
@@ -283,7 +293,7 @@ class DocCrudServiceTest {
         LocalDate docDate = LocalDate.parse("2022-03-16");
         Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
         boolean next = true;
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getDocTime(docDate, sort, next));
+        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getNewDocTime(docDate, sort, next));
     }
 
     @Test
@@ -291,7 +301,7 @@ class DocCrudServiceTest {
         LocalDate docDate = LocalDate.parse("2022-03-16");
         Sort sort = Sort.by(Constants.DATE_TIME_STRING);
         boolean next = false;
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getDocTime(docDate, sort, next));
+        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getNewDocTime(docDate, sort, next));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -307,5 +317,27 @@ class DocCrudServiceTest {
     void checkUnHoldenChecksExistsTest() {
         assertEquals("2022-04-16", docCrudService.checkUnHoldenChecks());
     }
+
+//    @InjectMocks
+//    private DocCrudService docCrudServiceInjected;
+//    @Mock
+//    private UserService userServiceMock;
+//
+//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void addPaymentTest() {
+//        User currentUser = userService.getById(4);
+//        when(userServiceMock.getCurrentUser()).thenReturn(currentUser);
+//        docCrudServiceInjected.addPayment(1);
+//        List<Document> docs = documentService.getAllDocuments();
+//        assertEquals(2, docs.size());
+//        ItemDoc postingDoc = (ItemDoc) docs.get(0);
+//        OrderDoc orderDoc = (OrderDoc) docs.get(1);
+//        assertTrue(postingDoc.isPayed());
+//        assertEquals(orderDoc, postingDoc.getBaseDocument());
+//        assertEquals(orderDoc.getRecipient(), postingDoc.getSupplier());
+//        assertEquals(orderDoc.getAmount(), docItemService.getItemsAmount(postingDoc));
+//    }
 
 }

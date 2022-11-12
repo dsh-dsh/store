@@ -54,6 +54,8 @@ public abstract class AbstractDocCrudService {
     private UnHoldDocs unHoldDocs;
     @Autowired
     private DocInfoService docInfoService;
+    @Autowired
+    private DocumentService documentService;
 
     protected DocumentType documentType;
     protected DocDTO docDTO;
@@ -194,7 +196,7 @@ public abstract class AbstractDocCrudService {
 
     protected void setCommonFields(Document document, DocDTO docDTO) {
         if(docDTO.getNumber() == 0) {
-            document.setNumber(getNextDocumentNumber(documentType));
+            document.setNumber(documentService.getNextDocumentNumber(documentType));
         } else {
             document.setNumber(docDTO.getNumber());
         }
@@ -216,13 +218,13 @@ public abstract class AbstractDocCrudService {
         if(document.getDateTime() != null && saveTime.equals("currentTime")) {
             return document.getDateTime();
         } else if(saveTime.equals("dayStart")) {
-            return getDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);
+            return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);
         } else {
-            return getDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING).descending(), true);
+            return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING).descending(), true);
         }
     }
 
-    protected LocalDateTime getDocTime(LocalDate docDate, Sort sort, boolean next) {
+    protected LocalDateTime getNewDocTime(LocalDate docDate, Sort sort, boolean next) {
         LocalDateTime start = docDate.atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         Optional<Document> optionalDocument =
@@ -231,14 +233,6 @@ public abstract class AbstractDocCrudService {
             return optionalDocument.get().getDateTime().plus(next ? 1 : -1, ChronoUnit.MILLIS);
         }
         return start.plusHours(1);
-    }
-
-    protected int getNextDocumentNumber(DocumentType type) {
-        try {
-            return documentRepository.getLastNumber(type.toString()) + 1;
-        } catch (Exception exception) {
-            return Constants.START_DOCUMENT_NUMBER;
-        }
     }
 
     protected void setBaseDocument(Document document, DocDTO docDTO) {
@@ -259,5 +253,46 @@ public abstract class AbstractDocCrudService {
         if(docDTO.getDocType().equals(DocumentType.CHECK_DOC.getValue())) {
             checkInfoService.updateCheckInfo(docDTO.getCheckInfo(), check);
         }
+    }
+
+    protected OrderDoc getSupplierPaymentDoc(ItemDoc itemDoc) {
+        OrderDoc orderDoc = new OrderDoc();
+        orderDoc.setNumber(documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC));
+        orderDoc.setDocType(DocumentType.CREDIT_ORDER_DOC);
+        orderDoc.setDateTime(getNewDocTime(LocalDate.now(), Sort.by(Constants.DATE_TIME_STRING).descending(), true));
+        orderDoc.setPaymentType(PaymentType.SUPPLIER_PAYMENT);
+        orderDoc.setProject(itemDoc.getProject());
+        orderDoc.setAuthor(userService.getCurrentUser());
+        orderDoc.setRecipient(itemDoc.getSupplier());
+        orderDoc.setAmount(docItemService.getItemsAmount(itemDoc));
+        orderDoc.setPayed(false);
+        orderDoc.setBaseDocument(itemDoc);
+        documentRepository.save(orderDoc);
+        return orderDoc;
+    }
+
+    protected void setPayed(ItemDoc itemDoc, OrderDoc orderDoc) {
+        itemDoc.setPayed(true);
+        itemDoc.setBaseDocument(orderDoc);
+        documentRepository.save(itemDoc);
+    }
+
+    protected void unSetPayed(ItemDoc itemDoc) {
+        itemDoc.setPayed(false);
+        itemDoc.setBaseDocument(null);
+        documentRepository.save(itemDoc);
+    }
+
+    protected void softDeletePaymentDocOf(ItemDoc itemDoc) {
+        Document paymentDoc = documentService.getBaseDocument(itemDoc);
+        if(paymentDoc == null) return;
+        if(paymentDoc.isHold()) {
+            throw new BadRequestException(
+                    Constants.ORDER_DOC_IS_HOLDEN_MESSAGE,
+                    this.getClass().getName() + " - deletePayment(int docId)");
+        }
+        paymentDoc.setDeleted(true);
+        paymentDoc.setBaseDocument(null);
+        documentRepository.save(paymentDoc);
     }
 }

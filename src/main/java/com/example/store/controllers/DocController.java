@@ -100,4 +100,16 @@ public class DocController {
         DocDTO docDTO = docCrudService.getDocDTOForControllerAdviceTest(id);
         return ResponseEntity.ok(new Response<>(docDTO));
     }
+
+    @PostMapping("/add/payment/{id}")
+    public ResponseEntity<Response<String>> addPayment(@PathVariable int id) {
+        docCrudService.addPayment(id);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    @PostMapping("/delete/payment/{id}")
+    public ResponseEntity<Response<String>> deletePayment(@PathVariable int id) {
+        docCrudService.deletePayment(id);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
 }

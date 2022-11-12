@@ -10,6 +10,7 @@ import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.LotMoveRepository;
@@ -17,6 +18,7 @@ import com.example.store.repositories.LotRepository;
 import com.example.store.services.*;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
+import com.example.store.utils.annotations.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.util.List;
@@ -943,5 +946,93 @@ class DocumentControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(12));
+    }
+
+    @Test
+    void addPaymentUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/add/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    void addPaymentTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/add/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        List<Document> documents = documentRepository.findAll();
+        assertEquals(2, documents.size());
+        ItemDoc postingDoc = (ItemDoc) documents.get(0);
+        OrderDoc orderDoc = (OrderDoc) documents.get(1);
+        assertTrue(postingDoc.isPayed());
+        assertEquals(orderDoc, postingDoc.getBaseDocument());
+        assertEquals(orderDoc.getRecipient(), postingDoc.getSupplier());
+        assertEquals(orderDoc.getAmount(), docItemService.getItemsAmount(postingDoc));
+    }
+
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    void addPaymentWhenNoPostingDocThenBadRequestTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/add/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deletePaymentUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/delete/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = {"/sql/documents/addPostingDoc.sql", "/sql/documents/addPaymentDoc.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    void deletePaymentTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/delete/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<Document> documents = documentRepository.findAll();
+        assertEquals(2, documents.size());
+        ItemDoc postingDoc = (ItemDoc) documents.get(0);
+        OrderDoc orderDoc = (OrderDoc) documents.get(1);
+        assertFalse(postingDoc.isPayed());
+        assertNull(postingDoc.getBaseDocument());
+        assertTrue(orderDoc.isDeleted());
+        assertNull(orderDoc.getBaseDocument());
+    }
+
+    @Sql(value = {"/sql/documents/addPostingDoc.sql", "/sql/documents/addPaymentDoc.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    @Transactional
+    void deletePaymentWhenPaymentDocIsHoldTest() throws Exception {
+        Document document = documentRepository.getById(2);
+        document.setHold(true);
+        documentRepository.save(document);
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/delete/payment/1")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
     }
 }

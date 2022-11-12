@@ -83,4 +83,13 @@ public class DocumentService {
             return Constants.START_DOCUMENT_NUMBER;
         }
     }
+
+    protected Document getBaseDocument(Document document) {
+        int id = documentRepository.getBaseDocumentId(document.getId());
+        if(id > 0) {
+            return documentRepository.getById(id);
+        } else {
+            return null;
+        }
+    }
 }

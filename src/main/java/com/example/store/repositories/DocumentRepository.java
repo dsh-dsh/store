@@ -73,4 +73,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     Optional<Document> findFirstByAuthorAndIsHold(User author, boolean isHold, Sort sort);
 
+    @Query(value =  "select base_document_id from document where id = :docId", nativeQuery = true)
+    int getBaseDocumentId(int docId);
+
 }
