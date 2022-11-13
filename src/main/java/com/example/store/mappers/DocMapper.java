@@ -26,6 +26,7 @@ public class DocMapper extends MappingConverters {
 
         modelMapper.createTypeMap(OrderDoc.class, DocDTO.class)
                 .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(OrderDoc::getDateTime, DocDTO::setDateTime))
+                .addMappings(mapper -> mapper.using(paymentTypeConverter).map(OrderDoc::getPaymentType, DocDTO::setPaymentType))
                 .addMappings(mapper -> mapper.using(docTypeConverter).map(OrderDoc::getDocType, DocDTO::setDocType));
 
         modelMapper.createTypeMap(ItemDoc.class, DocDTO.class)

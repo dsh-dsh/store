@@ -149,7 +149,7 @@ public class Hold1CDocksService {
         order.setProject(project);
         order.setAuthor(systemUser);
         order.setRecipient(companyService.getOurCompany());
-        order.setPayed(true);
+        order.setPayed(false);
         order.setBaseDocument(writeOffDoc);
         order.setPaymentType(type);
         order.setAmount(sum);
