@@ -8,7 +8,9 @@ import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
@@ -112,7 +114,7 @@ class Document1CControllerTest {
                                 .param("prefix", "3"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value("<3000000003>CHECK_DOC*"));
+                .andExpect(jsonPath("$").value("<3000000003>CHECK_DOC*16.04.2022"));
     }
 
     @Test
@@ -144,6 +146,8 @@ class Document1CControllerTest {
         assertEquals(654321, checkInfo.getCheckNumber());
         List<DocumentItem> documentItemList = docItemService.getItemsByDoc(check);
         assertEquals(4, documentItemList.size());
+         assertEquals(PaymentType.COST_PAYMENT, ((OrderDoc)docs.get(5)).getPaymentType());
+        assertEquals(PaymentType.SALARY_PAYMENT, ((OrderDoc)docs.get(6)).getPaymentType());
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -239,6 +243,8 @@ class Document1CControllerTest {
             DocDTO dto = new DocDTO();
             dto.setNumber(3000000000L + i);
             dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
+            if(i % 2 == 0) dto.setPaymentType(PaymentType.SALARY_PAYMENT.getValue());
+            else dto.setPaymentType(PaymentType.COST_PAYMENT.getValue());
             dto.setDate("27.08.22 00:00:00");
             dto.setProject(testService.setProject(0, "Жаровня 3"));
             dto.setAuthor(testService.setAuthorDTO(0, "Иванов"));

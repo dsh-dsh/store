@@ -1,5 +1,6 @@
 package com.example.store.repositories;
 
+import com.example.store.model.entities.Project;
 import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
@@ -75,5 +76,8 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     @Query(value =  "select base_document_id from document where id = :docId", nativeQuery = true)
     int getBaseDocumentId(int docId);
+
+    List<Document> findByDocTypeInAndProjectAndDateTimeBetween(
+            List<DocumentType> docTypes, Project project, LocalDateTime from, LocalDateTime to);
 
 }

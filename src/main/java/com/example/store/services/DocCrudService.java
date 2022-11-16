@@ -16,6 +16,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,13 @@ public class DocCrudService extends AbstractDocCrudService {
     private PeriodStartDateTime periodStartDateTime;
     @Autowired
     protected DocInfoService docInfoService;
+    @Autowired
+    private PeriodReportService periodReportService;
+    @Autowired
+    private MailService mailService;
+
+    @Value("${report.to.emails}")
+    private String[] emails;
 
     public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -98,6 +106,7 @@ public class DocCrudService extends AbstractDocCrudService {
             dto.setNumber(getNewDocNumber(dto.getDocType()));
             dto.setId(0);
             dto.setHold(false);
+            dto.setPayed(false);
             dto.setDateTime(Util.getLongLocalDateTime(LocalDateTime.now()));
         }
         return dto;
@@ -296,6 +305,12 @@ public class DocCrudService extends AbstractDocCrudService {
         docsFrom1cService.setDocDateTime(null);
         itemDocListRequestDTO.getDocDTOList()
                 .forEach(docsFrom1cService::addDocument);
+        DocDTO docDTO = itemDocListRequestDTO.getDocDTOList().get(0);
+        long start = Util.getLongLocalDateTime(docDTO.getDate());
+        long end = start + Constants.ONE_DAY_LONG;
+        String report = periodReportService.getStringPeriodReport(docDTO.getProject().getName(), start, end);
+        String subject = "Отчет по кафе " + docDTO.getProject().getName();
+        mailService.send(subject, report, emails);
     }
 
     @Transactional
@@ -348,7 +363,9 @@ public class DocCrudService extends AbstractDocCrudService {
         long from = 1000000000L * prefix;
         long to = 1000000000L * (prefix + 1);
         Document doc = documentRepository.getLast1CDocNumber(from, to, periodStart).orElse(null);
-        return doc != null? "<" + doc.getNumber() + ">" + doc.getDocType() + "*" : "";
+        return doc != null? "<" + doc.getNumber() + ">"
+                + doc.getDocType() + "*"
+                + Util.getDateFourDigitsYear(doc.getDateTime()) : "";
     }
 
     @Transactional

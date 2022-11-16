@@ -87,6 +87,7 @@ class DocCrudServiceTest {
         assertEquals(0, dto.getId());
         assertEquals(2, dto.getNumber());
         assertFalse(dto.isHold());
+        assertFalse(dto.isPayed());
         assertEquals(LocalDate.now(), Util.getLocalDate(dto.getDateTime()));
     }
 

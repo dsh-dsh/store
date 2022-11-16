@@ -7,6 +7,7 @@ public class Util {
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss");
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yy");
+    private static final DateTimeFormatter dateFormatterFourDigitsYear = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static LocalDateTime getLocalDateTime(long time) {
@@ -44,6 +45,10 @@ public class Util {
 
     public static String getDate(LocalDateTime localDateTime) {
         return localDateTime.format(dateFormatter);
+    }
+
+    public static String getDateFourDigitsYear(LocalDateTime localDateTime) {
+        return localDateTime.format(dateFormatterFourDigitsYear);
     }
 
     public static String getDateAndTime(LocalDateTime localDateTime) {

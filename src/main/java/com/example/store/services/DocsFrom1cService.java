@@ -5,6 +5,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -84,7 +85,8 @@ public class DocsFrom1cService {
             OrderDoc orderDoc = (OrderDoc) document;
             orderDoc.setAmount(docDTO.getAmount());
             orderDoc.setTax(docDTO.getTax());
-            document.setIndividual(userService.getByCode(docDTO.getIndividual().getCode()));
+            orderDoc.setIndividual(userService.getByCode(docDTO.getIndividual().getCode()));
+            orderDoc.setPaymentType(PaymentType.getByValue(docDTO.getPaymentType()));
             orderDocRepository.save((OrderDoc) document);
         }
     }

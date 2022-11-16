@@ -43,17 +43,28 @@ public class DocumentService {
 
     public List<Document> getDocumentsAfterAndInclude(Document document) {
         List<Document> documents = documentRepository
-                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING).descending());
+                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
+                        Sort.by(Constants.DATE_TIME_STRING).descending());
         documents.add(document);
         return documents;
     }
 
-    public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
-        return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(type, storage, isHold, from, to);
+    public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(
+            DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
+        return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(
+                type, storage, isHold, from, to);
     }
 
-    public List<OrderDoc> getDocumentsByTypeInAndProjectAndIsHold(List<DocumentType> types, Project project, boolean isHold, LocalDateTime from, LocalDateTime to) {
-        return orderDocRepository.findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(types, project, isHold, from, to);
+    public List<OrderDoc> getDocumentsByTypeInAndProjectAndIsHold(
+            List<DocumentType> types, Project project, boolean isHold, LocalDateTime from, LocalDateTime to) {
+        return orderDocRepository.findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(
+                types, project, isHold, from, to);
+    }
+
+    // todo add tests
+    public List<Document> getDocumentsByTypesAndProject(
+            List<DocumentType> types, Project project, LocalDateTime from, LocalDateTime to) {
+        return documentRepository.findByDocTypeInAndProjectAndDateTimeBetween(types, project, from, to);
     }
 
     public List<ItemDoc> getItemDocsByType(DocumentType documentType) {

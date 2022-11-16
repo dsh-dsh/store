@@ -16,4 +16,5 @@ public interface OrderDocRepository extends JpaRepository<OrderDoc, Integer> {
     List<OrderDoc> findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(
             List<DocumentType> docTypes, Project project, boolean isHold,
             LocalDateTime from, LocalDateTime to);
+
 }

@@ -96,6 +96,8 @@ class ItemRestServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getRestAndPriceWhenAveragePriceTest() {
+        periodStartDateTime.setPeriodStart();
+
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
 
@@ -127,6 +129,7 @@ class ItemRestServiceTest {
     @Test
     @Transactional
     void getItemRestMapTest() {
+        periodStartDateTime.setPeriodStart();
         Item item7 = itemService.getItemById(7);
         Item item8 = itemService.getItemById(8);
         List<Item> itemList = List.of(item7, item8);
