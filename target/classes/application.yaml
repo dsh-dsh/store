@@ -30,6 +30,8 @@ cors.urls : http://localhost:8082, http://localhost:8081
 
 spring.mail.to.email : daniilshipilov@yandex.ru
 
+report.to.emails : dan.shipilov@gmail.com, elenka050990@gmail.com
+
 spring.mail.host : smtp.mail.ru
 spring.mail.from.email : idiplomov@inbox.ru
 spring.mail.password : WLbazdt6huqnntZGPBeB

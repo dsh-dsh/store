@@ -5,7 +5,6 @@ import com.example.store.model.entities.LotMovement;
 import com.example.store.model.entities.documents.ItemDoc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository

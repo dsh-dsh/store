@@ -4,6 +4,8 @@ import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Item;
+import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.repositories.DocItemRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -83,6 +86,11 @@ public class DocItemService {
 
     public List<DocumentItem> getItemsByDoc(ItemDoc doc) {
         return docItemRepository.findByItemDoc(doc);
+    }
+
+    public List<DocumentItem> getDocItemsByItem(
+            Item item, Storage storage, LocalDateTime start, LocalDateTime end, boolean onlyHolden) {
+        return docItemRepository.findByItemId(item.getId(), storage.getId(), start, end, onlyHolden);
     }
 
     public List<DocItemDTO> getItemDTOListByDoc(ItemDoc doc) {

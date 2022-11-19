@@ -41,17 +41,19 @@ public class PeriodReportService {
     @Autowired
     private ProjectService projectService;
 
+    // todo add tests
+
     public PeriodReport getPeriodReport(int projectId, long dateStart, long dateEnd) {
         Project project = projectService.getById(projectId);
         LocalDateTime start = Util.getLocalDateTime(dateStart);
-        LocalDateTime end = Util.getLocalDateTime(dateEnd);
+        LocalDateTime end = Util.getLocalDateTime(dateEnd).plusDays(1).minusSeconds(1);
         return getReport(project, start, end);
     }
 
     public String getStringPeriodReport(String projectName, long dateStart, long dateEnd) {
         Project project = projectService.getByName(projectName);
         LocalDateTime start = Util.getLocalDateTime(dateStart);
-        LocalDateTime end = Util.getLocalDateTime(dateEnd);
+        LocalDateTime end = Util.getLocalDateTime(dateEnd).plusDays(1).minusSeconds(1);
         PeriodReport report = getReport(project, start, end);
         return reportToString(report);
     }
@@ -149,7 +151,8 @@ public class PeriodReportService {
     protected String listToString(List<ReportLine> list) {
         StringBuilder stringBuilder = new StringBuilder();
         for(ReportLine line : list) {
-            stringBuilder.append(lineToString(line) + "\n");
+            stringBuilder.append(lineToString(line));
+            stringBuilder.append("\n");
         }
         return stringBuilder.toString();
     }

@@ -52,6 +52,8 @@ public class ItemRestService {
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
     @Autowired
+    private PeriodService periodService;
+    @Autowired
     @Qualifier("periodAveragePrice")
     private PropertySetting periodAveragePriceSetting;
     @Autowired
@@ -106,6 +108,18 @@ public class ItemRestService {
     }
 
     // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
+    public Map<Item, BigDecimal> getItemsRestOnStorage(Storage storage, LocalDateTime time) {
+        List<Item> items = itemService.getIngredientItemsList(
+                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+        return items.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        item -> getRestOfItemOnStorageOutOfPeriod(item, storage, time)))
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
     public Map<Item, RestPriceValue> getItemsRestOnStorageForClosingPeriod(Storage storage, LocalDateTime time) {
         List<Item> items = itemService.getIngredientItemsList(
                 itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
@@ -140,8 +154,15 @@ public class ItemRestService {
     }
 
     public BigDecimal getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
-        return lotRepository
-                .getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), docTime)
+        return lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), docTime)
+                .stream()
+                .map(LotBigDecimal::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getRestOfItemOnStorageOutOfPeriod(Item item, Storage storage, LocalDateTime docTime) {
+        LocalDateTime periodStart = periodService.getStartDateByDateInPeriod(docTime.toLocalDate()).atStartOfDay();
+        return lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStart, docTime)
                 .stream()
                 .map(LotBigDecimal::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
