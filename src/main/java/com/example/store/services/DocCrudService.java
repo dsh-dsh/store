@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.WarningException;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
@@ -10,6 +11,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.ExceptionType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
@@ -126,6 +128,7 @@ public class DocCrudService extends AbstractDocCrudService {
     public void addDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(docDTO);
         this.saveTime = saveTime;
+//        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             addOrderDoc(docDTO);
@@ -138,11 +141,25 @@ public class DocCrudService extends AbstractDocCrudService {
     public void updateDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(docDTO);
         this.saveTime = saveTime;
+//        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             updateOrderDocument(docDTO);
         } else {
             updateItemDoc(docDTO);
+        }
+    }
+
+    // todo add tests
+    public void checkSaveTime(DocDTO docDTO) {
+        if(saveTime.equals(Constants.DAY_START)) {
+            LocalDateTime time = Util.getLocalDateTime(docDTO.getDateTime());
+            if(documentService.existsHoldenDocumentsAfter(time)) {
+                throw new WarningException(
+                        Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
+                        ExceptionType.UN_HOLD_EXCEPTION,
+                        this.getClass().getName() + " - checkSaveTime(DocDTO docDTO)");
+            }
         }
     }
 

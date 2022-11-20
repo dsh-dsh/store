@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 public class Constants {
 
     public static final String DEFAULT_PERIOD_START = "2000-01-01";
+    public static final String DAY_START = "dayStart";
+    public static final String CURRENT_TIME = "currentTime";
 
     public static final long ONE_DAY_LONG = 86400000L;
     public static final int START_DOCUMENT_NUMBER = 1;
@@ -42,6 +44,7 @@ public class Constants {
     public static final String SALARY_PAYMENT_TYPE = "Выплата зарплаты";
     public static final String SALE_CASH_PAYMENT_TYPE = "Выручка наличными";
     public static final String SALE_CARD_PAYMENT_TYPE = "Выручка по картам";
+    public static final String QR_PAYMENT_TYPE = "Выручка по QR";
 
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";

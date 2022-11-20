@@ -49,6 +49,11 @@ public class DocumentService {
         return documents;
     }
 
+    // todo add tests
+    public boolean existsHoldenDocumentsAfter(LocalDateTime time) {
+        return documentRepository.existsByDateTimeAfterAndIsHold(time, true);
+    }
+
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(
             DocumentType type, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return itemDocRepository.findByDocTypeAndStorageFromAndIsHoldAndDateTimeBetween(

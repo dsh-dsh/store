@@ -89,11 +89,11 @@ public class Config {
 
     @Bean
     @DependsOn("systemUser")
-    @Qualifier("blockDocsOnCheckHolding")
-    public PropertySetting getBlockDocsOnCheckHoldingSetting(SettingRepository settingRepository, User systemUser) {
+    @Qualifier("enableDocsBlockSetting")
+    public PropertySetting getEnableDocsBlockSetting(SettingRepository settingRepository, User systemUser) {
         return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.BLOCK_DOCS_ON_CHECK_HOLDING)
-                .orElse(PropertySetting.of(SettingType.BLOCK_DOCS_ON_CHECK_HOLDING, systemUser,1));
+                .findByUserAndSettingType(systemUser, SettingType.DOC_BLOCK_ENABLE)
+                .orElse(PropertySetting.of(SettingType.DOC_BLOCK_ENABLE, systemUser,1));
     }
 
 }

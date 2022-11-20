@@ -47,8 +47,8 @@ public class SettingService {
     @Qualifier("checkHoldingEnable")
     private PropertySetting checkHoldingEnableSetting;
     @Autowired
-    @Qualifier("blockDocsOnCheckHolding")
-    private PropertySetting blockDocsOnCheckHoldingSetting;
+    @Qualifier("enableDocsBlockSetting")
+    private PropertySetting enableDocsBlockSetting;
 
     private UserDTO systemUserDTO;
 
@@ -130,9 +130,9 @@ public class SettingService {
     }
 
     // todo add test
-    public void setBlockDocsOnCheckHoldingSetting(SettingDTO settingDTO) {
-        blockDocsOnCheckHoldingSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.BLOCK_DOCS_ON_CHECK_HOLDING);
+    public void setEnableDocsBlockSetting(SettingDTO settingDTO) {
+        enableDocsBlockSetting.setProperty(settingDTO.getProperty());
+        setSystemSetting(settingDTO, SettingType.DOC_BLOCK_ENABLE);
     }
 
     public void setCheckHoldingEnableSetting(SettingDTO settingDTO) {
@@ -183,7 +183,7 @@ public class SettingService {
         return getSettingDTO(checkHoldingEnableSetting, systemUserDTO);
     }
 
-    public SettingDTO getBlockDocsOnCheckHoldingSetting() {
-        return getSettingDTO(blockDocsOnCheckHoldingSetting, systemUserDTO);
+    public SettingDTO getEnableDocsBlockSetting() {
+        return getSettingDTO(enableDocsBlockSetting, systemUserDTO);
     }
 }

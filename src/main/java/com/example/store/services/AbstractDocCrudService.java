@@ -215,9 +215,9 @@ public abstract class AbstractDocCrudService {
 
     protected LocalDateTime getNewTime(Document document, DocDTO dto) {
         LocalDate docDate = Util.getLocalDate(dto.getDateTime());
-        if(document.getDateTime() != null && saveTime.equals("currentTime")) {
+        if(document.getDateTime() != null && saveTime.equals(Constants.CURRENT_TIME)) {
             return document.getDateTime();
-        } else if(saveTime.equals("dayStart")) {
+        } else if(saveTime.equals(Constants.DAY_START)) {
             return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);
         } else {
             return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING).descending(), true);
