@@ -41,6 +41,9 @@ public class PeriodReportService {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MailPeriodReportService mailPeriodReportService;
+
     // todo add tests
 
     public PeriodReport getPeriodReport(int projectId, long dateStart, long dateEnd) {
@@ -48,14 +51,6 @@ public class PeriodReportService {
         LocalDateTime start = Util.getLocalDateTime(dateStart);
         LocalDateTime end = Util.getLocalDateTime(dateEnd).plusDays(1).minusSeconds(1);
         return getReport(project, start, end);
-    }
-
-    public String getStringPeriodReport(String projectName, long dateStart, long dateEnd) {
-        Project project = projectService.getByName(projectName);
-        LocalDateTime start = Util.getLocalDateTime(dateStart);
-        LocalDateTime end = Util.getLocalDateTime(dateEnd).plusDays(1).minusSeconds(1);
-        PeriodReport report = getReport(project, start, end);
-        return reportToString(report);
     }
 
     public PeriodReport getReport(Project project, LocalDateTime dateStart, LocalDateTime dateEnd) {
@@ -109,52 +104,6 @@ public class PeriodReportService {
         sumMap.put(BY_CARD, BigDecimal.ZERO);
         sumMap.put(DELIVERY, BigDecimal.ZERO);
         return sumMap;
-    }
-
-
-    public static final String TOTAL = "ИТОГО:";
-    public static final String LINE_SEPARATOR = "\n";
-    private static final int REPORT_WIDTH = 50;
-    private static final String UNDER_LINE = "-".repeat(REPORT_WIDTH) + LINE_SEPARATOR;
-
-    public String reportToString(PeriodReport report) {
-        return "Отчет по кафе " + report.getDepartment() + LINE_SEPARATOR +
-                "за период с " + report.getDateStart() + " по " + report.getDateEnd() + LINE_SEPARATOR + LINE_SEPARATOR +
-                "ВЫРУЧКА" + LINE_SEPARATOR + UNDER_LINE + listToString(report.getReceipts()) + UNDER_LINE +
-                getStringWithGap(TOTAL, getAmountOfList(report.getReceipts()).toString(), " ") + LINE_SEPARATOR + LINE_SEPARATOR +
-                "ЗАРПЛАТА" + LINE_SEPARATOR + UNDER_LINE + listToString(report.getSalary()) + UNDER_LINE +
-                getStringWithGap(TOTAL, getAmountOfList(report.getSalary()).toString(), " ") + LINE_SEPARATOR + LINE_SEPARATOR +
-                "РАСХОДЫ" + LINE_SEPARATOR + UNDER_LINE + listToString(report.getSpends()) + UNDER_LINE +
-                getStringWithGap(TOTAL, getAmountOfList(report.getSpends()).toString(), " ") + LINE_SEPARATOR + LINE_SEPARATOR +
-                getStringWithGap("ОСТАТОК НАЛИЧНЫХ:", getTotalAmount(report).toString(), " ");
-    }
-
-    protected BigDecimal getTotalAmount(PeriodReport report) {
-        return report.getReceipts().get(0).getValue()
-                .subtract(getAmountOfList(report.getSalary()).add(getAmountOfList(report.getSpends())));
-    }
-
-    protected String getStringWithGap(String leftValue, String rightValue, String gapStr) {
-        int length = REPORT_WIDTH - (leftValue.length() + rightValue.length());
-        String gap = gapStr.repeat(length);
-        return leftValue + gap + rightValue;
-    }
-
-    protected BigDecimal getAmountOfList(List<ReportLine> list) {
-        return list.stream().map(ReportLine::getValue).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    protected String lineToString(ReportLine line) {
-        return getStringWithGap(line.getName(), line.getValue().toString(), ".");
-    }
-
-    protected String listToString(List<ReportLine> list) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for(ReportLine line : list) {
-            stringBuilder.append(lineToString(line));
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
     }
 
 }
