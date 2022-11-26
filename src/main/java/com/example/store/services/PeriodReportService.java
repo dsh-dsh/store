@@ -44,8 +44,6 @@ public class PeriodReportService {
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
 
-    // todo add tests
-
     public PeriodReport getPeriodReport(int projectId, long dateStart, long dateEnd) {
         Project project = projectService.getById(projectId);
         LocalDateTime start = Util.getLocalDateTime(dateStart);
@@ -64,7 +62,7 @@ public class PeriodReportService {
                 getSpendList(streamSupplier.get(), PaymentType.COST_PAYMENT));
     }
 
-    private List<ReportLine> getSpendList(Stream<OrderDoc> orders, PaymentType paymentType) {
+    protected List<ReportLine> getSpendList(Stream<OrderDoc> orders, PaymentType paymentType) {
         return orders
                 .filter(order -> order.getPaymentType() == paymentType)
                 .collect(Collectors.toMap(
@@ -91,14 +89,14 @@ public class PeriodReportService {
         return receipts;
     }
 
-    private String getReceiptType(ItemDoc check) {
+    protected String getReceiptType(ItemDoc check) {
         CheckInfo checkInfo = checkInfoService.getCheckInfo(check);
         String type = checkInfo.isPayedByCard() ? BY_CARD : CASH;
         type = checkInfo.isDelivery() ? DELIVERY : type;
         return type;
     }
 
-    private Map<String, BigDecimal> initMap() {
+    protected Map<String, BigDecimal> initMap() {
         Map<String, BigDecimal> sumMap = new HashMap<>();
         sumMap.put(CASH, BigDecimal.ZERO);
         sumMap.put(BY_CARD, BigDecimal.ZERO);

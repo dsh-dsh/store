@@ -38,6 +38,13 @@ public class ItemMovesReportService {
     private boolean includeNull;
     private boolean onlyHolden;
 
+    public void setCurrentStorage(Storage storage) {
+        this.currentStorage = storage;
+    }
+    public void setIncludeNull(boolean includeNull) {
+        this.includeNull = includeNull;
+    }
+
     // todo add tests
 
     public ItemMovesReport getItemMoveReport(int storageId, long start, long end, boolean includeNull, boolean onlyHolden) {
@@ -55,7 +62,7 @@ public class ItemMovesReportService {
         return new ItemMovesReport(items);
     }
 
-    private List<ItemLine> getItemLines(Map<Item, BigDecimal> startRestList) {
+    protected List<ItemLine> getItemLines(Map<Item, BigDecimal> startRestList) {
         return startRestList.entrySet().stream()
                 .map(this::getItemLine)
                 .filter(this::isNotNull)
@@ -63,16 +70,8 @@ public class ItemMovesReportService {
                 .collect(Collectors.toList());
     }
 
-    private boolean isNotNull(ItemLine itemLine) {
-        if(includeNull) return true;
-        return itemLine.getStartRest().compareTo(BigDecimal.ZERO) != 0
-                || itemLine.getReceipt().compareTo(BigDecimal.ZERO) != 0
-                || itemLine.getExpense().compareTo(BigDecimal.ZERO) != 0
-                || itemLine.getEndRest().compareTo(BigDecimal.ZERO) != 0;
-    }
-
     @NotNull
-    private ItemLine getItemLine(Map.Entry<Item, BigDecimal> entry) {
+    protected ItemLine getItemLine(Map.Entry<Item, BigDecimal> entry) {
         Item item = entry.getKey();
         List<DocumentItem> docItems = docItemService.getDocItemsByItem(item, currentStorage, dateStart, dateEnd, onlyHolden);
         BigDecimal startRest = entry.getValue();
@@ -85,65 +84,70 @@ public class ItemMovesReportService {
         return new ItemLine(item.getName(), startRest, receiptAmount, expenseAmount, endRest, docLines);
     }
 
-    private boolean isReceipt(DocumentItem docItem) {
+    protected boolean isNotNull(ItemLine itemLine) {
+        if(includeNull) return true;
+        return itemLine.getStartRest().compareTo(BigDecimal.ZERO) != 0
+                || itemLine.getReceipt().compareTo(BigDecimal.ZERO) != 0
+                || itemLine.getExpense().compareTo(BigDecimal.ZERO) != 0
+                || itemLine.getEndRest().compareTo(BigDecimal.ZERO) != 0;
+    }
+
+    protected boolean isReceipt(DocumentItem docItem) {
         ItemDoc document = docItem.getItemDoc();
         return (document.getDocType() == DocumentType.POSTING_DOC || document.getDocType() == DocumentType.RECEIPT_DOC)
                 || (document.getDocType() == DocumentType.MOVEMENT_DOC && document.getStorageTo() == currentStorage);
     }
 
-    private boolean isExpense(DocumentItem docItem) {
-        ItemDoc document = docItem.getItemDoc();
-        return (document.getDocType() == DocumentType.WRITE_OFF_DOC)
-                || (document.getDocType() == DocumentType.MOVEMENT_DOC && document.getStorageFrom() == currentStorage);
-    }
-
     @NotNull
-    private List<MoveDocLine> getMoveDocLines(List<DocumentItem> docItems) {
+    protected List<MoveDocLine> getMoveDocLines(List<DocumentItem> docItems) {
         return docItems.stream()
                 .filter(this::isWrightDocType)
                 .map(this::getMoveDocLine)
                 .collect(Collectors.toList());
     }
 
-    private MoveDocLine getMoveDocLine(DocumentItem docItem) {
+    protected MoveDocLine getMoveDocLine(DocumentItem docItem) {
         ItemDoc document = docItem.getItemDoc();
-        String date = Util.getDate(docItem.getItemDoc().getDateTime());
+        String date = Util.getDate(document.getDateTime());
         String name = document.getDocType().getValue() + " № " + document.getNumber();
-        String supplier = getSupplier(document);
-        String storageTo = getStorageTo(document);
-        boolean isExpense = (document.getDocType() == DocumentType.WRITE_OFF_DOC)
-                || (document.getDocType() == DocumentType.MOVEMENT_DOC
-                && document.getStorageFrom() == currentStorage);
-        BigDecimal quantity = isExpense ? docItem.getQuantity().negate() : docItem.getQuantity();
+        String supplier = getSupplierName(document);
+        String storageTo = getStorageToName(document);
+        BigDecimal quantity = isExpense(docItem) ? docItem.getQuantity().negate() : docItem.getQuantity();
         return new MoveDocLine(
                 document.getId(), date, name, supplier,
                 storageTo, quantity, document.isHold());
     }
 
-    private String getSupplier(ItemDoc document) {
+    protected boolean isExpense(DocumentItem docItem) {
+        ItemDoc document = docItem.getItemDoc();
+        return (document.getDocType() == DocumentType.WRITE_OFF_DOC)
+                || (document.getDocType() == DocumentType.MOVEMENT_DOC && document.getStorageFrom() == currentStorage);
+    }
+
+    protected String getSupplierName(ItemDoc document) {
         Company supplier = document.getSupplier();
         String str = supplier == null? "" : supplier.getName();
         if(str.equals("")) {
-            str = getStorageFrom(document);
+            str = getStorageFromName(document);
         }
         return str;
     }
 
-    private String getStorageFrom(ItemDoc document) {
+    protected String getStorageFromName(ItemDoc document) {
         String storageFrom = "";
         Storage storage = document.getStorageFrom();
         storageFrom = storage != null ? storage.getName() : "";
         return storageFrom;
     }
 
-    private String getStorageTo(ItemDoc document) {
+    protected String getStorageToName (ItemDoc document) {
         String storageTo = "";
         Storage storage = document.getStorageTo();
         storageTo = storage != null ? storage.getName() : "";
         return storageTo;
     }
 
-    private boolean isWrightDocType(DocumentItem docItem) {
+    protected boolean isWrightDocType(DocumentItem docItem) {
         Document document = docItem.getItemDoc();
         return document.getDocType() == DocumentType.WRITE_OFF_DOC
                 || document.getDocType() == DocumentType.MOVEMENT_DOC

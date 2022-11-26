@@ -49,7 +49,6 @@ public class DocumentService {
         return documents;
     }
 
-    // todo add tests
     public boolean existsHoldenDocumentsAfter(LocalDateTime time) {
         return documentRepository.existsByDateTimeAfterAndIsHold(time, true);
     }
@@ -66,7 +65,6 @@ public class DocumentService {
                 types, project, isHold, from, to);
     }
 
-    // todo add tests
     public List<Document> getDocumentsByTypesAndProject(
             List<DocumentType> types, Project project, LocalDateTime from, LocalDateTime to) {
         return documentRepository.findByDocTypeInAndProjectAndDateTimeBetween(types, project, from, to);

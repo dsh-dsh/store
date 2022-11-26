@@ -36,7 +36,7 @@ public class MailPeriodReportService {
         LocalDateTime start = Util.getLocalDateTime(date);
         LocalDateTime end = start.plusDays(1).minusSeconds(1);
         String report = reportToHTML(periodReportService.getReport(project, start, end));
-        String subject = "Отчет по кафе " + projectName + "за " + Util.getDate(start);
+        String subject = "Отчет по кафе " + projectName + " за " + Util.getDate(start);
         mailService.prepareAndSend(subject, report, emails);
     }
 
@@ -50,13 +50,15 @@ public class MailPeriodReportService {
                 "    body {" +
                 "       font-family: Verdana, Arial, Helvetica, sans-serif;" +
                 "       color: #333366;}" +
+                "    table {" +
+                "       table-layout: fixed;}" +
                 "    hr {" +
-                "       max-width: 400px;}" +
+                "       max-width: 350px;}" +
                 "    h4 {" +
                 "       margin-top: 10px;" +
                 "       margin-bottom: 4px;}" +
                 "    .width-content {" +
-                "       max-width: 400px;}" +
+                "       max-width: 350px;}" +
                 "    .right-align {" +
                 "       text-align: end;}" +
                 "</style>\n" +
@@ -78,7 +80,7 @@ public class MailPeriodReportService {
 
     protected String listToHTML(List<ReportLine> list) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<table width=\"400px\">");
+        stringBuilder.append("<table width=\"350px\">");
         for(ReportLine line : list) {
             stringBuilder.append(lineToHTML(line));
         }
@@ -91,7 +93,7 @@ public class MailPeriodReportService {
     }
 
     protected String getHTMLWithGap(String leftValue, String rightValue) {
-        return "<table width=\"400px\">" +
+        return "<table width=\"350px\">" +
                 "<tr><td>" + leftValue + "</td>" +
                 "<td></td>" +
                 "<td class=\"right-align\">" + rightValue + "</td></tr>" +

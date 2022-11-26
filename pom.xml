@@ -160,8 +160,6 @@
             <artifactId>jaxb-impl</artifactId>
             <version>3.0.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -172,29 +170,5 @@
             </plugin>
         </plugins>
     </build>
-
-
-<!--    <build>-->
-<!--    <plugins>-->
-<!--        <plugin>-->
-<!--            &lt;!&ndash; Build an executable JAR &ndash;&gt;-->
-<!--            <groupId>org.apache.maven.plugins</groupId>-->
-<!--            <artifactId>maven-jar-plugin</artifactId>-->
-<!--            <version>3.3.0</version>-->
-<!--            <configuration>-->
-<!--                <archive>-->
-<!--                    <manifest>-->
-<!--                        <addClasspath>true</addClasspath>-->
-<!--                        <classpathPrefix>lib/</classpathPrefix>-->
-<!--                        <mainClass>com.example.store.StoreApplication</mainClass>-->
-<!--                    </manifest>-->
-<!--                </archive>-->
-<!--                <includes>-->
-<!--                    <include>${basedir}/src/main/resources/db/migration/*</include>-->
-<!--                </includes>-->
-<!--            </configuration>-->
-<!--        </plugin>-->
-<!--    </plugins>-->
-<!--</build>-->
 
 </project>

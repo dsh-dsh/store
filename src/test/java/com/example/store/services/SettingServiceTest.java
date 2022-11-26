@@ -54,6 +54,9 @@ class SettingServiceTest {
     @Autowired
     @Qualifier("checkHoldingEnable")
     private PropertySetting checkHoldingEnableSetting;
+    @Autowired
+    @Qualifier("enableDocsBlockSetting")
+    private PropertySetting enableDocsBlockSetting;
 
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -190,6 +193,18 @@ class SettingServiceTest {
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
+    void setEnableDocsBlockSettingTest() {
+        SettingDTO dto = new SettingDTO();
+        dto.setProperty(0);
+        settingService.setEnableDocsBlockSetting(dto);
+        PropertySetting setting = settingService.getSettingByType(systemUser, SettingType.DOC_BLOCK_ENABLE);
+        assertEquals(0, setting.getProperty());
+        assertEquals(0, enableDocsBlockSetting.getProperty());
+        enableDocsBlockSetting.setProperty(1);
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
     void setCheckHoldingEnableSettingTest() {
         SettingDTO dto = new SettingDTO();
         dto.setProperty(0);
@@ -260,5 +275,10 @@ class SettingServiceTest {
     @Test
     void getCheckHoldingEnableSettingTest() {
         assertEquals(1, settingService.getCheckHoldingEnableSetting().getProperty());
+    }
+
+    @Test
+    void getEnableDocsBlockSettingTest() {
+        assertEquals(1, settingService.getEnableDocsBlockSetting().getProperty());
     }
 }

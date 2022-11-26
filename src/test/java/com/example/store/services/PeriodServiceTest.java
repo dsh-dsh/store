@@ -167,6 +167,14 @@ class PeriodServiceTest {
         assertEquals(LocalDate.parse("2022-04-01"), period.getStartDate());
     }
 
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getStartDateByDateInPeriodTest() {
+        assertEquals(Util.getLocalDate("01.03.22 00:00:00"),
+                periodService.getStartDateByDateInPeriod(Util.getLocalDate("10.03.22 00:00:00")));
+    }
+
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getCurrentPeriodIfNotExistsTest() {

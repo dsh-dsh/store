@@ -150,7 +150,6 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
-    // todo add tests
     public void checkSaveTime(DocDTO docDTO) {
         if(saveTime.equals(Constants.DAY_START)) {
             LocalDateTime time = Util.getLocalDateTime(docDTO.getDateTime());

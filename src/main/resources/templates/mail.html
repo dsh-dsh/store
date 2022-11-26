@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="Windows-1251">
+    <title>Title</title>
+    <style type="text/css">
+        body {
+            font-family: Verdana, Arial, Helvetica, sans-serif;" +
+            color: #333366;
+        }
+        table {
+            table-layout: fixed;
+        }
+        hr {
+            max-width: 350px;
+        }
+        h4 {
+            margin-top: 10px;
+            margin-bottom: 4px;
+        }
+        .width-content {
+            max-width: 350px;
+        }
+        .right-align {
+            text-align: end;
+        }
+    </style>
+</head>
+<body>
+<span th:text="${message}"></span>
+<h3>Отчет по кафе " + report.getDepartment() + " за " + report.getDateStart() + "</h3>
+<h4>выручка</h4>
+<h4>зарплата</h4>
+<h4>расходы</h4>
+</body>
+</html>
+
+"<h3>Отчет по кафе " + report.getDepartment() + " за " + report.getDateStart() + "</h3>" +
+"<h4>выручка</h4>" +
+listToHTML(report.getReceipts()) + HTML_UNDER_LINE +
+getHTMLWithGap(TOTAL, getAmountOfList(report.getReceipts()).toString()) +
+"<h4>зарплата</h4>" +
+listToHTML(report.getSalary()) + HTML_UNDER_LINE +
+getHTMLWithGap(TOTAL, getAmountOfList(report.getSalary()).toString()) +
+"<h4>расходы</h4>" +
+listToHTML(report.getSpends()) + HTML_UNDER_LINE +
+getHTMLWithGap(TOTAL, getAmountOfList(report.getSpends()).toString()) +
+getHTMLWithGap("ОСТАТОК НАЛИЧНЫХ:", getTotalAmount(report).toString()) +
+"</body></html>";

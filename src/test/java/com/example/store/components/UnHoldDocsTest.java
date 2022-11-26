@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
+@TestPropertySource(properties = {"jwt.secret=password", "spring.mail.password=UQ8A5dHTn0Mp1CDs6uPJ"})
 class UnHoldDocsTest {
 
     @Autowired

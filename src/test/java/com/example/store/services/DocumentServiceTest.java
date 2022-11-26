@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.print.Doc;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,6 +54,17 @@ class DocumentServiceTest {
         Document document = documentService.getDocumentById(1);
         List<Document> documents = documentService.getDocumentsAfterAndInclude(document);
         assertEquals(5, documents.size());
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void existsHoldenDocumentsAfterTest() {
+        assertTrue(documentService.existsHoldenDocumentsAfter(Util.getLocalDateTime("01.01.22 00:00:00")));
+    }
+    @Test
+    void existsHoldenDocumentsAfterFalseTest() {
+        assertFalse(documentService.existsHoldenDocumentsAfter(Util.getLocalDateTime("01.01.22 00:00:00")));
     }
 
     @Sql(value = "/sql/lots/addDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -99,6 +112,18 @@ class DocumentServiceTest {
         assertEquals(2, documents.size());
         assertEquals(1, documents.get(0).getId());
         assertEquals(2, documents.get(1).getId());
+    }
+
+    @Sql(value = "/sql/lots/addDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocumentsByTypesAndProjectTest() {
+        List<DocumentType> types = List.of(DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC);
+        Project project = projectService.getById(3);
+        LocalDateTime start = Util.getLocalDateTime("01.03.22 00:00:00");
+        LocalDateTime end = Util.getLocalDateTime("06.03.22 00:00:00");
+        List<Document> documents = documentService.getDocumentsByTypesAndProject(types, project, start, end);
+        assertEquals(2, documents.size());
     }
 
     @Sql(value = "/sql/lots/addDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

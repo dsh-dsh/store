@@ -125,7 +125,6 @@ public class  PeriodService {
         return doc;
     }
 
-    // todo add tests
     public LocalDate getStartDateByDateInPeriod(LocalDate date) {
         return periodRepository.findStartDateByDateInPeriod(date)
                 .orElse(LocalDate.parse(Constants.DEFAULT_PERIOD_START));

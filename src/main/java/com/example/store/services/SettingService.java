@@ -129,7 +129,6 @@ public class SettingService {
         setSystemSetting(settingDTO, SettingType.HOLDING_DIALOG_ENABLE);
     }
 
-    // todo add test
     public void setEnableDocsBlockSetting(SettingDTO settingDTO) {
         enableDocsBlockSetting.setProperty(settingDTO.getProperty());
         setSystemSetting(settingDTO, SettingType.DOC_BLOCK_ENABLE);

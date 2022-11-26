@@ -224,7 +224,6 @@ class DocCrudServiceTest {
         assertEquals(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE, exception.getMessage());
     }
 
-
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -234,6 +233,37 @@ class DocCrudServiceTest {
         periodStartDateTime.setPeriodStart();
         assertThrows(BadRequestException.class,
                 () -> docCrudService.checkTimePeriod(dto));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkSaveTimeThrowExceptionTest() {
+        DocDTO dto = new DocDTO();
+        dto.setDateTime(START);
+        docCrudService.setSaveTime(Constants.DAY_START);
+        assertThrows(WarningException.class, () -> docCrudService.checkSaveTime(dto));
+        docCrudService.setSaveTime(null);
+    }
+
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkSaveTimeDoNotThrowExceptionTest() {
+        DocDTO dto = new DocDTO();
+        dto.setDateTime(START);
+        docCrudService.setSaveTime(Constants.DAY_START);
+        assertDoesNotThrow( () -> docCrudService.checkSaveTime(dto));
+        docCrudService.setSaveTime(null);
+    }
+
+    @Test
+    void checkSaveTimeNotDayStartTest() {
+        DocDTO dto = new DocDTO();
+        dto.setDateTime(START);
+        docCrudService.setSaveTime(Constants.CURRENT_TIME);
+        assertDoesNotThrow( () -> docCrudService.checkSaveTime(dto));
+        docCrudService.setSaveTime(null);
     }
 
     @Sql(value = {"/sql/period/addPeriods.sql",

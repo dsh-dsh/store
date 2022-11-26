@@ -4,6 +4,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### properties ###
+application-test.yaml
+
+### logs ###
+**/logs
+.log
+
 ### STS ###
 .apt_generated
 .classpath
