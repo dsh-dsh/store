@@ -25,7 +25,11 @@ public class MailService {
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
 
-        mailSender.send(emailMessage);
+        try {
+            mailSender.send(emailMessage);
+        } catch (MailException e) {
+            // runtime exception; compiler will not force you to handle it
+        }
     }
 
     public void send(String subject, String message, String... toEmail) {
@@ -35,7 +39,11 @@ public class MailService {
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
 
-        mailSender.send(emailMessage);
+        try {
+            mailSender.send(emailMessage);
+        } catch (MailException e) {
+            // runtime exception; compiler will not force you to handle it
+        }
     }
 
     public void prepareAndSend(String subject, String message, String... toEmail) {
