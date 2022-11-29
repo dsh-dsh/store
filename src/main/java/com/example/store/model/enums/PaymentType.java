@@ -12,7 +12,7 @@ public enum PaymentType implements EnumeratedInterface {
     SALARY_PAYMENT(Constants.SALARY_PAYMENT_TYPE),
     SALE_CASH_PAYMENT(Constants.SALE_CASH_PAYMENT_TYPE),
     SALE_CARD_PAYMENT(Constants.SALE_CARD_PAYMENT_TYPE),
-    QR_PAYMENT(Constants.QR_PAYMENT_TYPE);
+    SALE_QR_PAYMENT(Constants.SALE_QR_PAYMENT_TYPE);
 
     private final String value;
 

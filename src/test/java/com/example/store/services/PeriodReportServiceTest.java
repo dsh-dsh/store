@@ -5,6 +5,7 @@ import com.example.store.model.entities.Project;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.model.reports.ReportLine;
@@ -51,9 +52,9 @@ class PeriodReportServiceTest {
     @InjectMocks
     private PeriodReportService injectedPeriodReportService;
 
-    public static final String CASH = "наличные";
-    public static final String BY_CARD = "по карте";
-    public static final String DELIVERY = "доставка";
+    public static final String CASH = CheckPaymentType.CASH_PAYMENT.getValue();
+    public static final String BY_CARD = CheckPaymentType.CARD_PAYMENT.getValue();
+    public static final String DELIVERY = CheckPaymentType.DELIVERY_PAYMENT.getValue();
 
     @Test
     void getPeriodReportTest() {
@@ -64,7 +65,7 @@ class PeriodReportServiceTest {
         spyReportService.getPeriodReport(3, start, end);
         verify(spyReportService, times(1))
                 .getReport(eq(project), eq(Util.getLocalDateTime(start)),
-                        eq(Util.getLocalDateTime(end).plusDays(1).minusSeconds(1)));
+                        eq(Util.getLocalDate(end).atStartOfDay().plusDays(1)));
     }
 
     @Test
@@ -120,42 +121,36 @@ class PeriodReportServiceTest {
     void getReceiptListTest() {
         List<Document> documents = documentService.getAllDocuments();
         List<ReportLine> reportLines = periodReportService.getReceiptList(documents);
-        assertEquals(3, reportLines.size());
-        assertEquals(0, BigDecimal.valueOf(780).compareTo(reportLines.get(0).getValue()));
-        assertEquals(0, BigDecimal.valueOf(940).compareTo(reportLines.get(1).getValue()));
-        assertEquals(0, BigDecimal.valueOf(440).compareTo(reportLines.get(2).getValue()));
+        assertEquals(4, reportLines.size());
+        assertEquals(CheckPaymentType.QR_PAYMENT.getValue(), reportLines.get(0).getName());
+        assertEquals(0, BigDecimal.valueOf(450).compareTo(reportLines.get(0).getValue()));
+        assertEquals(CheckPaymentType.CARD_PAYMENT.getValue(), reportLines.get(1).getName());
+        assertEquals(0, BigDecimal.valueOf(790).compareTo(reportLines.get(1).getValue()));
+        assertEquals(CheckPaymentType.CASH_PAYMENT.getValue(), reportLines.get(2).getName());
+        assertEquals(0, BigDecimal.valueOf(480).compareTo(reportLines.get(2).getValue()));
+        assertEquals(CheckPaymentType.DELIVERY_PAYMENT.getValue(), reportLines.get(3).getName());
+        assertEquals(0, BigDecimal.valueOf(440).compareTo(reportLines.get(3).getValue()));
     }
 
     @Test
     void getReceiptTypeDeliveryTest() {
-        when(mockedCheckInfo.isDelivery()).thenReturn(true);
+        when(mockedCheckInfo.getCheckPaymentType()).thenReturn(CheckPaymentType.DELIVERY_PAYMENT);
         when(mockedCheckInfoService.getCheckInfo(any())).thenReturn(mockedCheckInfo);
         assertEquals(DELIVERY, injectedPeriodReportService.getReceiptType(mockedCheck));
     }
 
     @Test
     void getReceiptTypeCashTest() {
-        when(mockedCheckInfo.isPayedByCard()).thenReturn(false);
-        when(mockedCheckInfo.isDelivery()).thenReturn(false);
+        when(mockedCheckInfo.getCheckPaymentType()).thenReturn(CheckPaymentType.CASH_PAYMENT);
         when(mockedCheckInfoService.getCheckInfo(any())).thenReturn(mockedCheckInfo);
         assertEquals(CASH, injectedPeriodReportService.getReceiptType(mockedCheck));
     }
 
     @Test
     void getReceiptTypeCardTest() {
-        when(mockedCheckInfo.isPayedByCard()).thenReturn(true);
-        when(mockedCheckInfo.isDelivery()).thenReturn(false);
+        when(mockedCheckInfo.getCheckPaymentType()).thenReturn(CheckPaymentType.CARD_PAYMENT);
         when(mockedCheckInfoService.getCheckInfo(any())).thenReturn(mockedCheckInfo);
         assertEquals(BY_CARD, injectedPeriodReportService.getReceiptType(mockedCheck));
-    }
-
-    @Test
-    void initMapTest() {
-        Map<String, BigDecimal> map = periodReportService.initMap();
-        assertEquals(3, map.size());
-        assertEquals(BigDecimal.ZERO, map.get(CASH));
-        assertEquals(BigDecimal.ZERO, map.get(BY_CARD));
-        assertEquals(BigDecimal.ZERO, map.get(DELIVERY));
     }
 
     private List<Document> getDocuments() {

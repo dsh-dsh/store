@@ -39,6 +39,13 @@ public class Document1cController {
         return ResponseEntity.ok(new Response<>("ok"));
     }
 
+    @PostMapping("/inventory")
+    public ResponseEntity<Response<String>> addInventoryDocFrom1C(
+            @RequestBody ItemDocListRequestDTO itemDocListRequestDTO) {
+        docCrudService.addInventoryDocFrom1C(itemDocListRequestDTO);
+        return ResponseEntity.ok(new Response<>("ok"));
+    }
+
     @PostMapping("/hold")
     public ResponseEntity<Response<String>> hold1CDocuments() {
         hold1CDocksService.holdFirstUnHoldenChecks();

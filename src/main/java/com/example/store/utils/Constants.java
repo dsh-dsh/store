@@ -44,7 +44,12 @@ public class Constants {
     public static final String SALARY_PAYMENT_TYPE = "Выплата зарплаты";
     public static final String SALE_CASH_PAYMENT_TYPE = "Выручка наличными";
     public static final String SALE_CARD_PAYMENT_TYPE = "Выручка по картам";
-    public static final String QR_PAYMENT_TYPE = "Выручка по QR";
+    public static final String SALE_QR_PAYMENT_TYPE = "Выручка по QR";
+
+    public static final String CASH_PAYMENT_TYPE = "Оплата наличными";
+    public static final String CARD_PAYMENT_TYPE = "Оплата картой";
+    public static final String QR_PAYMENT_TYPE = "Оплата QR";
+    public static final String DELIVERY_PAYMENT_TYPE = "Оплата через доставку";
 
     public static final String NET_TYPE = "Нетто";
     public static final String GROSS_TYPE = "Брутто";

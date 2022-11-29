@@ -1,0 +1,1 @@
+ALTER TABLE check_kkm_info ADD check_payment_type varchar(255);

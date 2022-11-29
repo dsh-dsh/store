@@ -6,6 +6,7 @@ import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.CheckInfoRepository;
 import com.example.store.utils.Constants;
@@ -57,7 +58,8 @@ public class CheckInfoService {
         checkInfo.setReturn(checkInfoDTO.isReturn());
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());
-        checkInfo.setPayedByCard(checkInfoDTO.isPayedByCard());
+        checkInfo.setCheckPaymentType(CheckPaymentType.getByValue(checkInfoDTO.getCheckPaymentType()));
+        checkInfo.setPayedByCard(checkInfoDTO.isPayedByCard()); // todo deprecated update tests
         checkInfo.setDelivery(checkInfoDTO.isDelivery());
     }
 

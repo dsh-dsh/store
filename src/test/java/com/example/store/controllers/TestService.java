@@ -3,6 +3,7 @@ package com.example.store.controllers;
 import com.example.store.model.dto.*;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
@@ -73,6 +74,8 @@ public class TestService {
         dto.setReturn(value == 0);
         dto.setKKMChecked(value == 0);
         dto.setPayed(value == 0);
+        CheckPaymentType type = value == 0? CheckPaymentType.CARD_PAYMENT : CheckPaymentType.CASH_PAYMENT;
+        dto.setCheckPaymentType(type.getValue());
         dto.setPayedByCard(value == 0);
         dto.setDelivery(value == 0);
 

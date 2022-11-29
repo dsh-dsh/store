@@ -309,7 +309,6 @@ public class DocCrudService extends AbstractDocCrudService {
         return docMapper.mapToDocDTO((ItemDoc) document);
     }
 
-
     @Transactional
     public void addDocsFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
         docsFrom1cService.setDocDateTime(null);
@@ -318,6 +317,13 @@ public class DocCrudService extends AbstractDocCrudService {
         DocDTO docDTO = itemDocListRequestDTO.getDocDTOList().get(0);
         long reportDate = Util.getLongLocalDateTime(docDTO.getDate());
         mailPeriodReportService.sendPeriodReport(docDTO.getProject().getName(), reportDate);
+    }
+
+    @Transactional
+    public void addInventoryDocFrom1C(ItemDocListRequestDTO itemDocListRequestDTO) {
+        docsFrom1cService.setDocDateTime(null);
+        itemDocListRequestDTO.getDocDTOList()
+                .forEach(docsFrom1cService::addDocument);
     }
 
     @Transactional

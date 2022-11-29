@@ -157,7 +157,7 @@ class Document1CControllerTest {
         ItemDocListRequestDTO docListRequestDTO = new ItemDocListRequestDTO();
         docListRequestDTO.setDocDTOList(getInventoryDocDTOList());
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/docs")
+                        post(URL_PREFIX + "/inventory")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(docListRequestDTO)))
                 .andDo(print())

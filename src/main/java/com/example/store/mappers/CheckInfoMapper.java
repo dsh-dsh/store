@@ -15,7 +15,8 @@ public class CheckInfoMapper extends MappingConverters {
         this.modelMapper = new ModelMapper();
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         this.modelMapper.createTypeMap(CheckInfo.class, CheckInfoDTO.class)
-                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(CheckInfo::getDateTime, CheckInfoDTO::setDateTime));
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(CheckInfo::getDateTime, CheckInfoDTO::setDateTime))
+                .addMappings((mapper -> mapper.using(checkPaymentTypeConverter).map(CheckInfo::getCheckPaymentType, CheckInfoDTO::setCheckPaymentType)));
     }
 
     public CheckInfoDTO mapCheckInfo(CheckInfo checkInfo) {

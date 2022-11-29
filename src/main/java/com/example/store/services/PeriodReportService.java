@@ -5,21 +5,20 @@ import com.example.store.model.entities.Project;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.model.reports.PeriodReport;
 import com.example.store.model.reports.ReportLine;
 import com.example.store.utils.Util;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,9 +26,10 @@ import java.util.stream.Stream;
 @Service
 public class PeriodReportService {
 
-    public static final String CASH = "наличные";
-    public static final String BY_CARD = "по карте";
-    public static final String DELIVERY = "доставка";
+    public static final String CASH = CheckPaymentType.CASH_PAYMENT.getValue();
+    public static final String BY_CARD = CheckPaymentType.CARD_PAYMENT.getValue();
+    public static final String BY_QR = CheckPaymentType.QR_PAYMENT.getValue();
+    public static final String DELIVERY = CheckPaymentType.DELIVERY_PAYMENT.getValue();
     @Autowired
     private DocumentService documentService;
     @Autowired
@@ -46,8 +46,8 @@ public class PeriodReportService {
 
     public PeriodReport getPeriodReport(int projectId, long dateStart, long dateEnd) {
         Project project = projectService.getById(projectId);
-        LocalDateTime start = Util.getLocalDateTime(dateStart);
-        LocalDateTime end = Util.getLocalDateTime(dateEnd).plusDays(1).minusSeconds(1);
+        LocalDateTime start = Util.getLocalDate(dateStart).atStartOfDay();
+        LocalDateTime end = Util.getLocalDate(dateEnd).atStartOfDay().plusDays(1);
         return getReport(project, start, end);
     }
 
@@ -75,33 +75,22 @@ public class PeriodReportService {
     }
 
     public List<ReportLine> getReceiptList(List<Document> documents) {
-        Map<String, BigDecimal> sumMap = initMap();
-        documents.stream().filter(document -> document.getDocType() == DocumentType.CHECK_DOC)
-                .forEach(check -> {
-                    BigDecimal checkAmount = BigDecimal.valueOf(docItemService.getItemsAmount((ItemDoc) check))
-                            .setScale(2, RoundingMode.HALF_EVEN);
-                    sumMap.merge(getReceiptType((ItemDoc) check), checkAmount, BigDecimal::add);
-                });
-        List<ReportLine> receipts = new ArrayList<>();
-        receipts.add(new ReportLine(CASH, sumMap.get(CASH)));
-        receipts.add(new ReportLine(BY_CARD, sumMap.get(BY_CARD)));
-        receipts.add(new ReportLine(DELIVERY, sumMap.get(DELIVERY)));
-        return receipts;
+        return documents.stream().filter(document -> document.getDocType() == DocumentType.CHECK_DOC)
+                .collect(Collectors.toMap(this::getReceiptType, this::getCheckAmount, BigDecimal::add))
+                .entrySet().stream()
+                .map(entry -> new ReportLine(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
-    protected String getReceiptType(ItemDoc check) {
-        CheckInfo checkInfo = checkInfoService.getCheckInfo(check);
-        String type = checkInfo.isPayedByCard() ? BY_CARD : CASH;
-        type = checkInfo.isDelivery() ? DELIVERY : type;
-        return type;
+    @NotNull
+    private BigDecimal getCheckAmount(Document check) {
+        return BigDecimal.valueOf(docItemService.getItemsAmount((ItemDoc) check))
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    protected Map<String, BigDecimal> initMap() {
-        Map<String, BigDecimal> sumMap = new HashMap<>();
-        sumMap.put(CASH, BigDecimal.ZERO);
-        sumMap.put(BY_CARD, BigDecimal.ZERO);
-        sumMap.put(DELIVERY, BigDecimal.ZERO);
-        return sumMap;
+    protected String getReceiptType(Document check) {
+        CheckInfo checkInfo = checkInfoService.getCheckInfo((ItemDoc) check);
+        return checkInfo.getCheckPaymentType().getValue();
     }
 
 }

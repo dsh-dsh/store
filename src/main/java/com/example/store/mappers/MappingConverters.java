@@ -43,6 +43,7 @@ public class MappingConverters {
     protected final Converter<String, PeriodicValueType> typeConverter = str -> PeriodicValueType.valueOf(str.getSource());
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().getValue();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
+    protected final Converter<CheckPaymentType, String> checkPaymentTypeConverter = type -> type.getSource().getValue();
     protected final Converter<Item, Integer> itemIdConverter = item -> item.getSource().getId();
     protected final Converter<Item, String> itemNameConverter = item -> item.getSource().getName();
     protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());

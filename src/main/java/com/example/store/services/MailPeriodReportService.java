@@ -33,9 +33,8 @@ public class MailPeriodReportService {
 
     public void sendPeriodReport(String projectName, long date) {
         Project project = projectService.getByName(projectName);
-        LocalDateTime start = Util.getLocalDateTime(date);
-        LocalDateTime end = start.plusDays(1).minusSeconds(1);
-        String report = reportToHTML(periodReportService.getReport(project, start, end));
+        LocalDateTime start = Util.getLocalDate(date).atStartOfDay();
+        String report = reportToHTML(periodReportService.getReport(project, start, start.plusDays(1)));
         String subject = "Отчет по кафе " + projectName + " за " + Util.getDate(start);
         mailService.prepareAndSend(subject, report, emails);
     }

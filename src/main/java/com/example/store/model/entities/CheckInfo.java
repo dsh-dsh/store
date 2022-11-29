@@ -1,6 +1,7 @@
 package com.example.store.model.entities;
 
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +39,15 @@ public class CheckInfo {
     private boolean isKKMChecked;
 
     private boolean isPayed;
+
+    @Deprecated(forRemoval = true)
     private boolean isPayedByCard;
+
     private boolean isDelivery;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "check_payment_type")
+    private CheckPaymentType checkPaymentType;
 
     @ManyToOne
     @JoinColumn(name = "check_id")
