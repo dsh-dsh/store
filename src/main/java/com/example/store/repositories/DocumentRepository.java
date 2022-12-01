@@ -72,12 +72,13 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             nativeQuery = true)
     Optional<Document> getLast1CDocNumber(long from, long to, LocalDateTime dateTime);
 
-    Optional<Document> findFirstByAuthorAndIsHold(User author, boolean isHold, Sort sort);
-
     @Query(value =  "select base_document_id from document where id = :docId", nativeQuery = true)
     int getBaseDocumentId(int docId);
 
     List<Document> findByDocTypeInAndProjectAndDateTimeBetween(
             List<DocumentType> docTypes, Project project, LocalDateTime from, LocalDateTime to);
+
+    Optional<Document> findFirstByAuthorInAndIsHold(List<User> authors, boolean isHold, Sort sort);
+
 
 }

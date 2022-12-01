@@ -179,8 +179,11 @@ public class  PeriodService {
 
 
     public Long getBlockTime() {
+        List<User> authors = List.of(
+                userService.getById(1), userService.getById(77),
+                userService.getById(79), userService.getById(80));
         Document document = documentRepository
-                .findFirstByAuthorAndIsHold(systemUser, true, Sort.by(Constants.DATE_TIME_STRING).descending())
+                .findFirstByAuthorInAndIsHold(authors, true, Sort.by(Constants.DATE_TIME_STRING).descending())
                 .orElse(null);
         return document != null?
                 Util.getLongLocalDateTime(document.getDateTime()) :
