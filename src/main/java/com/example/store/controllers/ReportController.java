@@ -2,9 +2,11 @@ package com.example.store.controllers;
 
 import com.example.store.model.reports.ItemMovesReport;
 import com.example.store.model.reports.PeriodReport;
+import com.example.store.model.reports.SalesReport;
 import com.example.store.model.responses.Response;
 import com.example.store.services.ItemMovesReportService;
 import com.example.store.services.PeriodReportService;
+import com.example.store.services.SalesReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,8 @@ public class ReportController {
     private PeriodReportService periodReportService;
     @Autowired
     private ItemMovesReportService itemMovesReportService;
+    @Autowired
+    private SalesReportService salesReportService;
 
     // todo add tests
 
@@ -35,6 +39,14 @@ public class ReportController {
             @RequestParam boolean includeNull, @RequestParam boolean onlyHolden){
         return ResponseEntity.ok(new Response<>(itemMovesReportService
                 .getItemMoveReport(storageId, start, end, includeNull, onlyHolden)));
+    }
+
+    @GetMapping("/sales")
+    public ResponseEntity<Response<SalesReport>> getSalesReport(
+            @RequestParam int itemId, @RequestParam int projectId, @RequestParam long start, @RequestParam long end,
+            @RequestParam boolean includeNull, @RequestParam boolean onlyHolden){
+        return ResponseEntity.ok(new Response<>(salesReportService
+                .getSalesReport(itemId, projectId, start, end, includeNull, onlyHolden)));
     }
 
 }

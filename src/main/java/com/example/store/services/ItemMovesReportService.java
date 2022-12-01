@@ -41,6 +41,7 @@ public class ItemMovesReportService {
     public void setCurrentStorage(Storage storage) {
         this.currentStorage = storage;
     }
+
     public void setIncludeNull(boolean includeNull) {
         this.includeNull = includeNull;
     }

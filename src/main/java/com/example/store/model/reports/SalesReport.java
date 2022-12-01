@@ -13,11 +13,10 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ItemMovesReport {
+public class SalesReport {
+    private List<SalesItemLine> lines;
 
-    private List<ItemLine> items;
-
-    public ItemMovesReport(List<ItemLine> items) {
-        this.items = items;
+    public SalesReport(List<SalesItemLine> lines) {
+        this.lines = lines;
     }
 }

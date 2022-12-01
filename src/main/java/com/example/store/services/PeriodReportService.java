@@ -30,6 +30,7 @@ public class PeriodReportService {
     public static final String BY_CARD = CheckPaymentType.CARD_PAYMENT.getValue();
     public static final String BY_QR = CheckPaymentType.QR_PAYMENT.getValue();
     public static final String DELIVERY = CheckPaymentType.DELIVERY_PAYMENT.getValue();
+
     @Autowired
     private DocumentService documentService;
     @Autowired

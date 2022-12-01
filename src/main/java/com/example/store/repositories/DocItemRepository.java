@@ -20,9 +20,9 @@ public interface DocItemRepository extends JpaRepository<DocumentItem, Integer> 
 
     List<DocumentItem> findByItemDoc(ItemDoc itemDoc);
 
-    @Query(value = "" +
+    @Query(value =
             "select doc_item.* from document_item as doc_item " +
-            "left  join document as doc on doc.id = doc_item.document_id " +
+            "left join document as doc on doc.id = doc_item.document_id " +
             "where doc_item.item_id = :itemId " +
             "and (:onlyHolden = false or doc.is_hold = :onlyHolden) " +
             "and (doc.storage_to_id = :storageId or doc.storage_from_id = :storageId) " +
@@ -34,4 +34,13 @@ public interface DocItemRepository extends JpaRepository<DocumentItem, Integer> 
 
     @Query(value = "select count(*) from document_item where document_id = :docId", nativeQuery = true)
     int countItemsByDocId(int docId);
+
+    @Query(value =
+            "select doc_item.* from document_item as doc_item " +
+            "left join document as doc on doc.id = doc_item.document_id " +
+            "where doc.project_id = :projectId " +
+            "and doc.date_time between :start and :end " +
+            "and doc.doc_type = 'CHECK_DOC' " +
+            "and (:onlyHolden = false or doc.is_hold = :onlyHolden)", nativeQuery = true)
+    List<DocumentItem> findByPeriod(int projectId, LocalDateTime start, LocalDateTime end, boolean onlyHolden);
 }

@@ -249,6 +249,15 @@ class ItemServiceTest extends TestService {
         assertEquals(Constants.NO_SUCH_ITEM_MESSAGE, exception.getMessage());
     }
 
+    @Test
+    void getByParentTest() {
+        Item item = itemService.getItemById(1);
+        List<Item> list = itemService.getByParent(item);
+        assertEquals(2, list.size());
+        assertEquals(7, list.get(0).getId());
+        assertEquals(8, list.get(1).getId());
+    }
+
 
     private List<IngredientDTO> getIngredientDTOListForUpDate(LocalDate date) {
         IngredientDTO ingredientDTO = IngredientDTO.builder()

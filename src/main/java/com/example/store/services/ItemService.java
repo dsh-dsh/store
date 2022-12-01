@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -181,5 +178,24 @@ public class ItemService {
                 .orElseThrow(() -> new BadRequestException(
                         Constants.NO_SUCH_ITEM_MESSAGE,
                         this.getClass().getName() + " - getParent(Item child)"));
+    }
+
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
+    }
+
+    public List<Item> getByParent(Item parent) {
+        List<Item> items = new LinkedList<>();
+        fillListByParentRecursively(parent, items);
+        return items;
+    }
+
+    private void fillListByParentRecursively(Item parent, List<Item> list) {
+        List<Item> items = itemRepository.findByParent(parent);
+        if(items.isEmpty()) {
+            list.add(parent);
+        } else {
+            items.forEach(item -> fillListByParentRecursively(item, list));
+        }
     }
 }

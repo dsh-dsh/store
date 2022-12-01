@@ -3,8 +3,10 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Project;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +33,8 @@ class DocItemServiceTest {
     private DocItemService docItemService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private ProjectService projectService;
 
     @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -149,8 +154,17 @@ class DocItemServiceTest {
         docItemService.save(item);
         List<DocumentItem> list = docItemService.getItemsByDoc(doc);
         assertEquals(3, list.size());
+    }
 
-
+    @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getItemsByPeriodTest() {
+        Project project = projectService.getById(3);
+        LocalDateTime start = Util.getLocalDate("16.04.22 00:00:00").atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        List<DocumentItem> list = docItemService.getItemsByPeriod(project, start, end, false);
+        assertEquals(5, list.size());
     }
 
     public DocItemDTO getDocItemDTO(int docId, int itemId, float quantity, float price) {

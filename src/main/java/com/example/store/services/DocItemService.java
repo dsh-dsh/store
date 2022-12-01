@@ -5,6 +5,7 @@ import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
+import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -117,6 +118,10 @@ public class DocItemService {
 
     public void save(DocumentItem docItem) {
         docItemRepository.save(docItem);
+    }
+
+    public List<DocumentItem> getItemsByPeriod(Project project, LocalDateTime start, LocalDateTime end, boolean onlyHolden) {
+        return docItemRepository.findByPeriod(project.getId(), start, end, onlyHolden);
     }
 }
 
