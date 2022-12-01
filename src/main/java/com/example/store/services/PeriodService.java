@@ -13,6 +13,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +54,10 @@ public class  PeriodService {
     private User systemUser;
     @Autowired
     private PeriodStartDateTime periodStartDateTime;
+
+
+    @Value("${blocking.users.ids}")
+    private int[] blockingUserIds;
 
 
     @Transactional
@@ -177,11 +183,9 @@ public class  PeriodService {
         return dto;
     }
 
-
     public Long getBlockTime() {
-        List<User> authors = List.of(
-                userService.getById(1), userService.getById(77),
-                userService.getById(79), userService.getById(80));
+        List<User> authors = Arrays.stream(blockingUserIds)
+                .mapToObj(userService::getById).collect(Collectors.toList());
         Document document = documentRepository
                 .findFirstByAuthorInAndIsHold(authors, true, Sort.by(Constants.DATE_TIME_STRING).descending())
                 .orElse(null);
