@@ -1,13 +1,15 @@
-package com.example.store.services;
+package com.example.store.services.reports;
 
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.reports.SalesItemLine;
 import com.example.store.model.reports.SalesReport;
+import com.example.store.services.DocItemService;
+import com.example.store.services.DocumentService;
+import com.example.store.services.ProjectService;
 import com.example.store.utils.Util;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class SalesReportService {
+public class SalesReportService extends ReportService {
 
     @Autowired
     private DocumentService documentService;
@@ -27,8 +29,6 @@ public class SalesReportService {
     private DocItemService docItemService;
     @Autowired
     private ProjectService projectService;
-    @Autowired
-    private ItemService itemService;
 
     private List<DocumentItem> documentItems;
     private boolean includeNull;
@@ -77,24 +77,5 @@ public class SalesReportService {
         return docItem.getQuantity()
                 .multiply(BigDecimal.valueOf(docItem.getPrice()))
                 .subtract(BigDecimal.valueOf(docItem.getDiscount()));
-    }
-
-    @Nullable
-    private Item getItem(int itemId) {
-        Item item = null;
-        if(itemId > 0) {
-            item = itemService.getItemById(itemId);
-        }
-        return item;
-    }
-
-    public List<Item> getItemList(Item item) {
-        if(item == null) {
-            return itemService.getAllItems();
-        } else if(item.isNode()) {
-            return itemService.getByParent(item);
-        } else {
-            return List.of(item);
-        }
     }
 }

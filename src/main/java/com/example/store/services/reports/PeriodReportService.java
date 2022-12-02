@@ -1,4 +1,4 @@
-package com.example.store.services;
+package com.example.store.services.reports;
 
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.Project;
@@ -10,6 +10,7 @@ import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.model.reports.PeriodReport;
 import com.example.store.model.reports.ReportLine;
+import com.example.store.services.*;
 import com.example.store.utils.Util;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

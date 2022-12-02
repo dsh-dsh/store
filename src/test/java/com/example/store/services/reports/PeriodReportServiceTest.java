@@ -1,4 +1,4 @@
-package com.example.store.services;
+package com.example.store.services.reports;
 
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.Project;
@@ -9,6 +9,10 @@ import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.model.reports.ReportLine;
+import com.example.store.services.CheckInfoService;
+import com.example.store.services.DocumentService;
+import com.example.store.services.ProjectService;
+import com.example.store.services.reports.PeriodReportService;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +28,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;

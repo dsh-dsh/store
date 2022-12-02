@@ -1,9 +1,12 @@
-package com.example.store.services;
+package com.example.store.services.reports;
 
 import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.reports.ItemLine;
 import com.example.store.model.reports.MoveDocLine;
+import com.example.store.services.CompanyService;
+import com.example.store.services.StorageService;
+import com.example.store.services.reports.ItemMovesReportService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

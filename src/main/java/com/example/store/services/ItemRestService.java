@@ -108,6 +108,16 @@ public class ItemRestService {
     }
 
     // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
+    public Map<Item, BigDecimal> getItemsRestOnStorage(List<Item> items, Storage storage, LocalDateTime time) {
+        return items.stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        item -> getRestOfItemOnStorageOutOfPeriod(item, storage, time)))
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
     public Map<Item, BigDecimal> getItemsRestOnStorage(Storage storage, LocalDateTime time) {
         List<Item> items = itemService.getIngredientItemsList(
                 itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));

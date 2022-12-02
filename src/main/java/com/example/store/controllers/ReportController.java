@@ -4,9 +4,9 @@ import com.example.store.model.reports.ItemMovesReport;
 import com.example.store.model.reports.PeriodReport;
 import com.example.store.model.reports.SalesReport;
 import com.example.store.model.responses.Response;
-import com.example.store.services.ItemMovesReportService;
-import com.example.store.services.PeriodReportService;
-import com.example.store.services.SalesReportService;
+import com.example.store.services.reports.ItemMovesReportService;
+import com.example.store.services.reports.PeriodReportService;
+import com.example.store.services.reports.SalesReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +35,10 @@ public class ReportController {
 
     @GetMapping("/item/moves")
     public ResponseEntity<Response<ItemMovesReport>> getItemMovesReport(
-            @RequestParam int storageId, @RequestParam long start, @RequestParam long end,
+            @RequestParam int itemId, @RequestParam int storageId, @RequestParam long start, @RequestParam long end,
             @RequestParam boolean includeNull, @RequestParam boolean onlyHolden){
         return ResponseEntity.ok(new Response<>(itemMovesReportService
-                .getItemMoveReport(storageId, start, end, includeNull, onlyHolden)));
+                .getItemMoveReport(itemId, storageId, start, end, includeNull, onlyHolden)));
     }
 
     @GetMapping("/sales")
