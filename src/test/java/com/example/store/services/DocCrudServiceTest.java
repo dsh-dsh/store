@@ -349,26 +349,26 @@ class DocCrudServiceTest {
         assertEquals("2022-04-16", docCrudService.checkUnHoldenChecks());
     }
 
-//    @InjectMocks
-//    private DocCrudService docCrudServiceInjected;
-//    @Mock
-//    private UserService userServiceMock;
-//
-//    @Sql(value = "/sql/documents/addPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    @Test
-//    void addPaymentTest() {
-//        User currentUser = userService.getById(4);
-//        when(userServiceMock.getCurrentUser()).thenReturn(currentUser);
-//        docCrudServiceInjected.addPayment(1);
-//        List<Document> docs = documentService.getAllDocuments();
-//        assertEquals(2, docs.size());
-//        ItemDoc postingDoc = (ItemDoc) docs.get(0);
-//        OrderDoc orderDoc = (OrderDoc) docs.get(1);
-//        assertTrue(postingDoc.isPayed());
-//        assertEquals(orderDoc, postingDoc.getBaseDocument());
-//        assertEquals(orderDoc.getRecipient(), postingDoc.getSupplier());
-//        assertEquals(orderDoc.getAmount(), docItemService.getItemsAmount(postingDoc));
-//    }
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getLastCheckNumberTest() {
+        periodStartDateTime.setDateTime(Util.getLocalDateTime("01.04.22 00:00:00"));
+        String response = docCrudService.getLastCheckNumber(3);
+        assertNotEquals("", response);
+        assertEquals("<3000000003>CHECK_DOC*16.04.2022", response);
+        periodStartDateTime.setPeriodStart();
+    }
+
+    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getLastCheckNumberOutOfPeriodTest() {
+        periodStartDateTime.setDateTime(Util.getLocalDateTime("01.05.22 00:00:00"));
+        String response = docCrudService.getLastCheckNumber(3);
+        assertNotEquals("", response);
+        assertEquals("<3000000003>CHECK_DOC*16.04.2022", response);
+        periodStartDateTime.setPeriodStart();
+    }
 
 }

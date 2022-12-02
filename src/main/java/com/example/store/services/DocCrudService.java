@@ -372,7 +372,7 @@ public class DocCrudService extends AbstractDocCrudService {
     }
 
     public String getLastCheckNumber(int prefix) {
-        LocalDateTime periodStart = periodStartDateTime.get();
+        LocalDateTime periodStart = periodStartDateTime.get().minusDays(30);
         long from = 1000000000L * prefix;
         long to = 1000000000L * (prefix + 1);
         Document doc = documentRepository.getLast1CDocNumber(from, to, periodStart).orElse(null);
