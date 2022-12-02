@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.model.entities.Project;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.reports.PeriodReport;
 import com.example.store.model.reports.ReportLine;
 import com.example.store.utils.Util;
@@ -100,7 +101,9 @@ public class MailPeriodReportService {
     }
 
     protected BigDecimal getTotalAmount(PeriodReport report) {
-        return report.getReceipts().get(0).getValue()
+        return report.getReceipts().stream()
+                .filter(line -> line.getName().equals(CheckPaymentType.CASH_PAYMENT.getValue()))
+                .findFirst().orElseGet(() -> new ReportLine("", BigDecimal.ZERO)).getValue()
                 .subtract(getAmountOfList(report.getSalary()).add(getAmountOfList(report.getSpends())));
     }
 
