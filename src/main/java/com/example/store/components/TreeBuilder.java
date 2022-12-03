@@ -1,21 +1,14 @@
 package com.example.store.components;
 
-import com.example.store.mappers.ItemMapper;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.EntityInterface;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class TreeBuilder <E extends EntityInterface>{
-    @Autowired
-    private ItemMapper itemMapper;
 
     private ItemDTOForTree[] itemArray;
 
@@ -23,11 +16,11 @@ public class TreeBuilder <E extends EntityInterface>{
         if(list.isEmpty()) return new ArrayList<>();
         fillItemArray(list);
         fillChildren();
-        List<ItemDTOForTree> itemList = Arrays.stream(itemArray)
+        Set<ItemDTOForTree> itemSet = Arrays.stream(itemArray)
                 .filter(Objects::nonNull)
-                .filter(dto -> dto.getParentId() == 0).collect(Collectors.toList());
-        setKeys(itemList, "");
-        return itemList;
+                .filter(dto -> dto.getParentId() == 0).collect(Collectors.toCollection(TreeSet::new));
+        setKeys(itemSet, "");
+        return new ArrayList<>(itemSet);
     }
 
     private void fillItemArray(List<E> list) {
@@ -49,9 +42,9 @@ public class TreeBuilder <E extends EntityInterface>{
         }
     }
 
-    private void setKeys(List<ItemDTOForTree> list, String key) {
+    private void setKeys(Set<ItemDTOForTree> set, String key) {
         int i = 0;
-        for(ItemDTOForTree item : list) {
+        for(ItemDTOForTree item : set) {
             if(!item.getChildren().isEmpty()) {
                 setKeys(item.getChildren(), key + i + "-");
             }

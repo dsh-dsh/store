@@ -52,9 +52,9 @@ class CompanyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[4]").exists())
                 .andExpect(jsonPath("$.data.[5]").doesNotExist())
-                .andExpect(jsonPath("$.data.[2].children.[0]").doesNotExist())
-                .andExpect(jsonPath("$.data.[3].children.[0]").exists())
-                .andExpect(jsonPath("$.data.[4].children.[0]").exists());
+                .andExpect(jsonPath("$.data.[0].children.[0]").exists())
+                .andExpect(jsonPath("$.data.[1].children.[0]").exists())
+                .andExpect(jsonPath("$.data.[2].children.[0]").doesNotExist());
 
     }
 

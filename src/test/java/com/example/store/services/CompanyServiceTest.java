@@ -110,8 +110,10 @@ class CompanyServiceTest {
     void getCompanyDTOTreeTest() {
         List<ItemDTOForTree> list = companyService.getCompanyDTOTree();
         assertEquals(5, list.size());
+        assertEquals(1, list.get(0).getChildren().size());
+        assertEquals(1, list.get(1).getChildren().size());
         assertEquals(0, list.get(2).getChildren().size());
-        assertEquals(1, list.get(3).getChildren().size());
+        assertEquals(0, list.get(3).getChildren().size());
     }
 
     @Test
