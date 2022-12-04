@@ -4,6 +4,8 @@ import com.example.store.components.ReHoldChecking;
 import com.example.store.components.UnHoldDocs;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.documents.DocDTO;
+import com.example.store.model.entities.Company;
+import com.example.store.model.entities.Project;
 import com.example.store.model.entities.documents.DocInterface;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDocCrudService {
@@ -260,20 +263,44 @@ public abstract class AbstractDocCrudService {
         }
     }
 
+    protected OrderDoc getSupplierPaymentDoc(Company supplier, List<Document> itemDocs) {
+        float amount = 0;
+        Project project = null;
+        for(Document document : itemDocs) {
+            amount += docItemService.getItemsAmount((ItemDoc) document);
+            if(project == null) {
+                project = document.getProject();
+            }
+        }
+        return getOrderDoc(project, supplier, amount, null);
+    }
+
     protected OrderDoc getSupplierPaymentDoc(ItemDoc itemDoc) {
+        return getOrderDoc(itemDoc.getProject(), itemDoc.getSupplier(), docItemService.getItemsAmount(itemDoc), itemDoc);
+    }
+
+    protected OrderDoc getOrderDoc(Project project, Company supplier, float amount, ItemDoc itemDoc) {
         OrderDoc orderDoc = new OrderDoc();
         orderDoc.setNumber(documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC));
         orderDoc.setDocType(DocumentType.CREDIT_ORDER_DOC);
         orderDoc.setDateTime(getNewDocTime(LocalDate.now(), Sort.by(Constants.DATE_TIME_STRING).descending(), true));
         orderDoc.setPaymentType(PaymentType.SUPPLIER_PAYMENT);
-        orderDoc.setProject(itemDoc.getProject());
+        orderDoc.setProject(project);
         orderDoc.setAuthor(userService.getCurrentUser());
-        orderDoc.setRecipient(itemDoc.getSupplier());
-        orderDoc.setAmount(docItemService.getItemsAmount(itemDoc));
+        orderDoc.setRecipient(supplier);
+        orderDoc.setAmount(amount);
         orderDoc.setPayed(false);
         orderDoc.setBaseDocument(itemDoc);
         documentRepository.save(orderDoc);
         return orderDoc;
+    }
+
+    protected void setPayed(List<Document> itemDocs, OrderDoc orderDoc) {
+        for(Document itemDoc : itemDocs) {
+            itemDoc.setPayed(true);
+            itemDoc.setBaseDocument(orderDoc);
+            documentRepository.save(itemDoc);
+        }
     }
 
     protected void setPayed(ItemDoc itemDoc, OrderDoc orderDoc) {

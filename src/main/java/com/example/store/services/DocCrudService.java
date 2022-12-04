@@ -6,13 +6,15 @@ import com.example.store.exceptions.WarningException;
 import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.dto.documents.DocToPaymentDTO;
 import com.example.store.model.dto.requests.ItemDocListRequestDTO;
+import com.example.store.model.entities.Company;
+import com.example.store.model.entities.DocInfo;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.ExceptionType;
-import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
@@ -25,7 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,7 +52,7 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
 
-    public ListResponse<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
+    public List<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
         LocalDateTime endDate = Util.getLocalDateTime(end).withHour(23);
         List<DocumentType> types;
@@ -77,7 +82,7 @@ public class DocCrudService extends AbstractDocCrudService {
                 types = null;
         }
         List<Document> list = documentRepository.findByDocInFilter(filter, types, startDate, endDate);
-        List<DocToListDTO> dtoList = list.stream()
+        return list.stream()
                 .map(doc -> {
                     if(doc instanceof ItemDoc) {
                         return docMapper.mapToDocToListDTO((ItemDoc) doc);
@@ -86,7 +91,6 @@ public class DocCrudService extends AbstractDocCrudService {
                     }
                 })
                 .collect(Collectors.toList());
-        return new ListResponse<>(dtoList);
     }
 
     public DocDTO getDocDTOById(int docId, boolean docCopy) {
@@ -393,5 +397,28 @@ public class DocCrudService extends AbstractDocCrudService {
         ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(docId);
         softDeletePaymentDocOf(itemDoc);
         unSetPayed(itemDoc);
+    }
+
+    // todo add tests
+    @Transactional
+    public void addSupplierPayments(String supplierName) {
+        Company supplier = companyService.getByName(supplierName);
+        List<Document> documents = documentService.getDocumentsBySupplierToPay(supplier);
+        OrderDoc orderDoc = getSupplierPaymentDoc(supplier, documents);
+        setPayed(documents, orderDoc);
+    }
+
+    // todo add tests
+    public List<DocToPaymentDTO> getDocsDTOToPay(int companyId) {
+        Company supplier = companyService.findById(companyId);
+        return documentService.getDocsToPay(supplier).stream()
+                .map(doc -> {
+                    DocToPaymentDTO dto = docMapper.mapToDocToPaymentDTO((ItemDoc) doc);
+                    DocInfo docInfo = docInfoService.getDocInfoByDocument(doc);
+                    if(docInfo != null) {
+                        dto.setSupplierDocNumber(docInfo.getSupplierDocNumber());
+                    }
+                    return dto;
+                }).collect(Collectors.toList());
     }
 }

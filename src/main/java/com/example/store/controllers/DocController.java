@@ -2,6 +2,7 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.dto.documents.DocToPaymentDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
@@ -11,6 +12,8 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/docs")
@@ -26,7 +29,8 @@ public class DocController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "0") long start,
             @RequestParam(defaultValue = "0") long end) {
-        return ResponseEntity.ok(docCrudService.getDocumentsByFilter(filter, start, end));
+        List<DocToListDTO> docToListDTOS = docCrudService.getDocumentsByFilter(filter, start, end);
+        return ResponseEntity.ok(new ListResponse<>(docToListDTOS));
     }
 
     @GetMapping
@@ -107,9 +111,24 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
+    // todo add tests
+    @PostMapping("/add/payments/{supplier}")
+    public ResponseEntity<Response<String>> addSupplierPayments(@PathVariable String supplier) {
+        docCrudService.addSupplierPayments(supplier);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
     @PostMapping("/delete/payment/{id}")
     public ResponseEntity<Response<String>> deletePayment(@PathVariable int id) {
         docCrudService.deletePayment(id);
         return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    // todo add tests
+    @GetMapping("/to/pay")
+    public ResponseEntity<ListResponse<DocToPaymentDTO>> getDocsToPay(
+            @RequestParam(defaultValue = "0") int companyId) {
+        List<DocToPaymentDTO> docToListDTOS = docCrudService.getDocsDTOToPay(companyId);
+        return ResponseEntity.ok(new ListResponse<>(docToListDTOS));
     }
 }

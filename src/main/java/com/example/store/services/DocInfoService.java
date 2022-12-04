@@ -8,8 +8,6 @@ import com.example.store.repositories.DocInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class DocInfoService {
 
@@ -21,8 +19,7 @@ public class DocInfoService {
     // todo add tests
 
     public DocInfo getDocInfoByDocument(Document document) {
-        Optional<DocInfo> optional = docInfoRepository.findByDocument(document);
-        return optional.orElse(null);
+        return docInfoRepository.findByDocument(document).orElse(null);
     }
 
     public DocInfoDTO getDocInfoDTOByDocument(Document document) {

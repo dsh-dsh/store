@@ -38,6 +38,11 @@ public class CompanyService {
                         this.getClass().getName() + " - getById(int id)"));
     }
 
+    // todo add tests
+    public Company findById(int id) {
+        return companyRepository.findById(id).orElse(null);
+    }
+
     public Company getByName(String name) {
         return companyRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new BadRequestException(

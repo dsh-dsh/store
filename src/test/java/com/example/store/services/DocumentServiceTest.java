@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Period;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
@@ -37,6 +38,8 @@ class DocumentServiceTest {
     private ProjectService projectService;
     @Autowired
     private PeriodService periodService;
+    @Autowired
+    private CompanyService companyService;
 
     @Sql(value = "/sql/documents/addSomeCheckDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -165,5 +168,27 @@ class DocumentServiceTest {
     void getNextDocumentNumberWhenDocNotExistsTest() {
         int newNumber = documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC);
         assertEquals(1, newNumber);
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocsToPayNotExistsTest() {
+        assertEquals(0, documentService.getDocsToPay(null).size());
+    }
+
+    @Sql(value = "/sql/documents/addFivePostingDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocsToPayTest() {
+        assertEquals(4, documentService.getDocsToPay(null).size());
+    }
+
+    @Sql(value = "/sql/documents/addFivePostingDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocsToPayBySupplierTest() {
+        Company supplier = companyService.getById(1);
+        assertEquals(2, documentService.getDocsToPay(supplier).size());
     }
 }

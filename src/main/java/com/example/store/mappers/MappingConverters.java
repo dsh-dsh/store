@@ -51,6 +51,7 @@ public class MappingConverters {
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());
     protected final Converter<Workshop, EnumDTO> workshopConverter = shop -> getEnumDTO(shop.getSource());
     protected final Converter<Unit, EnumDTO> unitConverter = unit -> getEnumDTO(unit.getSource());
+    protected final Converter<Company, String> supplierConverter = supplier -> supplier.getSource().getName();
 
     protected final Condition<Document, Document> isCheck =
             doc -> doc.getSource().getDocType() == DocumentType.CHECK_DOC;

@@ -1,5 +1,6 @@
 package com.example.store.repositories;
 
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
@@ -80,5 +81,12 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     Optional<Document> findFirstByAuthorInAndIsHold(List<User> authors, boolean isHold, Sort sort);
 
+    @Query("FROM Document " +
+            "WHERE docType = :docType " +
+            "AND (:supplier is null OR supplier = :supplier) " +
+            "AND isPayed = :isPayed")
+    List<Document> findDocsTtoPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
+
+    List<Document> findBySupplierAndIsPayed(Company company, boolean isPayed);
 
 }

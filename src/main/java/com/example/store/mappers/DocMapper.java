@@ -2,6 +2,8 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
+import com.example.store.model.dto.documents.DocToPaymentDTO;
+import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import org.modelmapper.ModelMapper;
@@ -34,6 +36,12 @@ public class DocMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(docItemsConverter).map(src -> src, DocDTO::setDocItems))
                 .addMappings(mapper -> mapper.using(docTypeConverter).map(ItemDoc::getDocType, DocDTO::setDocType))
                 .addMappings(mapper -> mapper.when(isCheck).using(checkInfoConverter).map(src -> src, DocDTO::setCheckInfo));
+
+        modelMapper.createTypeMap(ItemDoc.class, DocToPaymentDTO.class)
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(ItemDoc::getDateTime, DocToPaymentDTO::setDateTime))
+                .addMappings(mapper -> mapper.using(docTypeConverter).map(ItemDoc::getDocType, DocToPaymentDTO::setDocType))
+                .addMappings(mapper -> mapper.using(docItemAmountConverter).map(src -> src, DocToPaymentDTO::setAmount))
+                .addMappings(mapper -> mapper.using(supplierConverter).map(Document::getSupplier, DocToPaymentDTO::setSupplier));
     }
 
     public DocDTO mapToDocDTO(ItemDoc document) {
@@ -48,6 +56,10 @@ public class DocMapper extends MappingConverters {
     }
     public DocToListDTO mapToDocToListDTO(OrderDoc document) {
         return modelMapper.map(document, DocToListDTO.class);
+    }
+
+    public DocToPaymentDTO mapToDocToPaymentDTO(ItemDoc document) {
+        return modelMapper.map(document, DocToPaymentDTO.class);
     }
 
 }

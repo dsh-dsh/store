@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocMapper;
+import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
@@ -81,6 +82,11 @@ public class DocumentService {
                         this.getClass().getName() + " - getDocumentById(int docId)"));
     }
 
+    // todo add tests
+    public List<Document> getDocumentsBySupplierToPay(Company supplier) {
+        return documentRepository.findBySupplierAndIsPayed(supplier, false);
+    }
+
     public void setIsHoldAndSave(boolean hold, Document document) {
         document.setHold(hold);
         documentRepository.save(document);
@@ -105,5 +111,11 @@ public class DocumentService {
         } else {
             return null;
         }
+    }
+
+    protected List<Document> getDocsToPay(Company supplier) {
+        return documentRepository.findDocsTtoPayment(
+                DocumentType.POSTING_DOC, supplier, false,
+                Sort.by("supplier").and(Sort.by(Constants.DATE_TIME_STRING)));
     }
 }
