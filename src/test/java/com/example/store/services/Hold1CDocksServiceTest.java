@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.TransactionException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.*;
@@ -575,6 +576,29 @@ class Hold1CDocksServiceTest {
     @Test
     void checkUnHoldenDocksExistsTest() {
         assertFalse(hold1CDocksService.checkUnHoldenDocksExists(LocalDateTime.now()));
+    }
+
+    @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getFirstUnHoldenCheckDateTest() {
+        assertEquals(Util.getLocalDateTime("15.04.22 00:00:00"), hold1CDocksService.getFirstUnHoldenCheckDate());
+    }
+
+    @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkExistingNotHoldenChecksBeforeTest() {
+        LocalDateTime currentDate = Util.getLocalDateTime("15.04.22 00:00:00");
+        assertDoesNotThrow(() -> hold1CDocksService.checkExistingNotHoldenChecksBefore(currentDate));
+    }
+
+    @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkExistingNotHoldenChecksBeforeDoThrowTest() {
+        LocalDateTime currentDate = Util.getLocalDateTime("16.04.22 00:00:00");
+        assertThrows(BadRequestException.class, () -> hold1CDocksService.checkExistingNotHoldenChecksBefore(currentDate));
     }
 
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {

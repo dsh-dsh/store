@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -89,9 +90,7 @@ public class Hold1CDocksService {
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
-        Period period = periodService.getCurrentPeriod();
-        LocalDateTime from = documentService.getFirstUnHoldenCheck(period.getStartDate().atStartOfDay())
-                .getDateTime().toLocalDate().atStartOfDay();
+        LocalDateTime from = getFirstUnHoldenCheckDate();
         LocalDateTime to = from.plusDays(1);
         hold1CDocsByPeriod(from, to);
     }
@@ -114,6 +113,21 @@ public class Hold1CDocksService {
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
         checkUnHoldenDocksExists(to);
+    }
+
+    protected void checkExistingNotHoldenChecksBefore(LocalDateTime currentDate) {
+        LocalDateTime existingDate = getFirstUnHoldenCheckDate();
+        if(currentDate.isAfter(existingDate)) {
+            throw new BadRequestException(
+                    String.format(Constants.EXISTS_NOT_HOLDEN_CHECK_BEFORE_MESSAGE, currentDate, existingDate),
+                    this.getClass().getName() + " - deleteItemDoc(int docId)");
+        }
+    }
+
+    protected LocalDateTime getFirstUnHoldenCheckDate() {
+        Period period = periodService.getCurrentPeriod();
+        return documentService.getFirstUnHoldenCheck(period.getStartDate().atStartOfDay())
+                .getDateTime().toLocalDate().atStartOfDay();
     }
 
     protected void setLastCheckTime() {

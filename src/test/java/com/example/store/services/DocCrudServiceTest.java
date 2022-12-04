@@ -4,10 +4,7 @@ import com.example.store.components.PeriodStartDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.dto.documents.DocDTO;
-import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
-import com.example.store.model.entities.documents.ItemDoc;
-import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
@@ -15,8 +12,6 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
@@ -30,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
