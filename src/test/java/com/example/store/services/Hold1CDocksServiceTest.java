@@ -7,6 +7,7 @@ import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.DocItemRepository;
@@ -28,6 +29,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,9 +110,11 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.createCreditOrders(storage);
         List<OrderDoc> orders = orderDocRepository.findAll();
-        assertEquals(2, orders.size());
-        assertEquals(PaymentType.SALE_CARD_PAYMENT, orders.get(0).getPaymentType());
-        assertEquals(PaymentType.SALE_CASH_PAYMENT, orders.get(1).getPaymentType());
+        assertEquals(3, orders.size());
+        Set<PaymentType> set = orders.stream().map(OrderDoc::getPaymentType).collect(Collectors.toSet());
+        assertTrue(set.contains(PaymentType.SALE_CASH_PAYMENT));
+        assertTrue(set.contains(PaymentType.SALE_CARD_PAYMENT));
+        assertTrue(set.contains(PaymentType.SALE_QR_PAYMENT));
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
         hold1CDocksService.setChecks(new ArrayList<>());
@@ -128,8 +132,8 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLastCheckTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
-        Map<Boolean, Float> map = hold1CDocksService.getSumMap();
-        assertEquals(2, map.size());
+        Map<CheckPaymentType, Float> map = hold1CDocksService.getSumMap();
+        assertEquals(3, map.size());
         assertEquals(
                 (float) docItemRepository.findAll().stream()
                         .mapToDouble(item -> (item.getPrice()*item.getQuantity().floatValue()) - item.getDiscount()).sum(),
@@ -264,12 +268,13 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.createCreditOrders(storage);
         List<Document> documents = documentService.getAllDocuments();
         documents.sort(Comparator.comparing(Document::getDateTime));
-        assertEquals(7, documents.size());
+        assertEquals(8, documents.size());
         assertEquals(DocumentType.CHECK_DOC, documents.get(0).getDocType());
         assertEquals(DocumentType.RECEIPT_DOC, documents.get(3).getDocType());
         assertEquals(DocumentType.WRITE_OFF_DOC, documents.get(4).getDocType());
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(5).getDocType());
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(6).getDocType());
+        assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(7).getDocType());
 
         addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
 

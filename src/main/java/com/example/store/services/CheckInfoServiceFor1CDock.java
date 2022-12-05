@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckInfoServiceFor1CDock extends CheckInfoService{
 
-    // todo update tests
     @Override
     public void setFields(CheckInfoDTO checkInfoDTO, CheckInfo checkInfo) {
         checkInfo.setCheckNumber(checkInfoDTO.getCheckNumber());

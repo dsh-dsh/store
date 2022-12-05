@@ -32,6 +32,10 @@ public class CheckInfoService {
                         this.getClass().getName() + " - getCheckInfo(ItemDoc check)"));
     }
 
+    public CheckPaymentType getCheckPaymentType(ItemDoc check) {
+        return getCheckInfo(check).getCheckPaymentType();
+    }
+
     public void addCheckInfo(CheckInfoDTO checkInfoDTO, ItemDoc check) {
         CheckInfo checkInfo = new CheckInfo();
         setFields(checkInfoDTO, checkInfo);
@@ -59,7 +63,6 @@ public class CheckInfoService {
         checkInfo.setKKMChecked(checkInfoDTO.isKKMChecked());
         checkInfo.setPayed(checkInfoDTO.isPayed());
         checkInfo.setCheckPaymentType(CheckPaymentType.getByValue(checkInfoDTO.getCheckPaymentType()));
-        checkInfo.setPayedByCard(checkInfoDTO.isPayedByCard()); // todo deprecated update tests
         checkInfo.setDelivery(checkInfoDTO.isDelivery());
     }
 

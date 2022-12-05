@@ -194,7 +194,7 @@ class Document1CControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         List<Document> documents = documentService.getAllDocuments();
-        assertEquals(7, documents.size());
+        assertEquals(8, documents.size());
         List<Lot> lots = lotRepository.findAll();
         assertFalse(lots.isEmpty());
         List<LotMovement> lotMovements = lotMoveRepository.findAll();

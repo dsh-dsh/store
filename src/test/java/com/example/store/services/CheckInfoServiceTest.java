@@ -5,6 +5,7 @@ import com.example.store.model.dto.CheckInfoDTO;
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,7 @@ class CheckInfoServiceTest {
         CheckInfoDTO dto = getInfoDTO();
         checkInfoService.setFields(dto, checkInfo);
         assertEquals(12345, checkInfo.getCheckNumber());
+        assertEquals(CheckPaymentType.QR_PAYMENT, checkInfo.getCheckPaymentType());
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -98,6 +100,14 @@ class CheckInfoServiceTest {
         assertEquals("Официант 10", dto.getWaiter());
     }
 
+    @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getCheckPaymentTypeTest() {
+        Document document = documentService.getDocumentById(1);
+        assertEquals(CheckPaymentType.CARD_PAYMENT, checkInfoService.getCheckPaymentType((ItemDoc) document));
+    }
+
     private CheckInfoDTO getInfoDTO() {
         CheckInfoDTO dto = new CheckInfoDTO();
         dto.setAmountReceived(1000.00f);
@@ -108,7 +118,7 @@ class CheckInfoServiceTest {
         dto.setDelivery(false);
         dto.setKKMChecked(true);
         dto.setPayed(true);
-        dto.setPayedByCard(false);
+        dto.setCheckPaymentType(CheckPaymentType.QR_PAYMENT.getValue());
         dto.setReturn(false);
         dto.setTableNumber(1);
         dto.setWaiter("abc");

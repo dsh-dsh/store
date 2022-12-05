@@ -5,6 +5,7 @@ import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
 import com.example.store.repositories.DocumentRepository;
@@ -77,8 +78,6 @@ public class Hold1CDocksService {
 
     public static final int RECEIPT_DOC_OFFSET = 1;
     public static final int WRITE_OFF_DOC_OFFSET = 2;
-    public static final int SALE_CARD_PAYMENT_OFFSET = 3;
-    public static final int SALE_CASH_PAYMENT_OFFSET = 4;
 
     @Value("${spring.mail.to.email}")
     private String toEmail;
@@ -138,23 +137,33 @@ public class Hold1CDocksService {
     }
 
     public void createCreditOrders(Storage storage) {
-        Optional<Project> optionalProject = projectService.getProjectByStorageName(storage.getName());
-        Project project;
-        if(optionalProject.isEmpty()) return;
-        else project = optionalProject.get();
-
-        Map<Boolean, Float> sumMap = getSumMap();
-        if(sumMap.get(BY_CARD_KEY) > 0) {
-            createOrderDoc(sumMap.get(BY_CARD_KEY), PaymentType.SALE_CARD_PAYMENT, project,
-                    lastCheckTime.plus(SALE_CARD_PAYMENT_OFFSET, ChronoUnit.MILLIS));
-        }
-        if(sumMap.get(BY_CASH_KEY) > 0) {
-            createOrderDoc(sumMap.get(BY_CASH_KEY), PaymentType.SALE_CASH_PAYMENT, project,
-                    lastCheckTime.plus(SALE_CASH_PAYMENT_OFFSET, ChronoUnit.MILLIS));
+        int offset = WRITE_OFF_DOC_OFFSET + 1;
+        Project project = projectService.getProjectByStorageName(storage.getName()).orElse(null);
+        if(project == null) return;
+        for(Map.Entry<PaymentType, Float> entry : getPaymentAmountMap(getSumMap()).entrySet()) {
+            createOrderDoc(entry.getValue(), entry.getKey(), project, lastCheckTime.plus(offset++, ChronoUnit.MILLIS));
         }
     }
 
-    public void createOrderDoc(float sum, PaymentType type, Project project, LocalDateTime time) {
+    protected Map<PaymentType, Float> getPaymentAmountMap(Map<CheckPaymentType, Float> sumMap) {
+        Map<CheckPaymentType, PaymentType> enumMap = new EnumMap<>(CheckPaymentType.class);
+        enumMap.put(CheckPaymentType.CARD_PAYMENT, PaymentType.SALE_CARD_PAYMENT);
+        enumMap.put(CheckPaymentType.CASH_PAYMENT, PaymentType.SALE_CASH_PAYMENT);
+        enumMap.put(CheckPaymentType.QR_PAYMENT, PaymentType.SALE_QR_PAYMENT);
+        enumMap.put(CheckPaymentType.DELIVERY_PAYMENT, PaymentType.SALE_DELIVERY_PAYMENT);
+        return sumMap.entrySet().stream()
+                .collect(Collectors.toMap(entry -> enumMap.get(entry.getKey()), Map.Entry::getValue));
+    }
+
+    protected Map<CheckPaymentType, Float> getSumMap() {
+        return checks.stream()
+                .collect(Collectors.toMap(
+                        checkInfoService::getCheckPaymentType,
+                        docItemService::getItemsAmount,
+                        Float::sum));
+    }
+
+    protected void createOrderDoc(float sum, PaymentType type, Project project, LocalDateTime time) {
         DocumentType docType = DocumentType.WITHDRAW_ORDER_DOC;
         OrderDoc order = new OrderDoc();
         order.setNumber(documentService.getNextDocumentNumber(docType));
@@ -168,21 +177,6 @@ public class Hold1CDocksService {
         order.setPaymentType(type);
         order.setAmount(sum);
         orderDocRepository.save(order);
-    }
-
-    public Map<Boolean, Float> getSumMap() {
-        Map<Boolean, Float> sumMap = new HashMap<>();
-        sumMap.put(true, 0f);
-        sumMap.put(false, 0f);
-        List<DocumentItem> items;
-        CheckInfo checkInfo;
-        for(ItemDoc check : checks) {
-            items = docItemService.getItemsByDoc(check);
-            checkInfo = checkInfoService.getCheckInfo(check);
-            float sum = (float)items.stream().mapToDouble(item -> (item.getQuantity().floatValue() * item.getPrice()) - item.getDiscount()).sum();
-            sumMap.merge(checkInfo.isPayedByCard(), sum, Float::sum);
-        }
-        return sumMap;
     }
 
     protected void holdDocsBefore() {

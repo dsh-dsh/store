@@ -45,6 +45,7 @@ public class Constants {
     public static final String SALE_CASH_PAYMENT_TYPE = "Выручка наличными";
     public static final String SALE_CARD_PAYMENT_TYPE = "Выручка по картам";
     public static final String SALE_QR_PAYMENT_TYPE = "Выручка по QR";
+    public static final String SALE_DELIVERY_PAYMENT_TYPE = "Выручка по доставке";
 
     public static final String CASH_PAYMENT_TYPE = "Оплата наличными";
     public static final String CARD_PAYMENT_TYPE = "Оплата картой";
