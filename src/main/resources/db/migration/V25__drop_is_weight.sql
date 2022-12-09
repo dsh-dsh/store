@@ -1,0 +1,1 @@
+alter table item drop column is_weight;

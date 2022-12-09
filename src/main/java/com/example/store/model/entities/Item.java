@@ -31,8 +31,6 @@ public class Item implements EntityInterface{
     @Column(nullable = false)
     private LocalDateTime regTime;
 
-
-    private boolean isWeight;
     private boolean isNotInEmployeeMenu;
 
     private boolean isNotInPriceList;

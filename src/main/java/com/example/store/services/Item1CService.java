@@ -103,7 +103,6 @@ public class Item1CService extends ItemService{
     protected void updateItemFields(Item item, ItemDTO dto) {
         item.setName(dto.getName());
         item.setPrintName(dto.getPrintName());
-        item.setWeight(dto.isWeight());
         item.setNotInEmployeeMenu(dto.isNotInEmployeeMenu());
         item.setAlcohol(dto.isAlcohol());
         item.setGarnish(dto.isGarnish());

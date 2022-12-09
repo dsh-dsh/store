@@ -329,7 +329,7 @@ class IngredientCalculationTest {
         LocalDate date = LocalDate.now();
         List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item, date);
         assertDoesNotThrow(
-                () -> ingredientCalculation.checkForPortionItemInWeightItem(item.isWeight(), ingredients.get(0)));
+                () -> ingredientCalculation.checkForPortionItemInWeightItem(true, ingredients.get(0)));
     }
 
     @Sql(value = {"/sql/ingredients/setIngredients.sql", "/sql/ingredients/setNotWeightIngredient.sql"}

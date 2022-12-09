@@ -27,9 +27,6 @@ public class ItemDTO {
     @JsonProperty("reg_time")
     private long regTime;
 
-    @JsonProperty("is_weight")
-    private boolean isWeight;
-
     @JsonProperty("is_not_in_employee_menu")
     private boolean isNotInEmployeeMenu;
 
