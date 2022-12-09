@@ -36,18 +36,17 @@ public class SalesReportService extends ReportService {
 
     // todo add tests
 
-    public SalesReport getSalesReport(int itemId, int projectId, long dateStart, long dateEnd, boolean includeNull, boolean onlyHolden) {
+    public SalesReport getSalesReport(List<Integer> itemIdList, int projectId, long dateStart, long dateEnd, boolean includeNull, boolean onlyHolden) {
         Project project = projectService.getById(projectId);
         LocalDateTime start = Util.getLocalDate(dateStart).atStartOfDay();
         LocalDateTime end = Util.getLocalDate(dateEnd).atStartOfDay().plusDays(1);
         this.includeNull = includeNull;
         this.onlyHolden = onlyHolden;
-        Item item = getItem(itemId);
-        return getReport(item, project, start, end);
+        List<Item> items = getItemList(itemIdList);
+        return getReport(items, project, start, end);
     }
 
-    public SalesReport getReport(Item item, Project project, LocalDateTime dateStart, LocalDateTime dateEnd) {
-        List<Item> items = getItemList(item);
+    public SalesReport getReport(List<Item> items, Project project, LocalDateTime dateStart, LocalDateTime dateEnd) {
         documentItems = docItemService.getItemsByPeriod(project, dateStart, dateEnd, onlyHolden);
         List<SalesItemLine> lines = items.stream()
                 .map(this::getSalesItemLine)

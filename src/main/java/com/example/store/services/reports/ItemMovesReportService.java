@@ -40,7 +40,6 @@ public class ItemMovesReportService extends ReportService {
     private LocalDateTime dateEnd;
     private boolean includeNull;
     private boolean onlyHolden;
-    private Item item;
 
     // only for tests
     public void setCurrentStorage(Storage storage) {
@@ -52,18 +51,16 @@ public class ItemMovesReportService extends ReportService {
 
     // todo add tests
 
-    public ItemMovesReport getItemMoveReport(int itemId, int storageId, long start, long end, boolean includeNull, boolean onlyHolden) {
+    public ItemMovesReport getItemMoveReport(List<Integer> itemIdList, int storageId, long start, long end, boolean includeNull, boolean onlyHolden) {
         this.currentStorage = storageService.getById(storageId);
         this.dateStart = Util.getLocalDateTime(start).plusSeconds(1); // plusSeconds(1) duy to not include close period docs
         this.dateEnd = Util.getLocalDateTime(end).plusDays(1).minusSeconds(1);
         this.includeNull = includeNull;
         this.onlyHolden = onlyHolden;
-        this.item = getItem(itemId);
-        return getReport();
+        return getReport(getItemList(itemIdList));
     }
 
-    public ItemMovesReport getReport() {
-        List<Item> items = getItemList(item);
+    public ItemMovesReport getReport(List<Item> items) {
         Map<Item, BigDecimal> startRestList = itemRestService.getItemsRestOnStorage(items, currentStorage, dateStart);
         List<ItemLine> itemLines = getItemLines(startRestList);
         return new ItemMovesReport(itemLines);

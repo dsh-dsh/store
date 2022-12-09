@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/reports")
 public class ReportController {
@@ -35,18 +37,18 @@ public class ReportController {
 
     @GetMapping("/item/moves")
     public ResponseEntity<Response<ItemMovesReport>> getItemMovesReport(
-            @RequestParam int itemId, @RequestParam int storageId, @RequestParam long start, @RequestParam long end,
+            @RequestParam List<Integer> itemIdList, @RequestParam int storageId, @RequestParam long start, @RequestParam long end,
             @RequestParam boolean includeNull, @RequestParam boolean onlyHolden){
         return ResponseEntity.ok(new Response<>(itemMovesReportService
-                .getItemMoveReport(itemId, storageId, start, end, includeNull, onlyHolden)));
+                .getItemMoveReport(itemIdList, storageId, start, end, includeNull, onlyHolden)));
     }
 
     @GetMapping("/sales")
     public ResponseEntity<Response<SalesReport>> getSalesReport(
-            @RequestParam int itemId, @RequestParam int projectId, @RequestParam long start, @RequestParam long end,
+            @RequestParam List<Integer> itemIdList, @RequestParam int projectId, @RequestParam long start, @RequestParam long end,
             @RequestParam boolean includeNull, @RequestParam boolean onlyHolden){
         return ResponseEntity.ok(new Response<>(salesReportService
-                .getSalesReport(itemId, projectId, start, end, includeNull, onlyHolden)));
+                .getSalesReport(itemIdList, projectId, start, end, includeNull, onlyHolden)));
     }
 
 }
