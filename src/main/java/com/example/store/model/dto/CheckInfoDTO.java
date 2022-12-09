@@ -46,9 +46,6 @@ public class CheckInfoDTO {
     @JsonProperty("is_payed")
     private boolean isPayed;
 
-    @JsonProperty("is_payed_by_card")
-    private boolean isPayedByCard;
-
     @JsonProperty("check_payment_type")
     private String checkPaymentType;
 

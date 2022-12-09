@@ -1,0 +1,1 @@
+alter table check_kkm_info drop column is_payed_by_card;

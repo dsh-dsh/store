@@ -16,11 +16,11 @@ values
 
 insert into check_kkm_info
 (id, amount_received, cash_register_number, check_id, check_number, date_time, guest_number, is_delivery,
-is_kkm_checked, is_payed, is_payed_by_card, is_return, table_number, waiter)
+is_kkm_checked, is_payed, is_return, table_number, waiter)
 values
-(1, 1000.0, 63214823871, 1, 65469, '2022-04-16T01:00:00.004', 1, B'1', B'1', B'1', B'1', B'1', 12, 'Официант 10'),
-(2, 1000.0, 63214823871, 2, 65469, '2022-04-16T01:00:00.004', 2, B'1', B'1', B'1', B'1', B'1', 12, 'Официант 10'),
-(3, 1000.0, 63214823871, 3, 65469, '2022-04-16T01:00:00.004', 3, B'1', B'1', B'1', B'0', B'1', 12, 'Официант 10');
+(1, 1000.0, 63214823871, 1, 65469, '2022-04-16T01:00:00.004', 1, B'1', B'1', B'1', B'1', 12, 'Официант 10'),
+(2, 1000.0, 63214823871, 2, 65469, '2022-04-16T01:00:00.004', 2, B'1', B'1', B'1', B'1', 12, 'Официант 10'),
+(3, 1000.0, 63214823871, 3, 65469, '2022-04-16T01:00:00.004', 3, B'1', B'1', B'1', B'1', 12, 'Официант 10');
 
 insert into document_item
 (id, discount, item_id, document_id, price, d_quantity, quantity_fact)

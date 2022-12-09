@@ -40,9 +40,6 @@ public class CheckInfo {
 
     private boolean isPayed;
 
-    @Deprecated(forRemoval = true)
-    private boolean isPayedByCard;
-
     private boolean isDelivery;
 
     @Enumerated(EnumType.STRING)

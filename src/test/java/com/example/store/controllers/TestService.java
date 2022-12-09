@@ -76,7 +76,6 @@ public class TestService {
         dto.setPayed(value == 0);
         CheckPaymentType type = value == 0? CheckPaymentType.CARD_PAYMENT : CheckPaymentType.CASH_PAYMENT;
         dto.setCheckPaymentType(type.getValue());
-        dto.setPayedByCard(value == 0);
         dto.setDelivery(value == 0);
 
         return dto;
