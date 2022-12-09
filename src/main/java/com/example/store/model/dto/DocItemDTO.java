@@ -23,6 +23,8 @@ public class DocItemDTO {
     @JsonProperty("item_name")
     private String itemName;
 
+    private String unit;
+
     private float quantity;
 
     private float amount;

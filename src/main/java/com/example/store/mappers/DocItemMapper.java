@@ -19,6 +19,9 @@ public class DocItemMapper {
     private static final Converter<Item, Integer> idConverter =
             item -> item.getSource().getId();
 
+    private static final Converter<Item, String> unitConverter =
+            item -> item.getSource().getUnit().getValue();
+
     private static final Converter<DocumentItem, Float> amountConverter =
             item -> {
                     DocumentItem docItem = item.getSource();
@@ -37,7 +40,8 @@ public class DocItemMapper {
                 .addMappings(mapper -> mapper.using(amountConverter).map(src -> src, DocItemDTO::setAmount))
                 .addMappings(mapper -> mapper.using(amountFactConverter).map(src -> src, DocItemDTO::setAmountFact))
                 .addMappings(mapper -> mapper.using(idConverter).map(DocumentItem::getItem, DocItemDTO::setItemId))
-                .addMappings(mapper -> mapper.using(nameConverter).map(DocumentItem::getItem, DocItemDTO::setItemName));
+                .addMappings(mapper -> mapper.using(nameConverter).map(DocumentItem::getItem, DocItemDTO::setItemName))
+                .addMappings(mapper -> mapper.using(unitConverter).map(DocumentItem::getItem, DocItemDTO::setUnit));
     }
 
     public DocItemDTO mapToDocItemDTO(DocumentItem item) {
