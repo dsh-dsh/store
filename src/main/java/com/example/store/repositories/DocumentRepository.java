@@ -34,10 +34,11 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "FROM document " +
             "WHERE doc_type = :docType " +
             "AND number < 1000000000 " + // not 1C doc
+            "AND date_time >= :currentYearStart " +
             "ORDER BY number DESC " +
             "LIMIT 1"
             , nativeQuery = true)
-    int getLastNumber(String docType);
+    int getLastNumber(String docType, LocalDateTime currentYearStart);
 
     List<Document> findByIsHoldAndDateTimeAfter(
             boolean isHold, LocalDateTime dateTime, Sort sort);

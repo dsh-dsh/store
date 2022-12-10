@@ -1,38 +1,38 @@
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
-(10, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(10, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Некое блюдо", "Некое блюдо", "2012-02-02T12:00:00", 1, "PORTION", "KITCHEN", B'0', 10);
 
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
-(11, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(11, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Полуфабрикат 1", "Полуфабрикат 1", "2012-02-02T12:00:00", 2, "KG", "NONE", B'0', 11),
-(12, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(12, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Полуфабрикат 2", "Полуфабрикат 2", "2012-02-02T12:00:00", 2, "KG", "NONE", B'0', 12),
-(13, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(13, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Полуфабрикат 3", "Полуфабрикат 3", "2012-02-02T12:00:00", 2, "KG", "NONE", B'0', 13),
-(14, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(14, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Украшение тарелки", "Некое блюдо", "2012-02-02T12:00:00", 1, "PORTION", "KITCHEN", B'0', 10);
 
 insert into item
-(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce, is_weight,
+(id, is_alcohol, is_not_in_price_list, is_garnish, is_not_in_employee_menu, is_include_garnish, is_include_sauce, is_sauce,
 name, print_name, reg_time, parent_id, unit, workshop, is_deleted, number)
 values
-(15, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(15, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Ингредиент 1", "Ингредиент 1", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 14),
-(16, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(16, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Ингредиент 2", "Ингредиент 2", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 15),
-(17, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(17, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Ингредиент 3", "Ингредиент 3", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 16),
-(18, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(18, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Ингредиент 4", "Ингредиент 4", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 17),
-(19, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(19, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Помидоры", "Помидоры", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 16),
-(20, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000', B'000000',
+(20, B'000000', B'000000', B'000000', B'000001', B'000000', B'000001', B'000000',
 "Огурцы", "Огурцы", "2012-02-02T12:00:00", 3, "KG", "NONE", B'0', 17);
 
 insert into ingredient

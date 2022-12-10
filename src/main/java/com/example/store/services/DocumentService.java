@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 @Service
@@ -96,9 +98,12 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
+    // todo update tests
     protected int getNextDocumentNumber(DocumentType type) {
         try {
-            return documentRepository.getLastNumber(type.toString()) + 1;
+            LocalDateTime yearStart = LocalDate.now()
+                    .withMonth(Month.JANUARY.getValue()).withDayOfMonth(1).atStartOfDay();
+            return documentRepository.getLastNumber(type.toString(), yearStart) + 1;
         } catch (Exception exception) {
             return Constants.START_DOCUMENT_NUMBER;
         }
