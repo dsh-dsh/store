@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -40,7 +40,7 @@ public class LotService {
     @Autowired
     private ItemRestService itemRestService;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
     @Autowired
     @Qualifier("addRestForHold")
     private PropertySetting addRestForHoldSetting;
@@ -143,7 +143,7 @@ public class LotService {
     }
 
     public Map<Lot, BigDecimal> getLotsOfItem(Item item, Storage storage, LocalDateTime endTime) {
-        List<LotBigDecimal> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), endTime);
+        List<LotBigDecimal> lotsOfItem = lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodDateTime.getStartDateTime(), endTime);
         return lotsOfItem.stream()
                 .collect(Collectors.toMap(
                         lotBigDecimal -> getLotById(lotBigDecimal.getId()),

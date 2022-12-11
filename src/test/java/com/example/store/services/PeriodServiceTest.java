@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.DocumentItem;
@@ -45,7 +45,7 @@ class PeriodServiceTest {
     @Autowired
     private DocumentService documentService;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
     @Autowired
     private ItemService itemService;
 
@@ -97,7 +97,7 @@ class PeriodServiceTest {
     void closePeriodForStorage3Test() {
         Item frenchFries = itemService.getItemById(7);
         Item flour = itemService.getItemById(8);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
         periodService.closePeriodForStorage(newPeriodStart, storage);
@@ -115,7 +115,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage1Test() {
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(1);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
@@ -132,7 +132,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getDocItemsOnStorage3Test() {
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         LocalDateTime newPeriodStart = periodService.getNewPeriodStart();
         Storage storage = storageService.getById(3);
         ItemDoc doc = periodService.createRestMoveDoc(newPeriodStart, storage);
@@ -187,7 +187,7 @@ class PeriodServiceTest {
     void setNextPeriodTest() {
         Period period = periodService.setNextPeriod();
         assertEquals(LocalDate.parse("2022-05-31"), period.getEndDate());
-        assertEquals(LocalDateTime.parse("2022-05-01T00:00"), periodStartDateTime.get());
+        assertEquals(LocalDateTime.parse("2022-05-01T00:00"), periodDateTime.getStartDateTime());
     }
 
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -195,7 +195,7 @@ class PeriodServiceTest {
     void setNextPeriodIfNoCurrentTest() {
         Period period = periodService.setNextPeriod();
         assertEquals(LocalDate.parse("2000-01-01"), period.getStartDate());
-        assertEquals(LocalDateTime.parse("2000-01-01T00:00"), periodStartDateTime.get());
+        assertEquals(LocalDateTime.parse("2000-01-01T00:00"), periodDateTime.getStartDateTime());
     }
 
     @Test

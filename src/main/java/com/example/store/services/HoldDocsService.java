@@ -79,14 +79,15 @@ public class HoldDocsService {
     @Transaction
     public void unHoldDoc(Document document) {
         document.setHold(false);
-        if(document instanceof ItemDoc) {
+        if(document.getDocType() == DocumentType.CREDIT_ORDER_DOC
+                || document.getDocType() == DocumentType.WITHDRAW_ORDER_DOC) {
+            orderDocRepository.save((OrderDoc) document);
+        } else {
             List<DocumentItem> items =
                     docItemService.getItemsByDoc((ItemDoc) document);
             lotMoveService.removeByDocument((ItemDoc) document);
             lotService.removeLotsForItems(items);
             itemDocRepository.save((ItemDoc) document);
-        } else {
-            orderDocRepository.save((OrderDoc) document);
         }
     }
 

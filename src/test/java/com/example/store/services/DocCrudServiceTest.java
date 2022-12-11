@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.dto.documents.DocDTO;
@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DocCrudServiceTest {
 
     private static final long START = 1640995200000L; // 01/01/2022
+    private static final long MIDDLE = 1649970000000L; // 15/04/2022
     private static final long END = 1656633600000L;  // 01/07/2022
 
     @Autowired
@@ -43,7 +44,7 @@ class DocCrudServiceTest {
     @Autowired
     private LotMoveRepository lotMoveRepository;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
     @Autowired
     private DocItemService docItemService;
     @Autowired
@@ -106,7 +107,7 @@ class DocCrudServiceTest {
         dto.setDocType(DocumentType.POSTING_DOC.getValue());
         dto.setDateTime(1647443208000L); // 16/04/2022
         dto.setId(1);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         docCrudService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(1).isDeleted());
     }
@@ -120,7 +121,7 @@ class DocCrudServiceTest {
         dto.setDocType(DocumentType.CREDIT_ORDER_DOC.getValue());
         dto.setDateTime(1647443208000L); // 16/04/2022
         dto.setId(docId);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         docCrudService.softDeleteDocument(dto);
         assertTrue(documentService.getDocumentById(docId).isDeleted());
     }
@@ -130,7 +131,7 @@ class DocCrudServiceTest {
     @Test
     void holdDocumentTest() {
         int docId = 1;
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         docCrudService.holdDocument(docId);
         assertEquals(2, lotRepository.findAll().size());
         assertEquals(2, lotMoveRepository.findAll().size());
@@ -142,7 +143,7 @@ class DocCrudServiceTest {
     @Test
     void unHoldDocumentTest() {
         int docId = 6;
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         docCrudService.unHoldDocument(docId);
         assertFalse(documentService.getDocumentById(docId).isHold());
     }
@@ -153,7 +154,7 @@ class DocCrudServiceTest {
     @Test
     void unHoldDocumentWhenHoldenDocsExistsAfterTest() {
         int docId = 5;
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         assertThrows(WarningException.class, () -> docCrudService.unHoldDocument(docId));
     }
 
@@ -163,9 +164,9 @@ class DocCrudServiceTest {
     @Test
     void unHoldDocumentWhenStartPeriodIsAfterTest() {
         int docId = 5;
-        periodStartDateTime.setDateTime(LocalDate.parse("2022-10-10").atStartOfDay());
+        periodDateTime.setStartDateTime(LocalDate.parse("2022-10-10").atStartOfDay());
         assertThrows(BadRequestException.class, () -> docCrudService.unHoldDocument(docId));
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
     }
 
     @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -221,12 +222,44 @@ class DocCrudServiceTest {
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void checkTimePeriodThrowExceptionTest() {
+    void checkTimePeriodBeforeThrowExceptionTest() {
         DocDTO dto = new DocDTO();
         dto.setDateTime(START);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         assertThrows(BadRequestException.class,
-                () -> docCrudService.checkTimePeriod(dto));
+                () -> docCrudService.checkTimePeriod(Util.getLocalDateTime(dto.getDateTime())));
+    }
+
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkTimePeriodTest() {
+        DocDTO dto = new DocDTO();
+        dto.setDateTime(MIDDLE);
+        periodDateTime.setPeriodStart();
+        assertDoesNotThrow(() -> docCrudService.checkTimePeriod(Util.getLocalDateTime(dto.getDateTime())));
+    }
+
+    @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkTimePeriodAfterThrowExceptionTest() {
+        DocDTO dto = new DocDTO();
+        dto.setDateTime(END);
+        periodDateTime.setPeriodStart();
+        assertThrows(BadRequestException.class,
+                () -> docCrudService.checkTimePeriod(Util.getLocalDateTime(dto.getDateTime())));
+    }
+
+    @Sql(value = {"/sql/period/addPeriods.sql",
+            "/sql/period/addOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkTimePeriodByDocumentThrowExceptionTest() {
+        Document document = documentService.getDocumentById(6);
+        periodDateTime.setPeriodStart();
+        assertThrows(BadRequestException.class,
+                () -> docCrudService.checkTimePeriod(document.getDateTime()));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -258,17 +291,6 @@ class DocCrudServiceTest {
         docCrudService.setSaveTime(Constants.CURRENT_TIME);
         assertDoesNotThrow( () -> docCrudService.checkSaveTime(dto));
         docCrudService.setSaveTime(null);
-    }
-
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void checkTimePeriodByDocumentThrowExceptionTest() {
-        Document document = documentService.getDocumentById(6);
-        periodStartDateTime.setPeriodStart();
-        assertThrows(BadRequestException.class,
-                () -> docCrudService.checkTimePeriod(document));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -347,22 +369,22 @@ class DocCrudServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getLastCheckNumberTest() {
-        periodStartDateTime.setDateTime(Util.getLocalDateTime("01.04.22 00:00:00"));
+        periodDateTime.setStartDateTime(Util.getLocalDateTime("01.04.22 00:00:00"));
         String response = docCrudService.getLastCheckNumber(3);
         assertNotEquals("", response);
         assertEquals("<3000000003>CHECK_DOC*16.04.2022", response);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
     }
 
     @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getLastCheckNumberOutOfPeriodTest() {
-        periodStartDateTime.setDateTime(Util.getLocalDateTime("01.05.22 00:00:00"));
+        periodDateTime.setStartDateTime(Util.getLocalDateTime("01.05.22 00:00:00"));
         String response = docCrudService.getLastCheckNumber(3);
         assertNotEquals("", response);
         assertEquals("<3000000003>CHECK_DOC*16.04.2022", response);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
     }
 
 }

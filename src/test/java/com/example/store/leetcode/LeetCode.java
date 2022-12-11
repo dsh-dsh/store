@@ -118,7 +118,7 @@ class LeetCodeTest {
 //            if(map.containsKey(s.charAt(i))) {
 //                int strLength = i - start;
 //                result = Math.max(result, strLength);
-//                start = i = map.get(s.charAt(i))+1;
+//                start = i = map.getStartDateTime(s.charAt(i))+1;
 //                map.clear();
 //            }
 //            map.put(s.charAt(i), i);

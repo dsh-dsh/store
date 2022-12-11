@@ -12,26 +12,32 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Component
-public class PeriodStartDateTime {
+public class PeriodDateTime {
 
     @Autowired
     private PeriodRepository periodRepository;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
 
     @PostConstruct
     public void setPeriodStart() {
         Optional<Period> period = periodRepository.findByIsCurrent(true);
-        this.dateTime = period.map(value -> value.getStartDate().atStartOfDay())
+        this.startDateTime = period.map(value -> value.getStartDate().atStartOfDay())
                 .orElseGet(() -> LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
+        this.endDateTime = period.map(value -> value.getEndDate().plusDays(1).atStartOfDay()) // set to start of next day after period
+                .orElseGet(() -> LocalDate.now().plusDays(30).atStartOfDay());
     }
 
-    public LocalDateTime get() {
-        return dateTime;
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
     }
 
     // for tests only
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
     }
 }

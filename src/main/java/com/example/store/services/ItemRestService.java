@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.enums.ExceptionType;
@@ -50,7 +50,7 @@ public class ItemRestService {
     @Autowired
     private PeriodRepository periodRepository;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
     @Autowired
     private PeriodService periodService;
     @Autowired
@@ -83,7 +83,7 @@ public class ItemRestService {
                 .collect(Collectors.toList());
     }
 
-    public LocalDateTime getPeriodStartDateTime() {
+    public LocalDateTime getPeriodDateTime() {
         Optional<Period> period = periodRepository.findByIsCurrent(true);
         return period.map(value -> value.getStartDate().atStartOfDay())
                 .orElseGet(() -> LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay());
@@ -153,7 +153,7 @@ public class ItemRestService {
     public float getAveragePriceOfItem(Item item, Storage storage, LocalDateTime time, float quantity) {
         if(quantity == 0) return 0;
         float amount = (float) lotRepository
-                .getLotAmountOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), time)
+                .getLotAmountOfItem(item.getId(), storage.getId(), periodDateTime.getStartDateTime(), time)
                 .stream().mapToDouble(LotFloat::getValue).sum();
         return amount/quantity;
     }
@@ -164,7 +164,7 @@ public class ItemRestService {
     }
 
     public BigDecimal getRestOfItemOnStorage(Item item, Storage storage, LocalDateTime docTime) {
-        return lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodStartDateTime.get(), docTime)
+        return lotRepository.getLotsOfItem(item.getId(), storage.getId(), periodDateTime.getStartDateTime(), docTime)
                 .stream()
                 .map(LotBigDecimal::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

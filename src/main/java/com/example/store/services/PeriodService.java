@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.entities.*;
@@ -53,7 +53,7 @@ public class  PeriodService {
     @Autowired
     private User systemUser;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
 
 
     @Value("${blocking.users.ids}")
@@ -82,16 +82,23 @@ public class  PeriodService {
         setNextPeriod();
     }
 
+    // todo update tests due to checking holden docs after and adding plusDays to period end
     protected void checkPossibilityToClosePeriod() {
         Period currentPeriod = getCurrentPeriod();
         List<Document> notHoldenDocs = documentRepository.findByIsHoldAndIsDeletedAndDateTimeBetween(
                 false, false,
                 currentPeriod.getStartDate().atStartOfDay(),
-                currentPeriod.getEndDate().atStartOfDay(),
+                currentPeriod.getEndDate().plusDays(1).atStartOfDay(),
                 Sort.by(Constants.DATE_TIME_STRING));
         if(!notHoldenDocs.isEmpty()) {
             throw new BadRequestException(
                     Constants.NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE,
+                    this.getClass().getName() + " - checkPossibilityToClosePeriod()");
+        }
+        if(documentRepository.existsByDateTimeAfterAndIsHold(
+                currentPeriod.getEndDate().plusDays(1).atStartOfDay(), true)) {
+            throw new BadRequestException(
+                    Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
                     this.getClass().getName() + " - checkPossibilityToClosePeriod()");
         }
     }
@@ -160,7 +167,7 @@ public class  PeriodService {
         }
         next.setCurrent(true);
         periodRepository.save(next);
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         return next;
     }
 

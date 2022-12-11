@@ -1,6 +1,6 @@
 package com.example.store.controllers;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.DocRequestDTO;
@@ -18,7 +18,6 @@ import com.example.store.repositories.LotRepository;
 import com.example.store.services.*;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
-import com.example.store.utils.annotations.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,7 +74,7 @@ class DocumentControllerTest {
     @Autowired
     private DocumentRepository documentRepository;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -128,7 +127,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addReceiptDocThrowExceptionPeriodTest() throws Exception {
 
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         DocDTO docDTO = testService.setDTOFields(DocumentType.RECEIPT_DOC);
         docDTO.setDateTime(ZonedDateTime.of(LocalDateTime.parse("2022-01-01T00:00:00.000")
                 , ZoneId.systemDefault()).toInstant().toEpochMilli());
@@ -280,7 +279,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void holdDocTest() throws Exception {
 
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -298,7 +297,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notHoldDocThenExistsNotHoldenDocBeforeTest() throws Exception {
 
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 2)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -313,7 +312,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void notUnHoldDocThenExistsHoldenDocAfterTest() throws Exception {
 
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -360,7 +359,7 @@ class DocumentControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void holdSerialDocWhenUnHoldenChecksExistTest() throws Exception {
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/serial/" + 6)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -376,7 +375,7 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void unHoldSerialDocTest() throws Exception {
 
-        periodStartDateTime.setDateTime(LocalDate.parse("2022-03-01").atStartOfDay());
+        periodDateTime.setStartDateTime(LocalDate.parse("2022-03-01").atStartOfDay());
         this.mockMvc.perform(
                         post(URL_PREFIX + "/hold/serial/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -392,7 +391,7 @@ class DocumentControllerTest {
         assertEquals(0, lots.size());
         List<LotMovement> lotMovements = lotMoveRepository.findAll();
         assertEquals(0, lotMovements.size());
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
     }
 
     @Sql(value = "/sql/documents/addDocsForSerialHold.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -502,7 +501,7 @@ class DocumentControllerTest {
         docDTO.setDateTime(DATE);
         DocRequestDTO requestDTO = testService.setDTO(docDTO);
 
-        periodStartDateTime.setPeriodStart();
+        periodDateTime.setPeriodStart();
         this.mockMvc.perform(
                         put(URL_PREFIX + "/dayEnd")
                                 .contentType(MediaType.APPLICATION_JSON)

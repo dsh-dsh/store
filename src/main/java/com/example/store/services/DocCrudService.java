@@ -1,6 +1,6 @@
 package com.example.store.services;
 
-import com.example.store.components.PeriodStartDateTime;
+import com.example.store.components.PeriodDateTime;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.mappers.DocMapper;
@@ -46,7 +46,7 @@ public class DocCrudService extends AbstractDocCrudService {
     @Autowired
     private DocsFrom1cService docsFrom1cService;
     @Autowired
-    private PeriodStartDateTime periodStartDateTime;
+    private PeriodDateTime periodDateTime;
     @Autowired
     protected DocInfoService docInfoService;
     @Autowired
@@ -130,7 +130,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void addDocument(DocDTO docDTO, String saveTime) {
-        checkTimePeriod(docDTO);
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
         this.saveTime = saveTime;
 //        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
@@ -143,7 +143,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void updateDocument(DocDTO docDTO, String saveTime) {
-        checkTimePeriod(docDTO);
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
         this.saveTime = saveTime;
 //        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
@@ -168,7 +168,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void softDeleteDocument(DocDTO docDTO) {
-        checkTimePeriod(docDTO);
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
         int docId = docDTO.getId();
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -180,7 +180,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void holdDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
-        checkTimePeriod(document);
+        checkTimePeriod(document.getDateTime());
         holdDocsService.checkDocItemQuantities(document);
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.holdDoc(document);
@@ -189,7 +189,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void unHoldDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
-        checkTimePeriod(document);
+        checkTimePeriod(document.getDateTime());
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.unHoldDoc(document);
         }
@@ -198,7 +198,7 @@ public class DocCrudService extends AbstractDocCrudService {
     @Transactional
     public void serialHoldDocuments(int docId) {
         Document document = documentService.getDocumentById(docId);
-        checkTimePeriod(document);
+        checkTimePeriod(document.getDateTime());
         if(document.isHold()) {
             serialUnHold(document);
         } else {
@@ -284,7 +284,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     // add checks of the day that wasn't chosen
     protected List<Document> getAllChecksToUnHold(List<Document> documents) {
-        // todo refactoring: simplify - get first doc and if it checkDoc find other checkDocs
+        // todo refactoring: simplify - getStartDateTime first doc and if it checkDoc find other checkDocs
         List<Document> checks = documents.stream()
                 .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).collect(Collectors.toList());
         if(!checks.isEmpty()) {
@@ -340,23 +340,14 @@ public class DocCrudService extends AbstractDocCrudService {
         return new Response<>(Constants.OK, String.format(Constants.NUMBER_OF_DELETED_DOCS_MESSAGE, count));
     }
 
-    protected void checkTimePeriod(DocDTO docDTO) {
-        LocalDateTime docTime = Util.getLocalDateTime(docDTO.getDateTime());
-        if(docTime.isBefore(periodStartDateTime.get())) {
+    protected void checkTimePeriod(LocalDateTime docTime) {
+        if(docTime.isBefore(periodDateTime.getStartDateTime())
+                || docTime.isAfter(periodDateTime.getEndDateTime())) {
             throw new BadRequestException(
                     String.format(
                         Constants.OUT_OF_PERIOD_MESSAGE,
-                            periodStartDateTime.get().toString()),
-                    this.getClass().getName() + " checkTimePeriod(DocDTO docDTO)");
-        }
-    }
-
-    protected void checkTimePeriod(Document document) {
-        if(document.getDateTime().isBefore(periodStartDateTime.get())) {
-            throw new BadRequestException(
-                    String.format(
-                        Constants.OUT_OF_PERIOD_MESSAGE,
-                            periodStartDateTime.get().toString()),
+                            periodDateTime.getStartDateTime().toString(),
+                            periodDateTime.getEndDateTime().toString()),
                     this.getClass().getName() + " checkTimePeriod(Document document)");
         }
     }
@@ -369,14 +360,14 @@ public class DocCrudService extends AbstractDocCrudService {
     public String checkUnHoldenChecks() {
         Optional<Document> document = documentRepository
                 .getFirstByDateTimeAfterAndDocTypeAndIsHoldAndIsDeleted(
-                        periodStartDateTime.get(), DocumentType.CHECK_DOC,
+                        periodDateTime.getStartDateTime(), DocumentType.CHECK_DOC,
                         false, false,
                         Sort.by(Constants.DATE_TIME_STRING));
         return document.map(value -> value.getDateTime().toString().substring(0, 10)).orElse("");
     }
 
     public String getLastCheckNumber(int prefix) {
-        LocalDateTime periodStart = periodStartDateTime.get().minusDays(30);
+        LocalDateTime periodStart = periodDateTime.getStartDateTime().minusDays(30);
         long from = 1000000000L * prefix;
         long to = 1000000000L * (prefix + 1);
         Document doc = documentRepository.getLast1CDocNumber(from, to, periodStart).orElse(null);

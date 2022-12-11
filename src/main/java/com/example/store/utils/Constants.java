@@ -100,7 +100,7 @@ public class Constants {
     public static final String NO_SUCH_LOT_MESSAGE = "Партия не найдена";
     public static final String NO_SUCH_PROJECT_MESSAGE = "Проект %s отсутствует в системе";
     public static final String NO_SUCH_DINNER_MESSAGE = "no such dinner";
-    public static final String OUT_OF_PERIOD_MESSAGE = "Нельзя изменять документы до начала периода %s";
+    public static final String OUT_OF_PERIOD_MESSAGE = "Нельзя изменять/проводить документы вне периода %s - %s";
     public static final String NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE = "Существуют не проведенные документы в периоде";
     public static final String NOT_HOLDEN_CHECKS_EXIST_MESSAGE = "Существуют не проведенные чеки за предыдущие дни. Проведение текущих документов не возможно";
     public static final String NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
