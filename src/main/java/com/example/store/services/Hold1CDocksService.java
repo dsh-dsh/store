@@ -85,7 +85,7 @@ public class Hold1CDocksService {
     private ItemDoc receiptDoc;
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
-    private LocalDateTime lastCheckTime;
+    private LocalDateTime last1CDocTime;
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
@@ -102,7 +102,11 @@ public class Hold1CDocksService {
             if (checks.isEmpty()) {
                 continue;
             }
-            setLastCheckTime();
+
+            // refactor union this two methods bellow
+            setLast1CDocTime();
+            setLastDocTime(storage, from, to);
+
             createDocsToHoldByStoragesAndPeriod(storage, to);
             createCreditOrders(storage);
             holdDocsAndChecksByStoragesAndPeriod();
@@ -112,6 +116,13 @@ public class Hold1CDocksService {
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
         checkUnHoldenDocksExists(to);
+    }
+
+    private void setLastDocTime(Storage storage, LocalDateTime from, LocalDateTime to) {
+        List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(projectService.getByName(storage.getName()), from, to);
+        LocalDateTime orderTime = orders.stream()
+                .max(Comparator.comparing(OrderDoc::getDateTime)).get().getDateTime();
+        last1CDocTime = last1CDocTime.isAfter(orderTime)? last1CDocTime : orderTime;
     }
 
     protected void checkExistingNotHoldenChecksBefore(LocalDateTime currentDate) {
@@ -129,11 +140,11 @@ public class Hold1CDocksService {
                 .getDateTime().toLocalDate().atStartOfDay();
     }
 
-    protected void setLastCheckTime() {
-        lastCheckTime = null;
+    protected void setLast1CDocTime() {
+        last1CDocTime = null;
         checks.stream()
                 .max(Comparator.comparing(ItemDoc::getDateTime))
-                .ifPresent(itemDoc -> lastCheckTime = itemDoc.getDateTime());
+                .ifPresent(itemDoc -> last1CDocTime = itemDoc.getDateTime());
     }
 
     public void createCreditOrders(Storage storage) {
@@ -141,7 +152,7 @@ public class Hold1CDocksService {
         Project project = projectService.getProjectByStorageName(storage.getName()).orElse(null);
         if(project == null) return;
         for(Map.Entry<PaymentType, Float> entry : getPaymentAmountMap(getSumMap()).entrySet()) {
-            createOrderDoc(entry.getValue(), entry.getKey(), project, lastCheckTime.plus(offset++, ChronoUnit.MILLIS));
+            createOrderDoc(entry.getValue(), entry.getKey(), project, last1CDocTime.plus(offset++, ChronoUnit.MILLIS));
         }
     }
 
@@ -199,11 +210,11 @@ public class Hold1CDocksService {
         Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
-                lastCheckTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
+                last1CDocTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
         if(addRestForHoldSetting.getProperty() == 1) {
             Map<Item, BigDecimal> receiptItemMap = getReceiptItemMap(writeOffItemMap, storage, to);
             receiptDoc = createReceiptDoc(storage, project, receiptItemMap,
-                    lastCheckTime.plus(RECEIPT_DOC_OFFSET, ChronoUnit.MILLIS));
+                    last1CDocTime.plus(RECEIPT_DOC_OFFSET, ChronoUnit.MILLIS));
         }
     }
 

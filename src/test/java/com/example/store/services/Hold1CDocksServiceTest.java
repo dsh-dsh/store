@@ -106,7 +106,7 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.createCreditOrders(storage);
         List<OrderDoc> orders = orderDocRepository.findAll();
@@ -130,7 +130,7 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         Map<CheckPaymentType, Float> map = hold1CDocksService.getSumMap();
         assertEquals(3, map.size());
@@ -153,7 +153,7 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         assertEquals(DocumentType.RECEIPT_DOC, hold1CDocksService.getReceiptDoc().getDocType());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -180,7 +180,7 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(0);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         assertNull(hold1CDocksService.getReceiptDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -208,7 +208,7 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         assertNull(hold1CDocksService.getReceiptDoc());
         assertEquals(DocumentType.WRITE_OFF_DOC, hold1CDocksService.getWriteOffDoc().getDocType());
@@ -235,7 +235,7 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
@@ -263,7 +263,7 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.createCreditOrders(storage);
         List<Document> documents = documentService.getAllDocuments();
@@ -299,7 +299,7 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
         List<Document> documents = documentService.getAllDocuments();
@@ -337,7 +337,7 @@ class Hold1CDocksServiceTest {
         addRestForHoldSetting.setProperty(0);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
-        hold1CDocksService.setLastCheckTime();
+        hold1CDocksService.setLast1CDocTime();
         hold1CDocksService.createDocsToHoldByStoragesAndPeriod(storage, to);
         hold1CDocksService.holdDocsAndChecksByStoragesAndPeriod();
 
