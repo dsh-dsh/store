@@ -224,6 +224,9 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void addRequestDocTest() throws Exception {
 
+        LocalDateTime periodEnd = periodDateTime.getEndDateTime();
+        periodDateTime.setEndDateTime(LocalDateTime.now().plusMonths(1));
+
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         docDTO.setStorageTo(testService.setStorageDTO(1));
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
@@ -241,6 +244,8 @@ class DocumentControllerTest {
         assertEquals(1, docs.size());
 
         assertEquals(TestService.AUTHOR_ID, docs.get(0).getAuthor().getId());
+
+        periodDateTime.setEndDateTime(periodEnd);
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -521,6 +526,9 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void updateRequestDocTest() throws Exception {
 
+        LocalDateTime periodEnd = periodDateTime.getEndDateTime();
+        periodDateTime.setEndDateTime(LocalDateTime.now().plusMonths(1));
+
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setStorageTo(testService.setStorageDTO(1));
@@ -540,6 +548,8 @@ class DocumentControllerTest {
         assertEquals(TestService.DOC_NUMBER, doc.getNumber());
         assertEquals(DocumentType.REQUEST_DOC, doc.getDocType());
         assertEquals(Month.JUNE, doc.getDateTime().getMonth());
+
+        periodDateTime.setEndDateTime(periodEnd);
     }
 
     @Sql(value = "/sql/documents/addInventoryDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -651,6 +661,9 @@ class DocumentControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void deleteRequestDocTest() throws Exception {
 
+        LocalDateTime periodEnd = periodDateTime.getEndDateTime();
+        periodDateTime.setEndDateTime(LocalDateTime.now().plusMonths(1));
+
         DocDTO docDTO = testService.setDTOFields(DocumentType.REQUEST_DOC);
         testService.addTo(docDTO, TestService.DOC_ID, TestService.DOC_NUMBER);
         docDTO.setDocItems(testService.setDocItemDTOList(TestService.ADD_VALUE));
@@ -667,6 +680,8 @@ class DocumentControllerTest {
         List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.REQUEST_DOC);
         assertEquals(TestService.ONE_DOCUMENT, docs.size());
         assertTrue(docs.get(0).isDeleted());
+
+        periodDateTime.setEndDateTime(periodEnd);
 
     }
 

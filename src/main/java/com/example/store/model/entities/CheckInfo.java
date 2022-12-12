@@ -46,7 +46,7 @@ public class CheckInfo {
     @Column(name = "check_payment_type")
     private CheckPaymentType checkPaymentType;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "check_id")
     private ItemDoc check;
 }

@@ -4,9 +4,12 @@ import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.dto.User1CDTO;
 import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
+import com.example.store.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +18,16 @@ import javax.annotation.PostConstruct;
 @Component
 public class PersonMapper extends MappingConverters {
 
+    @Autowired
+    private UserService userService;
+
     private final ModelMapper modelMapper;
+
+    protected final Converter<Integer, User> userParentConverter =
+            src -> getUser(src.getSource());
+
+    protected final Converter<Integer, User> userParentIdConverter =
+            src -> getUserById(src.getSource());
 
     @PostConstruct
     public void init() {
@@ -51,6 +63,16 @@ public class PersonMapper extends MappingConverters {
 
     public User mapToUser(User1CDTO user1CDTO) {
         return modelMapper.map(user1CDTO, User.class);
+    }
+
+    private User getUser(int code) {
+        if(code == 0) return null;
+        return userService.getByCode(code);
+    }
+
+    private User getUserById(int userId) {
+        if(userId == 0) return null;
+        return userService.getById(userId);
     }
 
 }

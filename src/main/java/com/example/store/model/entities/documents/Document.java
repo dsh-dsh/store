@@ -1,5 +1,6 @@
 package com.example.store.model.entities.documents;
 
+import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.Company;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.User;
@@ -60,5 +61,8 @@ public class Document {
     private Document baseDocument;
 
     private boolean isDeleted = false;
+
+    @OneToOne(mappedBy = "check")
+    private CheckInfo checkInfo;
 
 }

@@ -1,21 +1,44 @@
 package com.example.store.mappers;
 
+import com.example.store.model.dto.CheckInfoDTO;
+import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.dto.documents.DocToPaymentDTO;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
+import com.example.store.services.CheckInfoService;
+import com.example.store.services.DocItemService;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DocMapper extends MappingConverters {
 
+    @Autowired
+    private DocItemService docItemService;
+    @Autowired
+    private CheckInfoService checkInfoService;
+
     private final ModelMapper modelMapper;
+
+    protected final Converter<ItemDoc, Float> docItemAmountConverter =
+            doc -> docItemService.getItemsAmount(doc.getSource());
+
+    protected final Converter<ItemDoc, List<DocItemDTO>> docItemsConverter =
+            itemDoc -> docItemService.getItemDTOListByDoc(itemDoc.getSource()) ;
+
+    protected final Converter<ItemDoc, CheckInfoDTO> checkInfoConverter =
+            doc -> checkInfoService.getCheckInfoDTO(doc.getSource());
 
     public DocMapper() {
         this.modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
 
         modelMapper.createTypeMap(ItemDoc.class, DocToListDTO.class)
                 .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(ItemDoc::getDateTime, DocToListDTO::setDateTime))

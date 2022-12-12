@@ -120,6 +120,7 @@ public class Hold1CDocksService {
 
     private void setLastDocTime(Storage storage, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(projectService.getByName(storage.getName()), from, to);
+        if(orders.isEmpty()) return;
         LocalDateTime orderTime = orders.stream()
                 .max(Comparator.comparing(OrderDoc::getDateTime)).get().getDateTime();
         last1CDocTime = last1CDocTime.isAfter(orderTime)? last1CDocTime : orderTime;

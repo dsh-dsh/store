@@ -2,8 +2,12 @@ package com.example.store.mappers;
 
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.entities.Ingredient;
+import com.example.store.model.entities.Item;
+import com.example.store.services.ItemService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +16,12 @@ import javax.annotation.PostConstruct;
 @Component
 public class IngredientMapper extends MappingConverters {
 
+    @Autowired
+    private ItemService itemService;
+
     private final ModelMapper modelMapper;
+
+    protected final Converter<Integer, Item> idToItemConverter = dto -> getItem(dto.getSource());
 
     @PostConstruct
     private void init() {
@@ -34,6 +43,11 @@ public class IngredientMapper extends MappingConverters {
 
     public Ingredient mapToEntity(IngredientDTO ingredientDTO) {
         return modelMapper.map(ingredientDTO, Ingredient.class);
+    }
+
+    private Item getItem(int itemId) {
+        if(itemId == 0) return null;
+        return itemService.findItemById(itemId);
     }
 
 }
