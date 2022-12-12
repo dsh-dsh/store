@@ -62,6 +62,13 @@ public class DocumentService {
                 type, storage, isHold, from, to);
     }
 
+    // todo add tests
+    public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(
+            List<DocumentType> types, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
+        return itemDocRepository.findByDocTypeInAndStorageToAndIsHoldAndDateTimeBetween(
+                types, storage, isHold, from, to);
+    }
+
     public List<OrderDoc> getDocumentsByTypeInAndProjectAndIsHold(
             List<DocumentType> types, Project project, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return orderDocRepository.findByDocTypeInAndProjectAndIsHoldAndDateTimeBetween(

@@ -2,6 +2,7 @@ package com.example.store.services.reports;
 
 import com.example.store.model.entities.CheckInfo;
 import com.example.store.model.entities.Project;
+import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
@@ -42,6 +43,8 @@ public class PeriodReportService {
     private CheckInfoService checkInfoService;
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private StorageService storageService;
 
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
@@ -59,9 +62,20 @@ public class PeriodReportService {
         Supplier<Stream<OrderDoc>> streamSupplier = () -> documents.stream()
                 .filter(doc -> doc.getDocType() == DocumentType.CREDIT_ORDER_DOC)
                 .map(OrderDoc.class::cast);
-        return new PeriodReport(project.getName(), Util.getDate(dateStart), Util.getDate(dateEnd),
+        return new PeriodReport(project.getName(), Util.getDate(dateStart), Util.getDate(dateEnd), getIncomingAmount(project, dateStart, dateEnd),
                 getReceiptList(documents), getSpendList(streamSupplier.get(), PaymentType.SALARY_PAYMENT),
                 getSpendList(streamSupplier.get(), PaymentType.COST_PAYMENT));
+    }
+
+    // todo add tests
+    protected BigDecimal getIncomingAmount(Project project, LocalDateTime from, LocalDateTime to) {
+        List<DocumentType> types = List.of(DocumentType.POSTING_DOC, DocumentType.MOVEMENT_DOC);
+        Storage storage = storageService.getByName(project.getName());
+        List<ItemDoc> documents = documentService.getDocumentsByTypeAndStorageAndIsHold(types, storage, true, from, to);
+        return documents.stream()
+                .map(docItemService::getItemsAmount)
+                .map(BigDecimal::valueOf)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     protected List<ReportLine> getSpendList(Stream<OrderDoc> orders, PaymentType paymentType) {

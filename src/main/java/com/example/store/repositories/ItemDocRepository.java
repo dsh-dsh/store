@@ -21,4 +21,8 @@ public interface ItemDocRepository extends JpaRepository<ItemDoc, Integer> {
             DocumentType docType, Storage storageFrom, boolean isHold,
             LocalDateTime from, LocalDateTime to);
 
+    List<ItemDoc> findByDocTypeInAndStorageToAndIsHoldAndDateTimeBetween(
+            List<DocumentType> types, Storage storageTo, boolean isHold,
+            LocalDateTime from, LocalDateTime to);
+
 }
