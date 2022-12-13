@@ -3,6 +3,7 @@ package com.example.store.services;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
+import com.example.store.model.dto.requests.ItemIdsDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
@@ -10,6 +11,7 @@ import com.example.store.repositories.SettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -137,6 +139,21 @@ public class SettingService {
     public void setCheckHoldingEnableSetting(SettingDTO settingDTO) {
         checkHoldingEnableSetting.setProperty(settingDTO.getProperty());
         setSystemSetting(settingDTO, SettingType.CHECK_HOLDING_ENABLE);
+    }
+
+    // todo add tests
+    @Transactional
+    public void setDisabledItems(ItemIdsDTO itemIdsDTO) {
+        settingRepository.deleteByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
+        for(int id : itemIdsDTO.getItemIds()) {
+            settingRepository.save(PropertySetting.of(SettingType.DISABLED_ITEM_ID, systemUser, id));
+        }
+    }
+
+    // todo add tests
+    public ItemIdsDTO getDisabledItems() {
+        List<PropertySetting> settings = settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
+        return new ItemIdsDTO(settings.stream().map(PropertySetting::getProperty).collect(Collectors.toList()));
     }
 
     public void setSystemSetting(SettingDTO dto, SettingType settingType) {

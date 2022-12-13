@@ -71,6 +71,14 @@ public class ItemService {
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }
 
+    // todo add tests
+    public List<ItemDTOForList> getItemDTOList() {
+        List<Item> items = itemRepository.findAll(Sort.by("name"));
+        return items.stream()
+                .map(item -> mapToDTOForList(item, null))
+                .collect(Collectors.toList());
+    }
+
     public List<ItemDTOForList> getItemDTOList(long time) {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
         List<Item> items = getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));

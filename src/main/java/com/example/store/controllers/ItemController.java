@@ -27,9 +27,16 @@ public class ItemController {
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList(@RequestParam(defaultValue = "0") long time) {
+    // todo add tests
+    @GetMapping("/rest/list")
+    public ResponseEntity<ListResponse<ItemDTOForList>> getItemRestList(@RequestParam(defaultValue = "0") long time) {
         List<ItemDTOForList> list = itemService.getItemDTOList(time);
+        return ResponseEntity.ok(new ListResponse<>(list));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList() {
+        List<ItemDTOForList> list = itemService.getItemDTOList();
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 

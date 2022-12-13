@@ -11,7 +11,6 @@ import com.example.store.services.ItemService;
 import com.example.store.services.PeriodicValueService;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -29,9 +28,6 @@ public class IngredientCalculation {
     @Autowired
     private ItemService itemService;
 
-    @Value("${water.item.number}")
-    private int waterItemNumber;
-
     private Map<Item, BigDecimal> ingredientMapOfItem;
 
     public Map<Item, BigDecimal> getIngredientMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
@@ -45,9 +41,7 @@ public class IngredientCalculation {
         // todo due to for each iteration will be at list two more select from db
         List<Ingredient> ingredients = getIngredientsNotDeleted(item, date);
         if(ingredients.isEmpty()) {
-            if(item.getNumber() != waterItemNumber) { // skip water item
-                ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
-            }
+            ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
         } else {
             boolean isWeight = isWeight(item);
             float totalWeight = isWeight ? getTotalWeight(ingredients, date) : 1;

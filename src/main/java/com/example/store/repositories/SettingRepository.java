@@ -19,6 +19,10 @@ public interface SettingRepository extends JpaRepository<PropertySetting, Intege
 
     Optional<PropertySetting> findByUserAndSettingType(User user, SettingType settingType);
 
+    List<PropertySetting> getByUserAndSettingType(User user, SettingType settingType);
+
+    void deleteByUserAndSettingType(User user, SettingType settingType);
+
     @Transactional
     @Modifying
     @Query(value =

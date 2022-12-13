@@ -3,6 +3,7 @@ package com.example.store.controllers;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
+import com.example.store.model.dto.requests.ItemIdsDTO;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.PeriodService;
@@ -73,6 +74,13 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
     }
 
+    // todo add tests
+    @GetMapping("disabled/items")
+    public ResponseEntity<Response<ItemIdsDTO>> getDisabledItems() {
+        return ResponseEntity.ok(new Response<>(settingService.getDisabledItems()));
+    }
+
+
     @GetMapping("/block/time")
     public ResponseEntity<Response<Long>> getBlockTime() {
         return ResponseEntity.ok(new Response<>(periodService.getBlockTime()));
@@ -139,10 +147,19 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
+    // todo add tests
     @PostMapping("/period")
     public ResponseEntity<Response<PeriodDTO>> closePeriod() {
         PeriodDTO periodDTO = periodService.closePeriodManually();
         return ResponseEntity.ok(new Response<>(periodDTO));
+    }
+
+
+    // todo add tests
+    @PostMapping("disabled/items")
+    public ResponseEntity<Response<String>> setDisabledItems(@RequestBody ItemIdsDTO itemIds) {
+        settingService.setDisabledItems(itemIds);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
 }

@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Configuration
 @EnableScheduling
 public class Config {
@@ -96,6 +99,13 @@ public class Config {
         return settingRepository
                 .findByUserAndSettingType(systemUser, SettingType.DOC_BLOCK_ENABLE)
                 .orElse(PropertySetting.of(SettingType.DOC_BLOCK_ENABLE, systemUser,1));
+    }
+
+    @Bean
+    @Qualifier("disabledItemIds")
+    public List<Integer> getDisabledItemIds(SettingRepository settingRepository, User systemUser) {
+        return settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID)
+                .stream().map(PropertySetting::getProperty).collect(Collectors.toList());
     }
 
 }
