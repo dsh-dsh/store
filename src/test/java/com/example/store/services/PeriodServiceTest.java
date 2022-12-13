@@ -212,8 +212,8 @@ class PeriodServiceTest {
         assertEquals(1651352400000L, dto.getStartDate());
     }
 
-    @Sql(value = "/sql/period/add7DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = {"/sql/period/add7DocList.sql", "/sql/settings/addIdsSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/period/after.sql", "/sql/settings/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getBlockTimeIfExistsTest () {
         assertEquals(Util.getLongLocalDateTime("16.10.22 01:00:00") + 402L, periodService.getBlockTime());
@@ -221,6 +221,7 @@ class PeriodServiceTest {
 
     @Test
     void getBlockTimeIfNotExistsTest () {
+        periodService.blockingUserIds = List.of(6);
         assertEquals(Util.getLongLocalDateTime(
                 LocalDate.parse(Constants.DEFAULT_PERIOD_START).atStartOfDay()),
                 periodService.getBlockTime());

@@ -3,7 +3,7 @@ package com.example.store.services;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
-import com.example.store.model.dto.requests.ItemIdsDTO;
+import com.example.store.model.dto.requests.IdsDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
@@ -51,6 +51,12 @@ public class SettingService {
     @Autowired
     @Qualifier("enableDocsBlockSetting")
     private PropertySetting enableDocsBlockSetting;
+    @Autowired
+    @Qualifier("disabledItemIds")
+    protected List<Integer> disabledItemIds;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
 
     private UserDTO systemUserDTO;
 
@@ -143,17 +149,29 @@ public class SettingService {
 
     // todo add tests
     @Transactional
-    public void setDisabledItems(ItemIdsDTO itemIdsDTO) {
-        settingRepository.deleteByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
-        for(int id : itemIdsDTO.getItemIds()) {
-            settingRepository.save(PropertySetting.of(SettingType.DISABLED_ITEM_ID, systemUser, id));
+    public void setIdSettingList(IdsDTO idsDTO, SettingType type) {
+        settingRepository.deleteByUserAndSettingType(systemUser, type);
+        for(int id : idsDTO.getIds()) {
+            settingRepository.save(PropertySetting.of(type, systemUser, id));
+        }
+        updateIdsSettingBean(type, idsDTO.getIds());
+    }
+
+    // todo add tests
+    protected void updateIdsSettingBean(SettingType type, List<Integer> ids) {
+        if(type == SettingType.BLOCKING_USER_ID) {
+            blockingUserIds.clear();
+            blockingUserIds.addAll(ids);
+        } else {
+            disabledItemIds.clear();
+            disabledItemIds.addAll(ids);
         }
     }
 
     // todo add tests
-    public ItemIdsDTO getDisabledItems() {
-        List<PropertySetting> settings = settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
-        return new ItemIdsDTO(settings.stream().map(PropertySetting::getProperty).collect(Collectors.toList()));
+    public IdsDTO getIdSettingList(SettingType type) {
+        List<PropertySetting> settings = settingRepository.getByUserAndSettingType(systemUser, type);
+        return new IdsDTO(settings.stream().map(PropertySetting::getProperty).collect(Collectors.toList()));
     }
 
     public void setSystemSetting(SettingDTO dto, SettingType settingType) {

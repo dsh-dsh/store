@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
@@ -105,6 +106,14 @@ public class Config {
     @Qualifier("disabledItemIds")
     public List<Integer> getDisabledItemIds(SettingRepository settingRepository, User systemUser) {
         return settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID)
+                .stream().map(PropertySetting::getProperty).collect(Collectors.toList());
+    }
+
+    @Bean
+    @Scope("singleton")
+    @Qualifier("blockingUserIds")
+    public List<Integer> getBlockingUserIds(SettingRepository settingRepository, User systemUser) {
+        return settingRepository.getByUserAndSettingType(systemUser, SettingType.BLOCKING_USER_ID)
                 .stream().map(PropertySetting::getProperty).collect(Collectors.toList());
     }
 

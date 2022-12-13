@@ -9,6 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ItemIdsDTO {
-    private List<Integer> itemIds;
+public class IdsDTO {
+    private List<Integer> ids;
 }

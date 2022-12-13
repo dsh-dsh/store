@@ -91,8 +91,15 @@ public class UserService {
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
     }
 
-    public List<UserDTO> getUserDTOList() {
-        return userRepository.findByIsNodeAndRoleNotLike(false, Role.SYSTEM, Sort.by("lastName")).stream()
+    // todo update tests
+    public List<UserDTO> getUserDTOList(boolean allUsers) {
+        List<User> users;
+        if(allUsers) {
+            users = userRepository.findAll(Sort.by("lastName"));
+        } else {
+            users = userRepository.findByIsNodeAndRoleNotLike(false, Role.SYSTEM, Sort.by("lastName"));
+        }
+        return users.stream()
                 .map(personMapper::mapToUserDTO)
                 .collect(Collectors.toList());
     }

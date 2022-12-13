@@ -3,7 +3,8 @@ package com.example.store.controllers;
 import com.example.store.model.dto.PeriodDTO;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
-import com.example.store.model.dto.requests.ItemIdsDTO;
+import com.example.store.model.dto.requests.IdsDTO;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.responses.ListResponse;
 import com.example.store.model.responses.Response;
 import com.example.store.services.PeriodService;
@@ -76,10 +77,17 @@ public class SettingController {
 
     // todo add tests
     @GetMapping("disabled/items")
-    public ResponseEntity<Response<ItemIdsDTO>> getDisabledItems() {
-        return ResponseEntity.ok(new Response<>(settingService.getDisabledItems()));
+    public ResponseEntity<Response<IdsDTO>> getDisabledItems() {
+        return ResponseEntity.ok(new Response<>(
+                settingService.getIdSettingList(SettingType.DISABLED_ITEM_ID)));
     }
 
+    // todo add tests
+    @GetMapping("blocking/users")
+    public ResponseEntity<Response<IdsDTO>> getBlockingUsers() {
+        return ResponseEntity.ok(new Response<>(
+                settingService.getIdSettingList(SettingType.BLOCKING_USER_ID)));
+    }
 
     @GetMapping("/block/time")
     public ResponseEntity<Response<Long>> getBlockTime() {
@@ -154,11 +162,17 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(periodDTO));
     }
 
-
     // todo add tests
     @PostMapping("disabled/items")
-    public ResponseEntity<Response<String>> setDisabledItems(@RequestBody ItemIdsDTO itemIds) {
-        settingService.setDisabledItems(itemIds);
+    public ResponseEntity<Response<String>> setDisabledItems(@RequestBody IdsDTO itemIds) {
+        settingService.setIdSettingList(itemIds, SettingType.DISABLED_ITEM_ID);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    // todo add tests
+    @PostMapping("blocking/users")
+    public ResponseEntity<Response<String>> setBlockingUses(@RequestBody IdsDTO itemIds) {
+        settingService.setIdSettingList(itemIds, SettingType.BLOCKING_USER_ID);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 

@@ -48,7 +48,14 @@ public class CatalogController {
 
     @GetMapping("/users")
     public ResponseEntity<ListResponse<UserDTO>> getUsers() {
-        List<UserDTO> userDTOList = userService.getUserDTOList();
+        List<UserDTO> userDTOList = userService.getUserDTOList(false);
+        return ResponseEntity.ok(new ListResponse<>(userDTOList));
+    }
+
+    // todo add tests
+    @GetMapping("/users/all")
+    public ResponseEntity<ListResponse<UserDTO>> getAllUsers() {
+        List<UserDTO> userDTOList = userService.getUserDTOList(true);
         return ResponseEntity.ok(new ListResponse<>(userDTOList));
     }
 
