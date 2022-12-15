@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.components.TreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.ItemMapper;
@@ -8,7 +9,7 @@ import com.example.store.model.dto.ItemDTOForDir;
 import com.example.store.model.dto.ItemDTOForList;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Item;
-import com.example.store.model.entities.PropertySetting;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.repositories.ItemRepository;
@@ -16,7 +17,6 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +43,7 @@ public class ItemService {
     @Autowired
     private TreeBuilder<Item> treeBuilder;
     @Autowired
-    @Qualifier("ingredientDir")
-    private PropertySetting ingredientDirSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     public List<ItemDTOForTree> getItemDTOTree() {
         List<Item> items = itemRepository.findAll(Sort.by("id"));
@@ -81,7 +80,8 @@ public class ItemService {
 
     public List<ItemDTOForList> getItemDTOList(long time) {
         LocalDateTime dateTime = time != 0 ? Util.getLocalDateTime(time) : null;
-        List<Item> items = getIngredientItemsList(itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+        List<Item> items = getIngredientItemsList(itemRepository.findByParentIds(
+                List.of(systemSettingsCash.getProperty(SettingType.INGREDIENT_DIR_ID))));
         return items.stream()
                 .sorted(Comparator.comparing(Item::getName))
                 .map(item -> mapToDTOForList(item, dateTime))

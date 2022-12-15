@@ -1,15 +1,13 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.controllers.TestService;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.*;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.PropertySetting;
-import com.example.store.model.enums.PriceType;
-import com.example.store.model.enums.PeriodicValueType;
-import com.example.store.model.enums.Unit;
-import com.example.store.model.enums.Workshop;
+import com.example.store.model.enums.*;
 import com.example.store.repositories.ItemRepository;
 import com.example.store.utils.Constants;
 import org.jetbrains.annotations.NotNull;
@@ -62,8 +60,7 @@ class ItemServiceTest extends TestService {
     @Autowired
     private IngredientService ingredientService;
     @Autowired
-    @Qualifier("ingredientDir")
-    private PropertySetting ingredientDirSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     @Test
     void getItemDTOTreeTest() {
@@ -157,7 +154,7 @@ class ItemServiceTest extends TestService {
 
     @Test
     void getItemDTOListTest() {
-        ingredientDirSetting.setProperty(2);
+        systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
         List<ItemDTOForList> list = itemService.getItemDTOList(UPDATE_DATE);
         assertNotNull(list);
         assertEquals(2, list.size());
@@ -176,7 +173,7 @@ class ItemServiceTest extends TestService {
 
     @Test
     void getItemDirListTest() {
-        ingredientDirSetting.setProperty(2);
+        systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
         List<ItemDTOForDir> list = itemService.getItemDirList();
         assertNotNull(list);
         assertEquals(3, list.size());

@@ -1,11 +1,16 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodDateTime;
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.model.entities.*;
+import com.example.store.model.entities.DocumentItem;
+import com.example.store.model.entities.Item;
+import com.example.store.model.entities.Lot;
+import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
@@ -13,7 +18,6 @@ import com.example.store.utils.Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,11 +46,7 @@ public class LotService {
     @Autowired
     private PeriodDateTime periodDateTime;
     @Autowired
-    @Qualifier("addRestForHold")
-    private PropertySetting addRestForHoldSetting;
-    @Autowired
-    @Qualifier("docsAveragePrice")
-    private PropertySetting docsAveragePriceSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     private boolean is1CDoc = false;
 
@@ -125,7 +125,7 @@ public class LotService {
     }
 
     protected void setAveragePrice(DocumentItem docItem, Map<Lot, BigDecimal> lotMap) {
-        if(docsAveragePriceSetting.getProperty() == 0) return;
+        if(systemSettingsCash.getProperty(SettingType.DOCS_AVERAGE_PRICE) == 0) return;
         float averagePrice = ((float) lotMap.entrySet()
                 .stream()
                 .mapToDouble(entry -> entry.getKey().getDocumentItem().getPrice() * entry.getValue().floatValue())
@@ -136,7 +136,7 @@ public class LotService {
     public Map<Lot, BigDecimal> getLotMap(DocumentItem docItem, Storage storage, LocalDateTime endTime) {
         Item item = docItem.getItem();
         Map<Lot, BigDecimal> lotMap = getLotsOfItem(docItem.getItem(), storage, endTime);
-        if(!is1CDoc || addRestForHoldSetting.getProperty() == 1) {
+        if(!is1CDoc || systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS) == 1) {
             itemRestService.checkQuantityShortage(item, lotMap, docItem.getQuantity());
         }
         return getLotMapToHold(lotMap, docItem.getQuantity());

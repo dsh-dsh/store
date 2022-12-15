@@ -29,45 +29,15 @@ public class SettingController {
         return ResponseEntity.ok(new ListResponse<>(settingService.getSettingsByUser(userId)));
     }
 
-    @GetMapping("/add/shortage")
-    public ResponseEntity<Response<SettingDTO>> getAddShortageForHoldSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getAddShortageForHoldSetting()));
+    @GetMapping("/system")
+    public ResponseEntity<Response<SettingDTO>> getSystemSetting(
+            @RequestParam(defaultValue = "") String type) {
+        return ResponseEntity.ok(new Response<>(settingService.getSystemSettingDTO(type)));
     }
 
-    @GetMapping("/average/price/period")
-    public ResponseEntity<Response<SettingDTO>> getAveragePriceForPeriodCloseSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForPeriodCloseSetting()));
-    }
-
-    @GetMapping("/average/price/docs")
-    public ResponseEntity<Response<SettingDTO>> getAveragePriceForDocsSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getAveragePriceForDocsSetting()));
-    }
-
-    @GetMapping("/our/company")
-    public ResponseEntity<Response<SettingDTO>> getOurCompanySetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getOurCompanySetting()));
-    }
-
-    @GetMapping("/ingredient/dir")
-    public ResponseEntity<Response<SettingDTO>> getIngredientDirSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getIngredientDirSetting()));
-    }
-
-    @GetMapping("/hold/dialog/enable")
-    public ResponseEntity<Response<SettingDTO>> getHoldingDialogEnableSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getHoldingDialogEnableSetting()));
-    }
-
-    @GetMapping("/check/holding/enable")
-    public ResponseEntity<Response<SettingDTO>> getCheckHoldingEnableSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getCheckHoldingEnableSetting()));
-    }
-
-    // todo add tests
-    @GetMapping("/doc/block/enable")
-    public ResponseEntity<Response<SettingDTO>> getEnableDocsBlockSetting() {
-        return ResponseEntity.ok(new Response<>(settingService.getEnableDocsBlockSetting()));
+    @GetMapping("/system/all")
+    public ResponseEntity<ListResponse<SettingDTO>> getAllSystemSettings() {
+        return ResponseEntity.ok(new ListResponse<>(settingService.getAllSystemSettings()));
     }
 
     @GetMapping("/period")
@@ -95,63 +65,20 @@ public class SettingController {
     }
 
     @PostMapping("/property")
-    public ResponseEntity<Response<String>> setSetting(@RequestBody SettingDTO settingDTO) {
+    public ResponseEntity<Response<String>> setProperty(@RequestBody SettingDTO settingDTO) {
         settingService.setProperty(settingDTO);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
+
+    @PostMapping("/system/property")
+    public ResponseEntity<Response<String>> setSystemProperty(@RequestBody SettingDTO settingDTO) {
+        settingService.setSystemProperty(settingDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
     @PostMapping("/doc/type/properties")
     public ResponseEntity<Response<String>> setDocTypeFilterProperties(@RequestBody SettingDTOList settingDTOList) {
         settingService.setDocTypeFilterProperties(settingDTOList);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/add/shortage")
-    public ResponseEntity<Response<String>> setAddShortageSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setAddShortageSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/average/price/period")
-    public ResponseEntity<Response<String>> setAveragePriceForPeriodCloseSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setAveragePriceForPeriodCloseSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/average/price/docs")
-    public ResponseEntity<Response<String>> setAveragePriceForDocsSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setAveragePriceForDocsSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/our/company")
-    public ResponseEntity<Response<String>> setOurCompanySetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setOurCompanySetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/ingredient/dir")
-    public ResponseEntity<Response<String>> setIngredientDirSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setIngredientDirSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/hold/dialog/enable")
-    public ResponseEntity<Response<String>> setHoldDialogEnableSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setHoldingDialogEnableSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    @PostMapping("/check/holding/enable")
-    public ResponseEntity<Response<String>> setCheckHoldingEnableSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setCheckHoldingEnableSetting(settingDTO);
-        return ResponseEntity.ok(new Response<>(Constants.OK));
-    }
-
-    // todo add tests
-    @PostMapping("/doc/block/enable")
-    public ResponseEntity<Response<String>> setEnableDocsBlockSetting(@RequestBody SettingDTO settingDTO) {
-        settingService.setEnableDocsBlockSetting(settingDTO);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 

@@ -9,8 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
@@ -31,78 +29,6 @@ public class Config {
     }
 
     @Bean
-    @DependsOn("systemUser")
-    @Qualifier("addRestForHold")
-    public PropertySetting getAddRestForHoldSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS)
-                .orElse(PropertySetting.of(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("periodAveragePrice")
-    public PropertySetting getPeriodAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.PERIOD_AVERAGE_PRICE)
-                .orElse(PropertySetting.of(SettingType.PERIOD_AVERAGE_PRICE, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("docsAveragePrice")
-    public PropertySetting getDocsAveragePriceSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.DOCS_AVERAGE_PRICE)
-                .orElse(PropertySetting.of(SettingType.DOCS_AVERAGE_PRICE, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("ourCompany")
-    public PropertySetting getOurCompanySetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.OUR_COMPANY_ID)
-                .orElse(PropertySetting.of(SettingType.OUR_COMPANY_ID, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("ingredientDir")
-    public PropertySetting getIngredientDirSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.INGREDIENT_DIR_ID)
-                .orElse(PropertySetting.of(SettingType.INGREDIENT_DIR_ID, systemUser,2));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("holdingDialogEnable")
-    public PropertySetting getHoldingDialogEnableSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.HOLDING_DIALOG_ENABLE)
-                .orElse(PropertySetting.of(SettingType.HOLDING_DIALOG_ENABLE, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("checkHoldingEnable")
-    public PropertySetting getCheckHoldingEnableSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.CHECK_HOLDING_ENABLE)
-                .orElse(PropertySetting.of(SettingType.CHECK_HOLDING_ENABLE, systemUser,1));
-    }
-
-    @Bean
-    @DependsOn("systemUser")
-    @Qualifier("enableDocsBlockSetting")
-    public PropertySetting getEnableDocsBlockSetting(SettingRepository settingRepository, User systemUser) {
-        return settingRepository
-                .findByUserAndSettingType(systemUser, SettingType.DOC_BLOCK_ENABLE)
-                .orElse(PropertySetting.of(SettingType.DOC_BLOCK_ENABLE, systemUser,1));
-    }
-
-    @Bean
     @Qualifier("disabledItemIds")
     public List<Integer> getDisabledItemIds(SettingRepository settingRepository, User systemUser) {
         return settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID)
@@ -110,7 +36,6 @@ public class Config {
     }
 
     @Bean
-    @Scope("singleton")
     @Qualifier("blockingUserIds")
     public List<Integer> getBlockingUserIds(SettingRepository settingRepository, User systemUser) {
         return settingRepository.getByUserAndSettingType(systemUser, SettingType.BLOCKING_USER_ID)

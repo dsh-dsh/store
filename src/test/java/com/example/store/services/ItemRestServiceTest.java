@@ -1,11 +1,13 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodDateTime;
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Lot;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.Storage;
+import com.example.store.model.enums.SettingType;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
@@ -40,8 +42,7 @@ class ItemRestServiceTest {
     @Autowired
     private PeriodDateTime periodDateTime;
     @Autowired
-    @Qualifier("periodAveragePrice")
-    private PropertySetting periodAveragePriceSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -79,13 +80,13 @@ class ItemRestServiceTest {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
 
-        int currentAveragePriceSetting = periodAveragePriceSetting.getProperty();
-        periodAveragePriceSetting.setProperty(0);
+        int currentAveragePriceSetting = systemSettingsCash.getProperty(SettingType.PERIOD_AVERAGE_PRICE);
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE, 2);
 
         ItemRestService.RestPriceValue value = itemRestService
                 .getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
 
-        periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE, currentAveragePriceSetting);
 
         assertEquals(2, value.getRest().floatValue());
         assertEquals(200, value.getPrice());
@@ -101,13 +102,13 @@ class ItemRestServiceTest {
         Item item = itemService.getItemById(7);
         Storage storage = storageService.getById(1);
 
-        int currentAveragePriceSetting = periodAveragePriceSetting.getProperty();
-        periodAveragePriceSetting.setProperty(1);
+        int currentAveragePriceSetting = systemSettingsCash.getProperty(SettingType.PERIOD_AVERAGE_PRICE);
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE, 1);
 
         ItemRestService.RestPriceValue value = itemRestService
                 .getRestAndPriceForClosingPeriod(item, storage, LocalDate.parse("2022-05-15").atStartOfDay());
 
-        periodAveragePriceSetting.setProperty(currentAveragePriceSetting);
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE, currentAveragePriceSetting);
 
         assertEquals(2, value.getRest().floatValue());
         assertEquals(150, value.getPrice());

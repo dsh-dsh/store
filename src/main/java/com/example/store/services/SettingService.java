@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,29 +29,7 @@ public class SettingService {
     @Autowired
     private User systemUser;
     @Autowired
-    @Qualifier("addRestForHold")
-    protected PropertySetting addRestForHoldSetting;
-    @Autowired
-    @Qualifier("periodAveragePrice")
-    private PropertySetting periodAveragePriceSetting;
-    @Autowired
-    @Qualifier("docsAveragePrice")
-    private PropertySetting docsAveragePriceSetting;
-    @Autowired
-    @Qualifier("ourCompany")
-    private PropertySetting ourCompanySetting;
-    @Autowired
-    @Qualifier("ingredientDir")
-    private PropertySetting ingredientDirSetting;
-    @Autowired
-    @Qualifier("holdingDialogEnable")
-    private PropertySetting holdingDialogEnableSetting;
-    @Autowired
-    @Qualifier("checkHoldingEnable")
-    private PropertySetting checkHoldingEnableSetting;
-    @Autowired
-    @Qualifier("enableDocsBlockSetting")
-    private PropertySetting enableDocsBlockSetting;
+    private SystemSettingsCash systemSettingsCash;
     @Autowired
     @Qualifier("disabledItemIds")
     protected List<Integer> disabledItemIds;
@@ -58,11 +37,12 @@ public class SettingService {
     @Qualifier("blockingUserIds")
     protected List<Integer> blockingUserIds;
 
-    private UserDTO systemUserDTO;
+    public PropertySetting getSystemSetting(SettingType type) {
+        return systemSettingsCash.getSetting(type);
+    }
 
-    @PostConstruct
-    public void init() {
-        systemUserDTO = new UserDTO(systemUser.getId(), systemUser.getEmail(), "");
+    public SettingDTO getSystemSettingDTO(String type) {
+        return mapToDTO(getSystemSetting(SettingType.valueOf(type)), null);
     }
 
     public PropertySetting getSettingByType(User user, SettingType type) {
@@ -70,16 +50,30 @@ public class SettingService {
         return setting.orElse(null);
     }
 
+    // todo add tests
+    public List<SettingDTO> getAllSystemSettings() {
+        List<SettingDTO> list = new ArrayList<>();
+        list.add(getSystemSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString()));
+        list.add(getSystemSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString()));
+        list.add(getSystemSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString()));
+        list.add(getSystemSettingDTO(SettingType.INGREDIENT_DIR_ID.toString()));
+        list.add(getSystemSettingDTO(SettingType.OUR_COMPANY_ID.toString()));
+        list.add(getSystemSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString()));
+        list.add(getSystemSettingDTO(SettingType.DOC_BLOCK_ENABLE.toString()));
+        list.add(getSystemSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString()));
+        return list;
+    }
+
     public List<SettingDTO> getSettingsByUser(int userId) {
         User user = userService.getById(userId);
         List<PropertySetting> list = settingRepository.findByUser(user);
         UserDTO userDTO = new UserDTO(user.getId(), user.getEmail(), "");
         return list.stream()
-                .map(setting -> getSettingDTO(setting, userDTO))
+                .map(setting -> mapToDTO(setting, userDTO))
                 .collect(Collectors.toList());
     }
 
-    public SettingDTO getSettingDTO(PropertySetting setting, UserDTO userDTO) {
+    public SettingDTO mapToDTO(PropertySetting setting, UserDTO userDTO) {
         SettingDTO dto = new SettingDTO();
         dto.setUser(userDTO);
         dto.setType(setting.getSettingType().toString());
@@ -107,44 +101,8 @@ public class SettingService {
         setProperty(user, settingDTO);
     }
 
-    public void setAddShortageSetting(SettingDTO settingDTO) {
-        addRestForHoldSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
-    }
-
-    public void setAveragePriceForPeriodCloseSetting(SettingDTO settingDTO) {
-        periodAveragePriceSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.PERIOD_AVERAGE_PRICE);
-    }
-
-    public void setAveragePriceForDocsSetting(SettingDTO settingDTO) {
-        docsAveragePriceSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.DOCS_AVERAGE_PRICE);
-    }
-
-    public void setOurCompanySetting(SettingDTO settingDTO) {
-        ourCompanySetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.OUR_COMPANY_ID);
-    }
-
-    public void setIngredientDirSetting(SettingDTO settingDTO) {
-        ingredientDirSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.INGREDIENT_DIR_ID);
-    }
-
-    public void setHoldingDialogEnableSetting(SettingDTO settingDTO) {
-        holdingDialogEnableSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.HOLDING_DIALOG_ENABLE);
-    }
-
-    public void setEnableDocsBlockSetting(SettingDTO settingDTO) {
-        enableDocsBlockSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.DOC_BLOCK_ENABLE);
-    }
-
-    public void setCheckHoldingEnableSetting(SettingDTO settingDTO) {
-        checkHoldingEnableSetting.setProperty(settingDTO.getProperty());
-        setSystemSetting(settingDTO, SettingType.CHECK_HOLDING_ENABLE);
+    public void setSystemProperty(SettingDTO dto) {
+        systemSettingsCash.setSetting(SettingType.valueOf(dto.getType()), dto.getProperty());
     }
 
     // todo add tests
@@ -174,50 +132,11 @@ public class SettingService {
         return new IdsDTO(settings.stream().map(PropertySetting::getProperty).collect(Collectors.toList()));
     }
 
-    public void setSystemSetting(SettingDTO dto, SettingType settingType) {
-        PropertySetting setting = settingRepository.findByUserAndSettingType(systemUser, settingType)
-                .orElseGet(() -> getNewSetting(systemUser, settingType, dto.getProperty()));
-        setting.setProperty(dto.getProperty());
-        settingRepository.save(setting);
-    }
-
     private PropertySetting getNewSetting(User user, SettingType type, int property) {
         PropertySetting setting = new PropertySetting();
         setting.setUser(user);
         setting.setSettingType(type);
         setting.setProperty(property);
         return  setting;
-    }
-
-    public SettingDTO getAddShortageForHoldSetting() {
-        return getSettingDTO(addRestForHoldSetting, systemUserDTO);
-    }
-
-    public SettingDTO getAveragePriceForPeriodCloseSetting() {
-        return getSettingDTO(periodAveragePriceSetting, systemUserDTO);
-    }
-
-    public SettingDTO getAveragePriceForDocsSetting() {
-        return getSettingDTO(docsAveragePriceSetting, systemUserDTO);
-    }
-
-    public SettingDTO getOurCompanySetting() {
-        return getSettingDTO(ourCompanySetting, systemUserDTO);
-    }
-
-    public SettingDTO getIngredientDirSetting() {
-        return getSettingDTO(ingredientDirSetting, systemUserDTO);
-    }
-
-    public SettingDTO getHoldingDialogEnableSetting() {
-        return getSettingDTO(holdingDialogEnableSetting, systemUserDTO);
-    }
-
-    public SettingDTO getCheckHoldingEnableSetting() {
-        return getSettingDTO(checkHoldingEnableSetting, systemUserDTO);
-    }
-
-    public SettingDTO getEnableDocsBlockSetting() {
-        return getSettingDTO(enableDocsBlockSetting, systemUserDTO);
     }
 }

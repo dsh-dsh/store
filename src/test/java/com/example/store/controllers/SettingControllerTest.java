@@ -1,5 +1,6 @@
 package com.example.store.controllers;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
@@ -61,26 +62,7 @@ class SettingControllerTest {
     @Autowired
     private User systemUser;
     @Autowired
-    @Qualifier("addRestForHold")
-    protected PropertySetting addRestForHoldSetting;
-    @Autowired
-    @Qualifier("periodAveragePrice")
-    private PropertySetting periodAveragePriceSetting;
-    @Autowired
-    @Qualifier("docsAveragePrice")
-    private PropertySetting docsAveragePriceSetting;
-    @Autowired
-    @Qualifier("ourCompany")
-    private PropertySetting ourCompanySetting;
-    @Autowired
-    @Qualifier("ingredientDir")
-    private PropertySetting ingredientDirSetting;
-    @Autowired
-    @Qualifier("holdingDialogEnable")
-    private PropertySetting holdingDialogEnableSetting;
-    @Autowired
-    @Qualifier("checkHoldingEnable")
-    private PropertySetting checkHoldingEnableSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     @Test
     void getSettingsUnauthorizedTest()  throws Exception {
@@ -116,12 +98,12 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getHoldingSettingsTest()  throws Exception {
-        addRestForHoldSetting.setProperty(1);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS,1);
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/add/shortage"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "ADD_REST_FOR_HOLD_1C_DOCS"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("ADD_REST_FOR_HOLD_1C_DOCS"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -129,7 +111,8 @@ class SettingControllerTest {
     @Test
     void getHoldingSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/add/shortage"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "ADD_REST_FOR_HOLD_1C_DOCS"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -137,12 +120,12 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForPeriodCloseSettingsTest()  throws Exception {
-        periodAveragePriceSetting.setProperty(1);
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE,1);
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/average/price/period"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "PERIOD_AVERAGE_PRICE"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("PERIOD_AVERAGE_PRICE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -150,7 +133,8 @@ class SettingControllerTest {
     @Test
     void getAveragePriceForPeriodCloseSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/average/price/period"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "PERIOD_AVERAGE_PRICE"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -158,12 +142,12 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getAveragePriceForDocsSettingsTest()  throws Exception {
-        docsAveragePriceSetting.setProperty(1);
+        systemSettingsCash.setSetting(SettingType.DOCS_AVERAGE_PRICE,1);
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/average/price/docs"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "DOCS_AVERAGE_PRICE"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("DOCS_AVERAGE_PRICE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -171,7 +155,8 @@ class SettingControllerTest {
     @Test
     void getAveragePriceForDocsSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/average/price/docs"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "DOCS_AVERAGE_PRICE"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -180,10 +165,10 @@ class SettingControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getOurCompanySettingsTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/our/company"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "OUR_COMPANY_ID"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("OUR_COMPANY_ID"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -191,7 +176,8 @@ class SettingControllerTest {
     @Test
     void getOurCompanySettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/our/company"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "DOCS_AVERAGE_PRICE"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -200,18 +186,19 @@ class SettingControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getIngredientDirSettingsTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/ingredient/dir"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "INGREDIENT_DIR_ID"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("INGREDIENT_DIR_ID"))
-                .andExpect(jsonPath("$.data.property").value(2));
+                .andExpect(jsonPath("$.data.property").value(1));
     }
 
     @Test
     void getIngredientDirSettingsUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/ingredient/dir"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "INGREDIENT_DIR_ID"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -220,10 +207,10 @@ class SettingControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getHoldingDialogEnableSettingTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/hold/dialog/enable"))
+                        get(URL_PREFIX + "/system")
+                        .param("type", "HOLDING_DIALOG_ENABLE"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("HOLDING_DIALOG_ENABLE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -231,7 +218,8 @@ class SettingControllerTest {
     @Test
     void getHoldingDialogEnableSettingUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/hold/dialog/enable"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "HOLDING_DIALOG_ENABLE"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -240,10 +228,10 @@ class SettingControllerTest {
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getCheckHoldingEnableSettingTest()  throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/check/holding/enable"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "CHECK_HOLDING_ENABLE"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.user.id").value(6))
                 .andExpect(jsonPath("$.data.type").value("CHECK_HOLDING_ENABLE"))
                 .andExpect(jsonPath("$.data.property").value(1));
     }
@@ -251,7 +239,8 @@ class SettingControllerTest {
     @Test
     void getCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
         this.mockMvc.perform(
-                get(URL_PREFIX + "/check/holding/enable"))
+                        get(URL_PREFIX + "/system")
+                                .param("type", "CHECK_HOLDING_ENABLE"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -379,23 +368,25 @@ class SettingControllerTest {
     void setAddShortageSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/add/shortage")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS).getProperty());
-        assertEquals(0, addRestForHoldSetting.getProperty());
-        addRestForHoldSetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.ADD_REST_FOR_HOLD_1C_DOCS).getProperty());
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS,1);
 
     }
 
+    // todo delete all but this
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAddShortageSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/add/shortage")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -408,23 +399,25 @@ class SettingControllerTest {
     void setAveragePriceForPeriodCloseSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/average/price/period")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         User user = userService.getSystemAuthor();
         assertEquals(0, settingService.getSettingByType(user, SettingType.PERIOD_AVERAGE_PRICE).getProperty());
-        assertEquals(0, periodAveragePriceSetting.getProperty());
-        periodAveragePriceSetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.PERIOD_AVERAGE_PRICE).getProperty());
+        systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForPeriodCloseSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/average/price/period")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -437,22 +430,24 @@ class SettingControllerTest {
     void setAveragePriceForDocsSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/average/price/docs")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.DOCS_AVERAGE_PRICE).getProperty());
-        assertEquals(0, docsAveragePriceSetting.getProperty());
-        periodAveragePriceSetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.DOCS_AVERAGE_PRICE).getProperty());
+        systemSettingsCash.setSetting(SettingType.DOCS_AVERAGE_PRICE,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAveragePriceForDocsSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/average/price/docs")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -465,22 +460,24 @@ class SettingControllerTest {
     void setIngredientDirSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.INGREDIENT_DIR_ID.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/ingredient/dir")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID).getProperty());
-        assertEquals(0, ingredientDirSetting.getProperty());
-        ingredientDirSetting.setProperty(2);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.INGREDIENT_DIR_ID).getProperty());
+        systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setIngredientDirSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.INGREDIENT_DIR_ID.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/ingredient/dir")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -493,22 +490,24 @@ class SettingControllerTest {
     void setOurCompanySettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.OUR_COMPANY_ID.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/our/company")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.OUR_COMPANY_ID).getProperty());
-        assertEquals(0, ourCompanySetting.getProperty());
-        ourCompanySetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.OUR_COMPANY_ID).getProperty());
+        systemSettingsCash.setSetting(SettingType.OUR_COMPANY_ID,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setOurCompanySettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.OUR_COMPANY_ID.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/our/company")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -521,22 +520,24 @@ class SettingControllerTest {
     void setHoldingDialogEnableSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold/dialog/enable")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.HOLDING_DIALOG_ENABLE).getProperty());
-        assertEquals(0, holdingDialogEnableSetting.getProperty());
-        holdingDialogEnableSetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.HOLDING_DIALOG_ENABLE).getProperty());
+        systemSettingsCash.setSetting(SettingType.HOLDING_DIALOG_ENABLE,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setHoldingDialogEnableSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold/dialog/enable")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
@@ -549,22 +550,24 @@ class SettingControllerTest {
     void setCheckHoldingEnableSettingTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/check/holding/enable")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())
                 .andExpect(status().isOk());
         assertEquals(0, settingService.getSettingByType(systemUser, SettingType.CHECK_HOLDING_ENABLE).getProperty());
-        assertEquals(0, checkHoldingEnableSetting.getProperty());
-        checkHoldingEnableSetting.setProperty(1);
+        assertEquals(0, settingService
+                .getSettingByType(systemUser, SettingType.CHECK_HOLDING_ENABLE).getProperty());
+        systemSettingsCash.setSetting(SettingType.CHECK_HOLDING_ENABLE,1);
     }
 
+    // todo delete
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
         SettingDTO settingDTO = getSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString(), 0);
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/check/holding/enable")
+                        post(URL_PREFIX + "/system/property")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(settingDTO)))
                 .andDo(print())

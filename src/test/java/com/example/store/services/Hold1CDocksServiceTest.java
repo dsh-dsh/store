@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.TransactionException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
@@ -10,6 +11,7 @@ import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.repositories.OrderDocRepository;
 import com.example.store.utils.Util;
@@ -61,8 +63,7 @@ class Hold1CDocksServiceTest {
     @Autowired
     private LotService lotService;
     @Autowired
-    @Qualifier("addRestForHold")
-    private PropertySetting addRestForHoldSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -176,8 +177,8 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
 
-        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
-        addRestForHoldSetting.setProperty(0);
+        int currentAddRestForHoldSetting = systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, 0);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLast1CDocTime();
@@ -189,7 +190,7 @@ class Hold1CDocksServiceTest {
         assertEquals(0, receiptItems.size());
         assertEquals(4, writeOffItems.size());
 
-        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, currentAddRestForHoldSetting);
 
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
@@ -231,8 +232,8 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
 
-        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
-        addRestForHoldSetting.setProperty(1);
+        int currentAddRestForHoldSetting = systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, 1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLast1CDocTime();
@@ -242,7 +243,7 @@ class Hold1CDocksServiceTest {
         assertEquals(5, documents.size());
         assertEquals(5, documents.stream().filter(Document::isHold).count());
 
-        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, currentAddRestForHoldSetting);
 
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
@@ -259,8 +260,8 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
 
-        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
-        addRestForHoldSetting.setProperty(1);
+        int currentAddRestForHoldSetting = systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, 1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLast1CDocTime();
@@ -276,7 +277,7 @@ class Hold1CDocksServiceTest {
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(6).getDocType());
         assertEquals(DocumentType.WITHDRAW_ORDER_DOC, documents.get(7).getDocType());
 
-        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, currentAddRestForHoldSetting);
 
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
@@ -295,8 +296,8 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
 
-        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
-        addRestForHoldSetting.setProperty(1);
+        int currentAddRestForHoldSetting = systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, 1);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLast1CDocTime();
@@ -314,7 +315,7 @@ class Hold1CDocksServiceTest {
         assertEquals(6.2f, docItems.get(2).getQuantity().floatValue());
         assertEquals(8f, docItems.get(3).getQuantity().floatValue());
 
-        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, currentAddRestForHoldSetting);
 
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);
@@ -333,8 +334,8 @@ class Hold1CDocksServiceTest {
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
 
-        int currentAddRestForHoldSetting = addRestForHoldSetting.getProperty();
-        addRestForHoldSetting.setProperty(0);
+        int currentAddRestForHoldSetting = systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, 0);
 
         hold1CDocksService.setChecks(hold1CDocksService.getUnHoldenChecksByStorageAndPeriod(storage, from, to));
         hold1CDocksService.setLast1CDocTime();
@@ -352,7 +353,7 @@ class Hold1CDocksServiceTest {
         assertEquals(7.2f, docItems.get(2).getQuantity().floatValue());
         assertEquals(9f, docItems.get(3).getQuantity().floatValue());
 
-        addRestForHoldSetting.setProperty(currentAddRestForHoldSetting);
+        systemSettingsCash.setSetting(SettingType.ADD_REST_FOR_HOLD_1C_DOCS, currentAddRestForHoldSetting);
 
         hold1CDocksService.setReceiptDoc(null);
         hold1CDocksService.setWriteOffDoc(null);

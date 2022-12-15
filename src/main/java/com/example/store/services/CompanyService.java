@@ -1,16 +1,16 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.components.TreeBuilder;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.CompanyMapper;
 import com.example.store.model.dto.CompanyDTO;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.entities.Company;
-import com.example.store.model.entities.PropertySetting;
+import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.CompanyRepository;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +28,7 @@ public class CompanyService {
     @Autowired
     protected CompanyMapper companyMapper;
     @Autowired
-    @Qualifier("ourCompany")
-    private PropertySetting ourCompanySetting;
+    private SystemSettingsCash systemSettingsCash;
 
     public Company getById(int id) {
         return companyRepository.findById(id)
@@ -69,7 +68,7 @@ public class CompanyService {
     }
 
     public Company getOurCompany() {
-        return companyRepository.getById(ourCompanySetting.getProperty());
+        return companyRepository.getById(systemSettingsCash.getProperty(SettingType.OUR_COMPANY_ID));
     }
 
     public List<ItemDTOForTree> getCompanyDTOTree() {

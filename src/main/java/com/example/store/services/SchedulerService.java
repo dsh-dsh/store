@@ -1,8 +1,8 @@
 package com.example.store.services;
 
-import com.example.store.model.entities.PropertySetting;
+import com.example.store.components.SystemSettingsCash;
+import com.example.store.model.enums.SettingType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,11 @@ public class SchedulerService {
     @Autowired
     private Hold1CDocksService hold1CDocksService;
     @Autowired
-    @Qualifier("checkHoldingEnable")
-    private PropertySetting checkHoldingEnableSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     @Scheduled(cron = "${hold.docs.scheduling.cron.expression}")
     public void holdChecksForADay() {
-        if(checkHoldingEnableSetting.getProperty() == 0) return;
+        if(systemSettingsCash.getProperty(SettingType.CHECK_HOLDING_ENABLE) == 0) return;
         LocalDateTime to = LocalDate.now(ZoneId.systemDefault()).atStartOfDay();
         LocalDateTime from = to.minusDays(1);
         hold1CDocksService.hold1CDocsByPeriod(from, to);

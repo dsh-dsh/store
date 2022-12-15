@@ -4,15 +4,15 @@ import com.example.store.model.enums.SettingType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "default_property_setting")
-public class PropertySetting {
+public class  PropertySetting {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -29,10 +29,6 @@ public class PropertySetting {
 
     @Column(name = "property")
     private int property;
-
-    public static PropertySetting getByType(List<PropertySetting> list, SettingType type) {
-        return list.stream().filter(setting -> setting.getSettingType() == type).findFirst().orElse(null);
-    }
 
     public static PropertySetting of(SettingType type, User user, int property) {
         PropertySetting setting = new PropertySetting();

@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -8,6 +9,7 @@ import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.CheckPaymentType;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.PaymentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -70,8 +72,7 @@ public class Hold1CDocksService {
     @Autowired
     private LotMoveService lotMoveService;
     @Autowired
-    @Qualifier("addRestForHold")
-    private PropertySetting addRestForHoldSetting;
+    private SystemSettingsCash systemSettingsCash;
     @Autowired
     @Qualifier("disabledItemIds")
     private List<Integer> disabledItemIds;
@@ -215,7 +216,7 @@ public class Hold1CDocksService {
         Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
         writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
                 last1CDocTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
-        if(addRestForHoldSetting.getProperty() == 1) {
+        if(systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS) == 1) {
             Map<Item, BigDecimal> receiptItemMap = getReceiptItemMap(writeOffItemMap, storage, to);
             receiptDoc = createReceiptDoc(storage, project, receiptItemMap,
                     last1CDocTime.plus(RECEIPT_DOC_OFFSET, ChronoUnit.MILLIS));

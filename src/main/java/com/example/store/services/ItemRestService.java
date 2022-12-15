@@ -1,13 +1,18 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodDateTime;
+import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
-import com.example.store.model.entities.*;
-import com.example.store.model.enums.ExceptionType;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
 import com.example.store.model.dto.RestDTO;
 import com.example.store.model.dto.StorageDTO;
+import com.example.store.model.entities.Item;
+import com.example.store.model.entities.Lot;
+import com.example.store.model.entities.Period;
+import com.example.store.model.entities.Storage;
+import com.example.store.model.enums.ExceptionType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.model.projections.LotFloat;
 import com.example.store.repositories.ItemRepository;
@@ -18,7 +23,6 @@ import com.example.store.utils.Util;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -54,11 +58,7 @@ public class ItemRestService {
     @Autowired
     private PeriodService periodService;
     @Autowired
-    @Qualifier("periodAveragePrice")
-    private PropertySetting periodAveragePriceSetting;
-    @Autowired
-    @Qualifier("ingredientDir")
-    private PropertySetting ingredientDirSetting;
+    private SystemSettingsCash systemSettingsCash;
 
     // todo refactor to BigDecimal all methods in class
 
@@ -76,7 +76,7 @@ public class ItemRestService {
         LocalDateTime dateTime = Util.getLocalDateTime(time);
         Storage storage = storageService.getById(storageId);
         List<Item> items = itemService.getIngredientItemsList(
-                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+                itemRepository.findByParentIds(List.of(systemSettingsCash.getProperty(SettingType.INGREDIENT_DIR_ID))));
         return items.stream()
                 .map(item -> getDocItemDTO(docId, item, storage, dateTime))
                 .filter(item -> item.getQuantity() != 0)
@@ -120,7 +120,7 @@ public class ItemRestService {
     // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
     public Map<Item, BigDecimal> getItemsRestOnStorage(Storage storage, LocalDateTime time) {
         List<Item> items = itemService.getIngredientItemsList(
-                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+                itemRepository.findByParentIds(List.of(systemSettingsCash.getProperty(SettingType.INGREDIENT_DIR_ID))));
         return items.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
@@ -132,7 +132,7 @@ public class ItemRestService {
     // todo try to refactor it, start from retrieving all lot_moves of period, then collect it to item list with rests
     public Map<Item, RestPriceValue> getItemsRestOnStorageForClosingPeriod(Storage storage, LocalDateTime time) {
         List<Item> items = itemService.getIngredientItemsList(
-                itemRepository.findByParentIds(List.of(ingredientDirSetting.getProperty())));
+                itemRepository.findByParentIds(List.of(systemSettingsCash.getProperty(SettingType.INGREDIENT_DIR_ID))));
         return items.stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
@@ -144,7 +144,7 @@ public class ItemRestService {
 
     protected RestPriceValue getRestAndPriceForClosingPeriod(Item item, Storage storage, LocalDateTime time) {
         BigDecimal rest = getRestOfItemOnStorage(item, storage, time);
-        float price = periodAveragePriceSetting.getProperty() == 1 ?
+        float price = systemSettingsCash.getProperty(SettingType.PERIOD_AVERAGE_PRICE) == 1 ?
                 getAveragePriceOfItem(item, storage, time, rest.floatValue()) :
                 getLastPriceOfItem(item, time);
         return new RestPriceValue(rest, price);
