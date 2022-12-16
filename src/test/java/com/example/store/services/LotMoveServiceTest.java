@@ -70,7 +70,7 @@ class LotMoveServiceTest {
         Lot lot = lotService.getById(1);
         lotMoveService.updatePlusLotMovement(lot, itemDoc, BigDecimal.valueOf(15f));
         LotMovement lotMovement = lotMoveRepository.findByLot(lot).get(0);
-        assertEquals(BigDecimal.valueOf(15).setScale(3, RoundingMode.HALF_EVEN), lotMovement.getDQuantity());
+        assertEquals(BigDecimal.valueOf(15).setScale(3, RoundingMode.HALF_EVEN), lotMovement.getQuantity());
     }
 
     @Sql(value = {"/sql/lotMovements/addDocAndLots.sql", "/sql/lotMovements/addMoves.sql"},

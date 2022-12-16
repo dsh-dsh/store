@@ -34,7 +34,7 @@ public class LotMoveService {
 
     public void updatePlusLotMovement(Lot lot, ItemDoc itemDoc, BigDecimal quantity) {
         LotMovement lotMovement = lotMoveRepository.findByLotAndDocument(lot, itemDoc);
-        lotMovement.setDQuantity(quantity);
+        lotMovement.setQuantity(quantity);
         lotMoveRepository.save(lotMovement);
     }
 

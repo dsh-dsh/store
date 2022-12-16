@@ -6,7 +6,7 @@ values
 (4, 2, null, '2022-03-01T11:00:00.000', 'RECEIPT_DOC', null, B'1', B'1', 1, 3, 1, 1, null, 3, B'0', 1);
 
 insert into document_item
-(id, discount, item_id, document_id, price, d_quantity, quantity_fact)
+(id, discount, item_id, document_id, price, quantity, quantity_fact)
 values
 (10, 0.0, 15, 4, 150.00, 10.0, 0.0),
 (11, 0.0, 16, 4, 150.00, 10.0, 0.0),

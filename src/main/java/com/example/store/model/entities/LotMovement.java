@@ -38,16 +38,13 @@ public class LotMovement {
     private LocalDateTime movementTime;
 
     @Column(name = "quantity")
-    private float fQuantity = 0;
-
-    @Column(name = "d_quantity")
-    private BigDecimal dQuantity;
+    private BigDecimal quantity;
 
     public LotMovement(Lot lot, ItemDoc document, LocalDateTime movementTime, Storage storage, BigDecimal quantity) {
         this.lot = lot;
         this.document = document;
         this.movementTime = movementTime;
         this.storage = storage;
-        this.dQuantity = quantity;
+        this.quantity = quantity;
     }
 }

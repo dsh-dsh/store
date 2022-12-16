@@ -9,7 +9,7 @@ values
 (5, 2, null, '2022-03-16T13:30:36.395', 'REQUEST_DOC', null, B'0', B'0', 1, 3, 1, 1, 3, 1, B'0', 1);
 
 insert into document_item
-(id, item_id, document_id, price, d_quantity, quantity_fact, discount)
+(id, item_id, document_id, price, quantity, quantity_fact, discount)
 values
 (1, 7, 1, 200.00, 5.0, 0.0, 0.0),
 (2, 8, 2, 100.00, 5.0, 0.0, 0.0),

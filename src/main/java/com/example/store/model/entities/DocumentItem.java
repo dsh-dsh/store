@@ -31,9 +31,6 @@ public class DocumentItem {
     private Item item;
 
     @Column(name = "quantity")
-    private float fQuantity = 0f;
-
-    @Column(name = "d_quantity")
     private BigDecimal quantity;
 
     @Column(name = "quantity_fact")
