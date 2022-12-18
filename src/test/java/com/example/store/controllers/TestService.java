@@ -28,7 +28,7 @@ public class TestService {
     static final List<Integer> UPDATE_ITEM_IDS = List.of(2, 3, 4, 5);
     static final int ONE_DOCUMENT = 1;
     static final int NO_DOCUMENTS = 0;
-    static final String EXISTING_EMAIL = "customer@mail.ru";
+    public static final String EXISTING_EMAIL = "customer@mail.ru";
 
 
     void addTo(DocDTO dto, int docId, int docNumber) {

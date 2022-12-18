@@ -52,7 +52,6 @@ public class CatalogController {
         return ResponseEntity.ok(new ListResponse<>(userDTOList));
     }
 
-    // todo add tests
     @GetMapping("/users/all")
     public ResponseEntity<ListResponse<UserDTO>> getAllUsers() {
         List<UserDTO> userDTOList = userService.getUserDTOList(true);

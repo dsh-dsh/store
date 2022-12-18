@@ -91,7 +91,6 @@ public class UserService {
         if(dto.getRole() != null && !dto.getRole().equals("")) user.setRole(Role.valueOf(dto.getRole()));
     }
 
-    // todo update tests
     public List<UserDTO> getUserDTOList(boolean allUsers) {
         List<User> users;
         if(allUsers) {

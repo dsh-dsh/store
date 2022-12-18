@@ -9,11 +9,13 @@ import com.example.store.model.entities.Period;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.model.enums.SettingType;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -48,6 +50,11 @@ class PeriodServiceTest {
     private PeriodDateTime periodDateTime;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private SettingService settingService;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
@@ -67,6 +74,17 @@ class PeriodServiceTest {
         assertThrows(BadRequestException.class,
                 () -> periodService.checkPossibilityToClosePeriod());
     }
+
+    @Sql(value = {"/sql/period/addPeriodMarch.sql",
+            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkingExistingHoldenDocsAfterTest() {
+        Period currentPeriod = periodService.getCurrentPeriod();
+        assertThrows(BadRequestException.class,
+                () -> periodService.checkingExistingHoldenDocsAfter(currentPeriod));
+    }
+
 
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -178,7 +196,7 @@ class PeriodServiceTest {
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getCurrentPeriodIfNotExistsTest() {
-        assertEquals(LocalDate.parse(Constants.DEFAULT_PERIOD_START).minusDays(1), periodService.getCurrentPeriod().getEndDate());
+        assertEquals(LocalDate.now().plusDays(30).atStartOfDay().toLocalDate(), periodService.getCurrentPeriod().getEndDate());
     }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -194,14 +212,14 @@ class PeriodServiceTest {
     @Test
     void setNextPeriodIfNoCurrentTest() {
         Period period = periodService.setNextPeriod();
-        assertEquals(LocalDate.parse("2000-01-01"), period.getStartDate());
-        assertEquals(LocalDateTime.parse("2000-01-01T00:00"), periodDateTime.getStartDateTime());
+        assertEquals(LocalDate.now().plusDays(31).atStartOfDay().toLocalDate(), period.getStartDate());
+        assertEquals(LocalDate.now().plusDays(31).atStartOfDay(), periodDateTime.getStartDateTime());
     }
 
     @Test
     void getPeriodDTOIfNoCurrentPeriodTest() {
         PeriodDTO dto = periodService.getPeriodDTO();
-        assertEquals(946587600000L, dto.getEndDate());
+        assertEquals(Util.getLongLocalDateTime(LocalDate.now().plusDays(30).atStartOfDay()), dto.getEndDate());
     }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -212,11 +230,14 @@ class PeriodServiceTest {
         assertEquals(1651352400000L, dto.getStartDate());
     }
 
-    @Sql(value = {"/sql/period/add7DocList.sql", "/sql/settings/addIdsSettings.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/period/add7DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = {"/sql/period/after.sql", "/sql/settings/after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getBlockTimeIfExistsTest () {
+        List<Integer> currentList = List.copyOf(blockingUserIds);
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, List.of(6));
         assertEquals(Util.getLongLocalDateTime("16.10.22 01:00:00") + 402L, periodService.getBlockTime());
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, currentList);
     }
 
     @Test

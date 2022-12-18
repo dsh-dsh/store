@@ -486,6 +486,40 @@ class Hold1CDocksServiceTest {
         hold1CDocksService.setChecks(new ArrayList<>());
     }
 
+    @Autowired
+    @Qualifier("disabledItemIds")
+    private List<Integer> disabledItemIds;
+
+
+    @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @Transactional
+    void createWriteOffDocForChecksWithDisabledItemTest() {
+        Storage storage = storageService.getById(2);
+        Project project = projectService.getById(2);
+        LocalDateTime time = LocalDateTime.now();
+        Item item7 = itemService.getItemById(7);
+        Item item8 = itemService.getItemById(8);
+        Map<Item, BigDecimal> itemMap = new HashMap<>();
+        itemMap.put(item7, BigDecimal.valueOf(2.0f));
+        itemMap.put(item8, BigDecimal.valueOf(3.0f));
+        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
+        List<Integer> currentList = List.copyOf(disabledItemIds);
+        setDisabledItems(List.of(8));
+        ItemDoc itemDoc = hold1CDocksService.createWriteOffDocForChecks(storage, project, itemMap, time);
+        assertEquals(1, itemDoc.getDocumentItems().size());
+        setDisabledItems(currentList);
+        hold1CDocksService.setReceiptDoc(null);
+        hold1CDocksService.setWriteOffDoc(null);
+        hold1CDocksService.setChecks(new ArrayList<>());
+    }
+
+    private void setDisabledItems(List<Integer> list) {
+        disabledItemIds.clear();
+        disabledItemIds.addAll(list);
+    }
+
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test

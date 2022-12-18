@@ -4,6 +4,7 @@ import com.example.store.components.SystemSettingsCash;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
+import com.example.store.model.dto.requests.IdsDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
@@ -36,6 +37,12 @@ class SettingServiceTest {
     private User systemUser;
     @Autowired
     private SystemSettingsCash systemSettingsCash;
+    @Autowired
+    @Qualifier("disabledItemIds")
+    protected List<Integer> disabledItemIds;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
 
     @Sql(value = "/sql/settings/addSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -268,5 +275,60 @@ class SettingServiceTest {
     void getEnableDocsBlockSettingTest() {
         assertEquals(1, settingService
                 .getSystemSetting(SettingType.DOC_BLOCK_ENABLE).getProperty());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setDisabledItemsSettingListTest() {
+        IdsDTO idsDTO = new IdsDTO(List.of(7, 8));
+        settingService.setIdSettingList(idsDTO, SettingType.DISABLED_ITEM_ID);
+        List<PropertySetting> list = settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
+        assertEquals(2, list.size());
+        assertEquals(7, list.get(0).getProperty());
+        assertEquals(8, list.get(1).getProperty());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setBlockingUsersSettingListTest() {
+        IdsDTO idsDTO = new IdsDTO(List.of(1, 2));
+        settingService.setIdSettingList(idsDTO, SettingType.BLOCKING_USER_ID);
+        List<PropertySetting> list = settingRepository.getByUserAndSettingType(systemUser, SettingType.BLOCKING_USER_ID);
+        assertEquals(2, list.size());
+        assertEquals(1, list.get(0).getProperty());
+        assertEquals(2, list.get(1).getProperty());
+
+    }
+
+    @Test
+    void updateDisabledItemsSettingBeanTest() {
+        List<Integer> currentList = List.copyOf(disabledItemIds);
+        settingService.updateIdsSettingBean(SettingType.DISABLED_ITEM_ID, List.of(10,11));
+        assertEquals(10, disabledItemIds.get(0));
+        assertEquals(11, disabledItemIds.get(1));
+        settingService.updateIdsSettingBean(SettingType.DISABLED_ITEM_ID, currentList);
+    }
+
+    @Test
+    void updateBlockingUsersSettingBeanTest() {
+        List<Integer> currentList = List.copyOf(blockingUserIds);
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, List.of(10,11));
+        assertEquals(10, blockingUserIds.get(0));
+        assertEquals(11, blockingUserIds.get(1));
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, currentList);
+    }
+
+    @Sql(value = "/sql/settings/addIdsSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDisabledItemsSettingListTest() {
+        assertEquals(7, settingService.getIdSettingList(SettingType.DISABLED_ITEM_ID).getIds().get(0));
+    }
+
+    @Sql(value = "/sql/settings/addIdsSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getBlockingUsersSettingListTest() {
+        assertEquals(1, settingService.getIdSettingList(SettingType.BLOCKING_USER_ID).getIds().get(0));
     }
 }

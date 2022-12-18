@@ -50,7 +50,6 @@ public class SettingService {
         return setting.orElse(null);
     }
 
-    // todo add tests
     public List<SettingDTO> getAllSystemSettings() {
         List<SettingDTO> list = new ArrayList<>();
         list.add(getSystemSettingDTO(SettingType.ADD_REST_FOR_HOLD_1C_DOCS.toString()));
@@ -105,7 +104,6 @@ public class SettingService {
         systemSettingsCash.setSetting(SettingType.valueOf(dto.getType()), dto.getProperty());
     }
 
-    // todo add tests
     @Transactional
     public void setIdSettingList(IdsDTO idsDTO, SettingType type) {
         settingRepository.deleteByUserAndSettingType(systemUser, type);
@@ -115,8 +113,7 @@ public class SettingService {
         updateIdsSettingBean(type, idsDTO.getIds());
     }
 
-    // todo add tests
-    protected void updateIdsSettingBean(SettingType type, List<Integer> ids) {
+    public void updateIdsSettingBean(SettingType type, List<Integer> ids) {
         if(type == SettingType.BLOCKING_USER_ID) {
             blockingUserIds.clear();
             blockingUserIds.addAll(ids);
@@ -126,7 +123,6 @@ public class SettingService {
         }
     }
 
-    // todo add tests
     public IdsDTO getIdSettingList(SettingType type) {
         List<PropertySetting> settings = settingRepository.getByUserAndSettingType(systemUser, type);
         return new IdsDTO(settings.stream().map(PropertySetting::getProperty).collect(Collectors.toList()));

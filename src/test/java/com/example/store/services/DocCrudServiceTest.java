@@ -1,10 +1,13 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodDateTime;
+import com.example.store.controllers.TestService;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.entities.documents.Document;
+import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -385,6 +389,33 @@ class DocCrudServiceTest {
         assertNotEquals("", response);
         assertEquals("<3000000003>CHECK_DOC*16.04.2022", response);
         periodDateTime.setPeriodStart();
+    }
+
+    @Sql(value = "/sql/documents/addThreePostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void addSupplierPaymentsTest() {
+        docCrudService.addSupplierPayments("ООО \"Защита\"");
+        List<Document> documents = documentService.getAllDocuments();
+        assertEquals(4, documents.size());
+        ItemDoc postingDoc = (ItemDoc) documents.get(2);
+        OrderDoc orderDoc = (OrderDoc) documents.get(3);
+        assertTrue(postingDoc.isPayed());
+        assertEquals(orderDoc, postingDoc.getBaseDocument());
+        assertEquals(orderDoc.getRecipient(), postingDoc.getSupplier());
+        float amount = (float) documents.stream()
+                .filter(doc -> doc.getDocType() == DocumentType.POSTING_DOC)
+                .mapToDouble(doc -> docItemService.getItemsAmount((ItemDoc) doc))
+                .sum();
+        assertEquals(orderDoc.getAmount(), amount);
+    }
+
+    @Sql(value = "/sql/documents/addThreePostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocsDTOToPayTest() {
+        assertEquals(3, docCrudService.getDocsDTOToPay(2).size());
     }
 
 }

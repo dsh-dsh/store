@@ -27,7 +27,6 @@ public class ItemController {
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 
-    // todo add tests
     @GetMapping("/rest/list")
     public ResponseEntity<ListResponse<ItemDTOForList>> getItemRestList(@RequestParam(defaultValue = "0") long time) {
         List<ItemDTOForList> list = itemService.getItemDTOList(time);

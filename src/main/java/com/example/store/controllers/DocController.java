@@ -111,7 +111,6 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
     @PostMapping("/add/payments/{supplier}")
     public ResponseEntity<Response<String>> addSupplierPayments(@PathVariable String supplier) {
         docCrudService.addSupplierPayments(supplier);
@@ -124,7 +123,6 @@ public class DocController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
     @GetMapping("/to/pay")
     public ResponseEntity<ListResponse<DocToPaymentDTO>> getDocsToPay(
             @RequestParam(defaultValue = "0") int companyId) {

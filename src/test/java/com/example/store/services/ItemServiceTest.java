@@ -97,7 +97,6 @@ class ItemServiceTest extends TestService {
         assertEquals(5, item.getPrices().size());
         List<Ingredient> ingredients = ingredientService.getIngredientsNotDeleted(item);
         assertEquals(3, ingredients.size());
-        // todo в тесте не добавляется quantities в новом ингредиенте quantities из нового ингредиента добавляются в старый, хотя через браузер все работает
     }
 
     @Sql(value = {"/sql/documents/addDocsForSerialHold.sql",
@@ -150,6 +149,14 @@ class ItemServiceTest extends TestService {
         assertEquals(UPDATE_NAME, item.getName());
         assertEquals(Workshop.BAR, item.getWorkshop());
         assertEquals(Unit.KG, item.getUnit());
+    }
+
+    @Test
+    void getItemDTOListNoDateTest() {
+        systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
+        List<ItemDTOForList> list = itemService.getItemDTOList();
+        assertNotNull(list);
+        assertEquals(9, list.size());
     }
 
     @Test

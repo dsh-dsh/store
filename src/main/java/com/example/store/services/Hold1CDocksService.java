@@ -288,7 +288,7 @@ public class Hold1CDocksService {
         ItemDoc doc = getWriteOffDoc(storage, project, time);
         itemDocRepository.save(doc);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
-                .filter(entry -> !disabledItemIds.contains(entry.getKey().getNumber())) // todo update tests due to disabledItemIds
+                .filter(entry -> !disabledItemIds.contains(entry.getKey().getId()))
                 .filter(entry -> entry.getValue().compareTo(BigDecimal.ZERO) != 0)
                 .map(entry -> saveDocumentItem(new DocumentItem(doc, entry.getKey(), entry.getValue())))
                 .collect(Collectors.toSet());

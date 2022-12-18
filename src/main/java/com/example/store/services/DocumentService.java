@@ -62,7 +62,6 @@ public class DocumentService {
                 type, storage, isHold, from, to);
     }
 
-    // todo add tests
     public List<ItemDoc> getDocumentsByTypeAndStorageAndIsHold(
             List<DocumentType> types, Storage storage, boolean isHold, LocalDateTime from, LocalDateTime to) {
         return itemDocRepository.findByDocTypeInAndStorageToAndIsHoldAndDateTimeBetween(
@@ -91,8 +90,8 @@ public class DocumentService {
                         this.getClass().getName() + " - getDocumentById(int docId)"));
     }
 
-    // todo add tests
-    public List<Document> getDocumentsBySupplierToPay(Company supplier) {
+    @Deprecated
+    public List<Document> getDocumentsBySupplierToPay(Company supplier) { // todo
         return documentRepository.findBySupplierAndIsPayed(supplier, false);
     }
 
@@ -105,7 +104,6 @@ public class DocumentService {
         return documentRepository.findAll();
     }
 
-    // todo update tests
     protected int getNextDocumentNumber(DocumentType type) {
         try {
             LocalDateTime yearStart = LocalDate.now()

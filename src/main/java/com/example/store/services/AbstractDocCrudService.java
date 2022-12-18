@@ -64,12 +64,9 @@ public abstract class AbstractDocCrudService {
     protected DocDTO docDTO;
     protected String saveTime;
 
-    // only for tests
     public void setSaveTime(String saveTime) {
         this.saveTime = saveTime;
     }
-
-    // todo add tests
 
     public DocInterface addItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));

@@ -4,6 +4,7 @@ import com.example.store.components.SystemSettingsCash;
 import com.example.store.model.dto.SettingDTO;
 import com.example.store.model.dto.SettingDTOList;
 import com.example.store.model.dto.UserDTO;
+import com.example.store.model.dto.requests.IdsDTO;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
@@ -63,6 +64,9 @@ class SettingControllerTest {
     private User systemUser;
     @Autowired
     private SystemSettingsCash systemSettingsCash;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
 
     @Test
     void getSettingsUnauthorizedTest()  throws Exception {
@@ -250,12 +254,15 @@ class SettingControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getBlockTimeIfHoldenChecksExistsTest()  throws Exception {
+        List<Integer> currentList = List.copyOf(blockingUserIds);
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, List.of(6));
         this.mockMvc.perform(
                         get(URL_PREFIX + "/block/time"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data")
                         .value(Util.getLongLocalDateTime("16.10.22 01:00:00") + 402L));
+        settingService.updateIdsSettingBean(SettingType.BLOCKING_USER_ID, currentList);
     }
 
     @Test
@@ -380,7 +387,6 @@ class SettingControllerTest {
 
     }
 
-    // todo delete all but this
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void setAddShortageSettingUnauthorizedTest()  throws Exception {
@@ -411,19 +417,6 @@ class SettingControllerTest {
         systemSettingsCash.setSetting(SettingType.PERIOD_AVERAGE_PRICE,1);
     }
 
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setAveragePriceForPeriodCloseSettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.PERIOD_AVERAGE_PRICE.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -439,19 +432,6 @@ class SettingControllerTest {
         assertEquals(0, settingService
                 .getSettingByType(systemUser, SettingType.DOCS_AVERAGE_PRICE).getProperty());
         systemSettingsCash.setSetting(SettingType.DOCS_AVERAGE_PRICE,1);
-    }
-
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setAveragePriceForDocsSettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.DOCS_AVERAGE_PRICE.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -471,19 +451,6 @@ class SettingControllerTest {
         systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID,1);
     }
 
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setIngredientDirSettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.INGREDIENT_DIR_ID.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -499,19 +466,6 @@ class SettingControllerTest {
         assertEquals(0, settingService
                 .getSettingByType(systemUser, SettingType.OUR_COMPANY_ID).getProperty());
         systemSettingsCash.setSetting(SettingType.OUR_COMPANY_ID,1);
-    }
-
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setOurCompanySettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.OUR_COMPANY_ID.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
     }
 
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -531,19 +485,6 @@ class SettingControllerTest {
         systemSettingsCash.setSetting(SettingType.HOLDING_DIALOG_ENABLE,1);
     }
 
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setHoldingDialogEnableSettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.HOLDING_DIALOG_ENABLE.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
     @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
@@ -560,20 +501,6 @@ class SettingControllerTest {
                 .getSettingByType(systemUser, SettingType.CHECK_HOLDING_ENABLE).getProperty());
         systemSettingsCash.setSetting(SettingType.CHECK_HOLDING_ENABLE,1);
     }
-
-    // todo delete
-    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void setCheckHoldingEnableSettingUnauthorizedTest()  throws Exception {
-        SettingDTO settingDTO = getSettingDTO(SettingType.CHECK_HOLDING_ENABLE.toString(), 0);
-        this.mockMvc.perform(
-                        post(URL_PREFIX + "/system/property")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(settingDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -596,6 +523,48 @@ class SettingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void getDisabledItemsUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/disabled/items"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/addIdsSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getDisabledItemsTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/disabled/items"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.ids.[0]").value(7))
+                .andExpect(jsonPath("$.data.ids.[1]").doesNotExist());
+    }
+
+    @Test
+    void getBlockingUsersUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/blocking/users"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/addIdsSettings.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getBlockingUsersTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/blocking/users"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.ids.[0]").value(1))
+                .andExpect(jsonPath("$.data.ids.[1]").doesNotExist());
+    }
+
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -615,6 +584,64 @@ class SettingControllerTest {
                         post(URL_PREFIX + "/period"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setDisabledItemsUnauthorizedTest()  throws Exception {
+        IdsDTO idsDTO = new IdsDTO(List.of(7, 8));
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/disabled/items")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(idsDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setDisabledItemsTest()  throws Exception {
+        IdsDTO idsDTO = new IdsDTO(List.of(7, 8));
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/disabled/items")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(idsDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<PropertySetting> list = settingRepository.getByUserAndSettingType(systemUser, SettingType.DISABLED_ITEM_ID);
+        assertEquals(2, list.size());
+        assertEquals(7, list.get(0).getProperty());
+        assertEquals(8, list.get(1).getProperty());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void setBlockingUsersUnauthorizedTest()  throws Exception {
+        IdsDTO idsDTO = new IdsDTO(List.of(1, 2));
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/blocking/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(idsDTO)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/settings/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void setBlockingUsersTest()  throws Exception {
+        IdsDTO idsDTO = new IdsDTO(List.of(1, 2));
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/blocking/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(idsDTO)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        List<PropertySetting> list = settingRepository.getByUserAndSettingType(systemUser, SettingType.BLOCKING_USER_ID);
+        assertEquals(2, list.size());
+        assertEquals(1, list.get(0).getProperty());
+        assertEquals(2, list.get(1).getProperty());
     }
 
     private SettingDTO getSettingDTO(String type, int property) {

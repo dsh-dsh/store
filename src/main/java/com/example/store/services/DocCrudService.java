@@ -132,7 +132,6 @@ public class DocCrudService extends AbstractDocCrudService {
     public void addDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
         this.saveTime = saveTime;
-//        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             addOrderDoc(docDTO);
@@ -145,7 +144,6 @@ public class DocCrudService extends AbstractDocCrudService {
     public void updateDocument(DocDTO docDTO, String saveTime) {
         checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
         this.saveTime = saveTime;
-//        checkSaveTime(docDTO);
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
             updateOrderDocument(docDTO);
@@ -390,16 +388,14 @@ public class DocCrudService extends AbstractDocCrudService {
         unSetPayed(itemDoc);
     }
 
-    // todo add tests
     @Transactional
     public void addSupplierPayments(String supplierName) {
         Company supplier = companyService.getByName(supplierName);
-        List<Document> documents = documentService.getDocumentsBySupplierToPay(supplier);
+        List<Document> documents = documentService.getDocsToPay(supplier);
         OrderDoc orderDoc = getSupplierPaymentDoc(supplier, documents);
         setPayed(documents, orderDoc);
     }
 
-    // todo add tests
     public List<DocToPaymentDTO> getDocsDTOToPay(int companyId) {
         Company supplier = companyService.findById(companyId);
         return documentService.getDocsToPay(supplier).stream()

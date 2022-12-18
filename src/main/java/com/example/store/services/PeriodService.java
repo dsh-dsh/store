@@ -80,7 +80,6 @@ public class  PeriodService {
         setNextPeriod();
     }
 
-    // todo update tests due to checking holden docs after and adding plusDays to period end
     protected void checkPossibilityToClosePeriod() {
         Period currentPeriod = getCurrentPeriod();
         List<Document> notHoldenDocs = documentRepository.findByIsHoldAndIsDeletedAndDateTimeBetween(
@@ -93,11 +92,15 @@ public class  PeriodService {
                     Constants.NOT_HOLDEN_DOCS_IN_PERIOD_MESSAGE,
                     this.getClass().getName() + " - checkPossibilityToClosePeriod()");
         }
+        checkingExistingHoldenDocsAfter(currentPeriod);
+    }
+
+    protected void checkingExistingHoldenDocsAfter(Period currentPeriod) {
         if(documentRepository.existsByDateTimeAfterAndIsHold(
                 currentPeriod.getEndDate().plusDays(1).atStartOfDay(), true)) {
             throw new BadRequestException(
                     Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE,
-                    this.getClass().getName() + " - checkPossibilityToClosePeriod()");
+                    this.getClass().getName() + " - checkingExistingHoldenDocsAfter(Period currentPeriod)");
         }
     }
 
@@ -146,7 +149,7 @@ public class  PeriodService {
                 .orElseGet(() -> {
                     Period period = new Period();
                     period.setStartDate(LocalDate.parse(Constants.DEFAULT_PERIOD_START));
-                    period.setEndDate(LocalDate.parse(Constants.DEFAULT_PERIOD_START).minusDays(1));
+                    period.setEndDate(LocalDate.now().plusDays(30).atStartOfDay().toLocalDate());
                     return period;
                 });
     }

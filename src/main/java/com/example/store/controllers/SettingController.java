@@ -45,15 +45,13 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(periodService.getPeriodDTO()));
     }
 
-    // todo add tests
-    @GetMapping("disabled/items")
+    @GetMapping("/disabled/items")
     public ResponseEntity<Response<IdsDTO>> getDisabledItems() {
         return ResponseEntity.ok(new Response<>(
                 settingService.getIdSettingList(SettingType.DISABLED_ITEM_ID)));
     }
 
-    // todo add tests
-    @GetMapping("blocking/users")
+    @GetMapping("/blocking/users")
     public ResponseEntity<Response<IdsDTO>> getBlockingUsers() {
         return ResponseEntity.ok(new Response<>(
                 settingService.getIdSettingList(SettingType.BLOCKING_USER_ID)));
@@ -82,22 +80,19 @@ public class SettingController {
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
     @PostMapping("/period")
     public ResponseEntity<Response<PeriodDTO>> closePeriod() {
         PeriodDTO periodDTO = periodService.closePeriodManually();
         return ResponseEntity.ok(new Response<>(periodDTO));
     }
 
-    // todo add tests
-    @PostMapping("disabled/items")
+    @PostMapping("/disabled/items")
     public ResponseEntity<Response<String>> setDisabledItems(@RequestBody IdsDTO itemIds) {
         settingService.setIdSettingList(itemIds, SettingType.DISABLED_ITEM_ID);
         return ResponseEntity.ok(new Response<>(Constants.OK));
     }
 
-    // todo add tests
-    @PostMapping("blocking/users")
+    @PostMapping("/blocking/users")
     public ResponseEntity<Response<String>> setBlockingUses(@RequestBody IdsDTO itemIds) {
         settingService.setIdSettingList(itemIds, SettingType.BLOCKING_USER_ID);
         return ResponseEntity.ok(new Response<>(Constants.OK));

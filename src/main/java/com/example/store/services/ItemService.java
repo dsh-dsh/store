@@ -70,7 +70,6 @@ public class ItemService {
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }
 
-    // todo add tests
     public List<ItemDTOForList> getItemDTOList() {
         List<Item> items = itemRepository.findAll(Sort.by("name"));
         return items.stream()

@@ -270,4 +270,24 @@ class CatalogControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void getAllUsersUnauthorizedTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/users/all"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getAllUsersTest() throws Exception{
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/users/all"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.[5]").exists())
+                .andExpect(jsonPath("$.data.[6]").doesNotExist());
+    }
+
 }

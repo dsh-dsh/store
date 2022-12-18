@@ -992,6 +992,40 @@ class DocumentControllerTest {
         assertEquals(orderDoc.getAmount(), docItemService.getItemsAmount(postingDoc));
     }
 
+    @Test
+    void addSupplierPaymentsUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/add/payments/ООО \"Защита\"")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/addThreePostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    void addSupplierPaymentsTest() throws Exception {
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/add/payments/ООО \"Защита\"")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        List<Document> documents = documentRepository.findAll();
+        assertEquals(4, documents.size());
+        ItemDoc postingDoc = (ItemDoc) documents.get(2);
+        OrderDoc orderDoc = (OrderDoc) documents.get(3);
+        assertTrue(postingDoc.isPayed());
+        assertEquals(orderDoc, postingDoc.getBaseDocument());
+        assertEquals(orderDoc.getRecipient(), postingDoc.getSupplier());
+        float amount = (float) documents.stream()
+                .filter(doc -> doc.getDocType() == DocumentType.POSTING_DOC)
+                .mapToDouble(doc -> docItemService.getItemsAmount((ItemDoc) doc))
+                .sum();
+        assertEquals(orderDoc.getAmount(), amount);
+    }
+
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @WithUserDetails(TestService.EXISTING_EMAIL)
     @Test
@@ -1048,5 +1082,30 @@ class DocumentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void getDocsToPayUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/to/pay")
+                                .param("companyId", "2"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Sql(value = "/sql/documents/addThreePostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    @Test
+    void getDocsToPayTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/to/pay")
+                                .param("companyId", "2"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[0].id").value(1))
+                .andExpect(jsonPath("$.data.[1].id").value(2))
+                .andExpect(jsonPath("$.data.[2].id").value(3));
     }
 }

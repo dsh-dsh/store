@@ -1,7 +1,9 @@
 package com.example.store.services;
 
+import com.example.store.controllers.TestService;
 import com.example.store.model.dto.ItemDTOForTree;
 import com.example.store.model.dto.PersonDTO;
+import com.example.store.model.dto.UserDTO;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.Role;
 import com.example.store.repositories.UserRepository;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -50,6 +53,18 @@ class UserServiceTest {
     private static final long BIRTH_DATE = 978307200000L; // 2001-01-01
     private static final String PHONE = "+7(900)0000000";
     private static final String BIRTH_DATE_STR = "2001-01-01";
+
+    @Test
+    void getUserDTOListTest() {
+        List<UserDTO> users = userService.getUserDTOList(false);
+        assertEquals(4, users.size());
+    }
+
+    @Test
+    void getAllUserDTOListTest() {
+        List<UserDTO> users = userService.getUserDTOList(true);
+        assertEquals(6, users.size());
+    }
 
     @Test
     void getUserTree() {
@@ -129,6 +144,14 @@ class UserServiceTest {
         assertNull(user.getPassword());
     }
 
+    @WithUserDetails(ADMIN_EMAIL)
+    @Test
+    void getCurrentUserTest() {
+        User user = userService.getCurrentUser();
+        assertEquals("Васильев", user.getLastName());
+        assertEquals(Role.ADMIN, user.getRole());
+    }
+
     private PersonDTO getPersonDTO() {
         return PersonDTO.builder()
                 .firstName(FIRST_NAME)
@@ -139,5 +162,7 @@ class UserServiceTest {
                 .role(Role.CUSTOMER.toString())
                 .build();
     }
+
+
 
 }

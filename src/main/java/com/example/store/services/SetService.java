@@ -18,8 +18,6 @@ public class SetService {
     @Autowired
     private ItemRepository itemRepository;
 
-    // TODO add tests
-
     public List<Integer> getSets(Item item) {
         List<ItemSet> setList = setRepository.findSetsByItem(item);
         return setList.stream().map(itemSet -> itemSet.getSet().getId()).collect(Collectors.toList());

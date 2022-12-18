@@ -88,6 +88,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "AND isPayed = :isPayed")
     List<Document> findDocsTtoPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
 
-    List<Document> findBySupplierAndIsPayed(Company company, boolean isPayed);
+    @Deprecated
+    List<Document> findBySupplierAndIsPayed(Company company, boolean isPayed); // todo
 
 }

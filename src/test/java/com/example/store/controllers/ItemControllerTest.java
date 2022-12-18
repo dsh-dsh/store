@@ -99,11 +99,10 @@ class ItemControllerTest extends TestService {
     }
 
     @Test
-    void getItemListUnauthorizedTest() throws Exception {
+    void getItemListRestUnauthorizedTest() throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/rest/list?time=" + ITEM_REST_DATE)
-                                .param("id", String.valueOf(NEW_ITEM_ID))
-                                .param("date", LocalDate.now().toString()))
+                        get(URL_PREFIX + "/rest/list")
+                                .param("time", String.valueOf(ITEM_REST_DATE)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
 
@@ -114,9 +113,10 @@ class ItemControllerTest extends TestService {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void getItemListTest() throws Exception{
+    void getItemRestListTest() throws Exception{
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/rest/list?time=" + ITEM_REST_DATE))
+                        get(URL_PREFIX + "/rest/list")
+                                .param("time", String.valueOf(ITEM_REST_DATE)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[0].id").value(7))
@@ -138,7 +138,7 @@ class ItemControllerTest extends TestService {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void getItemListWhenNoDateTest() throws Exception{
+    void getItemRestListWhenNoDateTest() throws Exception{
         this.mockMvc.perform(
                         get(URL_PREFIX + "/rest/list"))
                 .andDo(print())
@@ -147,6 +147,27 @@ class ItemControllerTest extends TestService {
                 .andExpect(jsonPath("$.data.[0].rest_list").doesNotExist())
                 .andExpect(jsonPath("$.data.[1].id").value(8))
                 .andExpect(jsonPath("$.data.[1].rest_list").doesNotExist());
+
+    }
+
+    @Test
+    void getItemListUnauthorizedTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemListTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[8]").exists())
+                .andExpect(jsonPath("$.data.[9]").doesNotExist());
 
     }
 

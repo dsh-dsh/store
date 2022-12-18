@@ -34,6 +34,16 @@ class CompanyServiceTest {
     public static final int MISSING_ID = 155;
 
     @Test
+    void findByIdTest() {
+        assertEquals("230000000001", companyService.findById(2).getInn());
+    }
+
+    @Test
+    void findByIdNullTest() {
+        assertNull(companyService.findById(55));
+    }
+
+    @Test
     void getByIdTest() {
         Company company = companyService.getById(1);
         assertEquals(OUR_INN, company.getInn());

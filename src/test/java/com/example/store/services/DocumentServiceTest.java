@@ -83,6 +83,21 @@ class DocumentServiceTest {
         assertEquals(4, documents.get(1).getId());
     }
 
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getDocumentsByTypesAndStorageAndIsHoldTest() {
+        Storage storageTo = storageService.getById(3);
+        LocalDateTime from = LocalDateTime.parse("2022-03-01T00:00:00.000");
+        LocalDateTime to = LocalDateTime.now();
+        List<DocumentType> types = List.of(DocumentType.POSTING_DOC, DocumentType.RECEIPT_DOC, DocumentType.REQUEST_DOC);
+        List<ItemDoc> documents = documentService.getDocumentsByTypeAndStorageAndIsHold(types, storageTo, true, from, to);
+        assertEquals(3, documents.size());
+        assertEquals(3, documents.get(0).getId());
+        assertEquals(4, documents.get(1).getId());
+        assertEquals(5, documents.get(2).getId());
+    }
+
     @Sql(value = {"/sql/orders/addCreditDoc.sql", "/sql/orders/addWithdrawDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -168,6 +183,14 @@ class DocumentServiceTest {
     void getNextDocumentNumberWhenDocNotExistsTest() {
         int newNumber = documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC);
         assertEquals(1, newNumber);
+    }
+
+    @Sql(value = "/sql/documents/addLastYearPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getNextDocumentNumberWhenNewYearTest() {
+        int newPostingNumber = documentService.getNextDocumentNumber(DocumentType.POSTING_DOC);
+        assertEquals(1, newPostingNumber);
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

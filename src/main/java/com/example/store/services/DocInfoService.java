@@ -16,8 +16,6 @@ public class DocInfoService {
     @Autowired
     private DocInfoMapper docInfoMapper;
 
-    // todo add tests
-
     public DocInfo getDocInfoByDocument(Document document) {
         return docInfoRepository.findByDocument(document).orElse(null);
     }

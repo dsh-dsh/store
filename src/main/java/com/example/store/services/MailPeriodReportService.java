@@ -30,7 +30,6 @@ public class MailPeriodReportService {
     @Value("${report.to.emails}")
     private String[] emails;
 
-
     // todo add tests
 
     public void sendPeriodReport(String projectName, long date) {
