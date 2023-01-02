@@ -51,6 +51,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     List<Document> findByIsHoldAndIsDeletedAndDateTimeBetween(
             boolean isHold, boolean isDeleted, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 
+    @Deprecated
     List<Document> findByDocTypeAndIsHoldAndIsDeletedAndDateTimeBetween(
             DocumentType docType, boolean isHold, boolean isDeleted,
             LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
@@ -98,4 +99,17 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     @Query(value = "update document set date_time = :time where doc_type = :type", nativeQuery = true)
     void updateDateTimeOfDocForTestsOnly(String type, LocalDateTime time);
 
+    // method for SerialUnHoldDocService
+    @Query(value = "select * from document where author_id in :authorIds and date_time between :from and :to order by date_time limit 1", nativeQuery = true)
+    Optional<Document> findFistCheckDocOfDay(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
+
+    // method for SerialUnHoldDocService
+    @Modifying
+    @Query(value = "update document set is_hold = :isHold where date_time >= :from", nativeQuery = true)
+    void setIsHold(boolean isHold, LocalDateTime from);
+
+    // method for SerialUnHoldDocService
+    @Modifying
+    @Query(value = "update document set is_deleted = :isDeleted where author_id in :authorIds and date_time >= :from", nativeQuery = true)
+    void softDeleteDocs(boolean isDeleted, List<Integer> authorIds, LocalDateTime from);
 }

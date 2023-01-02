@@ -6,6 +6,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.projections.LotBigDecimal;
 import com.example.store.model.projections.LotFloat;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -66,4 +67,9 @@ public interface LotRepository extends JpaRepository<Lot, Long> {
             "inner join lot_movement as movement on lot.id = movement.lot_id " +
             "where lot.id = :lotId and movement.storage_id = :storageId", nativeQuery = true)
     float getQuantityRestOfLot(long lotId, int storageId);
+
+    // method for SerialUnHoldDocService
+    @Modifying
+    @Query(value = "delete from lot where lot_time >= :from", nativeQuery = true)
+    void deleteLots(LocalDateTime from);
 }

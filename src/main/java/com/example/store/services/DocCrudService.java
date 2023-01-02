@@ -49,6 +49,8 @@ public class DocCrudService extends AbstractDocCrudService {
     protected DocInfoService docInfoService;
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
+    @Autowired
+    private SerialUnHoldDocService serialUnHoldDocService;
 
     public List<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -217,7 +219,7 @@ public class DocCrudService extends AbstractDocCrudService {
         Document document = documentService.getDocumentById(docId);
         checkTimePeriod(document.getDateTime());
         if(document.isHold()) {
-            serialUnHold(document);
+            serialUnHoldDocService.unHold(document);
         } else {
             serialHold(document);
         }
@@ -228,16 +230,15 @@ public class DocCrudService extends AbstractDocCrudService {
                 .findByIsHoldAndIsDeletedAndDateTimeBefore(false, false,
                         document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
         documents.add(document);
-        for (Document doc : documents) {
-            if(doc.getDocType() == DocumentType.CHECK_DOC) {
-                throw new BadRequestException(
-                        Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE,
-                        this.getClass().getName() + " serialHold(Document document)");
-            }
-            holdDocsService.holdDoc(doc);
+        if(documents.stream().anyMatch(doc -> doc.getDocType() == DocumentType.CHECK_DOC)) {
+            throw new BadRequestException(
+                    Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE,
+                    this.getClass().getName() + " serialHold(Document document)");
         }
+        documents.forEach(holdDocsService::holdDoc);
     }
 
+    @Deprecated
     protected void serialUnHold(Document document) {
         List<Document> documents = documentRepository
                 .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
@@ -248,6 +249,7 @@ public class DocCrudService extends AbstractDocCrudService {
         softDeleteBaseDocs(documents);
     }
 
+    @Deprecated
     protected void checkingFogUnHoldenChecks(List<Document> documents) {
         Optional<Document> optional = documents.stream()
                 .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).findFirst();
@@ -258,6 +260,7 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    @Deprecated
     protected void softDeleteBaseDocs(List<Document> documents) {
         List<LocalDate> dates = getDatesOfChecks(documents);
         if(!dates.isEmpty()) {
@@ -276,6 +279,7 @@ public class DocCrudService extends AbstractDocCrudService {
         }
     }
 
+    @Deprecated
     protected void clearBaseDocInCheckDoc(Document document) {
         document.setBaseDocument(null);
         documentRepository.save(document);
@@ -288,6 +292,7 @@ public class DocCrudService extends AbstractDocCrudService {
         return false;
     }
 
+    @Deprecated
     protected List<LocalDate> getDatesOfChecks(List<Document> documents) {
         List<LocalDate> dates = new ArrayList<>();
         if(!documents.isEmpty()) {
@@ -299,7 +304,7 @@ public class DocCrudService extends AbstractDocCrudService {
         return dates;
     }
 
-    // add checks of the day that wasn't chosen
+    @Deprecated
     protected List<Document> getAllChecksToUnHold(List<Document> documents) {
         // todo refactoring: simplify - getStartDateTime first doc and if it checkDoc find other checkDocs
         List<Document> checks = documents.stream()
