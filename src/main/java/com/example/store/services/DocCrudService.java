@@ -7,6 +7,7 @@ import com.example.store.mappers.DocMapper;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.documents.DocToListDTO;
 import com.example.store.model.dto.documents.DocToPaymentDTO;
+import com.example.store.model.dto.requests.FixShortagesRequest;
 import com.example.store.model.dto.requests.ItemDocListRequestDTO;
 import com.example.store.model.entities.Company;
 import com.example.store.model.entities.DocInfo;
@@ -27,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -183,13 +181,34 @@ public class DocCrudService extends AbstractDocCrudService {
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.holdDoc(document);
         }
+        holdRelativeDocs(document);
+    }
+
+    // todo add tests
+    protected void holdRelativeDocs(Document document) {
+        if(document.getDocType() == DocumentType.INVENTORY_DOC) {
+            List<Integer> relativeDocIdList = getRelativeDocIds(document.getId());
+            relativeDocIdList.forEach(this::holdDocument);
+        }
     }
 
     public void unHoldDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
+        unHoldRelativeDocs(document);
         checkTimePeriod(document.getDateTime());
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.unHoldDoc(document);
+        }
+    }
+
+    // todo add tests
+    protected void unHoldRelativeDocs(Document document) {
+        if(document.getDocType() == DocumentType.INVENTORY_DOC) {
+            List<Integer> relativeDocIdList = getRelativeDocIds(document.getId());
+            relativeDocIdList.stream()
+                    .sorted(Comparator.reverseOrder())
+                    .map(documentService::getDocumentById)
+                    .forEach(this::softDeleteDoc);
         }
     }
 
@@ -407,5 +426,30 @@ public class DocCrudService extends AbstractDocCrudService {
                     }
                     return dto;
                 }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void addRelativeDocuments(ItemDocListRequestDTO itemDocListRequestDTO, int docId) {
+        Document parentDoc = documentService.getDocumentById(docId);
+        List<DocDTO> docDTOList = itemDocListRequestDTO.getDocDTOList();
+        documentService.shiftTimeInDocsAfter(parentDoc, docDTOList.size());
+        for(int i = 0; i < docDTOList.size(); i++) {
+            DocDTO dto = docDTOList.get(i);
+            int offset = i + 1;
+            dto.setDateTime(Util.getLongLocalDateTime(parentDoc.getDateTime()) + offset);
+            addDocument(dto, Constants.DTO_TIME);
+        }
+    }
+
+    // todo add tests
+    public List<Integer> getRelativeDocIds(int docId) {
+        return documentRepository.getRelativeDocIds(docId);
+    }
+
+    // todo add tests
+    public void fixShortagesAndHold(FixShortagesRequest request) {
+        ItemDoc itemDoc = (ItemDoc) documentService.getDocumentById(request.getDocId());
+        docItemService.fixShortages(itemDoc, request.getShortages());
+        holdDocument(itemDoc.getId());
     }
 }

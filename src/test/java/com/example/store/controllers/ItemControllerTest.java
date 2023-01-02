@@ -161,13 +161,27 @@ class ItemControllerTest extends TestService {
 
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
-    void getItemListTest() throws Exception {
+    void getItemListIncludeNodesTest() throws Exception {
         this.mockMvc.perform(
-                        get(URL_PREFIX + "/list"))
+                        get(URL_PREFIX + "/list")
+                                .param("includeNodes", "true"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.[8]").exists())
                 .andExpect(jsonPath("$.data.[9]").doesNotExist());
+
+    }
+
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void getItemListExcludeNodesTest() throws Exception {
+        this.mockMvc.perform(
+                        get(URL_PREFIX + "/list")
+                                .param("includeNodes", "false"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.[4]").exists())
+                .andExpect(jsonPath("$.data.[6]").doesNotExist());
 
     }
 

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,4 +41,20 @@ public class DocItemDTO {
 
     private float discount;
 
+    private List<DocItemDTO> children;
+
+    public DocItemDTO(int documentId, int itemId, String itemName, String unit,
+                      float quantity, float quantityFact, float price, float discount, List<DocItemDTO> children) {
+        this.documentId = documentId;
+        this.itemId = itemId;
+        this.itemName = itemName;
+        this.unit = unit;
+        this.quantity = quantity;
+        this.quantityFact = quantityFact;
+        this.price = price;
+        this.discount = discount;
+        this.children = children;
+        this.amount = quantity * price;
+        this.amountFact = quantityFact * price;
+    }
 }

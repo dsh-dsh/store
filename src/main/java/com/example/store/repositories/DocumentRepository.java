@@ -7,8 +7,10 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.enums.DocumentType;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -88,7 +90,12 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "AND isPayed = :isPayed")
     List<Document> findDocsTtoPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
 
-    @Deprecated
-    List<Document> findBySupplierAndIsPayed(Company company, boolean isPayed); // todo
+    @Query(value = "select document.id from document where is_deleted = false and base_document_id = :docId", nativeQuery = true)
+    List<Integer> getRelativeDocIds(int docId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update document set date_time = :time where doc_type = :type", nativeQuery = true)
+    void updateDateTimeOfDocForTestsOnly(String type, LocalDateTime time);
 
 }

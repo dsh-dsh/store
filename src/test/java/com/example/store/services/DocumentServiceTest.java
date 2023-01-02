@@ -9,6 +9,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.utils.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.print.Doc;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +42,8 @@ class DocumentServiceTest {
     private PeriodService periodService;
     @Autowired
     private CompanyService companyService;
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @Sql(value = "/sql/documents/addSomeCheckDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -172,6 +176,8 @@ class DocumentServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getNextDocumentNumberWhenDocOfSuchTypeExistsTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.CREDIT_ORDER_DOC.toString(), LocalDate.now().atStartOfDay());
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.POSTING_DOC.toString(), LocalDate.now().atStartOfDay());
         int newOrderNumber = documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC);
         int newPostingNumber = documentService.getNextDocumentNumber(DocumentType.POSTING_DOC);
         assertEquals(7, newOrderNumber);

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -50,6 +51,19 @@ public class DocumentService {
                         Sort.by(Constants.DATE_TIME_STRING).descending());
         documents.add(document);
         return documents;
+    }
+
+    // todo add tests
+    public void shiftTimeInDocsAfter(Document document, int offset) {
+        List<Document> documents =documentRepository
+                .findByIsHoldAndDateTimeAfter(false, document.getDateTime(), Sort.by(Constants.DATE_TIME_STRING));
+        documents.forEach(doc -> shiftTime(doc, offset));
+    }
+
+    // todo add tests
+    protected void shiftTime(Document document, int offset) {
+        document.setDateTime(document.getDateTime().plus(offset, ChronoUnit.MILLIS));
+        documentRepository.save(document);
     }
 
     public boolean existsHoldenDocumentsAfter(LocalDateTime time) {
@@ -88,11 +102,6 @@ public class DocumentService {
                 .orElseThrow(() -> new BadRequestException(
                         Constants.NO_SUCH_DOCUMENT_MESSAGE,
                         this.getClass().getName() + " - getDocumentById(int docId)"));
-    }
-
-    @Deprecated
-    public List<Document> getDocumentsBySupplierToPay(Company supplier) { // todo
-        return documentRepository.findBySupplierAndIsPayed(supplier, false);
     }
 
     public void setIsHoldAndSave(boolean hold, Document document) {

@@ -34,8 +34,8 @@ public class ItemController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList() {
-        List<ItemDTOForList> list = itemService.getItemDTOList();
+    public ResponseEntity<ListResponse<ItemDTOForList>> getItemList(@RequestParam boolean includeNodes) {
+        List<ItemDTOForList> list = itemService.getItemDTOList(includeNodes);
         return ResponseEntity.ok(new ListResponse<>(list));
     }
 

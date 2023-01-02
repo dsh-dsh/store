@@ -955,6 +955,7 @@ class DocumentControllerTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getNewDocNumberWhenRequestDocTest() throws Exception {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.REQUEST_DOC.toString(), LocalDate.now().atStartOfDay());
         this.mockMvc.perform(
                         get(URL_PREFIX + "/new/number?type=" + DocumentType.REQUEST_DOC.getValue()))
                 .andDo(print())

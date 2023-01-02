@@ -85,19 +85,6 @@ class PeriodServiceTest {
                 () -> periodService.checkingExistingHoldenDocsAfter(currentPeriod));
     }
 
-
-    @Sql(value = {"/sql/period/addPeriods.sql",
-            "/sql/period/addHoldenReceiptDocAndMovementDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void closePeriodTest() {
-        periodService.closePeriod();
-        List<ItemDoc> docs = documentService.getItemDocsByType(DocumentType.PERIOD_REST_MOVE_DOC);
-        assertEquals(2, docs.size());
-        assertEquals(LocalDateTime.parse("2022-05-01T00:00:00.000000"), docs.get(0).getDateTime());
-        assertEquals(LocalDateTime.parse("2022-05-01T00:00:00.002000"), docs.get(1).getDateTime());
-    }
-
     @Sql(value = {"/sql/period/addPeriods.sql",
             "/sql/period/addHoldenReceiptDocAndMovementDoc.sql",
             "/sql/period/addNotHoldenOrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

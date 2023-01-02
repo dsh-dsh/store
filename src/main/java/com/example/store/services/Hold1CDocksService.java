@@ -1,7 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.SystemSettingsCash;
-import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.UnHoldenDocsException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
@@ -100,13 +100,13 @@ public class Hold1CDocksService {
 
     @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
+        checkExistingNotHoldenDocsBefore(from);
         List<Storage> storages = storageService.getStorageList();
         for (Storage storage : storages) {
             checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
             if (checks.isEmpty()) {
                 continue;
             }
-
             // refactor union this two methods bellow
             setLast1CDocTime();
             setLastDocTime(storage, from, to);
@@ -119,23 +119,16 @@ public class Hold1CDocksService {
         }
         List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
-        checkUnHoldenDocksExists(to);
+        checkUnHoldenDocksExists(to, false);
     }
 
-    private void setLastDocTime(Storage storage, LocalDateTime from, LocalDateTime to) {
-        List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(projectService.getByName(storage.getName()), from, to);
-        if(orders.isEmpty()) return;
-        LocalDateTime orderTime = orders.stream()
-                .max(Comparator.comparing(OrderDoc::getDateTime)).get().getDateTime();
-        last1CDocTime = last1CDocTime.isAfter(orderTime)? last1CDocTime : orderTime;
-    }
-
-    protected void checkExistingNotHoldenChecksBefore(LocalDateTime currentDate) {
-        LocalDateTime existingDate = getFirstUnHoldenCheckDate();
-        if(currentDate.isAfter(existingDate)) {
-            throw new BadRequestException(
-                    String.format(Constants.EXISTS_NOT_HOLDEN_CHECK_BEFORE_MESSAGE, currentDate, existingDate),
-                    this.getClass().getName() + " - deleteItemDoc(int docId)");
+    protected void setLastDocTime(Storage storage, LocalDateTime from, LocalDateTime to) {
+        Optional<OrderDoc> optional = getUnHoldenOrdersByProjectAndPeriod(
+                projectService.getByName(storage.getName()), from, to)
+                .stream().max(Comparator.comparing(OrderDoc::getDateTime));
+        if (optional.isPresent()) {
+            LocalDateTime orderTime = optional.get().getDateTime();
+            last1CDocTime = last1CDocTime.isAfter(orderTime) ? last1CDocTime : orderTime;
         }
     }
 
@@ -152,7 +145,7 @@ public class Hold1CDocksService {
                 .ifPresent(itemDoc -> last1CDocTime = itemDoc.getDateTime());
     }
 
-    public void createCreditOrders(Storage storage) {
+    protected void createCreditOrders(Storage storage) {
         int offset = WRITE_OFF_DOC_OFFSET + 1;
         Project project = projectService.getProjectByStorageName(storage.getName()).orElse(null);
         if(project == null) return;
@@ -209,7 +202,7 @@ public class Hold1CDocksService {
                 .forEach(doc -> holdDocsService.holdDoc(doc));
     }
 
-    public void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
+    protected void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
 //        holdDocsBefore(); todo refactor this
         Project project = checks.get(0).getProject();
         Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
@@ -223,7 +216,7 @@ public class Hold1CDocksService {
         }
     }
 
-    public void holdDocsAndChecksByStoragesAndPeriod() {
+    protected void holdDocsAndChecksByStoragesAndPeriod() {
         if (receiptDoc != null) {
             receiptDoc.setBaseDocument(writeOffDoc);
             holdDocsService.holdDoc(receiptDoc);
@@ -237,14 +230,14 @@ public class Hold1CDocksService {
         }
     }
 
-    public void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+    protected void holdOrdersByProjectsAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<OrderDoc> orders = getUnHoldenOrdersByProjectAndPeriod(project, from, to);
         for(OrderDoc order : orders) {
             holdDocsService.holdDoc(order);
         }
     }
 
-    public Map<Item, BigDecimal> getReceiptItemMap(Map<Item, BigDecimal> writeOffItemMap, Storage storage, LocalDateTime time) {
+    protected Map<Item, BigDecimal> getReceiptItemMap(Map<Item, BigDecimal> writeOffItemMap, Storage storage, LocalDateTime time) {
         List<Item> writeOfItems = new ArrayList<>(writeOffItemMap.keySet());
         Map<Item, BigDecimal> itemRestMap = itemRestService.getItemRestMap(writeOfItems, storage, time);
         return writeOffItemMap.entrySet().stream()
@@ -257,7 +250,7 @@ public class Hold1CDocksService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public Map<Item, BigDecimal> getItemMapFromCheckDocs(List<ItemDoc> checks) {
+    protected Map<Item, BigDecimal> getItemMapFromCheckDocs(List<ItemDoc> checks) {
         return checks.stream()
                 .flatMap(check -> docItemService.getItemsByDoc(check).stream())
                 .collect(Collectors.toMap(
@@ -266,7 +259,7 @@ public class Hold1CDocksService {
                         BigDecimal::add));
     }
 
-    public ItemDoc createReceiptDoc(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
+    protected ItemDoc createReceiptDoc(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
         if(itemMap == null || itemMap.isEmpty()) return null;
         ItemDoc doc = getReceiptDoc(storage, project, time);
         itemDocRepository.save(doc);
@@ -284,7 +277,7 @@ public class Hold1CDocksService {
         return doc;
     }
 
-    public ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
+    protected ItemDoc createWriteOffDocForChecks(Storage storage, Project project, Map<Item, BigDecimal> itemMap, LocalDateTime time) {
         ItemDoc doc = getWriteOffDoc(storage, project, time);
         itemDocRepository.save(doc);
         Set<DocumentItem> docItemSet = itemMap.entrySet().stream()
@@ -296,44 +289,49 @@ public class Hold1CDocksService {
         return doc;
     }
 
-    public DocumentItem saveDocumentItem(DocumentItem docItem) {
+    protected DocumentItem saveDocumentItem(DocumentItem docItem) {
         docItemService.save(docItem);
         return docItem;
     }
 
-    public List<ItemDoc> getUnHoldenChecksByStorageAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
+    protected List<ItemDoc> getUnHoldenChecksByStorageAndPeriod(Storage storage, LocalDateTime from, LocalDateTime to) {
         return documentService.getDocumentsByTypeAndStorageAndIsHold(DocumentType.CHECK_DOC, storage, false, from, to);
     }
 
-    public List<OrderDoc> getUnHoldenOrdersByProjectAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
+    protected List<OrderDoc> getUnHoldenOrdersByProjectAndPeriod(Project project, LocalDateTime from, LocalDateTime to) {
         List<DocumentType> types = List.of(DocumentType.CREDIT_ORDER_DOC, DocumentType.WITHDRAW_ORDER_DOC);
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 
-    public boolean checkUnHoldenDocksExists(LocalDateTime untilDateTime) {
-        if(documentRepository
-                .existsByDateTimeBeforeAndIsDeletedAndIsHold(untilDateTime, false, false)) {
-            mailService.send(toEmail,
-                    String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(LocalDateTime.now())),
-                    String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(untilDateTime)));
+    protected void checkExistingNotHoldenDocsBefore(LocalDateTime time) {
+        if(checkUnHoldenDocksExists(time, true)) throw new UnHoldenDocsException();
+    }
+
+    protected boolean checkUnHoldenDocksExists(LocalDateTime time, boolean before) {
+        String subject = String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(LocalDateTime.now()));
+        String message = before ?
+                Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE :
+                String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(time));
+        if(documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(time, false, false)) {
+            mailService.send(toEmail, subject, message);
             return true;
         }
         return false;
     }
 
-    public ItemDoc getWriteOffDoc(Storage storage, Project project, LocalDateTime time) {
+    protected ItemDoc getWriteOffDoc(Storage storage, Project project, LocalDateTime time) {
         ItemDoc itemDocOfType = getItemDocOfType(DocumentType.WRITE_OFF_DOC, project, time);
         itemDocOfType.setStorageFrom(storage);
         return itemDocOfType;
     }
 
-    public ItemDoc getReceiptDoc(Storage storage, Project project, LocalDateTime time) {
+    protected ItemDoc getReceiptDoc(Storage storage, Project project, LocalDateTime time) {
         ItemDoc itemDocOfType = getItemDocOfType(DocumentType.RECEIPT_DOC, project, time);
         itemDocOfType.setStorageTo(storage);
         return itemDocOfType;
     }
 
-    public ItemDoc getItemDocOfType(DocumentType docType, Project project, LocalDateTime time) {
+    protected ItemDoc getItemDocOfType(DocumentType docType, Project project, LocalDateTime time) {
         ItemDoc itemDoc = new ItemDoc();
         itemDoc.setNumber(documentService.getNextDocumentNumber(docType));
         itemDoc.setDateTime(time);

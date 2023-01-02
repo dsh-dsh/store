@@ -200,11 +200,11 @@ public abstract class AbstractDocCrudService {
     }
 
     protected void setCommonFields(Document document, DocDTO docDTO) {
-        if(docDTO.getNumber() == 0) {
-            document.setNumber(documentService.getNextDocumentNumber(documentType));
-        } else {
-            document.setNumber(docDTO.getNumber());
-        }
+        // todo update test due to line below
+        long newDocNumber = document.getNumber() > 0 ?
+                docDTO.getNumber() :
+                documentService.getNextDocumentNumber(documentType);
+        document.setNumber(newDocNumber);
         document.setDocType(documentType);
         document.setDateTime(getNewTime(document, docDTO));
         document.setProject(projectService.getById(docDTO.getProject().getId()));
@@ -220,7 +220,9 @@ public abstract class AbstractDocCrudService {
 
     protected LocalDateTime getNewTime(Document document, DocDTO dto) {
         LocalDate docDate = Util.getLocalDate(dto.getDateTime());
-        if(document.getDateTime() != null && saveTime.equals(Constants.CURRENT_TIME)) {
+        if(saveTime.equals(Constants.DTO_TIME)) {
+            return Util.getLocalDateTime(dto.getDateTime());
+        } else if(document.getDateTime() != null && saveTime.equals(Constants.CURRENT_TIME)) {
             return document.getDateTime();
         } else if(saveTime.equals(Constants.DAY_START)) {
             return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);

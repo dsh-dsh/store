@@ -8,6 +8,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.repositories.DocumentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ class DocsFrom1cServiceTest {
     private DocItemService docItemService;
     @Autowired
     private CheckInfoService checkInfoService;
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -133,6 +136,7 @@ class DocsFrom1cServiceTest {
         docDTO.setTax(12f);
         docDTO.setSupplier(testService.setCompanyDTO("230902612219"));
 
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.CREDIT_ORDER_DOC.toString(), LocalDate.now().atStartOfDay());
         docsFrom1cService.addDocument(docDTO);
         List<Document> docs = documentService.getAllDocuments();
         assertEquals(1, docs.size());
@@ -166,6 +170,7 @@ class DocsFrom1cServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void isDocNumberExistsTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.RECEIPT_DOC.toString(), LocalDate.now().atStartOfDay());
         assertTrue(docsFrom1cService.isDocNumberExists(4L, DocumentType.RECEIPT_DOC));
     }
 
@@ -173,6 +178,7 @@ class DocsFrom1cServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void isDocNumberNotExistsTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.RECEIPT_DOC.toString(), LocalDate.now().atStartOfDay());
         assertFalse(docsFrom1cService.isDocNumberExists(5L, DocumentType.RECEIPT_DOC));
     }
 

@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.ShortageException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -112,7 +113,7 @@ class HoldDocsServiceTest {
                 new DocumentItem(itemDoc, item2, BigDecimal.TEN)
         );
         itemDoc.setDocumentItems(items);
-        assertThrows(WarningException.class, () -> holdDocsService.checkDocItemQuantities(itemDoc));
+        assertThrows(ShortageException.class, () -> holdDocsService.checkDocItemQuantities(itemDoc));
     }
 
     @Sql(value = {"/sql/documents/addDocsForSerialHold.sql", "/sql/documents/holdDocsForSerialUnHold.sql"},

@@ -9,6 +9,7 @@ import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
+import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.LotMoveRepository;
 import com.example.store.repositories.LotRepository;
 import com.example.store.utils.Constants;
@@ -53,6 +54,8 @@ class DocCrudServiceTest {
     private DocItemService docItemService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private DocumentRepository documentRepository;
 
     @Sql(value = {"/sql/documents/addPostingDoc.sql", "/sql/docInfo/addDocInfoOnly.sql"},
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -81,6 +84,7 @@ class DocCrudServiceTest {
     @Test
     @Transactional
     void getCopyPostingDocDTOByIdTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.POSTING_DOC.toString(), LocalDate.now().atStartOfDay());
         DocDTO dto = docCrudService.getDocDTOById(1, true);
         assertEquals("Поступление", dto.getDocType());
         assertEquals(0, dto.getId());
@@ -95,6 +99,7 @@ class DocCrudServiceTest {
     @Test
     @Transactional
     void getCopyOrderDocDTOByIdTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.CREDIT_ORDER_DOC.toString(), LocalDate.now().atStartOfDay());
         DocDTO dto = docCrudService.getDocDTOById(6, true);
         assertEquals("Расходный кассовый ордер", dto.getDocType());
         assertEquals(0, dto.getId());
@@ -301,6 +306,7 @@ class DocCrudServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getNewDocNumberWhenCheckDocTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.CHECK_DOC.toString(), LocalDate.now().atStartOfDay());
         assertEquals(2, docCrudService.getNewDocNumber(DocumentType.CHECK_DOC.getValue()));
     }
 
@@ -308,6 +314,7 @@ class DocCrudServiceTest {
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void getNewDocNumberWhenRequestDocTest() {
+        documentRepository.updateDateTimeOfDocForTestsOnly(DocumentType.REQUEST_DOC.toString(), LocalDate.now().atStartOfDay());
         assertEquals(12, docCrudService.getNewDocNumber(DocumentType.REQUEST_DOC.getValue()));
     }
 

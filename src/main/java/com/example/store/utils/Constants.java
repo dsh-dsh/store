@@ -7,6 +7,7 @@ public class Constants {
     public static final String DEFAULT_PERIOD_START = "2000-01-01";
     public static final String DAY_START = "dayStart";
     public static final String CURRENT_TIME = "currentTime";
+    public static final String DTO_TIME = "dtoTime";
 
     public static final long ONE_DAY_LONG = 86400000L;
     public static final int START_DOCUMENT_NUMBER = 1;
@@ -78,13 +79,14 @@ public class Constants {
     public static final String BAD_REQUEST_MESSAGE = "invalid request";
     public static final String TRANSACTION_FAILED_MESSAGE = "transaction failed";
     public static final String SHORTAGE_OF_ITEM_MESSAGE = "Не достаточный остаток %s, требуется %f в наличии %f";
-    public static final String SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE = "В документе %s № %d не достает:%n%s";
+    public static final String SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE = "В документе %s № %d не достает:";
     public static final String HOLD_FAILED_MESSAGE = "Проведение документа не удалось";
     public static final String UN_HOLD_FAILED_MESSAGE = "Отмена проведения документа не удалась";
     public static final String NO_DOCUMENT_ITEMS_MESSAGE = "В документе отсутствует товары";
     public static final String NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE = "Существуют более ранние не проведенные документы";
     public static final String HOLDEN_DOCS_EXISTS_AFTER_MESSAGE = "Существуют более поздние проведенные документы";
     public static final String ORDER_DOC_IS_HOLDEN_MESSAGE = "Сначала требуется отменить проведение расходного ордера";
+    public static final String RELATIVE_DOC_HOLD_MESSAGE = "Нельзя проводить/распроводить подчиненный документ";
     public static final String WRONG_CREDENTIALS_MESSAGE = "Не правильные логин и пароль - %s";
     public static final String NO_SUCH_USER_MESSAGE = "Пользователь %s отсутствует в системе";
     public static final String NO_SUCH_COMPANY_MESSAGE = "Компания %s отсутствует в системе";

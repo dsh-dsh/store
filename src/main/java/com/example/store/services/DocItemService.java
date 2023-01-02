@@ -1,26 +1,30 @@
 package com.example.store.services;
 
+import com.example.store.components.IngredientCalculation;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
+import com.example.store.model.dto.requests.DocItemDTORequest;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
 import com.example.store.model.entities.Project;
 import com.example.store.model.entities.Storage;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
+import com.example.store.model.enums.DocumentType;
+import com.example.store.model.responses.ShortageResponseLine;
 import com.example.store.repositories.DocItemRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +36,15 @@ public class DocItemService {
     protected ItemService itemService;
     @Autowired
     private DocItemMapper docItemMapper;
+    @Autowired
+    private IngredientService ingredientService;
+    @Autowired
+    private IngredientCalculation ingredientCalculation;
+    @Autowired
+    private ItemRestService itemRestService;
+    @Autowired
+    @Qualifier("disabledItemIds")
+    private List<Integer> disabledItemIds;
 
     public void addDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
@@ -96,7 +109,16 @@ public class DocItemService {
 
     public List<DocItemDTO> getItemDTOListByDoc(ItemDoc doc) {
         List<DocumentItem> items = getItemsByDoc(doc);
-        return items.stream().map(docItemMapper::mapToDocItemDTO).collect(Collectors.toList());
+        List<DocItemDTO> dtoList = items.stream().map(docItemMapper::mapToDocItemDTO)
+                .collect(Collectors.toList());
+        return  addIngredientItemDTOListIfInventoryDoc(doc, dtoList);
+    }
+
+    public List<DocItemDTO> addIngredientItemDTOListIfInventoryDoc(ItemDoc doc, List<DocItemDTO> dtoList) {
+        if(doc.getDocType() != DocumentType.INVENTORY_DOC) return dtoList;
+        return dtoList.stream()
+                .map(this::getIngredientsDTOOfItem)
+                .collect(Collectors.toList());
     }
 
     public Float getItemsAmount(ItemDoc itemDoc) {
@@ -122,6 +144,67 @@ public class DocItemService {
 
     public List<DocumentItem> getItemsByPeriod(Project project, LocalDateTime start, LocalDateTime end, boolean onlyHolden) {
         return docItemRepository.findByPeriod(project.getId(), start, end, onlyHolden);
+    }
+
+    // todo add test
+    public DocItemDTORequest getIngredientsOfItems(List<DocItemDTO> docItemDTOList) {
+        List<DocItemDTO> list = docItemDTOList.stream()
+                .map(this::getIngredientsDTOOfItem).collect(Collectors.toList());
+        return new DocItemDTORequest(list);
+    }
+
+    // todo add test
+    protected DocItemDTO getIngredientsDTOOfItem(DocItemDTO dto) {
+        LocalDate date = LocalDate.now();
+        Item item = itemService.findItemById(dto.getItemId());
+        Map<Item, BigDecimal> map = getIngredientsMapOfItem(item, BigDecimal.valueOf(dto.getQuantityFact()), date);
+        if(!map.isEmpty()) {
+            List<DocItemDTO> list = map.entrySet().stream()
+                    .filter(entry -> !disabledItemIds.contains(entry.getKey().getId()))
+                    .map(entry -> getIngredientDocItemDTO(entry, date))
+                    .collect(Collectors.toList());
+            dto.setChildren(list);
+        }
+        return dto;
+    }
+
+    // todo add tests
+    private DocItemDTO getIngredientDocItemDTO(Map.Entry<Item, BigDecimal> entry, LocalDate date) {
+        DocItemDTO dto = new DocItemDTO();
+        dto.setItemId(entry.getKey().getId());
+        dto.setItemName(entry.getKey().getName());
+        dto.setUnit(entry.getKey().getUnit().getValue());
+        dto.setQuantityFact(entry.getValue().floatValue());
+        dto.setPrice(itemRestService.getLastPriceOfItem(entry.getKey(), date.atStartOfDay()));
+        dto.setAmountFact(dto.getQuantityFact()*dto.getPrice());
+        return dto;
+    }
+
+    // todo add test
+    protected Map<Item, BigDecimal> getIngredientsMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
+        if(!ingredientService.haveIngredients(item)) return Map.of();
+        return ingredientCalculation.getIngredientMapOfItem(item, quantity, date);
+    }
+
+    // todo add tests
+    public void fixShortages(ItemDoc doc, List<ShortageResponseLine> shortages) {
+        List<DocumentItem> items = docItemRepository.findByItemDoc(doc);
+        shortages.forEach(shortage -> {
+            Optional<DocumentItem> optional = getItem(shortage.getItemId(), items);
+            if(optional.isPresent()) {
+                DocumentItem item = optional.get();
+                if(item.getQuantity().compareTo(shortage.getValue()) > 0) {
+                    item.setQuantity(item.getQuantity().subtract(shortage.getValue()));
+                    docItemRepository.save(item);
+                } else {
+                    docItemRepository.delete(item);
+                }
+            }
+        });
+    }
+
+    protected Optional<DocumentItem> getItem(int itemId, List<DocumentItem> items) {
+        return items.stream().filter(item -> item.getItem().getId() == itemId).findFirst();
     }
 }
 

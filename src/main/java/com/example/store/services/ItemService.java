@@ -70,9 +70,10 @@ public class ItemService {
         ingredientService.updateIngredients(item, itemDTO.getIngredients());
     }
 
-    public List<ItemDTOForList> getItemDTOList() {
+    public List<ItemDTOForList> getItemDTOList(boolean includeNodes) {
         List<Item> items = itemRepository.findAll(Sort.by("name"));
         return items.stream()
+                .filter(item -> includeNodes || !item.isNode())
                 .map(item -> mapToDTOForList(item, null))
                 .collect(Collectors.toList());
     }

@@ -1,6 +1,7 @@
 package com.example.store.exceptions;
 
 import com.example.store.model.responses.ErrorResponse;
+import com.example.store.model.responses.ShortageResponse;
 import com.example.store.model.responses.WarningResponse;
 import com.example.store.services.MailService;
 import com.example.store.services.UserService;
@@ -58,8 +59,14 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<WarningResponse> handleWarningException(WarningException ex) {
         mailService.send(toEmail, Constants.WARNING_SUBJECT,
                 String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getInfo(), "WarningException", userService.getCurrentUser().getLastName()));
-        return new ResponseEntity<>(new WarningResponse(ex.getMessage(),
-                    ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new WarningResponse(ex.getMessage(), ex.getExceptionType().getValue()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ShortageException.class)
+    protected ResponseEntity<ShortageResponse> handleShortageException(ShortageException ex) {
+        mailService.send(toEmail, Constants.WARNING_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getList(), "ShortageException", userService.getCurrentUser().getLastName()));
+        return new ResponseEntity<>(new ShortageResponse(ex.getDocId(), ex.getMessage(), ex.getList()), HttpStatus.BAD_REQUEST);
     }
 
     @Override

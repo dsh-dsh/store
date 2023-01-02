@@ -3,6 +3,7 @@ package com.example.store.services;
 import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.TransactionException;
+import com.example.store.exceptions.UnHoldenDocsException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -64,6 +65,8 @@ class Hold1CDocksServiceTest {
     private LotService lotService;
     @Autowired
     private SystemSettingsCash systemSettingsCash;
+    @Autowired
+    private User systemUser;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -473,7 +476,7 @@ class Hold1CDocksServiceTest {
         Map<Item, BigDecimal> itemMap = new HashMap<>();
         itemMap.put(item7, BigDecimal.valueOf(2.0f));
         itemMap.put(item8, BigDecimal.valueOf(3.0f));
-        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
+//        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
         ItemDoc itemDoc = hold1CDocksService.createWriteOffDocForChecks(storage, project, itemMap, time);
         assertEquals(storage, itemDoc.getStorageFrom());
         assertEquals(project, itemDoc.getProject());
@@ -504,7 +507,7 @@ class Hold1CDocksServiceTest {
         Map<Item, BigDecimal> itemMap = new HashMap<>();
         itemMap.put(item7, BigDecimal.valueOf(2.0f));
         itemMap.put(item8, BigDecimal.valueOf(3.0f));
-        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
+//        hold1CDocksService.setSystemUser(userService.getSystemAuthor());
         List<Integer> currentList = List.copyOf(disabledItemIds);
         setDisabledItems(List.of(8));
         ItemDoc itemDoc = hold1CDocksService.createWriteOffDocForChecks(storage, project, itemMap, time);
@@ -591,7 +594,9 @@ class Hold1CDocksServiceTest {
         Project project = projectService.getById(1);
         LocalDateTime time = LocalDateTime.now();
         ItemDoc itemDoc = hold1CDocksService.getItemDocOfType(DocumentType.RECEIPT_DOC, project, time);
-        assertEquals(333, itemDoc.getNumber());
+        assertEquals(time, itemDoc.getDateTime());
+        assertEquals(project, itemDoc.getProject());
+        assertEquals(systemUser, itemDoc.getAuthor());
     }
 
     @Sql(value = "/sql/hold1CDocs/addTwoDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -601,21 +606,23 @@ class Hold1CDocksServiceTest {
         Project project = projectService.getById(1);
         LocalDateTime time = LocalDateTime.now();
         ItemDoc itemDoc = hold1CDocksService.getItemDocOfType(DocumentType.WRITE_OFF_DOC, project, time);
-        assertEquals(222, itemDoc.getNumber());
+        assertEquals(time, itemDoc.getDateTime());
+        assertEquals(project, itemDoc.getProject());
+        assertEquals(systemUser, itemDoc.getAuthor());
     }
 
     @Sql(value = "/sql/hold1CDocs/addOneCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkUnHoldenDocksExistsIfExistsTest() {
-        assertTrue(hold1CDocksService.checkUnHoldenDocksExists(LocalDateTime.now()));
+        assertTrue(hold1CDocksService.checkUnHoldenDocksExists(LocalDateTime.now(), false));
     }
 
     @Sql(value = "/sql/documents/addCheckDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkUnHoldenDocksExistsTest() {
-        assertFalse(hold1CDocksService.checkUnHoldenDocksExists(LocalDateTime.now()));
+        assertFalse(hold1CDocksService.checkUnHoldenDocksExists(LocalDateTime.now(), false));
     }
 
     @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -628,17 +635,25 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void checkExistingNotHoldenChecksBeforeTest() {
+    void checkExistingNotHoldenDocsBeforeTest() {
         LocalDateTime currentDate = Util.getLocalDateTime("15.04.22 00:00:00");
-        assertDoesNotThrow(() -> hold1CDocksService.checkExistingNotHoldenChecksBefore(currentDate));
+        assertDoesNotThrow(() -> hold1CDocksService.checkExistingNotHoldenDocsBefore(currentDate));
     }
 
     @Sql(value = "/sql/documents/add12Checks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void checkExistingNotHoldenChecksBeforeDoThrowTest() {
+    void checkExistingNotHoldenCheckBeforeDoThrowTest() {
         LocalDateTime currentDate = Util.getLocalDateTime("16.04.22 00:00:00");
-        assertThrows(BadRequestException.class, () -> hold1CDocksService.checkExistingNotHoldenChecksBefore(currentDate));
+        assertThrows(UnHoldenDocsException.class, () -> hold1CDocksService.checkExistingNotHoldenDocsBefore(currentDate));
+    }
+
+    @Sql(value = "/sql/documents/addNotHoldenPostingDoc.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkExistingNotHoldenDocsBeforeDoThrowTest() {
+        LocalDateTime currentDate = Util.getLocalDateTime("16.04.22 00:00:00");
+        assertThrows(UnHoldenDocsException.class, () -> hold1CDocksService.checkExistingNotHoldenDocsBefore(currentDate));
     }
 
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {

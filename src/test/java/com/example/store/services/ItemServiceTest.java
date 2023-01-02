@@ -152,18 +152,23 @@ class ItemServiceTest extends TestService {
     }
 
     @Test
-    void getItemDTOListNoDateTest() {
+    void getItemDTOListNoDateWithNodesTest() {
         systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
-        List<ItemDTOForList> list = itemService.getItemDTOList();
-        assertNotNull(list);
+        List<ItemDTOForList> list = itemService.getItemDTOList(true);
         assertEquals(9, list.size());
+    }
+
+    @Test
+    void getItemDTOListNoDateWithOutNodesTest() {
+        systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
+        List<ItemDTOForList> list = itemService.getItemDTOList(false);
+        assertEquals(6, list.size());
     }
 
     @Test
     void getItemDTOListTest() {
         systemSettingsCash.setSetting(SettingType.INGREDIENT_DIR_ID, 2);
         List<ItemDTOForList> list = itemService.getItemDTOList(UPDATE_DATE);
-        assertNotNull(list);
         assertEquals(2, list.size());
         assertEquals(7, list.get(0).getId());
         assertEquals(4, list.get(0).getRestList().size());

@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.exceptions.ShortageException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.DocumentItem;
 import com.example.store.model.entities.Item;
@@ -8,6 +9,7 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.model.enums.ExceptionType;
+import com.example.store.model.responses.ShortageResponseLine;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -99,26 +101,24 @@ public class HoldDocsService {
                 return;
             }
             Set<DocumentItem> documentItems = itemDoc.getDocumentItems();
+            if(documentItems.isEmpty()) {                                        // todo update tests due to this
+                throw new WarningException(
+                        Constants.NO_DOCUMENT_ITEMS_MESSAGE,
+                        this.getClass().getName() + " - checkDocItemQuantities(Document document)");
+            }
             Map<Item, BigDecimal> shortages = lotService.getShortageMapOfItems(
                     documentItems, itemDoc.getStorageFrom(), itemDoc.getDateTime());
             if(!shortages.isEmpty()) {
-                String formatString = "%s %s %20.3f %s%n";
-                String message = shortages.entrySet().stream()
-                        .map(entry -> String.format(formatString,
-                                entry.getKey().getName(),
-                                getDots(entry.getKey().getName()),
-                                entry.getValue().abs().floatValue(),
-                                entry.getKey().getUnit().getValue()))
-                        .collect(Collectors.joining());
-                throw new WarningException(
+                List<ShortageResponseLine> list = shortages.entrySet().stream()
+                        .map(entry -> new ShortageResponseLine(entry.getKey().getId(), entry.getKey().getName(), entry.getValue().abs(), entry.getKey().getUnit().getValue()))
+                        .collect(Collectors.toList());
+                throw new ShortageException(
                         String.format(Constants.SHORTAGE_OF_ITEMS_IN_DOC_MESSAGE,
-                                document.getDocType().getValue(), document.getNumber(), message),
+                                document.getDocType().getValue(), document.getNumber()),
+                        list,
+                        document.getId(),
                         this.getClass().getName() + " - checkDocItemQuantities(Document document)");
             }
         }
-    }
-    private String getDots(String value) {
-        int length = Math.max(32 - value.length(), 0);
-        return ". ".repeat(length);
     }
 }
