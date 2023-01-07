@@ -2,6 +2,7 @@ package com.example.store.exceptions;
 
 import com.example.store.model.responses.ErrorResponse;
 import com.example.store.model.responses.ShortageResponse;
+import com.example.store.model.responses.ShortageResponseLine;
 import com.example.store.model.responses.WarningResponse;
 import com.example.store.services.MailService;
 import com.example.store.services.UserService;
@@ -64,8 +65,11 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ShortageException.class)
     protected ResponseEntity<ShortageResponse> handleShortageException(ShortageException ex) {
+        String shortages = ex.getList().stream()
+                .map(ShortageResponseLine::toString)
+                .collect(Collectors.joining(", " + System.lineSeparator()));
         mailService.send(toEmail, Constants.WARNING_SUBJECT,
-                String.format(FORMAT_MESSAGE, ex.getMessage(), ex.getList(), "ShortageException", userService.getCurrentUser().getLastName()));
+                String.format(FORMAT_MESSAGE, ex.getMessage(), shortages, "ShortageException", userService.getCurrentUser().getLastName()));
         return new ResponseEntity<>(new ShortageResponse(ex.getDocId(), ex.getMessage(), ex.getList()), HttpStatus.BAD_REQUEST);
     }
 

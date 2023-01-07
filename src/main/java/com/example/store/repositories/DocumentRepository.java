@@ -110,6 +110,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     // method for SerialUnHoldDocService
     @Modifying
-    @Query(value = "update document set is_deleted = :isDeleted where author_id in :authorIds and date_time >= :from", nativeQuery = true)
-    void softDeleteDocs(boolean isDeleted, List<Integer> authorIds, LocalDateTime from);
+    @Query(value = "update document set is_deleted = 1 where author_id = :authorId and date_time >= :from", nativeQuery = true)
+    void softDeleteDocs(int authorId, LocalDateTime from);
 }

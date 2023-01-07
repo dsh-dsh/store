@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.model.entities.User;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.LotMoveRepository;
@@ -23,6 +24,8 @@ public class SerialUnHoldDocService {
     @Autowired
     private LotRepository lotRepository;
     @Autowired
+    private User systemUser;
+    @Autowired
     @Qualifier("blockingUserIds")
     private List<Integer> blockingUserIds;
 
@@ -34,7 +37,7 @@ public class SerialUnHoldDocService {
         documentRepository.setIsHold(false, from);
         lotMoveRepository.deleteLotMovements(from);
         lotRepository.deleteLots(from);
-        documentRepository.softDeleteDocs(false, blockingUserIds, from);
+        documentRepository.softDeleteDocs(systemUser.getId(), from);
     }
 
     protected Document getFirstDocIfCheckDocInSequence(Document document) {

@@ -13,4 +13,5 @@ import java.util.List;
 public class FixShortagesRequest {
     int docId;
     List<ShortageResponseLine> shortages;
+
 }

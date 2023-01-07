@@ -30,4 +30,11 @@ public class ShortageResponseLine {
     public String getUnit() {
         return unit;
     }
+
+    @Override
+    public String toString() {
+        int repeatLength = 25 - (itemName + itemId).length();
+        String space = ". ".repeat(Math.max(repeatLength, 0));
+        return itemName + "(id " + itemId + ")" + space + value + " " + unit;
+    }
 }
