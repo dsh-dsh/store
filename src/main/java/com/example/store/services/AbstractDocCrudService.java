@@ -19,7 +19,7 @@ import com.example.store.repositories.ProjectRepository;
 import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +59,19 @@ public abstract class AbstractDocCrudService {
     private DocInfoService docInfoService;
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
+
+    // only for tests
+    public List<Integer> getBlockingUserIds() {
+        return blockingUserIds;
+    }
+
+    // only for tests
+    public void setBlockingUserIds(List<Integer> blockingUserIds) {
+        this.blockingUserIds = blockingUserIds;
+    }
 
     protected DocumentType documentType;
     protected DocDTO docDTO;
@@ -224,22 +237,21 @@ public abstract class AbstractDocCrudService {
             return Util.getLocalDateTime(dto.getDateTime());
         } else if(document.getDateTime() != null && saveTime.equals(Constants.CURRENT_TIME)) {
             return document.getDateTime();
-        } else if(saveTime.equals(Constants.DAY_START)) {
-            return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING), false);
         } else {
-            return getNewDocTime(docDate, Sort.by(Constants.DATE_TIME_STRING).descending(), true);
+            return getNewDocTime(docDate,  saveTime.equals(Constants.DAY_START));
         }
     }
 
-    protected LocalDateTime getNewDocTime(LocalDate docDate, Sort sort, boolean next) {
+    protected LocalDateTime getNewDocTime(LocalDate docDate, boolean first) {
         LocalDateTime start = docDate.atStartOfDay();
         LocalDateTime end = start.plusDays(1);
-        Optional<Document> optionalDocument =
-                documentRepository.getFirstByDateTimeBetween(start, end, sort);
+        Optional<Document> optionalDocument = first ?
+                documentRepository.getFirstNotCheckDoc(blockingUserIds, start, end) :
+                documentRepository.getLastNotCheckDoc(blockingUserIds, start, end);
         if(optionalDocument.isPresent()) {
-            return optionalDocument.get().getDateTime().plus(next ? 1 : -1, ChronoUnit.MILLIS);
+            return optionalDocument.get().getDateTime().plus(first ? -1 : 1, ChronoUnit.MILLIS);
         }
-        return start.plusHours(1);
+        return start.plusHours(Constants.START_HOUR_DOCS);
     }
 
     protected void setBaseDocument(Document document, DocDTO docDTO) {
@@ -282,7 +294,7 @@ public abstract class AbstractDocCrudService {
         OrderDoc orderDoc = new OrderDoc();
         orderDoc.setNumber(documentService.getNextDocumentNumber(DocumentType.CREDIT_ORDER_DOC));
         orderDoc.setDocType(DocumentType.CREDIT_ORDER_DOC);
-        orderDoc.setDateTime(getNewDocTime(LocalDate.now(), Sort.by(Constants.DATE_TIME_STRING).descending(), true));
+        orderDoc.setDateTime(getNewDocTime(LocalDate.now(), true));
         orderDoc.setPaymentType(PaymentType.SUPPLIER_PAYMENT);
         orderDoc.setProject(project);
         orderDoc.setAuthor(userService.getCurrentUser());

@@ -25,12 +25,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class DocCrudService extends AbstractDocCrudService {
@@ -236,92 +235,6 @@ public class DocCrudService extends AbstractDocCrudService {
                     this.getClass().getName() + " serialHold(Document document)");
         }
         documents.forEach(holdDocsService::holdDoc);
-    }
-
-    @Deprecated
-    protected void serialUnHold(Document document) {
-        List<Document> documents = documentRepository
-                .findByIsHoldAndDateTimeAfter(true, document.getDateTime(),
-                        Sort.by(Constants.DATE_TIME_STRING).descending());
-        documents = getAllChecksToUnHold(documents);
-        documents.forEach(doc -> holdDocsService.unHoldDoc(doc));
-        holdDocsService.unHoldDoc(document);
-        softDeleteBaseDocs(documents);
-    }
-
-    @Deprecated
-    protected void checkingFogUnHoldenChecks(List<Document> documents) {
-        Optional<Document> optional = documents.stream()
-                .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).findFirst();
-        if(optional.isPresent()) {
-            throw new BadRequestException(
-                    Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE,
-                    this.getClass().getName() + " checkingFogUnHoldenChecks(List<Document> documents)");
-        }
-    }
-
-    @Deprecated
-    protected void softDeleteBaseDocs(List<Document> documents) {
-        List<LocalDate> dates = getDatesOfChecks(documents);
-        if(!dates.isEmpty()) {
-            List<Document> writeOffDocs = documents.stream()
-                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
-                    .map(Document::getBaseDocument).distinct().collect(Collectors.toList());
-            List<Document> otherDocs = documents.stream()
-                    .filter(doc -> doc.getDocType() != DocumentType.CHECK_DOC)
-                    .filter(doc -> isInList(writeOffDocs, doc))
-                    .collect(Collectors.toList());
-            documents.stream()
-                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
-                    .forEach(this::clearBaseDocInCheckDoc);
-            otherDocs.forEach(doc -> {if(doc != null) softDeleteDoc(doc);});
-            writeOffDocs.forEach(doc -> {if(doc != null) softDeleteDoc(doc);});
-        }
-    }
-
-    @Deprecated
-    protected void clearBaseDocInCheckDoc(Document document) {
-        document.setBaseDocument(null);
-        documentRepository.save(document);
-    }
-
-    private boolean isInList(List<Document> writeOffDocs, Document doc) {
-        for (Document writeOffDoc : writeOffDocs) {
-            if (doc.getBaseDocument() == writeOffDoc) return true;
-        }
-        return false;
-    }
-
-    @Deprecated
-    protected List<LocalDate> getDatesOfChecks(List<Document> documents) {
-        List<LocalDate> dates = new ArrayList<>();
-        if(!documents.isEmpty()) {
-            dates = documents.stream()
-                    .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC)
-                    .map(check -> check.getDateTime().toLocalDate())
-                    .distinct().collect(Collectors.toList());
-        }
-        return dates;
-    }
-
-    @Deprecated
-    protected List<Document> getAllChecksToUnHold(List<Document> documents) {
-        // todo refactoring: simplify - getStartDateTime first doc and if it checkDoc find other checkDocs
-        List<Document> checks = documents.stream()
-                .filter(doc -> doc.getDocType() == DocumentType.CHECK_DOC).collect(Collectors.toList());
-        if(!checks.isEmpty()) {
-            LocalDateTime to = checks.get(checks.size()-1).getDateTime().minus(1, ChronoUnit.MILLIS);
-            LocalDateTime from = to.toLocalDate().atStartOfDay();
-            List<Document> checksBefore
-                    = documentRepository.findByDocTypeAndIsHoldAndIsDeletedAndDateTimeBetween(
-                    DocumentType.CHECK_DOC, true, false,
-                    from, to, Sort.by(Constants.DATE_TIME_STRING).descending());
-            if(!checksBefore.isEmpty()) {
-                documents = Stream.of(checksBefore, documents)
-                        .flatMap(Collection::stream).collect(Collectors.toList());
-            }
-        }
-        return documents;
     }
 
     protected void softDeleteDoc(Document document) {

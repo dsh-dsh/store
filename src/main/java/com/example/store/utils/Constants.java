@@ -9,6 +9,9 @@ public class Constants {
     public static final String CURRENT_TIME = "currentTime";
     public static final String DTO_TIME = "dtoTime";
 
+    public static final int START_HOUR_DOCS = 1;
+    public static final int START_HOUR_1C_DOCS = 2;
+
     public static final long ONE_DAY_LONG = 86400000L;
     public static final int START_DOCUMENT_NUMBER = 1;
     public static final int EMPTY_PROJECT_ID = 1;

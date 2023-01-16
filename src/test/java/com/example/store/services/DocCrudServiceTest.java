@@ -178,55 +178,55 @@ class DocCrudServiceTest {
         periodDateTime.setPeriodStart();
     }
 
-    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    @Transactional
-    void softDeleteBaseDocsTest() {
-        List<Document> docs = documentService.getAllDocuments();
-        docCrudService.softDeleteBaseDocs(docs);
-        docs = documentService.getAllDocuments();
-        assertFalse(docs.get(0).isDeleted());
-        assertNull(docs.get(0).getBaseDocument());
-        assertFalse(docs.get(1).isDeleted());
-        assertNull(docs.get(1).getBaseDocument());
-        assertFalse(docs.get(2).isDeleted());
-        assertNull(docs.get(2).getBaseDocument());
-        assertTrue(docs.get(3).isDeleted());
-        assertTrue(docs.get(4).isDeleted());
-        assertTrue(docs.get(5).isDeleted());
-    }
-
-    @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void getDatesOfChecksTest() {
-        List<Document> docs = documentService.getAllDocuments();
-        List<LocalDate> dates = docCrudService.getDatesOfChecks(docs);
-        assertEquals(2, dates.size());
-        assertEquals(LocalDate.parse("2022-04-15"), dates.get(0));
-        assertEquals(LocalDate.parse("2022-04-16"), dates.get(1));
-    }
-
-    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void getAllChecksToUnHoldTest() {
-        Document check = documentService.getDocumentById(2);
-        List<Document> docs = documentService.getDocumentsAfterAndInclude(check);
-        docs = docCrudService.getAllChecksToUnHold(docs);
-        assertEquals(5, docs.size());
-    }
-
-    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void checkingFogUnHoldenChecksTest() {
-        List<Document> docs = documentService.getAllDocuments();
-        BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> docCrudService.checkingFogUnHoldenChecks(docs));
-        assertEquals(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE, exception.getMessage());
-    }
+//    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    @Transactional
+//    void softDeleteBaseDocsTest() {
+//        List<Document> docs = documentService.getAllDocuments();
+//        docCrudService.softDeleteBaseDocs(docs);
+//        docs = documentService.getAllDocuments();
+//        assertFalse(docs.get(0).isDeleted());
+//        assertNull(docs.get(0).getBaseDocument());
+//        assertFalse(docs.get(1).isDeleted());
+//        assertNull(docs.get(1).getBaseDocument());
+//        assertFalse(docs.get(2).isDeleted());
+//        assertNull(docs.get(2).getBaseDocument());
+//        assertTrue(docs.get(3).isDeleted());
+//        assertTrue(docs.get(4).isDeleted());
+//        assertTrue(docs.get(5).isDeleted());
+//    }
+//
+//    @Sql(value = "/sql/documents/addTenChecks.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void getDatesOfChecksTest() {
+//        List<Document> docs = documentService.getAllDocuments();
+//        List<LocalDate> dates = docCrudService.getDatesOfChecks(docs);
+//        assertEquals(2, dates.size());
+//        assertEquals(LocalDate.parse("2022-04-15"), dates.get(0));
+//        assertEquals(LocalDate.parse("2022-04-16"), dates.get(1));
+//    }
+//
+//    @Sql(value = "/sql/documents/addChecksAndBaseDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void getAllChecksToUnHoldTest() {
+//        Document check = documentService.getDocumentById(2);
+//        List<Document> docs = documentService.getDocumentsAfterAndInclude(check);
+//        docs = docCrudService.getAllChecksToUnHold(docs);
+//        assertEquals(5, docs.size());
+//    }
+//
+//    @Sql(value = "/sql/documents/addUnHoldenDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    @Test
+//    void checkingFogUnHoldenChecksTest() {
+//        List<Document> docs = documentService.getAllDocuments();
+//        BadRequestException exception = assertThrows(BadRequestException.class,
+//                () -> docCrudService.checkingFogUnHoldenChecks(docs));
+//        assertEquals(Constants.NOT_HOLDEN_CHECKS_EXIST_MESSAGE, exception.getMessage());
+//    }
 
     @Sql(value = "/sql/period/addPeriods.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/period/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -324,42 +324,6 @@ class DocCrudServiceTest {
     @Test
     void getNewDocNumberWhenOrderDocAndExists1COrderDocTest() {
         assertEquals(1, docCrudService.getNewDocNumber(DocumentType.CREDIT_ORDER_DOC.getValue()));
-    }
-
-    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void getNextDocTimeWhenDocsExistTest() {
-        LocalDate docDate = LocalDate.parse("2022-03-16");
-        Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
-        boolean next = true;
-        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docCrudService.getNewDocTime(docDate, sort, next));
-    }
-
-    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Test
-    void getPreviousDocTimeWhenDocsExistTest() {
-        LocalDate docDate = LocalDate.parse("2022-03-16");
-        Sort sort = Sort.by(Constants.DATE_TIME_STRING);
-        boolean next = false;
-        assertEquals(LocalDateTime.parse("2022-03-16T06:30:36.394"), docCrudService.getNewDocTime(docDate, sort, next));
-    }
-
-    @Test
-    void getNextDocTimeWhenDocsNotExistTest() {
-        LocalDate docDate = LocalDate.parse("2022-03-16");
-        Sort sort = Sort.by(Constants.DATE_TIME_STRING).descending();
-        boolean next = true;
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getNewDocTime(docDate, sort, next));
-    }
-
-    @Test
-    void getPreviousDocTimeWhenDocsNotExistTest() {
-        LocalDate docDate = LocalDate.parse("2022-03-16");
-        Sort sort = Sort.by(Constants.DATE_TIME_STRING);
-        boolean next = false;
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docCrudService.getNewDocTime(docDate, sort, next));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

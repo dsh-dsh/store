@@ -9,18 +9,19 @@ import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
 import com.example.store.model.enums.DocumentType;
 import com.example.store.repositories.DocumentRepository;
+import com.example.store.utils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +43,9 @@ class DocsFrom1cServiceTest {
     private CheckInfoService checkInfoService;
     @Autowired
     private DocumentRepository documentRepository;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    private List<Integer> blockingUserIds;
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
@@ -187,17 +191,21 @@ class DocsFrom1cServiceTest {
     @Test
     void getNewTimeDocDateTimeExistsTest() {
         LocalDate date = LocalDate.parse("2022-03-16");
-        docsFrom1cService.setDocDateTime(LocalDateTime.parse("2022-03-16T11:30:36.596"));
-        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.597"), docsFrom1cService.getNewTime(date));
+        docsFrom1cService.setDocDateTime(LocalDateTime.parse("2022-03-16T02:00:00.596"));
+        assertEquals(LocalDateTime.parse("2022-03-16T02:00:00.597"), docsFrom1cService.getNewTime(date));
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getNewTimeTest() {
+    void getNewTimeWhenNoChecksTest() {
         docsFrom1cService.setDocDateTime(null);
         LocalDate date = LocalDate.parse("2022-03-16");
-        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.396"), docsFrom1cService.getNewTime(date));
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00);
+        List<Integer> currentIds = docsFrom1cService.blockingUserIds;
+        docsFrom1cService.setBlockingUserIds(List.of(6));
+        assertEquals(time, docsFrom1cService.getNewTime(date));
+        docsFrom1cService.setBlockingUserIds(currentIds);
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -206,7 +214,8 @@ class DocsFrom1cServiceTest {
     void getNewTimeWhenNextDateTest() {
         LocalDate date = LocalDate.parse("2022-03-17");
         docsFrom1cService.setDocDateTime(LocalDateTime.parse("2022-03-16T11:30:36.596"));
-        assertEquals(LocalDateTime.parse("2022-03-17T01:00:00.001"), docsFrom1cService.getNewTime(date));
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00);
+        assertEquals(time, docsFrom1cService.getNewTime(date));
     }
 
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -214,20 +223,42 @@ class DocsFrom1cServiceTest {
     void getNewTimeWhenNoDocsTest() {
         LocalDate date = LocalDate.parse("2022-03-16");
         docsFrom1cService.setDocDateTime(null);
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.001"), docsFrom1cService.getNewTime(date));
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00);
+        assertEquals(time, docsFrom1cService.getNewTime(date));
+    }
+
+    @Sql(value = {"/sql/documents/add5DocList.sql",
+            "/sql/documents/add3Checks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void getLastDocTimeThenChecksExistsTest() {
+        LocalDate date = LocalDate.parse("2022-03-16");
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00, 00).plus(3, ChronoUnit.MILLIS);
+        List<Integer> currentIds = docsFrom1cService.blockingUserIds;
+        docsFrom1cService.setBlockingUserIds(List.of(6));
+        assertEquals(time, docsFrom1cService.getLastDocTime(date));
+        docsFrom1cService.setBlockingUserIds(currentIds);
     }
 
     @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
-    void getLastDocTimeTest() {
+    void getLastDocTimeWhenNoChecksTest() {
         LocalDate date = LocalDate.parse("2022-03-16");
-        assertEquals(LocalDateTime.parse("2022-03-16T11:30:36.395"), docsFrom1cService.getLastDocTime(date));
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00, 00).minus(1, ChronoUnit.MILLIS);
+        List<Integer> currentIds = docsFrom1cService.blockingUserIds;
+        docsFrom1cService.setBlockingUserIds(List.of(6));
+        assertEquals(time, docsFrom1cService.getLastDocTime(date));
+        docsFrom1cService.setBlockingUserIds(currentIds);
     }
 
     @Test
     void getLastDocTimeWhenNoDocsTest() {
         LocalDate date = LocalDate.parse("2022-03-16");
-        assertEquals(LocalDateTime.parse("2022-03-16T01:00:00.000"), docsFrom1cService.getLastDocTime(date));
+        LocalDateTime time = date.atTime(Constants.START_HOUR_1C_DOCS, 00, 00).minus(1, ChronoUnit.MILLIS);
+        List<Integer> currentIds = docsFrom1cService.blockingUserIds;
+        docsFrom1cService.setBlockingUserIds(List.of(6));
+        assertEquals(time, docsFrom1cService.getLastDocTime(date));
+        docsFrom1cService.setBlockingUserIds(currentIds);
     }
 }

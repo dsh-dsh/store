@@ -13,13 +13,14 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Setter
@@ -46,6 +47,9 @@ public class DocsFrom1cService {
     protected OrderDocRepository orderDocRepository;
     @Autowired
     private MailService mailService;
+    @Autowired
+    @Qualifier("blockingUserIds")
+    protected List<Integer> blockingUserIds;
 
     private LocalDateTime docDateTime;
 
@@ -106,14 +110,12 @@ public class DocsFrom1cService {
     }
 
     protected LocalDateTime getNewTime(LocalDate docDate) {
-        if(this.docDateTime != null && !docDate.equals(this.docDateTime.toLocalDate())) {
+        if(this.docDateTime != null
+                && !docDate.equals(this.docDateTime.toLocalDate())) {
             this.docDateTime = null;
         }
-        if(this.docDateTime == null) {
-            this.docDateTime = getLastDocTime(docDate).plus(1, ChronoUnit.MILLIS);
-        } else {
-            this.docDateTime = this.docDateTime.plus(1, ChronoUnit.MILLIS);
-        }
+        if(this.docDateTime == null) this.docDateTime = getLastDocTime(docDate);
+        this.docDateTime = this.docDateTime.plus(1, ChronoUnit.MILLIS); // todo update tests
         return this.docDateTime;
     }
 
@@ -121,11 +123,11 @@ public class DocsFrom1cService {
         LocalDateTime start = docDate.atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         Optional<Document> optionalDocument =
-                documentRepository.getFirstByDateTimeBetween(start, end, Sort.by(Constants.DATE_TIME_STRING).descending());
+                documentRepository.findLastCheckDocOfDay(blockingUserIds, start, end);
         if(optionalDocument.isPresent()) {
             return optionalDocument.get().getDateTime();
         } else {
-            return start.plusHours(1);
+            return start.plusHours(Constants.START_HOUR_1C_DOCS).minus(1, ChronoUnit.MILLIS);
         }
     }
 

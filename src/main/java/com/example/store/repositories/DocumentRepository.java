@@ -51,14 +51,15 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     List<Document> findByIsHoldAndIsDeletedAndDateTimeBetween(
             boolean isHold, boolean isDeleted, LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
 
-    @Deprecated
-    List<Document> findByDocTypeAndIsHoldAndIsDeletedAndDateTimeBetween(
-            DocumentType docType, boolean isHold, boolean isDeleted,
-            LocalDateTime fromTime, LocalDateTime toTime, Sort sort);
-
     boolean existsByDateTime(LocalDateTime dateTime);
 
-    Optional<Document> getFirstByDateTimeBetween(LocalDateTime start, LocalDateTime end, Sort sort);
+    @Query(value = "select * from document where author_id not in :authorIds and date_time between :from and :to order by date_time limit 1", nativeQuery = true)
+    Optional<Document> getFirstNotCheckDoc(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
+
+    @Query(value = "select * from document where author_id not in :authorIds and date_time between :from and :to order by date_time desc limit 1", nativeQuery = true)
+    Optional<Document> getLastNotCheckDoc(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
+
+    Optional<Document> getFirstByDateTimeBetween(LocalDateTime from, LocalDateTime to, Sort sort);
 
     boolean existsByNumberAndDocTypeAndDateTimeAfter(long number, DocumentType docType, LocalDateTime dateTime);
 
@@ -112,4 +113,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
     @Modifying
     @Query(value = "update document set is_deleted = 1 where author_id = :authorId and date_time >= :from", nativeQuery = true)
     void softDeleteDocs(int authorId, LocalDateTime from);
+
+    @Query(value = "select * from document where author_id in :authorIds and date_time between :from and :to order by date_time desc limit 1", nativeQuery = true)
+    Optional<Document> findLastCheckDocOfDay(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
 }
