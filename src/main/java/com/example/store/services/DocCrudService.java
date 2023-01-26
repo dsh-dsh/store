@@ -48,8 +48,6 @@ public class DocCrudService extends AbstractDocCrudService {
     protected DocInfoService docInfoService;
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
-    @Autowired
-    private SerialUnHoldDocService serialUnHoldDocService;
 
     public List<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
         LocalDateTime startDate = Util.getLocalDateTime(start);
@@ -145,7 +143,7 @@ public class DocCrudService extends AbstractDocCrudService {
         this.saveTime = saveTime;
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
-            updateOrderDocument(docDTO);
+            updateOrderDoc(docDTO);
         } else {
             updateItemDoc(docDTO);
         }
@@ -177,6 +175,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void holdDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
+        if(document.isHold()) return;
         checkTimePeriod(document.getDateTime());
         holdDocsService.checkDocItemQuantities(document);
         if(holdDocsService.checkPossibilityToHold(document)) {
@@ -195,6 +194,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     public void unHoldDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
+        if(!document.isHold()) return;
         unHoldRelativeDocs(document);
         checkTimePeriod(document.getDateTime());
         if(holdDocsService.checkPossibilityToHold(document)) {

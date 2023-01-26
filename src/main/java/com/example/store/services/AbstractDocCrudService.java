@@ -62,6 +62,8 @@ public abstract class AbstractDocCrudService {
     @Autowired
     @Qualifier("blockingUserIds")
     protected List<Integer> blockingUserIds;
+    @Autowired
+    protected SerialUnHoldDocService serialUnHoldDocService;
 
     // only for tests
     public List<Integer> getBlockingUserIds() {
@@ -89,6 +91,7 @@ public abstract class AbstractDocCrudService {
             addCheckInfo(itemDoc, docDTO);
         }
         docInfoService.setDocInfo(itemDoc, docDTO.getDocInfo());
+        serialUnHoldDocService.unHold(itemDoc);
         return itemDoc;
     }
 
@@ -96,25 +99,21 @@ public abstract class AbstractDocCrudService {
         OrderDoc order = (OrderDoc) setDocument(getOrAddOrderDoc(docDTO));
         setAdditionalFieldsAndSave(order);
         docInfoService.setDocInfo(order, docDTO.getDocInfo());
+        serialUnHoldDocService.unHold(order);
         return order;
     }
 
     public DocInterface updateItemDoc(DocDTO docDTO) {
         ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
-        boolean reHoldPossible = reHoldChecking.checkFalsePossibility(itemDoc, docDTO);
         setAdditionalFieldsAndSave(itemDoc);
-        if(reHoldPossible) {
-            lotService.updateLotMovements(itemDoc);
-        } else {
-            unHoldDocs.unHoldAllDocsAfter(itemDoc);
-        }
         updateDocItems(itemDoc);
         updateCheckInfo(itemDoc);
         docInfoService.setDocInfo(itemDoc, docDTO.getDocInfo());
+        serialUnHoldDocService.unHold(itemDoc);
         return itemDoc;
     }
 
-    public DocInterface updateOrderDocument(DocDTO docDTO) {
+    public DocInterface updateOrderDoc(DocDTO docDTO) {
         return addOrderDoc(docDTO);
     }
 
@@ -123,7 +122,7 @@ public abstract class AbstractDocCrudService {
                 .orElseThrow(() -> new BadRequestException(
                         Constants.NO_SUCH_DOCUMENT_MESSAGE,
                         this.getClass().getName() + " - deleteItemDoc(int docId)"));
-        unHoldDocs.unHoldAllDocsAfter(itemDoc);
+        serialUnHoldDocService.unHold(itemDoc);
         itemDoc.setDeleted(!itemDoc.isDeleted());
         itemDocRepository.save(itemDoc);
     }
@@ -133,7 +132,7 @@ public abstract class AbstractDocCrudService {
                 .orElseThrow(() -> new BadRequestException(
                         Constants.NO_SUCH_DOCUMENT_MESSAGE,
                         this.getClass().getName() + " - deleteOrderDoc(int docId)"));
-        unHoldDocs.unHoldAllDocsAfter(order);
+        serialUnHoldDocService.unHold(order);
         order.setDeleted(!order.isDeleted());
         orderDocRepository.save(order);
     }

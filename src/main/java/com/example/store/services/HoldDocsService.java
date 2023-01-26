@@ -63,6 +63,7 @@ public class HoldDocsService {
 
     @Transaction
     public void holdDoc(Document document) {
+        if(document.isHold()) return;
         document.setHold(true);
         if(document instanceof ItemDoc) {
             lotService.addLotMovements(document);

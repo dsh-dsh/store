@@ -319,11 +319,25 @@ class DocumentControllerTest {
 
         periodDateTime.setPeriodStart();
         this.mockMvc.perform(
-                        post(URL_PREFIX + "/hold/" + 1)
+                        post(URL_PREFIX + "/un/hold/" + 1)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.warning").value(Constants.HOLDEN_DOCS_EXISTS_AFTER_MESSAGE));
+    }
+
+    @Sql(value = "/sql/documents/add5DocList.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/documents/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    @WithUserDetails(TestService.EXISTING_EMAIL)
+    void unHoldDocTest() throws Exception {
+
+        periodDateTime.setPeriodStart();
+        this.mockMvc.perform(
+                        post(URL_PREFIX + "/un/hold/" + 5)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test

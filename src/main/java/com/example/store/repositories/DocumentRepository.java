@@ -90,7 +90,7 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "WHERE docType = :docType " +
             "AND (:supplier is null OR supplier = :supplier) " +
             "AND isPayed = :isPayed")
-    List<Document> findDocsTtoPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
+    List<Document> findDocsToPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
 
     @Query(value = "select document.id from document where is_deleted = false and base_document_id = :docId", nativeQuery = true)
     List<Integer> getRelativeDocIds(int docId);

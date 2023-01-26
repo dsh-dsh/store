@@ -133,7 +133,7 @@ public class DocumentService {
     }
 
     protected List<Document> getDocsToPay(Company supplier) {
-        return documentRepository.findDocsTtoPayment(
+        return documentRepository.findDocsToPayment(
                 DocumentType.POSTING_DOC, supplier, false,
                 Sort.by("supplier").and(Sort.by(Constants.DATE_TIME_STRING)));
     }
