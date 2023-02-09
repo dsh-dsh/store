@@ -92,16 +92,20 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "AND isPayed = :isPayed")
     List<Document> findDocsToPayment(DocumentType docType, Company supplier, boolean isPayed, Sort sort);
 
-    @Query(value = "select document.id from document where is_deleted = false and base_document_id = :docId", nativeQuery = true)
+    @Query(value = "select document.id from document " +
+            "where is_deleted = false and base_document_id = :docId", nativeQuery = true)
     List<Integer> getRelativeDocIds(int docId);
 
     @Transactional
     @Modifying
-    @Query(value = "update document set date_time = :time where doc_type = :type", nativeQuery = true)
+    @Query(value = "update document set date_time = :time " +
+            "where doc_type = :type", nativeQuery = true)
     void updateDateTimeOfDocForTestsOnly(String type, LocalDateTime time);
 
     // method for SerialUnHoldDocService
-    @Query(value = "select * from document where author_id in :authorIds and date_time between :from and :to order by date_time limit 1", nativeQuery = true)
+    @Query(value = "select * from document " +
+            "where author_id in :authorIds " +
+            "and date_time between :from and :to order by date_time limit 1", nativeQuery = true)
     Optional<Document> findFistCheckDocOfDay(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
 
     // method for SerialUnHoldDocService
@@ -111,9 +115,12 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
     // method for SerialUnHoldDocService
     @Modifying
-    @Query(value = "update document set is_deleted = 1 where author_id = :authorId and date_time >= :from", nativeQuery = true)
+    @Query(value = "update document set is_deleted = 1 " +
+            "where author_id = :authorId and date_time >= :from", nativeQuery = true)
     void softDeleteDocs(int authorId, LocalDateTime from);
 
-    @Query(value = "select * from document where author_id in :authorIds and date_time between :from and :to order by date_time desc limit 1", nativeQuery = true)
+    @Query(value = "select * from document " +
+            "where author_id in :authorIds and doc_type != 'PERIOD_REST_MOVE_DOC' " +
+            "and date_time between :from and :to order by date_time desc limit 1", nativeQuery = true)
     Optional<Document> findLastCheckDocOfDay(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
 }
