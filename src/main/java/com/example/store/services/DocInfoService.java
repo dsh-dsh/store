@@ -8,6 +8,8 @@ import com.example.store.repositories.DocInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DocInfoService {
 
@@ -30,6 +32,16 @@ public class DocInfoService {
         DocInfo docInfo = docInfoMapper.mapToDocInfo(docInfoDTO);
         docInfo.setDocument(document);
         docInfoRepository.save(docInfo);
+    }
+
+    // todo add tests
+    public void deleteByDocuments(List<Document> docs) {
+        docs.forEach(this::deleteByDocument);
+    }
+
+    // todo add tests
+    public void deleteByDocument(Document document) {
+        docInfoRepository.deleteByDocument(document);
     }
 
 }

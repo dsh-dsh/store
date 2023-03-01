@@ -265,11 +265,13 @@ public class DocCrudService extends AbstractDocCrudService {
                 .forEach(docsFrom1cService::addDocument);
     }
 
+    // todo update tests due to docInfoService.deleteByDocuments(documents);
     @Transactional
     public Response<String> hardDeleteDocuments() {
         List<Document> documents = documentRepository
                 .findByIsHoldAndIsDeletedAndDateTimeBefore(false, true, LocalDateTime.now(), Sort.by("id"));
         checkInfoService.deleteByDocs(documents);
+        docInfoService.deleteByDocuments(documents);
         docItemService.deleteByDocs(documents);
         int count = documentRepository.deleteByIsDeleted(true);
         return new Response<>(Constants.OK, String.format(Constants.NUMBER_OF_DELETED_DOCS_MESSAGE, count));

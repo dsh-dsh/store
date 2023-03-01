@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface DocInfoRepository extends JpaRepository<DocInfo, Integer> {
     Optional<DocInfo> findByDocument(Document document);
+
+    void deleteByDocument(Document check);
 }
