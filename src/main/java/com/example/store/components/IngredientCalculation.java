@@ -29,8 +29,14 @@ public class IngredientCalculation {
     private ItemService itemService;
 
     private Map<Item, BigDecimal> ingredientMapOfItem;
+    private Map<Item, List<Ingredient>> ingredientsCache = new HashMap<>();
+
+    public void resetCache() {
+        ingredientsCache.clear();
+    }
 
     public Map<Item, BigDecimal> getIngredientMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
+        resetCache();
         ingredientMapOfItem = new HashMap<>();
         setIngredientMapOfItemRecursively(item, quantity, date);
         return ingredientMapOfItem;
@@ -39,7 +45,11 @@ public class IngredientCalculation {
     private void setIngredientMapOfItemRecursively(Item item, BigDecimal quantity, LocalDate date) {
         // todo refactor this to exclude from getIngredientsNotDeleted() getGrossQuantity and getEnableValue
         // todo due to for each iteration will be at list two more select from db
-        List<Ingredient> ingredients = getIngredientsNotDeleted(item, date);
+//        if(!ingredientsCache.containsKey(item)) {
+//            ingredientsCache.put(item, getIngredientsNotDeleted(item, date));
+//        }
+//        List<Ingredient> ingredients = ingredientsCache.get(item);
+        List<Ingredient> ingredients = ingredientsCache.computeIfAbsent(item, i -> getIngredientsNotDeleted(item, date));
         if(ingredients.isEmpty()) {
             ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
         } else {
