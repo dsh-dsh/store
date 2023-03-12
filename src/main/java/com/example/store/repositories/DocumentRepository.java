@@ -123,4 +123,6 @@ public interface DocumentRepository extends JpaRepository<Document, Integer> {
             "where author_id in :authorIds and doc_type != 'PERIOD_REST_MOVE_DOC' " +
             "and date_time between :from and :to order by date_time desc limit 1", nativeQuery = true)
     Optional<Document> findLastCheckDocOfDay(List<Integer> authorIds, LocalDateTime from, LocalDateTime to);
+
+    boolean existsByDocTypeAndProjectAndDateTimeBetween(DocumentType docType, Project project, LocalDateTime from, LocalDateTime to);
 }

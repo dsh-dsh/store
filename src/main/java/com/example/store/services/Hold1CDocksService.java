@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.SystemSettingsCash;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.exceptions.UnHoldenDocsException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
@@ -82,6 +83,7 @@ public class Hold1CDocksService {
 
     public static final int RECEIPT_DOC_OFFSET = 1;
     public static final int WRITE_OFF_DOC_OFFSET = 2;
+    public static final int CHECK_DOC_START_HOUR = 2;
 
     @Value("${spring.mail.to.email}")
     private String toEmail;
@@ -95,12 +97,16 @@ public class Hold1CDocksService {
     public void holdFirstUnHoldenChecks() {
         LocalDateTime from = getFirstUnHoldenCheckDate();
         LocalDateTime to = from.plusDays(1);
+        long start = System.currentTimeMillis();
         hold1CDocsByPeriod(from, to);
+        System.out.println("execution time : " + (System.currentTimeMillis() - start) + " ms");
     }
 
     @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
         checkExistingNotHoldenDocsBefore(from);
+        List<Project> projects = projectService.getProjectListToHold();
+        checkExistingAllProjectsDocs(projects, from, to);
         List<Storage> storages = storageService.getStorageList();
         for (Storage storage : storages) {
             checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
@@ -117,7 +123,6 @@ public class Hold1CDocksService {
             receiptDoc = null;
             writeOffDoc = null;
         }
-        List<Project> projects = projectService.getProjectList();
         projects.forEach(project -> holdOrdersByProjectsAndPeriod(project, from, to));
         checkUnHoldenDocksExists(to, false);
     }
@@ -303,14 +308,24 @@ public class Hold1CDocksService {
         return documentService.getDocumentsByTypeInAndProjectAndIsHold(types, project, false, from, to);
     }
 
+    protected void checkExistingAllProjectsDocs(List<Project> projects, LocalDateTime from, LocalDateTime to) {
+        projects.forEach(project -> {
+            if(!documentRepository.existsByDocTypeAndProjectAndDateTimeBetween(DocumentType.CREDIT_ORDER_DOC, project, from, to)) {
+                throw new HoldDocumentException(String.format(Constants.NO_DOCS_TO_HOLD_FROM_PROJECT_MESSAGE, project.getName()));
+            }
+        });
+    }
+
     protected void checkExistingNotHoldenDocsBefore(LocalDateTime time) {
-        if(checkUnHoldenDocksExists(time, true)) throw new UnHoldenDocsException();
+        time = time.withHour(CHECK_DOC_START_HOUR);
+        if(checkUnHoldenDocksExists(time, true))
+            throw new UnHoldenDocsException(Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE);
     }
 
     protected boolean checkUnHoldenDocksExists(LocalDateTime time, boolean before) {
         String subject = String.format(Constants.CHECKS_HOLDING_FAIL_SUBJECT, Util.getDateAndTime(LocalDateTime.now()));
         String message = before ?
-                Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE :
+                "Чеки не будут проведены. " + Constants.NOT_HOLDEN_DOCS_EXISTS_BEFORE_MESSAGE :
                 String.format(Constants.CHECKS_HOLDING_FAIL_MESSAGE, Util.getDate(time));
         if(documentRepository.existsByDateTimeBeforeAndIsDeletedAndIsHold(time, false, false)) {
             mailService.send(toEmail, subject, message);

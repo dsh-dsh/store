@@ -42,6 +42,17 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    public List<Project> getProjectListToHold() {
+        // todo refactor to SystemSettingsCash
+        int[] ids = {2, 3, 4};
+        return projectRepository.findAll().stream().filter(project -> {
+            for (int i = 0; i < ids.length; i++) {
+                if(project.getId() == ids[i]) return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
+    }
+
     public ProjectDTO mapToDTO(Project project) {
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());

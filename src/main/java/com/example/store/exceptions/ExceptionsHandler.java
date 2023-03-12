@@ -56,6 +56,13 @@ public class ExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UnHoldenDocsException.class)
+    protected ResponseEntity<ErrorResponse> handleUnHoldenDocsException(UnHoldenDocsException ex) {
+        mailService.send(toEmail, Constants.ERROR_SUBJECT,
+                String.format(FORMAT_MESSAGE, ex.getMessage(), "", "UnHoldenDocsException", userService.getCurrentUser().getLastName()));
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(WarningException.class)
     protected ResponseEntity<WarningResponse> handleWarningException(WarningException ex) {
         mailService.send(toEmail, Constants.WARNING_SUBJECT,

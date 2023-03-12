@@ -54,6 +54,13 @@ class ProjectServiceTest {
     }
 
     @Test
+    void getProjectListToHoldTest() {
+        List<Project> list = projectService.getProjectListToHold();
+        assertEquals(3, list.size());
+        assertEquals(2, list.get(0).getId());
+    }
+
+    @Test
     void getProjectListTest() {
         List<Project> list = projectService.getProjectList();
         assertEquals(4, list.size());

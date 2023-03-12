@@ -111,6 +111,7 @@ public class Constants {
     public static final String NOT_HOLDEN_CHECKS_DOCS_NOT_EXIST_MESSAGE = "Не проведенных чеков не обнаружено.";
     public static final String CHECKS_HOLDING_FAIL_MESSAGE = "После проведения чеков за %s все еще остались не проведенные документы";
     public static final String CHECKS_HOLDING_FAIL_SUBJECT = "Ошибка проведения чеков - %s";
+    public static final String NO_DOCS_TO_HOLD_FROM_PROJECT_MESSAGE = "Нет документов или не все документы загружены для проведения от проекта %s";
     public static final String DOC_NUMBER_EXISTS_MESSAGE = "Документ %s № %s существует";
     public static final String PORTION_ITEM_MESSAGE = "Не весовой ингредиент %s в весовой номенклатуре %s";
     public static final String NO_DO_INFO_MESSAGE = "В документе нет дополнительной информации";

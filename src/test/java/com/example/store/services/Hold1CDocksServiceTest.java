@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
+import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.exceptions.TransactionException;
 import com.example.store.exceptions.UnHoldenDocsException;
 import com.example.store.model.dto.ItemQuantityPriceDTO;
@@ -654,6 +655,27 @@ class Hold1CDocksServiceTest {
     void checkExistingNotHoldenDocsBeforeDoThrowTest() {
         LocalDateTime currentDate = Util.getLocalDateTime("16.04.22 00:00:00");
         assertThrows(UnHoldenDocsException.class, () -> hold1CDocksService.checkExistingNotHoldenDocsBefore(currentDate));
+    }
+
+    @Sql(value = "/sql/documents/add1CDocs.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkExistingAllProjectsDocsThrowsTest() {
+        List<Project> projects = projectService.getProjectListToHold();
+        LocalDateTime from = Util.getLocalDateTime("16.03.22 00:00:00");
+        assertThrows(HoldDocumentException.class,
+                () -> hold1CDocksService.checkExistingAllProjectsDocs(projects, from, from.plusDays(1)));
+    }
+
+    @Sql(value = {"/sql/documents/add1CDocs.sql",
+            "/sql/documents/add1COrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    void checkExistingAllProjectsDocsTest() {
+        List<Project> projects = projectService.getProjectListToHold();
+        LocalDateTime from = Util.getLocalDateTime("16.03.22 00:00:00");
+        assertDoesNotThrow(
+                () -> hold1CDocksService.checkExistingAllProjectsDocs(projects, from, from.plusDays(1)));
     }
 
     private ItemQuantityPriceDTO getItemQuantityPriceDTO(Item item, float quantity, float price) {
