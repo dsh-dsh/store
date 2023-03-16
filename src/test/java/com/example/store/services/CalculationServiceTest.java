@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.model.dto.CalculationDTO;
 import com.example.store.model.dto.IngredientCalculationDTO;
 import com.example.store.model.entities.Ingredient;
@@ -28,6 +29,8 @@ class CalculationServiceTest {
     private IngredientService ingredientService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private PeriodicValuesCache periodicValuesCache;
 
     private final float THRESHOLD = 0.0001f;
 
@@ -36,6 +39,8 @@ class CalculationServiceTest {
     @Test
     @Transactional
     void getCalculationTest() {
+        periodicValuesCache.clearPeriodicQuantities();
+        periodicValuesCache.setValues();
         Item item = itemService.getItemById(10);
         CalculationDTO dto = calculationService.getCalculationDTO(item, LocalDate.now());
         assertEquals("Некое блюдо", dto.getItemName());
@@ -48,6 +53,7 @@ class CalculationServiceTest {
     @Test
     void getCalculationForIngredientTest() {
 
+        periodicValuesCache.setValues();
         Ingredient ingredient = ingredientService.getIngredientById(2);
         IngredientCalculationDTO dto = calculationService.getCostCalculation(ingredient, LocalDate.now());
 

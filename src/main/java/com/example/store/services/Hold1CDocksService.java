@@ -97,9 +97,7 @@ public class Hold1CDocksService {
     public void holdFirstUnHoldenChecks() {
         LocalDateTime from = getFirstUnHoldenCheckDate();
         LocalDateTime to = from.plusDays(1);
-        long start = System.currentTimeMillis();
         hold1CDocsByPeriod(from, to);
-        System.out.println("execution time : " + (System.currentTimeMillis() - start) + " ms");
     }
 
     @Transactional
@@ -116,6 +114,7 @@ public class Hold1CDocksService {
             // refactor union this two methods bellow
             setLast1CDocTime();
             setLastDocTime(storage, from, to);
+
 
             createDocsToHoldByStoragesAndPeriod(storage, to);
             createCreditOrders(storage);
@@ -208,7 +207,6 @@ public class Hold1CDocksService {
     }
 
     protected void createDocsToHoldByStoragesAndPeriod(Storage storage, LocalDateTime to) {
-//        holdDocsBefore(); todo refactor this
         Project project = checks.get(0).getProject();
         Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());

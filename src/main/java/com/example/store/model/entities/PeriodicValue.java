@@ -1,6 +1,7 @@
 package com.example.store.model.entities;
 
 import com.example.store.model.enums.PeriodicValueType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "periodic_quantity")
+@EqualsAndHashCode(of = {"id"})
 public class PeriodicValue {
 
     @Id

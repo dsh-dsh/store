@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.HoldDocumentException;
@@ -68,6 +69,8 @@ class Hold1CDocksServiceTest {
     private SystemSettingsCash systemSettingsCash;
     @Autowired
     private User systemUser;
+    @Autowired
+    private PeriodicValuesCache periodicValuesCache;
 
     @InjectMocks
     private Hold1CDocksService mockedHold1CDocksService;
@@ -154,6 +157,7 @@ class Hold1CDocksServiceTest {
     @Test
     @Transactional
     void createDocsToHoldByStoragesAndPeriodTest() {
+        periodicValuesCache.setValues();
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
@@ -177,6 +181,7 @@ class Hold1CDocksServiceTest {
     @Test
     @Transactional
     void createDocsToHoldByStoragesAndPeriodWhenAddRestToHoldIsFalseTest() {
+        periodicValuesCache.setValues();
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.parse("2022-03-16T00:00:00.000");
         LocalDateTime to = LocalDateTime.parse("2022-03-17T00:00:00.000");
@@ -232,6 +237,7 @@ class Hold1CDocksServiceTest {
     @Test
     @Transactional
     void holdDocsAndChecksByStoragesAndPeriodTest() {
+        periodicValuesCache.setValues();
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
@@ -296,6 +302,7 @@ class Hold1CDocksServiceTest {
     @Test
     @Transactional
     void holdDocsAndChecksByStoragesAndPeriodWhenAddRestToHoldIsTrueAndRestLeakExistsTest() {
+        periodicValuesCache.setValues();
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
@@ -334,6 +341,7 @@ class Hold1CDocksServiceTest {
     @Test
     @Transactional
     void holdDocsAndChecksByStoragesAndPeriodWhenAddRestToHoldIsFalseTest() {
+        periodicValuesCache.setValues();
         Storage storage = storageService.getById(3);
         LocalDateTime from = LocalDateTime.now(ZoneId.systemDefault()).withYear(2022).withMonth(3).withDayOfMonth(16).withHour(4);
         LocalDateTime to = from.plusDays(1);
@@ -637,6 +645,7 @@ class Hold1CDocksServiceTest {
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void checkExistingNotHoldenDocsBeforeTest() {
+        periodicValuesCache.setValues();
         LocalDateTime currentDate = Util.getLocalDateTime("15.04.22 00:00:00");
         assertDoesNotThrow(() -> hold1CDocksService.checkExistingNotHoldenDocsBefore(currentDate));
     }

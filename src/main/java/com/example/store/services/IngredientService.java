@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.IngredientCalculation;
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.IngredientMapper;
 import com.example.store.model.dto.IngredientDTO;
@@ -32,6 +33,8 @@ public class IngredientService {
     private PeriodicValueService periodicValueService;
     @Autowired
     private IngredientCalculation ingredientCalculation;
+    @Autowired
+    PeriodicValuesCache periodicValuesCache;
 
     public Ingredient getIngredientById(int id) {
         return ingredientRepository.findById(id)
@@ -41,6 +44,7 @@ public class IngredientService {
     }
 
     public Map<Item, BigDecimal> getIngredientQuantityMap(Map<Item, BigDecimal> itemMap, LocalDate date) {
+        periodicValuesCache.setPeriodicQuantities();
         return itemMap.entrySet().stream()
                 .filter(entry -> haveIngredients(entry.getKey()))
                 .flatMap(itemEntry -> ingredientCalculation.getIngredientMapOfItem(itemEntry.getKey(), itemEntry.getValue(), date)
@@ -51,18 +55,18 @@ public class IngredientService {
     }
 
     public Map<Integer, Ingredient> getIdIngredientMap(Item item) {
-        return  getIngredientsNotDeleted(item).stream()
+        return getIngredientsNotDeleted(item).stream()
                 .collect(Collectors.toMap(
                         ingredient -> ingredient.getChild().getId(),
                         Function.identity()));
     }
 
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
-        if(ingredientDTOList == null) return;
+        if (ingredientDTOList == null) return;
         Map<Integer, Ingredient> ingredientMap = getIdIngredientMap(item);
-        for(IngredientDTO ingredientDTO : ingredientDTOList) {
+        for (IngredientDTO ingredientDTO : ingredientDTOList) {
             int childId = ingredientDTO.getChildId();
-            if(ingredientMap.containsKey(childId)) {
+            if (ingredientMap.containsKey(childId)) {
                 Ingredient ingredient = ingredientMap.get(childId);
                 updateIngredient(ingredient, ingredientDTO);
                 ingredientMap.remove(childId);
@@ -89,7 +93,7 @@ public class IngredientService {
     }
 
     protected void setPeriodicValueFields(IngredientDTO dto, List<PeriodicValueDTO> valueDTOList) {
-        for(PeriodicValueDTO valueDTO : valueDTOList) {
+        for (PeriodicValueDTO valueDTO : valueDTOList) {
             switch (valueDTO.getType()) {
                 case "NET":
                     dto.setNetto(valueDTO);
@@ -110,7 +114,7 @@ public class IngredientService {
     }
 
     public void setIngredients(Item item, List<IngredientDTO> ingredientDTOS) {
-        if(ingredientDTOS == null) return;
+        if (ingredientDTOS == null) return;
         ingredientDTOS.forEach(dto -> setIngredient(item, dto));
     }
 

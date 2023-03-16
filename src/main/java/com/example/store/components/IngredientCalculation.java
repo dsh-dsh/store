@@ -27,16 +27,12 @@ public class IngredientCalculation {
     private PeriodicValueService periodicValueService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private IngredientCache ingredientCache;
 
     private Map<Item, BigDecimal> ingredientMapOfItem;
-    private Map<Item, List<Ingredient>> ingredientsCache = new HashMap<>();
-
-    public void resetCache() {
-        ingredientsCache.clear();
-    }
 
     public Map<Item, BigDecimal> getIngredientMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
-        resetCache();
         ingredientMapOfItem = new HashMap<>();
         setIngredientMapOfItemRecursively(item, quantity, date);
         return ingredientMapOfItem;
@@ -45,20 +41,16 @@ public class IngredientCalculation {
     private void setIngredientMapOfItemRecursively(Item item, BigDecimal quantity, LocalDate date) {
         // todo refactor this to exclude from getIngredientsNotDeleted() getGrossQuantity and getEnableValue
         // todo due to for each iteration will be at list two more select from db
-//        if(!ingredientsCache.containsKey(item)) {
-//            ingredientsCache.put(item, getIngredientsNotDeleted(item, date));
-//        }
-//        List<Ingredient> ingredients = ingredientsCache.get(item);
-        List<Ingredient> ingredients = ingredientsCache.computeIfAbsent(item, i -> getIngredientsNotDeleted(item, date));
+        List<Ingredient> ingredients = ingredientCache.getValue(item);
         if(ingredients.isEmpty()) {
             ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
         } else {
             boolean isWeight = isWeight(item);
-            float totalWeight = isWeight ? getTotalWeight(ingredients, date) : 1;
+            float totalWeight = isWeight ? getTotalWeight(ingredients) : 1;
             for(Ingredient ingredient : ingredients) {
                 checkForPortionItemInWeightItem(isWeight, ingredient);
-                float grossQuantity = getGrossQuantity(ingredient, date);
-                float enableValue = getEnableValue(ingredient, date);
+                float grossQuantity = periodicValueService.getGrossQuantity(ingredient);
+                float enableValue = periodicValueService.getEnableQuantity(ingredient);
                 if(grossQuantity == 0f || enableValue == 0f) continue;
                 BigDecimal itemQuantity =
                         BigDecimal.valueOf(grossQuantity / totalWeight)
@@ -84,38 +76,27 @@ public class IngredientCalculation {
         return unit == Unit.KG || unit == Unit.LITER;
     }
 
-    public List<Ingredient> getIngredientsNotDeleted(Item item, LocalDate date) {
+    public List<Ingredient> getIngredientsNotDeleted(Item item) {
         List<Ingredient> ingredients = ingredientRepository.findByParentAndIsDeleted(item, false);
         for(Ingredient ingredient : ingredients) {
-            float grossQuantity = getGrossQuantity(ingredient, date);
-            float enableValue = getEnableValue(ingredient, date);
+            float grossQuantity = periodicValueService.getGrossQuantity(ingredient);
+            float enableValue = periodicValueService.getEnableQuantity(ingredient);
             if(grossQuantity > 0 && enableValue > 0) return ingredients;
         }
         return new ArrayList<>();
     }
 
-    public float getGrossQuantity(Ingredient ingredient, LocalDate date) {
-        Optional<PeriodicValue> optional = periodicValueService.getGrossQuantity(ingredient, date);
-        return optional.map(PeriodicValue::getQuantity).orElse(0f);
-    }
-
+    // todo refactor
     public float getNetQuantity(Ingredient ingredient, LocalDate date) {
         Optional<PeriodicValue> optional = periodicValueService.getNetQuantity(ingredient, date);
         return optional.map(PeriodicValue::getQuantity).orElse(0f);
     }
 
-    public float getEnableValue(Ingredient ingredient, LocalDate date) {
-        Optional<PeriodicValue> optional = periodicValueService.getEnableQuantity(ingredient, date);
-        return optional.map(PeriodicValue::getQuantity).orElse(0f);
-    }
-
-    public float getTotalWeight(List<Ingredient> ingredients, LocalDate date) {
+    public float getTotalWeight(List<Ingredient> ingredients) {
         float netWeight = 0;
         for(Ingredient ingredient : ingredients) {
-            Optional<PeriodicValue> netValue = periodicValueService.getNetQuantity(ingredient, date);
-            Optional<PeriodicValue> enableValue = periodicValueService.getEnableQuantity(ingredient, date);
-            if(netValue.isPresent() && enableValue.isPresent() && enableValue.get().getQuantity() == 1) {
-                netWeight += netValue.get().getQuantity();
+            if(periodicValueService.getEnableQuantity(ingredient) == 1) {
+                netWeight += periodicValueService.getNetQuantity(ingredient);
             }
         }
         if(netWeight == 0) throw new BadRequestException(

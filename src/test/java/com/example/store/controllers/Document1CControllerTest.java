@@ -1,5 +1,6 @@
 package com.example.store.controllers;
 
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.model.dto.documents.DocDTO;
 import com.example.store.model.dto.requests.ItemDocListRequestDTO;
 import com.example.store.model.entities.CheckInfo;
@@ -69,6 +70,8 @@ class Document1CControllerTest {
     private CheckInfoService checkInfoService;
     @Autowired
     private DocItemService docItemService;
+    @Autowired
+    private PeriodicValuesCache periodicValuesCache;
 
     private static final String URL_PREFIX = "/api/v1/1c";
 
@@ -178,15 +181,17 @@ class Document1CControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql",
-            "/sql/hold1CDocs/addThreeChecks.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = {"/sql/hold1CDocs/addIngredients.sql", "/sql/documents/add1CDocs.sql",
+            "/sql/documents/add1COrderDoc.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/hold1CDocs/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void hold1CDocsTest() throws Exception {
+        periodicValuesCache.setValues();
         List<Document> docs = documentService.getAllDocuments();
         docs.forEach(document -> {
-            document.setDateTime(LocalDateTime.now().minusDays(1));
+            document.setDateTime(LocalDateTime.now().minusDays(1).withHour(2).withMinute(0));
+            document.setHold(false);
             documentRepository.save(document);
         });
         this.mockMvc.perform(
@@ -194,7 +199,7 @@ class Document1CControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         List<Document> documents = documentService.getAllDocuments();
-        assertEquals(8, documents.size());
+        assertEquals(15, documents.size());
         List<Lot> lots = lotRepository.findAll();
         assertFalse(lots.isEmpty());
         List<LotMovement> lotMovements = lotMoveRepository.findAll();

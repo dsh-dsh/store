@@ -1,5 +1,6 @@
 package com.example.store.services;
 
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.dto.PeriodicValueDTO;
@@ -47,6 +48,8 @@ class IngredientServiceTest {
     private IngredientRepository ingredientRepository;
     @Autowired
     private PeriodicValueService periodicValueService;
+    @Autowired
+    private PeriodicValuesCache periodicValuesCache;
 
     @Sql(value = "/sql/ingredients/setIngredients.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -263,6 +266,7 @@ class IngredientServiceTest {
     @Sql(value = "/sql/ingredients/after.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void addInnerItemsWeightTest() {
+        periodicValuesCache.setValues();
         ItemDoc document = new ItemDoc();
         LocalDate date = LocalDate.now();
         List<DocumentItem> docItems = new ArrayList<>();
