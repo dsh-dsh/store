@@ -81,8 +81,6 @@ public class Hold1CDocksService {
     public static final boolean BY_CARD_KEY = true;
     public static final boolean BY_CASH_KEY = false;
 
-    public static final int RECEIPT_DOC_OFFSET = 1;
-    public static final int WRITE_OFF_DOC_OFFSET = 2;
     public static final int CHECK_DOC_START_HOUR = 2;
 
     @Value("${spring.mail.to.email}")
@@ -92,6 +90,7 @@ public class Hold1CDocksService {
     private ItemDoc writeOffDoc;
     private List<ItemDoc> checks;
     private LocalDateTime last1CDocTime;
+    private LocalDateTime nextDocTime;
 
     @Transactional
     public void holdFirstUnHoldenChecks() {
@@ -102,20 +101,15 @@ public class Hold1CDocksService {
 
     @Transactional
     public void hold1CDocsByPeriod(LocalDateTime from, LocalDateTime to) {
+        setNextDocTime(null);
         checkExistingNotHoldenDocsBefore(from);
         List<Project> projects = projectService.getProjectListToHold();
         checkExistingAllProjectsDocs(projects, from, to);
         List<Storage> storages = storageService.getStorageList();
+        setNextDocTime(from);
         for (Storage storage : storages) {
             checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);
-            if (checks.isEmpty()) {
-                continue;
-            }
-            // refactor union this two methods bellow
-            setLast1CDocTime();
-            setLastDocTime(storage, from, to);
-
-
+            if (checks.isEmpty()) continue;
             createDocsToHoldByStoragesAndPeriod(storage, to);
             createCreditOrders(storage);
             holdDocsAndChecksByStoragesAndPeriod();
@@ -126,13 +120,27 @@ public class Hold1CDocksService {
         checkUnHoldenDocksExists(to, false);
     }
 
-    protected void setLastDocTime(Storage storage, LocalDateTime from, LocalDateTime to) {
-        Optional<OrderDoc> optional = getUnHoldenOrdersByProjectAndPeriod(
-                projectService.getByName(storage.getName()), from, to)
-                .stream().max(Comparator.comparing(OrderDoc::getDateTime));
-        if (optional.isPresent()) {
-            LocalDateTime orderTime = optional.get().getDateTime();
-            last1CDocTime = last1CDocTime.isAfter(orderTime) ? last1CDocTime : orderTime;
+    // todo tests
+    protected void setNextDocTime(LocalDateTime dateTime) {
+        if(dateTime == null) {
+            nextDocTime = null;
+            return;
+        }
+        if(nextDocTime == null) {
+            nextDocTime = dateTime.toLocalDate().atStartOfDay().withHour(3);
+        } else {
+            nextDocTime = nextDocTime.plus(1, ChronoUnit.MILLIS);
+        }
+    }
+
+    // todo tests
+    protected LocalDateTime getNextDocTime() {
+        if(nextDocTime == null) {
+            throw new HoldDocumentException("Ошибка даты документа");
+        } else {
+            LocalDateTime current = nextDocTime;
+            nextDocTime = nextDocTime.plus(1, ChronoUnit.MILLIS);
+            return current;
         }
     }
 
@@ -142,19 +150,12 @@ public class Hold1CDocksService {
                 .getDateTime().toLocalDate().atStartOfDay();
     }
 
-    protected void setLast1CDocTime() {
-        last1CDocTime = null;
-        checks.stream()
-                .max(Comparator.comparing(ItemDoc::getDateTime))
-                .ifPresent(itemDoc -> last1CDocTime = itemDoc.getDateTime());
-    }
 
     protected void createCreditOrders(Storage storage) {
-        int offset = WRITE_OFF_DOC_OFFSET + 1;
         Project project = projectService.getProjectByStorageName(storage.getName()).orElse(null);
         if(project == null) return;
         for(Map.Entry<PaymentType, Float> entry : getPaymentAmountMap(getSumMap()).entrySet()) {
-            createOrderDoc(entry.getValue(), entry.getKey(), project, last1CDocTime.plus(offset++, ChronoUnit.MILLIS));
+            createOrderDoc(entry.getValue(), entry.getKey(), project, getNextDocTime());
         }
     }
 
@@ -210,13 +211,11 @@ public class Hold1CDocksService {
         Project project = checks.get(0).getProject();
         Map<Item, BigDecimal> itemMap = getItemMapFromCheckDocs(checks);
         Map<Item, BigDecimal> writeOffItemMap = ingredientService.getIngredientQuantityMap(itemMap, to.toLocalDate());
-        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap,
-                last1CDocTime.plus(WRITE_OFF_DOC_OFFSET, ChronoUnit.MILLIS));
         if(systemSettingsCash.getProperty(SettingType.ADD_REST_FOR_HOLD_1C_DOCS) == 1) {
             Map<Item, BigDecimal> receiptItemMap = getReceiptItemMap(writeOffItemMap, storage, to);
-            receiptDoc = createReceiptDoc(storage, project, receiptItemMap,
-                    last1CDocTime.plus(RECEIPT_DOC_OFFSET, ChronoUnit.MILLIS));
+            receiptDoc = createReceiptDoc(storage, project, receiptItemMap, getNextDocTime());
         }
+        writeOffDoc = createWriteOffDocForChecks(storage, project, writeOffItemMap, getNextDocTime());
     }
 
     protected void holdDocsAndChecksByStoragesAndPeriod() {

@@ -264,7 +264,7 @@ class IngredientCalculationTest {
     @Transactional
     @Order(19)
     void getIngredientMapOfItemThenEnableIngredientTest() {
-        LocalDate date = LocalDate.of(2022, 03, 04);
+        LocalDate date = LocalDate.of(2022, 3, 4);
         periodicValuesCache.setValues(date.atStartOfDay());
         Item item = itemService.getItemById(15);
         Item ingr1 = itemService.getItemById(19);
