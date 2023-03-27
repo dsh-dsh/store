@@ -1,5 +1,6 @@
 package com.example.store.configuration;
 
+import com.example.store.components.doc_filters.*;
 import com.example.store.model.entities.PropertySetting;
 import com.example.store.model.entities.User;
 import com.example.store.model.enums.SettingType;
@@ -40,6 +41,27 @@ public class Config {
     public List<Integer> getBlockingUserIds(SettingRepository settingRepository, User systemUser) {
         return settingRepository.getByUserAndSettingType(systemUser, SettingType.BLOCKING_USER_ID)
                 .stream().map(PropertySetting::getProperty).collect(Collectors.toList());
+    }
+
+    @Bean
+    @Qualifier("docFilter")
+    public DocFilter getDocFilter() {
+        DocFilter postingFilter = new PostingFilter();
+        DocFilter storeFilter = new StoreFilter();
+        DocFilter requestFilter = new RequestFilter();
+        DocFilter orderFilter = new OrderFilter();
+        DocFilter checkFilter = new CheckFilter();
+        DocFilter inventFilter = new InventFilter();
+        DocFilter defaultFilter = new DefaultFilter();
+
+        postingFilter.setNext(storeFilter);
+        storeFilter.setNext(requestFilter);
+        requestFilter.setNext(orderFilter);
+        orderFilter.setNext(checkFilter);
+        checkFilter.setNext(inventFilter);
+        inventFilter.setNext(defaultFilter);
+
+        return postingFilter;
     }
 
 }

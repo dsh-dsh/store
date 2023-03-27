@@ -35,7 +35,7 @@ public class DocController {
             @RequestParam(defaultValue = "") String filter,
             @RequestParam(defaultValue = "0") long start,
             @RequestParam(defaultValue = "0") long end) {
-        List<DocToListDTO> docToListDTOS = docCrudService.getDocumentsByFilter(filter, start, end);
+        List<DocToListDTO> docToListDTOS = docCrudService.getDocDtoByFilter(filter, start, end);
         return ResponseEntity.ok(new ListResponse<>(docToListDTOS));
     }
 

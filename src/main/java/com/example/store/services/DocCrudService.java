@@ -1,6 +1,8 @@
 package com.example.store.services;
 
 import com.example.store.components.PeriodDateTime;
+import com.example.store.components.doc_filters.DocFilter;
+import com.example.store.model.enums.DocFilterType;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.exceptions.WarningException;
 import com.example.store.mappers.DocMapper;
@@ -21,6 +23,7 @@ import com.example.store.utils.Constants;
 import com.example.store.utils.Util;
 import com.example.store.utils.annotations.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,46 +51,26 @@ public class DocCrudService extends AbstractDocCrudService {
     protected DocInfoService docInfoService;
     @Autowired
     private MailPeriodReportService mailPeriodReportService;
+    @Autowired
+    @Qualifier("docFilter")
+    private DocFilter docFilter;
 
-    public List<DocToListDTO> getDocumentsByFilter(String filter, long start, long end) {
-        LocalDateTime startDate = Util.getLocalDateTime(start);
-        LocalDateTime endDate = Util.getLocalDateTime(end).withHour(23);
-        List<DocumentType> types;
-        switch (filter) {
-            case "default" :
-                types = List.of(DocumentType.POSTING_DOC, DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
-                break;
-            case "posting" :
-                types = List.of(DocumentType.POSTING_DOC);
-                break;
-            case "store" :
-                types = List.of(DocumentType.RECEIPT_DOC, DocumentType.WRITE_OFF_DOC, DocumentType.MOVEMENT_DOC);
-                break;
-            case "request" :
-                types = List.of(DocumentType.REQUEST_DOC);
-                break;
-            case "order" :
-                types = List.of(DocumentType.WITHDRAW_ORDER_DOC, DocumentType.CREDIT_ORDER_DOC);
-                break;
-            case "check" :
-                types = List.of(DocumentType.CHECK_DOC);
-                break;
-            case "invent" :
-                types = List.of(DocumentType.INVENTORY_DOC);
-                break;
-            default:
-                types = null;
-        }
-        List<Document> list = documentRepository.findByDocInFilter(filter, types, startDate, endDate);
-        return list.stream()
+    public List<DocToListDTO> getDocDtoByFilter(String filter, long start, long end) {
+        return getDocumentsByFilter(filter, start, end).stream()
                 .map(doc -> {
                     if(doc instanceof ItemDoc) {
                         return docMapper.mapToDocToListDTO((ItemDoc) doc);
                     } else {
                         return docMapper.mapToDocToListDTO((OrderDoc) doc);
                     }
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
+    }
+
+    protected List<Document> getDocumentsByFilter(String filter, long start, long end) {
+        LocalDateTime startDate = Util.getLocalDateTime(start);
+        LocalDateTime endDate = Util.getLocalDateTime(end).withHour(23);
+        List<DocumentType> types = docFilter.getTypeList(Enum.valueOf(DocFilterType.class, filter.toUpperCase()));
+        return documentRepository.findByDocInFilter(!types.isEmpty(), types, startDate, endDate);
     }
 
     public DocDTO getDocDTOById(int docId, boolean docCopy) {
