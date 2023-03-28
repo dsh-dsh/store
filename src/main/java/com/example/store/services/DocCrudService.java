@@ -110,7 +110,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void addDocument(DocDTO docDTO, String saveTime) {
-        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()), false);
         this.saveTime = saveTime;
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -122,7 +122,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void updateDocument(DocDTO docDTO, String saveTime) {
-        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()), false);
         this.saveTime = saveTime;
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -146,7 +146,7 @@ public class DocCrudService extends AbstractDocCrudService {
 
     @Transaction
     public void softDeleteDocument(DocDTO docDTO) {
-        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()));
+        checkTimePeriod(Util.getLocalDateTime(docDTO.getDateTime()), false);
         int docId = docDTO.getId();
         if(docDTO.getDocType().equals(DocumentType.CREDIT_ORDER_DOC.getValue())
                 || docDTO.getDocType().equals(DocumentType.WITHDRAW_ORDER_DOC.getValue())) {
@@ -159,7 +159,7 @@ public class DocCrudService extends AbstractDocCrudService {
     public void holdDocument(int docId) {
         Document document = documentService.getDocumentById(docId);
         if(document.isHold()) return;
-        checkTimePeriod(document.getDateTime());
+        checkTimePeriod(document.getDateTime(), true);
         holdDocsService.checkDocItemQuantities(document);
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.holdDoc(document);
@@ -179,7 +179,7 @@ public class DocCrudService extends AbstractDocCrudService {
         Document document = documentService.getDocumentById(docId);
         if(!document.isHold()) return;
         unHoldRelativeDocs(document);
-        checkTimePeriod(document.getDateTime());
+        checkTimePeriod(document.getDateTime(), true);
         if(holdDocsService.checkPossibilityToHold(document)) {
             holdDocsService.unHoldDoc(document);
         }
@@ -199,7 +199,7 @@ public class DocCrudService extends AbstractDocCrudService {
     @Transactional
     public void serialHoldDocuments(int docId) {
         Document document = documentService.getDocumentById(docId);
-        checkTimePeriod(document.getDateTime());
+        checkTimePeriod(document.getDateTime(), true);
         if(document.isHold()) {
             serialUnHoldDocService.unHold(document);
         } else {
@@ -260,10 +260,10 @@ public class DocCrudService extends AbstractDocCrudService {
         return new Response<>(Constants.OK, String.format(Constants.NUMBER_OF_DELETED_DOCS_MESSAGE, count));
     }
 
-    protected void checkTimePeriod(LocalDateTime docTime) {
+    protected void checkTimePeriod(LocalDateTime docTime, boolean checkAfter) {
         if(docTime.isBefore(periodDateTime.getStartDateTime())
-                || docTime.isAfter(periodDateTime.getEndDateTime())) {
-            throw new BadRequestException(
+                || (checkAfter && docTime.isAfter(periodDateTime.getEndDateTime()))) {
+                throw new BadRequestException(
                     String.format(
                         Constants.OUT_OF_PERIOD_MESSAGE,
                             periodDateTime.getStartDateTime().toString(),

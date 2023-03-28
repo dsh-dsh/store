@@ -43,7 +43,8 @@ class ControllerAdviceTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getDocWhenNotExistsTest() throws Exception {
-        this.mockMvc.perform(get("/api/v1/docs/controller/advice/test?id=1000"))
+        this.mockMvc.perform(get("/api/v1/docs/controller/advice/test")
+                .param("id","1000"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -51,7 +52,8 @@ class ControllerAdviceTest {
     @Test
     @WithUserDetails(TestService.EXISTING_EMAIL)
     void getProjectWhenNotExistsTest() throws Exception {
-        this.mockMvc.perform(get("/api/v1/catalogs/controller/advice/test/project?id=1000"))
+        this.mockMvc.perform(get("/api/v1/catalogs/controller/advice/test/project")
+                        .param("id","1000"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
