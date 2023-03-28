@@ -36,6 +36,11 @@ public class ItemMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(workshopDTOConverter).map(Item1CDTO::getWorkshop, Item::setWorkshop))
                 .addMappings(mapper -> mapper.using(unitDTOConverter).map(Item1CDTO::getUnit, Item::setUnit))
                 .addMappings(mapper -> mapper.skip(Item1CDTO::getParentId, Item::setParent));
+        this.modelMapper.createTypeMap(Item.class, Item1CDTO.class)
+                .addMappings(mapper -> mapper.using(dateTimeToLongConverter).map(Item::getRegTime, Item1CDTO::setRegTime))
+                .addMappings(mapper -> mapper.using(workshopConverter).map(Item::getWorkshop, Item1CDTO::setWorkshop))
+                .addMappings(mapper -> mapper.using(unitConverter).map(Item::getUnit, Item1CDTO::setUnit))
+                .addMappings(mapper -> mapper.using(parentNumberConverter).map(Item::getParent, Item1CDTO::setParentNumber));
     }
 
     public ItemDTO mapToDTO(Item item) {
@@ -45,7 +50,12 @@ public class ItemMapper extends MappingConverters {
     public ItemDTOForDir mapToDTOForDir(Item item) {
         return modelMapper.map(item, ItemDTOForDir.class);
     }
+
     public Item mapToItem(ItemDTO dto) {
         return modelMapper.map(dto, Item.class);
+    }
+
+    public Item1CDTO mapTo1CDTO(Item item) {
+        return modelMapper.map(item, Item1CDTO.class);
     }
 }

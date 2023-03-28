@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Item1CDTO extends ItemDTO {
+
     @JsonProperty("parent_number")
     private int parentNumber;
 

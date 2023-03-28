@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 public class MappingConverters {
 
     protected final Converter<Item, Integer> parentConverter = item -> item.getSource().getId();
+    protected final Converter<Item, Integer> parentNumberConverter = item -> item.getSource().getNumber();
     protected final Converter<String, PeriodicValueType> typeConverter = str -> PeriodicValueType.valueOf(str.getSource());
     protected final Converter<PaymentType, String> paymentTypeConverter = type -> type.getSource().getValue();
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();

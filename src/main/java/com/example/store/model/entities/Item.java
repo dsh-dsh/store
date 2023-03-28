@@ -68,4 +68,8 @@ public class Item implements EntityInterface{
     public int getParentId() {
         return parent.getId();
     }
+
+    public int getParentNumber() {
+        return parent.getNumber();
+    }
 }

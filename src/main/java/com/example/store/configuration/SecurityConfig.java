@@ -34,7 +34,8 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             "/api/v1/auth/**",
             "/api/v1/auth/login",
             "/static/**", "/favicon.ico", "/fonts/**",
-            "/ws"
+            "/ws",
+            "/swagger-ui/**", "/v3/api-docs/**"
     };
 
     @Override

@@ -34,4 +34,14 @@ public class ListResponse<T> {
         this.pageSize = 0;
         this.data = data;
     }
+
+    public ListResponse(List<T> data, int total) {
+        this.total = total;
+        this.pageNumber = 0;
+        this.pageSize = 0;
+        this.data = data;
+    }
+
 }
+
+//[{"id":1, "name":"aaaггг"},{"id":2, "name":"bbbччч"}]

@@ -16,4 +16,7 @@ public class EnumDTO {
     private String name;
     private String code;
 
+    public EnumDTO(String name) {
+        this.name = name;
+    }
 }

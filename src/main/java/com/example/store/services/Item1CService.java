@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Setter
 @Service
@@ -23,6 +24,43 @@ public class Item1CService extends ItemService{
     private Ingredient1CService ingredient1CService;
 
     private LocalDate date;
+
+    public List<Item1CDTO> getItemDTOList() {
+        date = LocalDate.now();
+        List<Item> items = List.of(itemRepository.getById(727)); //itemRepository.findAll(Sort.by("id"));
+        return items.stream()
+                .peek(item -> item.setPrices(priceService.getPriceListOfItem(item, date)))
+                .map(this::mapToItem1CDTO)
+                .collect(Collectors.toList());
+    }
+
+    protected Item1CDTO mapToItem1CDTO(Item item) {
+        Item1CDTO dto = itemMapper.mapTo1CDTO(item);
+        dto.setIngredients(ingredientService.getIngredientDTOList(item, date));
+        return dto;
+    }
+
+//    public String getItemDTOList() {
+//        List<Item> items = itemRepository.findAll(Sort.by("id"));
+//        String itemString = items.stream()
+//                .map(this::mapToJsonString)
+//                .collect(Collectors.joining(", "));
+//
+//        return "{\"total\":" + items.size() +
+//                ", \"data\":[" + itemString + "]}";
+//    }
+
+//    protected String mapToJsonString(Item item) {
+//        StringBuilder builder = new StringBuilder();
+//        builder.append("{");
+//        builder.append("\"id\":" + item.getId());
+//        builder.append("}");
+////        dto.setId(item.getId());
+////        dto.setName(item.getName());
+//////        dto.setUnit(item.getUnit());
+////        dto.setParentId(item.getParentId()); // parent number
+//        return builder.toString();
+//    }
 
     public void setItemsFrom1C(ItemList1CRequestDTO itemList1CRequestDTO) {
         date = LocalDate.now();
