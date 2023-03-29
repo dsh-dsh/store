@@ -2,6 +2,7 @@ package com.example.store.controllers;
 
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.requests.CompanyList1CRequestDTO;
+import com.example.store.model.dto.requests.IdNumberRequest;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.dto.requests.UserList1CRequestDTO;
 import com.example.store.model.responses.ListResponse;
@@ -29,19 +30,18 @@ public class Item1CController {
     @Autowired
     private Company1CService company1CService;
 
-//    @GetMapping("/items") //(value = "/items", produces = "application/json; charset=windows-1252")
-//    public ResponseEntity<String> getItems() {
-//        List<ItemDTO> list = item1CService.getItemDTOList();
-//        ListResponse<ItemDTO> response = new ListResponse<>(list, list.size());
-//        return ResponseEntity.ok(response.toJsonString());
-//    }
-
     @GetMapping("/items")
     public ResponseEntity<ListResponse<Item1CDTO>> getItems() {
         List<Item1CDTO> list = item1CService.getItemDTOList();
         return ResponseEntity.ok(new ListResponse<>(list, list.size()));
     }
 
+    @PostMapping("/set/number")
+    public ResponseEntity<Response<String>>  setNumber(
+            @RequestBody IdNumberRequest idNumberRequest) {
+        item1CService.setNumber(idNumberRequest);
+        return ResponseEntity.ok(new Response<>(Constants.OK));
+    }
 
     @PostMapping("/items")
     public ResponseEntity<Response<String>>  setItems(

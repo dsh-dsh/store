@@ -38,6 +38,11 @@ class UtilTest extends TestService {
     }
 
     @Test
+    void encodeStringToNumbersTest() {
+        assertEquals("48 57 65 90 97 122 192 223 224 255 44 46 45 43 95 40 41", Util.encodeStringToNumbers("09AZazАЯая,.-+_()"));
+    }
+
+    @Test
     void floatTest1() {
         float req = 1.234567f;
         float rest = 0.647352f;

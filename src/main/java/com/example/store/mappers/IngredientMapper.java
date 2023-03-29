@@ -1,5 +1,6 @@
 package com.example.store.mappers;
 
+import com.example.store.model.dto.Ingredient1CDTO;
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
@@ -31,10 +32,19 @@ public class IngredientMapper extends MappingConverters {
                 .addMappings(mapper -> mapper.using(itemIdConverter).map(Ingredient::getParent, IngredientDTO::setParentId))
                 .addMappings(mapper -> mapper.using(itemIdConverter).map(Ingredient::getChild, IngredientDTO::setChildId))
                 .addMappings(mapper -> mapper.skip(Ingredient::getPeriodicValueList, IngredientDTO::setQuantityList));
+        modelMapper.createTypeMap(Ingredient.class, Ingredient1CDTO.class)
+                .addMappings(mapper -> mapper.using(itemNameConverter).map(Ingredient::getChild, Ingredient1CDTO::setName))
+                .addMappings(mapper -> mapper.using(itemNumberConverter).map(Ingredient::getParent, Ingredient1CDTO::setParentNumber))
+                .addMappings(mapper -> mapper.using(itemNumberConverter).map(Ingredient::getChild, Ingredient1CDTO::setChildNumber))
+                .addMappings(mapper -> mapper.skip(Ingredient::getPeriodicValueList, Ingredient1CDTO::setQuantityList));
         modelMapper.createTypeMap(IngredientDTO.class, Ingredient.class)
                 .addMappings(mapper -> mapper.using(idToItemConverter).map(IngredientDTO::getChildId, Ingredient::setChild))
                 .addMappings(mapper -> mapper.using(idToItemConverter).map(IngredientDTO::getParentId, Ingredient::setParent))
                 .addMappings(mapper -> mapper.skip(IngredientDTO::getQuantityList, Ingredient::setPeriodicValueList));
+    }
+
+    public Ingredient1CDTO mapTo1CDTO(Ingredient ingredient) {
+        return modelMapper.map(ingredient, Ingredient1CDTO.class);
     }
 
     public IngredientDTO mapToDTO(Ingredient ingredient) {

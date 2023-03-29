@@ -26,6 +26,7 @@ public class MappingConverters {
     protected final Converter<DocumentType, String> docTypeConverter = type -> type.getSource().getValue();
     protected final Converter<CheckPaymentType, String> checkPaymentTypeConverter = type -> type.getSource().getValue();
     protected final Converter<Item, Integer> itemIdConverter = item -> item.getSource().getId();
+    protected final Converter<Item, Integer> itemNumberConverter = item -> item.getSource().getNumber();
     protected final Converter<Item, String> itemNameConverter = item -> item.getSource().getName();
     protected final Converter<EnumDTO, Workshop> workshopDTOConverter = dto -> Workshop.valueOf(dto.getSource().getCode());
     protected final Converter<EnumDTO, Unit> unitDTOConverter = dto -> Unit.valueOf(dto.getSource().getCode());

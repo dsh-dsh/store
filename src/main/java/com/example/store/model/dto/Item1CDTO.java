@@ -15,7 +15,7 @@ public class Item1CDTO extends ItemDTO {
     @JsonProperty("parent_number")
     private int parentNumber;
 
-    private List<IngredientDTO> ingredients;
+    private List<Ingredient1CDTO> ingredient1CDTOList;
 
     @Override
     public String toString() {

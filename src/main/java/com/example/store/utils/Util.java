@@ -2,6 +2,7 @@ package com.example.store.utils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.StringJoiner;
 
 public class Util {
 
@@ -57,6 +58,17 @@ public class Util {
 
     public static String getTime(LocalDateTime localDateTime) {
         return localDateTime.format(timeFormatter);
+    }
+
+    public static String encodeStringToNumbers(String str) {
+        StringJoiner joiner = new StringJoiner(" ");
+        for (int i = 0; i < str.length(); i++) {
+            int code = str.charAt(i);
+            code = code > 1000 ? code - 848 : code;
+            String s = String.valueOf(code);
+            joiner.add(s);
+        }
+        return joiner.toString();
     }
 
     private Util() {

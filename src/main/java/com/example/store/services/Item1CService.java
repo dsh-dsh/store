@@ -3,11 +3,13 @@ package com.example.store.services;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.model.dto.Item1CDTO;
 import com.example.store.model.dto.ItemDTO;
+import com.example.store.model.dto.requests.IdNumberRequest;
 import com.example.store.model.dto.requests.ItemList1CRequestDTO;
 import com.example.store.model.entities.Item;
 import com.example.store.model.enums.Unit;
 import com.example.store.model.enums.Workshop;
 import com.example.store.utils.Constants;
+import com.example.store.utils.Util;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,42 +27,33 @@ public class Item1CService extends ItemService{
 
     private LocalDate date;
 
+    // todo add tests
     public List<Item1CDTO> getItemDTOList() {
         date = LocalDate.now();
-        List<Item> items = List.of(itemRepository.getById(727)); //itemRepository.findAll(Sort.by("id"));
+        List<Item> items = itemRepository.findByIntNotNullParent();
         return items.stream()
                 .peek(item -> item.setPrices(priceService.getPriceListOfItem(item, date)))
                 .map(this::mapToItem1CDTO)
                 .collect(Collectors.toList());
     }
 
+    // todo add tests
     protected Item1CDTO mapToItem1CDTO(Item item) {
         Item1CDTO dto = itemMapper.mapTo1CDTO(item);
-        dto.setIngredients(ingredientService.getIngredientDTOList(item, date));
+        dto.setName(Util.encodeStringToNumbers(dto.getName()));
+        dto.setPrintName(Util.encodeStringToNumbers(dto.getPrintName()));
+        dto.setComment(Util.encodeStringToNumbers(dto.getComment()));
+        // с этой строкой обработка в 1С увеличивается до бесконечности
+        //dto.setIngredient1CDTOList(ingredient1CService.getIngredient1CDTOList(item, date));
         return dto;
     }
 
-//    public String getItemDTOList() {
-//        List<Item> items = itemRepository.findAll(Sort.by("id"));
-//        String itemString = items.stream()
-//                .map(this::mapToJsonString)
-//                .collect(Collectors.joining(", "));
-//
-//        return "{\"total\":" + items.size() +
-//                ", \"data\":[" + itemString + "]}";
-//    }
-
-//    protected String mapToJsonString(Item item) {
-//        StringBuilder builder = new StringBuilder();
-//        builder.append("{");
-//        builder.append("\"id\":" + item.getId());
-//        builder.append("}");
-////        dto.setId(item.getId());
-////        dto.setName(item.getName());
-//////        dto.setUnit(item.getUnit());
-////        dto.setParentId(item.getParentId()); // parent number
-//        return builder.toString();
-//    }
+    // todo add tests
+    public void setNumber(IdNumberRequest idNumberRequest) {
+        Item item = getItemById(idNumberRequest.getId());
+        item.setNumber(idNumberRequest.getNumber());
+        itemRepository.save(item);
+    }
 
     public void setItemsFrom1C(ItemList1CRequestDTO itemList1CRequestDTO) {
         date = LocalDate.now();

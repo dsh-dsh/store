@@ -30,7 +30,7 @@ public class IngredientService {
     @Autowired
     protected IngredientRepository ingredientRepository;
     @Autowired
-    private PeriodicValueService periodicValueService;
+    protected PeriodicValueService periodicValueService;
     @Autowired
     private IngredientCalculation ingredientCalculation;
     @Autowired

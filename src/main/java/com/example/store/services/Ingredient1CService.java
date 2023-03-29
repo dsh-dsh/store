@@ -1,14 +1,17 @@
 package com.example.store.services;
 
+import com.example.store.model.dto.Ingredient1CDTO;
 import com.example.store.model.dto.IngredientDTO;
 import com.example.store.model.entities.Ingredient;
 import com.example.store.model.entities.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class Ingredient1CService extends IngredientService {
@@ -17,6 +20,17 @@ public class Ingredient1CService extends IngredientService {
     private PeriodicValue1CService periodicValue1CService;
     @Autowired
     private ItemService itemService;
+
+    //todo add tests
+    public List<Ingredient1CDTO> getIngredient1CDTOList(Item item, LocalDate date) {
+        List<Ingredient> ingredients = getIngredientsNotDeleted(item);
+        return ingredients.stream()
+                .map(ingredient -> {
+                    Ingredient1CDTO dto = ingredientMapper.mapTo1CDTO(ingredient);
+                    setPeriodicValueFields(dto, periodicValueService.getPeriodicValueDTOList(ingredient, date));
+                    return dto;
+                }).collect(Collectors.toList());
+    }
 
     @Override
     public void updateIngredients(Item item, List<IngredientDTO> ingredientDTOList) {
