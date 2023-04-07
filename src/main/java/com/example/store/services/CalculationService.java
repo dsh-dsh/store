@@ -2,6 +2,7 @@ package com.example.store.services;
 
 import com.example.store.components.IngredientCache;
 import com.example.store.components.IngredientCalculation;
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.model.dto.CalculationDTO;
 import com.example.store.model.dto.IngredientCalculationDTO;
 import com.example.store.model.entities.Ingredient;
@@ -31,6 +32,8 @@ public class CalculationService {
     private PeriodicValueService periodicValueService;
     @Autowired
     private IngredientCache ingredientCache;
+    @Autowired
+    PeriodicValuesCache periodicValuesCache;
 
     public CalculationDTO getCalculation(int itemId, long longDate) {
         Item item = itemService.findItemById(itemId);
@@ -52,6 +55,7 @@ public class CalculationService {
     public IngredientCalculationDTO getCostCalculation(Ingredient ingredient, LocalDate date) {
         BigDecimal itemQuantity = BigDecimal.valueOf(ingredientCalculation.getNetQuantity(ingredient, date));
         ingredientCache.resetCache();
+        periodicValuesCache.setPeriodicQuantities();
         Map<Item, BigDecimal> map = ingredientCalculation.getIngredientMapOfItem(ingredient.getChild(), itemQuantity, date);
         float quantity = 0;
         float amount = 0;

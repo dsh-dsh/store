@@ -1,6 +1,7 @@
 package com.example.store.services;
 
 import com.example.store.components.IngredientCalculation;
+import com.example.store.components.PeriodicValuesCache;
 import com.example.store.exceptions.BadRequestException;
 import com.example.store.mappers.DocItemMapper;
 import com.example.store.model.dto.DocItemDTO;
@@ -45,6 +46,8 @@ public class DocItemService {
     @Autowired
     @Qualifier("disabledItemIds")
     private List<Integer> disabledItemIds;
+    @Autowired
+    PeriodicValuesCache periodicValuesCache;
 
     public void addDocItem(DocItemDTO docItemDTO, Document doc) {
         DocumentItem documentItem = createDocItem(docItemDTO, doc);
@@ -185,6 +188,7 @@ public class DocItemService {
     // todo add test
     protected Map<Item, BigDecimal> getIngredientsMapOfItem(Item item, BigDecimal quantity, LocalDate date) {
         if(!ingredientService.haveIngredients(item)) return Map.of();
+        periodicValuesCache.setPeriodicQuantities();
         return ingredientCalculation.getIngredientMapOfItem(item, quantity, date);
     }
 
