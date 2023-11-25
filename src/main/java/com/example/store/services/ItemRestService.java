@@ -183,7 +183,7 @@ public class ItemRestService {
     }
 
     public List<RestDTO> getItemRestList(Item item, LocalDateTime dateTime) {
-        List<Storage> storages = storageService.getStorageList();
+        List<Storage> storages = storageService.getStorageList(dateTime.toLocalDate());
         return storages.stream()
                 .map(storage -> new RestDTO(
                         new StorageDTO(storage),

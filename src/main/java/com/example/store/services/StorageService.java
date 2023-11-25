@@ -8,7 +8,10 @@ import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,14 +20,16 @@ public class StorageService {
     @Autowired
     private StorageRepository storageRepository;
 
+    Map<LocalDate, List<Storage>> storageCache = new HashMap<>();
+
     public List<StorageDTO> getStorageDTOList() {
-        return getStorageList().stream()
+        return getStorageList(LocalDate.now()).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<Storage> getStorageList() {
-        return storageRepository.findAll();
+    public List<Storage> getStorageList(LocalDate localDate) {
+        return storageCache.computeIfAbsent(localDate, fake -> storageRepository.findAll());
     }
 
     public Storage getById(int id) {

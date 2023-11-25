@@ -105,7 +105,7 @@ public class Hold1CDocksService {
         checkExistingNotHoldenDocsBefore(from);
         List<Project> projects = projectService.getProjectListToHold();
         checkExistingAllProjectsDocs(projects, from, to);
-        List<Storage> storages = storageService.getStorageList();
+        List<Storage> storages = storageService.getStorageList(from.toLocalDate());
         setNextDocTime(from);
         for (Storage storage : storages) {
             checks = getUnHoldenChecksByStorageAndPeriod(storage, from, to);

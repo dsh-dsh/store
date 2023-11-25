@@ -168,6 +168,12 @@ public class LotService {
         return newLotMap;
     }
 
+    // todo add test
+    public void addLots(List<DocumentItem> items) {
+        items.forEach(this::addLot);
+    }
+
+    @Deprecated
     public void addLots(Document document) {
         List<DocumentItem> items = docItemService.getItemsByDoc((ItemDoc) document);
         items.forEach(this::addLot);

@@ -4,7 +4,6 @@ import com.example.store.mappers.PersonMapper;
 import com.example.store.model.dto.PersonDTO;
 import com.example.store.model.dto.requests.AuthUserRequest;
 import com.example.store.model.entities.User;
-import com.example.store.repositories.UserRepository;
 import com.example.store.security.JwtProvider;
 import com.example.store.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private UserService userService;
     @Autowired

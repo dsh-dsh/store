@@ -73,7 +73,7 @@ public class  PeriodService {
         long docTimeMillis = 0;
         checkPossibilityToClosePeriod();
         LocalDateTime newPeriodStart = getNewPeriodStart();
-        List<Storage> storages = storageService.getStorageList();
+        List<Storage> storages = storageService.getStorageList(newPeriodStart.toLocalDate());
         for (Storage storage : storages) {
             closePeriodForStorage(newPeriodStart.plus(docTimeMillis++, ChronoUnit.MILLIS), storage);
         }

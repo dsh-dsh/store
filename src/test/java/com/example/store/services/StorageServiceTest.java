@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,7 @@ class StorageServiceTest {
 
     @Test
     void getStorageListTest() {
-        List<Storage> list = storageService.getStorageList();
+        List<Storage> list = storageService.getStorageList(LocalDate.now());
         assertEquals(4, list.size());
     }
 
