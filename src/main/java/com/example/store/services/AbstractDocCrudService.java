@@ -104,13 +104,14 @@ public abstract class AbstractDocCrudService {
     }
 
     public DocInterface updateItemDoc(DocDTO docDTO) {
-        ItemDoc itemDoc = (ItemDoc) setDocument(getOrAddItemDoc(docDTO));
-        setAdditionalFieldsAndSave(itemDoc);
-        updateDocItems(itemDoc);
-        updateCheckInfo(itemDoc);
-        docInfoService.setDocInfo(itemDoc, docDTO.getDocInfo());
+        ItemDoc itemDoc = getOrAddItemDoc(docDTO);
         serialUnHoldDocService.unHold(itemDoc);
-        return itemDoc;
+        ItemDoc updatedDoc = (ItemDoc) setDocument(itemDoc);
+        setAdditionalFieldsAndSave(updatedDoc);
+        updateDocItems(updatedDoc);
+        updateCheckInfo(updatedDoc);
+        docInfoService.setDocInfo(updatedDoc, docDTO.getDocInfo());
+        return updatedDoc;
     }
 
     public DocInterface updateOrderDoc(DocDTO docDTO) {
@@ -231,12 +232,12 @@ public abstract class AbstractDocCrudService {
     }
 
     protected LocalDateTime getNewTime(Document document, DocDTO dto) {
-        LocalDate docDate = Util.getLocalDate(dto.getDateTime());
         if(saveTime.equals(Constants.DTO_TIME)) {
             return Util.getLocalDateTime(dto.getDateTime());
         } else if(document.getDateTime() != null && saveTime.equals(Constants.CURRENT_TIME)) {
             return document.getDateTime();
         } else {
+            LocalDate docDate = Util.getLocalDate(dto.getDateTime());
             return getNewDocTime(docDate,  saveTime.equals(Constants.DAY_START));
         }
     }
