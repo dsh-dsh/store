@@ -100,7 +100,7 @@ public class Constants {
     public static final String NO_SUCH_CHECK_INFO_MESSAGE = "Информация о чеке ККМ не найдена";
     public static final String NO_SUCH_CODE_ITEM_MESSAGE = "Номенклатура с кодом %s не найдена";
     public static final String NO_SUCH_ITEM_MESSAGE = "Номенклатура не найдена";
-    public static final String NO_INGREDIENTS_IN_ITEM_MESSAGE = "В номенклатуре нет ингредиентов";
+    public static final String NO_INGREDIENTS_IN_ITEM_MESSAGE = "В номенклатуре %s(id - %d) нет ингредиентов";
     public static final String NO_SUCH_INGREDIENT_MESSAGE = "Ингредиента с номером %s не найдено";
     public static final String NO_SUCH_LOT_MESSAGE = "Партия не найдена";
     public static final String NO_SUCH_PROJECT_MESSAGE = "Проект %s отсутствует в системе";

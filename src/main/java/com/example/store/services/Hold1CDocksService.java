@@ -3,14 +3,12 @@ package com.example.store.services;
 import com.example.store.components.SystemSettingsCash;
 import com.example.store.exceptions.HoldDocumentException;
 import com.example.store.exceptions.UnHoldenDocsException;
+import com.example.store.exceptions.WarningException;
 import com.example.store.model.entities.*;
 import com.example.store.model.entities.documents.Document;
 import com.example.store.model.entities.documents.ItemDoc;
 import com.example.store.model.entities.documents.OrderDoc;
-import com.example.store.model.enums.CheckPaymentType;
-import com.example.store.model.enums.DocumentType;
-import com.example.store.model.enums.PaymentType;
-import com.example.store.model.enums.SettingType;
+import com.example.store.model.enums.*;
 import com.example.store.repositories.DocumentRepository;
 import com.example.store.repositories.ItemDocRepository;
 import com.example.store.repositories.OrderDocRepository;
@@ -91,11 +89,13 @@ public class Hold1CDocksService {
     private List<ItemDoc> checks;
     private LocalDateTime last1CDocTime;
     private LocalDateTime nextDocTime;
+    private Boolean ignoreMissingDocs;
 
     @Transactional
-    public void holdFirstUnHoldenChecks() {
+    public void holdFirstUnHoldenChecks(Boolean ignoreMissingDocs) {
         LocalDateTime from = getFirstUnHoldenCheckDate();
         LocalDateTime to = from.plusDays(1);
+        this.ignoreMissingDocs = ignoreMissingDocs;
         hold1CDocsByPeriod(from, to);
     }
 
@@ -306,9 +306,10 @@ public class Hold1CDocksService {
     }
 
     protected void checkExistingAllProjectsDocs(List<Project> projects, LocalDateTime from, LocalDateTime to) {
+        if(ignoreMissingDocs) return;
         projects.forEach(project -> {
             if(!documentRepository.existsByDocTypeAndProjectAndDateTimeBetween(DocumentType.CREDIT_ORDER_DOC, project, from, to)) {
-                throw new HoldDocumentException(String.format(Constants.NO_DOCS_TO_HOLD_FROM_PROJECT_MESSAGE, project.getName()));
+                throw new WarningException(String.format(Constants.NO_DOCS_TO_HOLD_FROM_PROJECT_MESSAGE, project.getName()), ExceptionType.HOLD_EXCEPTION, null);
             }
         });
     }

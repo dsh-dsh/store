@@ -47,8 +47,9 @@ public class Document1cController {
     }
 
     @PostMapping("/hold")
-    public ResponseEntity<Response<String>> hold1CDocuments() {
-        hold1CDocksService.holdFirstUnHoldenChecks();
+    public ResponseEntity<Response<String>> hold1CDocuments(
+            @RequestParam(defaultValue = "false") Boolean ignoreMissingDocs) {
+        hold1CDocksService.holdFirstUnHoldenChecks(ignoreMissingDocs);
         return ResponseEntity.ok(new Response<>("ok"));
     }
 

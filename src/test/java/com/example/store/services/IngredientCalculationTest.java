@@ -236,7 +236,7 @@ class IngredientCalculationTest {
     void getTotalWeightTest() {
         Item item = itemService.getItemById(61);
         List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item);
-        assertEquals(2f, ingredientCalculation.getTotalWeight(ingredients));
+        assertEquals(2f, ingredientCalculation.getTotalWeight(ingredients, item));
     }
 
     @Test
@@ -302,7 +302,7 @@ class IngredientCalculationTest {
     void getTotalWeightIfNoEnabledIngredientsTest() {
         Item item = itemService.getItemById(61);
         List<Ingredient> ingredients = ingredientCalculation.getIngredientsNotDeleted(item);
-        assertThrows(BadRequestException.class, () -> ingredientCalculation.getTotalWeight(ingredients));
+        assertThrows(BadRequestException.class, () -> ingredientCalculation.getTotalWeight(ingredients, item));
     }
 
 

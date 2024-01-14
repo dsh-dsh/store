@@ -46,7 +46,7 @@ public class IngredientCalculation {
             ingredientMapOfItem.merge(item, quantity.setScale(3, RoundingMode.HALF_EVEN), BigDecimal::add);
         } else {
             boolean isWeight = isWeight(item);
-            float totalWeight = isWeight ? getTotalWeight(ingredients) : 1;
+            float totalWeight = isWeight ? getTotalWeight(ingredients, item) : 1;
             for(Ingredient ingredient : ingredients) {
                 checkForPortionItemInWeightItem(isWeight, ingredient);
                 float grossQuantity = periodicValueService.getGrossQuantity(ingredient);
@@ -92,7 +92,7 @@ public class IngredientCalculation {
         return optional.map(PeriodicValue::getQuantity).orElse(0f);
     }
 
-    public float getTotalWeight(List<Ingredient> ingredients) {
+    public float getTotalWeight(List<Ingredient> ingredients, Item item) {
         float netWeight = 0;
         for(Ingredient ingredient : ingredients) {
             if(periodicValueService.getEnableQuantity(ingredient) == 1) {
@@ -100,7 +100,7 @@ public class IngredientCalculation {
             }
         }
         if(netWeight == 0) throw new BadRequestException(
-                Constants.NO_INGREDIENTS_IN_ITEM_MESSAGE,
+                String.format(Constants.NO_INGREDIENTS_IN_ITEM_MESSAGE, item.getName(), item.getId()),
                 this.getClass().getName() + " - getTotalWeight(List<Ingredient> ingredients, LocalDate date)");
         return netWeight;
     }
